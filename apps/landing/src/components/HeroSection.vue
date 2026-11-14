@@ -45,8 +45,8 @@ const highlights = [
             Solicitar una demostración
             <ArrowRight class="size-4" aria-hidden="true" />
           </a>
-          <a href="#funcionalidades" class="btn-ghost px-6 py-3.5 text-base">
-            Ver funcionalidades
+          <a href="#demo" class="btn-ghost px-6 py-3.5 text-base">
+            Probar la demo
           </a>
         </div>
 

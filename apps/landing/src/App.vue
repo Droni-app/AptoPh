@@ -5,6 +5,7 @@ import FeaturesSection from './components/FeaturesSection.vue'
 import ProfilesSection from './components/ProfilesSection.vue'
 import PlatformSection from './components/PlatformSection.vue'
 import StepsSection from './components/StepsSection.vue'
+import DemoSection from './components/DemoSection.vue'
 import SecuritySection from './components/SecuritySection.vue'
 import FaqSection from './components/FaqSection.vue'
 import CtaSection from './components/CtaSection.vue'
@@ -24,6 +25,7 @@ import SiteFooter from './components/SiteFooter.vue'
     <ProfilesSection />
     <PlatformSection />
     <StepsSection />
+    <DemoSection />
     <SecuritySection />
     <FaqSection />
     <CtaSection />

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { createSSRApp } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import App from '../App.vue'
-import { faqs, features } from '../content'
+import { demo, faqs, features } from '../content'
 import { headTags, structuredData } from '../seo'
 
 describe('landing prerender', () => {
@@ -15,6 +15,14 @@ describe('landing prerender', () => {
     for (const faq of faqs) expect(html).toContain(faq.question)
     // Inline brand logo, no external request
     expect(html).toContain('aria-label="AptoPH"')
+  })
+
+  it('publishes the demo accounts', async () => {
+    const html = await renderToString(createSSRApp(App))
+
+    expect(html).toContain('id="demo"')
+    for (const account of demo.accounts) expect(html).toContain(account.email)
+    expect(html).toContain(demo.password)
   })
 
   it('builds FAQ structured data from the same content', () => {

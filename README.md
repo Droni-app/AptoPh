@@ -98,6 +98,21 @@ pnpm --filter @apartadock/api exec node ace db:seed --files database/seeders/fon
 La unidad 101 trae además un familiar, dos vehículos, una mascota y dos cuotas de administración
 (la del mes anterior abonada y vencida, la del mes actual pendiente) para ver la app de residentes.
 
+### Conjunto demo público
+
+`demo_seeder` crea **Altos del Parque (Demo)**: 3 torres, 72 apartamentos, parqueaderos y depósitos,
+con registros en todos los módulos (ocupantes, vehículos, mascotas, cuotas, pagos, zonas comunes y
+reservas, comunicados, PQRS, visitas, paquetes, documentos y auditoría). Las credenciales se publican
+en la landing (sección «Demo»):
+
+| Correo (contraseña `demo1234`) | Acceso |
+| --- | --- |
+| `admin@demo.test` | Backoffice, administración |
+| `residente@demo.test` | App web, propietario de Torre 1 · 302 |
+
+Corre en `development` y `production`, y en cada ejecución borra y recrea los datos del conjunto
+demo (los usuarios demo solo pertenecen a ese conjunto).
+
 ## Backoffice (`apps/backoffice`)
 
 Vue 3 + [droni-kit](https://www.npmjs.com/package/@dronico/droni-kit) + Tailwind 4. Inicia sesión con
@@ -132,8 +147,8 @@ Cada push a `main` despliega solo.
 | `api.aptoph.com` | API AdonisJS | 512 MB, $5/mes |
 | — | PostgreSQL 18 administrado `aptoph-db` (nyc1), base `aptoph` | $15/mes |
 
-Antes de cada despliegue, el job `migrate` corre las migraciones y `production_seeder` (clientes OAuth
-con las URLs de producción). Los secretos (`APP_KEY`, `SMTP_*`) solo viven cifrados en la app: para
+Antes de cada despliegue, el job `migrate` corre las migraciones, `production_seeder` (clientes OAuth
+con las URLs de producción) y `demo_seeder`, que reinicia el conjunto demo público. Los secretos (`APP_KEY`, `SMTP_*`) solo viven cifrados en la app: para
 cambiar la configuración parte de `doctl apps spec get <id>` en vez de reenviar `.do/app.yaml`, que
 tiene marcadores `__…__` en su lugar.
 
