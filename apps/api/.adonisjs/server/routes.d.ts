@@ -4,21 +4,78 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
-    'auth.new_account.store': { paramsTuple?: []; params?: {} }
-    'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
-    'profile.profile.show': { paramsTuple?: []; params?: {} }
-    'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
+    'oauth.authorize': { paramsTuple?: []; params?: {} }
+    'oauth.authorize.store': { paramsTuple?: []; params?: {} }
+    'oauth.token': { paramsTuple?: []; params?: {} }
+    'oauth.revoke': { paramsTuple?: []; params?: {} }
+    'oauth.logout': { paramsTuple?: []; params?: {} }
+    'profile.show': { paramsTuple?: []; params?: {} }
+    'profile.tenants': { paramsTuple?: []; params?: {} }
+    'profile.logout': { paramsTuple?: []; params?: {} }
+    'tenant.current': { paramsTuple?: []; params?: {} }
+    'dashboard': { paramsTuple?: []; params?: {} }
+    'buildings.index': { paramsTuple?: []; params?: {} }
+    'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'units.index': { paramsTuple?: []; params?: {} }
+    'units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'members.index': { paramsTuple?: []; params?: {} }
+    'buildings.store': { paramsTuple?: []; params?: {} }
+    'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'units.store': { paramsTuple?: []; params?: {} }
+    'units.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'units.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'occupants.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'occupants.update': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
+    'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
   }
   GET: {
-    'profile.profile.show': { paramsTuple?: []; params?: {} }
+    'oauth.authorize': { paramsTuple?: []; params?: {} }
+    'oauth.logout': { paramsTuple?: []; params?: {} }
+    'profile.show': { paramsTuple?: []; params?: {} }
+    'profile.tenants': { paramsTuple?: []; params?: {} }
+    'tenant.current': { paramsTuple?: []; params?: {} }
+    'dashboard': { paramsTuple?: []; params?: {} }
+    'buildings.index': { paramsTuple?: []; params?: {} }
+    'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'units.index': { paramsTuple?: []; params?: {} }
+    'units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'members.index': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
-    'profile.profile.show': { paramsTuple?: []; params?: {} }
+    'oauth.authorize': { paramsTuple?: []; params?: {} }
+    'oauth.logout': { paramsTuple?: []; params?: {} }
+    'profile.show': { paramsTuple?: []; params?: {} }
+    'profile.tenants': { paramsTuple?: []; params?: {} }
+    'tenant.current': { paramsTuple?: []; params?: {} }
+    'dashboard': { paramsTuple?: []; params?: {} }
+    'buildings.index': { paramsTuple?: []; params?: {} }
+    'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'units.index': { paramsTuple?: []; params?: {} }
+    'units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'members.index': { paramsTuple?: []; params?: {} }
   }
   POST: {
-    'auth.new_account.store': { paramsTuple?: []; params?: {} }
-    'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
-    'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
+    'oauth.authorize.store': { paramsTuple?: []; params?: {} }
+    'oauth.token': { paramsTuple?: []; params?: {} }
+    'oauth.revoke': { paramsTuple?: []; params?: {} }
+    'profile.logout': { paramsTuple?: []; params?: {} }
+    'buildings.store': { paramsTuple?: []; params?: {} }
+    'units.store': { paramsTuple?: []; params?: {} }
+    'occupants.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+  }
+  PATCH: {
+    'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'units.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'occupants.update': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
+  }
+  DELETE: {
+    'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'units.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

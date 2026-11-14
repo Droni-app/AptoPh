@@ -1,12 +1,26 @@
 import { UserSchema } from '#database/schema'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
+import { hasMany } from '@adonisjs/lucid/orm'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { type AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
+import oauthConfig from '#config/oauth'
+import Enrollment from '#models/enrollment'
 
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
-  static accessTokens = DbAccessTokensProvider.forModel(User)
+  static accessTokens = DbAccessTokensProvider.forModel(User, {
+    expiresIn: oauthConfig.accessTokenTtl,
+    prefix: 'oat_',
+  })
   declare currentAccessToken?: AccessToken
+
+  @hasMany(() => Enrollment)
+  declare enrollments: HasMany<typeof Enrollment>
+
+  get isBlocked() {
+    return this.status === 'blocked' || this.deletedAt !== null
+  }
 
   get initials() {
     const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')

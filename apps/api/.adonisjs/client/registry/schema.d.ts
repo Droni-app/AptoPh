@@ -8,33 +8,72 @@ import type { routes } from './index.ts'
 export type ParamValue = string | number | bigint | boolean
 
 export interface Registry {
-  'auth.new_account.store': {
-    methods: ["POST"]
-    pattern: '/api/v1/auth/signup'
+  'oauth.authorize': {
+    methods: ["GET","HEAD"]
+    pattern: '/oauth/authorize'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/user').signupValidator)>>
+      body: {}
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/user').signupValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/oauth/authorize_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/oauth/authorize_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/oauth/authorize_controller').default['show']>>>
     }
   }
-  'auth.access_tokens.store': {
+  'oauth.authorize.store': {
     methods: ["POST"]
-    pattern: '/api/v1/auth/login'
+    pattern: '/oauth/authorize'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/user').loginValidator)>>
+      body: {}
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/user').loginValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/oauth/authorize_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/oauth/authorize_controller').default['store']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/oauth/authorize_controller').default['store']>>>
     }
   }
-  'profile.profile.show': {
+  'oauth.token': {
+    methods: ["POST"]
+    pattern: '/oauth/token'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/oauth/token_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/oauth/token_controller').default['handle']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/oauth/token_controller').default['handle']>>>
+    }
+  }
+  'oauth.revoke': {
+    methods: ["POST"]
+    pattern: '/oauth/revoke'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/oauth/revoke_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/oauth/revoke_controller').default['handle']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/oauth/revoke_controller').default['handle']>>>
+    }
+  }
+  'oauth.logout': {
+    methods: ["GET","HEAD"]
+    pattern: '/oauth/logout'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/oauth/logout_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/oauth/logout_controller').default['handle']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/oauth/logout_controller').default['handle']>>>
+    }
+  }
+  'profile.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/account/profile'
     types: {
@@ -47,7 +86,20 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/profile_controller').default['show']>>>
     }
   }
-  'profile.access_tokens.destroy': {
+  'profile.tenants': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/account/tenants'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/my_tenants_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/my_tenants_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/my_tenants_controller').default['index']>>>
+    }
+  }
+  'profile.logout': {
     methods: ["POST"]
     pattern: '/api/v1/account/logout'
     types: {
@@ -58,6 +110,227 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['destroy']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['destroy']>>>
+    }
+  }
+  'tenant.current': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/tenant'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/my_tenants_controller').default['current']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/my_tenants_controller').default['current']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/my_tenants_controller').default['current']>>>
+    }
+  }
+  'dashboard': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/dashboard'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/dashboard_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/dashboard_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/dashboard_controller').default['show']>>>
+    }
+  }
+  'buildings.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/buildings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['index']>>>
+    }
+  }
+  'buildings.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/buildings/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['show']>>>
+    }
+  }
+  'units.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/units'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/unit').listUnitsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'units.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/units/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['show']>>>
+    }
+  }
+  'occupants.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/units/:unitId/occupants'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['index']>>>
+    }
+  }
+  'members.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/members'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['index']>>>
+    }
+  }
+  'buildings.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/buildings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/building').createBuildingValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/building').createBuildingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'buildings.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/buildings/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/building').updateBuildingValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/building').updateBuildingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'buildings.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/buildings/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/buildings_controller').default['destroy']>>>
+    }
+  }
+  'units.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/units'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/unit').createUnitValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/unit').createUnitValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'units.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/units/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/unit').updateUnitValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/unit').updateUnitValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'units.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/units/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/units_controller').default['destroy']>>>
+    }
+  }
+  'occupants.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/units/:unitId/occupants'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/unit_occupant').createUnitOccupantValidator)>>
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/unit_occupant').createUnitOccupantValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'occupants.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/units/:unitId/occupants/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/unit_occupant').updateUnitOccupantValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { unitId: ParamValue; id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/unit_occupant').updateUnitOccupantValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'occupants.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/units/:unitId/occupants/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { unitId: ParamValue; id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['destroy']>>>
     }
   }
 }

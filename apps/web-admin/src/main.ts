@@ -1,3 +1,4 @@
+import '@dronico/droni-kit/dist/droni-kit.css'
 import './assets/main.css'
 
 import { createApp } from 'vue'
@@ -5,6 +6,9 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import { initTheme } from './composables/useTheme'
+
+initTheme()
 
 const app = createApp(App)
 

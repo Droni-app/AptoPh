@@ -5,6 +5,19 @@
 
 export const controllers = {
   AccessTokens: () => import('#controllers/access_tokens_controller'),
-  NewAccount: () => import('#controllers/new_account_controller'),
+  backoffice: {
+    Buildings: () => import('#controllers/backoffice/buildings_controller'),
+    Dashboard: () => import('#controllers/backoffice/dashboard_controller'),
+    Members: () => import('#controllers/backoffice/members_controller'),
+    UnitOccupants: () => import('#controllers/backoffice/unit_occupants_controller'),
+    Units: () => import('#controllers/backoffice/units_controller'),
+  },
+  MyTenants: () => import('#controllers/my_tenants_controller'),
+  oauth: {
+    Authorize: () => import('#controllers/oauth/authorize_controller'),
+    Logout: () => import('#controllers/oauth/logout_controller'),
+    Revoke: () => import('#controllers/oauth/revoke_controller'),
+    Token: () => import('#controllers/oauth/token_controller'),
+  },
   Profile: () => import('#controllers/profile_controller'),
 }

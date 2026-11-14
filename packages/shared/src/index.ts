@@ -3,27 +3,31 @@
  * La app móvil (Flutter) no consume este paquete: replica los contratos en Dart.
  */
 
-/** Roles dentro de una copropiedad (conjunto). */
-export const CommunityRole = {
+/** Rol de un usuario dentro de un tenant (tabla `enrollments`). Ver docs/database-model.md */
+export const EnrollmentRole = {
   Administrator: 'administrator',
   CouncilMember: 'council_member',
   Accountant: 'accountant',
   FiscalReviewer: 'fiscal_reviewer',
-  Security: 'security',
-  Owner: 'owner',
-  Tenant: 'tenant',
+  Staff: 'staff',
+  SecurityGuard: 'security_guard',
+  Resident: 'resident',
 } as const
 
-export type CommunityRole = (typeof CommunityRole)[keyof typeof CommunityRole]
+export type EnrollmentRole = (typeof EnrollmentRole)[keyof typeof EnrollmentRole]
 
 /** Roles con acceso al backoffice (web-admin). */
-export const BACKOFFICE_ROLES: readonly CommunityRole[] = [
-  CommunityRole.Administrator,
-  CommunityRole.CouncilMember,
-  CommunityRole.Accountant,
-  CommunityRole.FiscalReviewer,
-  CommunityRole.Security,
+export const BACKOFFICE_ROLES: readonly EnrollmentRole[] = [
+  EnrollmentRole.Administrator,
+  EnrollmentRole.CouncilMember,
+  EnrollmentRole.Accountant,
+  EnrollmentRole.FiscalReviewer,
+  EnrollmentRole.Staff,
+  EnrollmentRole.SecurityGuard,
 ]
 
-/** Roles de residentes (web-residents y app móvil). */
-export const RESIDENT_ROLES: readonly CommunityRole[] = [CommunityRole.Owner, CommunityRole.Tenant]
+export const ENROLLMENT_ROLES = Object.values(EnrollmentRole)
+
+export * from './domain.js'
+export * from './labels.js'
+export type * from './api.js'

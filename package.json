@@ -14,8 +14,6 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "db:up": "docker compose up -d postgres",
-    "db:down": "docker compose down",
     "db:migrate": "pnpm --filter @apartadock/api db:migrate"
   },
   "devDependencies": {

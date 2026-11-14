@@ -30,13 +30,13 @@ const shieldConfig = defineConfig({
     /**
      * Enable CSRF token verification for state-changing requests.
      */
-    enabled: false,
+    enabled: true,
 
     /**
-     * Route patterns to exclude from CSRF checks.
-     * Useful for external webhooks or API endpoints.
+     * Only the hosted login form (cookie session) needs CSRF protection.
+     * The JSON API and the OAuth token/revoke endpoints are stateless.
      */
-    exceptRoutes: [],
+    exceptRoutes: (ctx) => ctx.request.url() !== '/oauth/authorize',
 
     /**
      * Expose an encrypted XSRF-TOKEN cookie for frontend HTTP clients.
