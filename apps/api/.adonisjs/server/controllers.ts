@@ -21,7 +21,14 @@ export const controllers = {
   },
   Profile: () => import('#controllers/profile_controller'),
   resident: {
+    Bookings: () => import('#controllers/resident/bookings_controller'),
     Home: () => import('#controllers/resident/home_controller'),
+    Household: () => import('#controllers/resident/household_controller'),
+    Parcels: () => import('#controllers/resident/parcels_controller'),
+    Pets: () => import('#controllers/resident/pets_controller'),
+    Tickets: () => import('#controllers/resident/tickets_controller'),
     Units: () => import('#controllers/resident/units_controller'),
+    Vehicles: () => import('#controllers/resident/vehicles_controller'),
+    Visits: () => import('#controllers/resident/visits_controller'),
   },
 }

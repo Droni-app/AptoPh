@@ -1,6 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import UnitOccupant from '#models/unit_occupant'
-import { activeOccupancy, balancesFor, tenantToday } from '#services/resident_scope'
+import {
+  activeOccupancy,
+  balancesFor,
+  canManageHousehold,
+  tenantToday,
+} from '#services/resident_scope'
+import { presentHouseholdMember, presentPet, presentVehicle } from '#transformers/resident'
 
 /**
  * GET /api/v1/resident/units/:id — one of the resident's own units.
@@ -42,6 +48,7 @@ export default class UnitsController {
     }
 
     const unit = occupancy.unit
+    const manages = canManageHousehold(occupancy)
     const balances = await balancesFor(tenant, [unit.id], today)
 
     return {
@@ -58,29 +65,12 @@ export default class UnitsController {
         isPrimaryContact: occupancy.isPrimaryContact,
         isBillingResponsible: occupancy.isBillingResponsible,
         balance: balances.get(unit.id)!,
-        // Co-residents see each other's name and role in the unit, never documents or contacts
-        household: unit.occupants.map((member) => ({
-          id: member.id,
-          fullName: member.fullName,
-          relationship: member.relationship,
-          isPrimaryContact: member.isPrimaryContact,
-          isBillingResponsible: member.isBillingResponsible,
-          isMe: member.userId === user.id,
-        })),
-        vehicles: unit.vehicles.map((vehicle) => ({
-          id: vehicle.id,
-          plate: vehicle.plate,
-          type: vehicle.type,
-          brand: vehicle.brand,
-          model: vehicle.model,
-          color: vehicle.color,
-        })),
-        pets: unit.pets.map((pet) => ({
-          id: pet.id,
-          name: pet.name,
-          species: pet.species,
-          breed: pet.breed,
-        })),
+        canManageHousehold: manages,
+        // Co-residents see each other's name and role; documents and phones only
+        // for the members this resident manages (see presentHouseholdMember)
+        household: unit.occupants.map((member) => presentHouseholdMember(member, user.id, manages)),
+        vehicles: unit.vehicles.map(presentVehicle),
+        pets: unit.pets.map(presentPet),
         openCharges: unit.charges.map((charge) => {
           const dueOn = charge.dueOn.toISODate()!
           return {

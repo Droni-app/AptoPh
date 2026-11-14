@@ -24,7 +24,12 @@ async function createUnit(tenant: Tenant, building: Building, code: string) {
   })
 }
 
-async function occupy(tenant: Tenant, unit: Unit, user: User, overrides: Partial<UnitOccupant> = {}) {
+async function occupy(
+  tenant: Tenant,
+  unit: Unit,
+  user: User,
+  overrides: Partial<UnitOccupant> = {}
+) {
   return UnitOccupant.create({
     tenantId: tenant.id,
     unitId: unit.id,
@@ -99,7 +104,11 @@ test.group('Resident · home and own units', (group) => {
         ...values,
       })
 
-    await charge({ dueOn: today.minus({ days: 5 }), balance: '150000.00', status: 'partially_paid' })
+    await charge({
+      dueOn: today.minus({ days: 5 }),
+      balance: '150000.00',
+      status: 'partially_paid',
+    })
     await charge({})
     await charge({ status: 'paid', balance: '0.00' })
 
@@ -119,7 +128,7 @@ test.group('Resident · home and own units', (group) => {
     assert.isFalse(openCharges[1].isOverdue)
   })
 
-  test('unit detail shows the household without documents or contacts', async ({
+  test('unit detail: contacts only for the members the viewer manages', async ({
     client,
     assert,
   }) => {
@@ -143,8 +152,14 @@ test.group('Resident · home and own units', (group) => {
     assert.lengthOf(data.household, 2)
     assert.isTrue(data.household.find((m: any) => m.relationship === 'owner').isMe)
     const relative = data.household.find((m: any) => m.fullName === 'Lucía Familiar')
-    assert.notProperty(relative, 'documentNumber')
-    assert.notProperty(relative, 'phone')
+    // The owner manages family members without an account: their contact data is shown
+    assert.isTrue(relative.editable)
+    assert.equal(relative.documentNumber, '1012345678')
+    // Occupants with their own account are managed by the administration
+    const me = data.household.find((m: any) => m.isMe)
+    assert.isFalse(me.editable)
+    assert.isNull(me.documentNumber)
+    assert.isNull(me.phone)
     assert.equal(data.vehicles[0].plate, 'ABC123')
   })
 

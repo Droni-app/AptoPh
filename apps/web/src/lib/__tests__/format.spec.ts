@@ -5,6 +5,8 @@ import {
   formatDate,
   formatMoney,
   formatPeriod,
+  formatRelative,
+  toIsoInstant,
   unitName,
 } from '../format'
 
@@ -33,5 +35,19 @@ describe('format', () => {
       'Torre 1 · Apartamento 101',
     )
     expect(unitName({ code: 'P-12', type: 'parking', building: null })).toBe('Parqueadero P-12')
+  })
+})
+
+describe('date and time inputs', () => {
+  it('turns local form values into an ISO instant', () => {
+    const iso = toIsoInstant('2026-11-20', '19:00')
+    expect(iso).toMatch(/^2026-11-2\dT\d{2}:00:00\.000Z$/)
+    expect(new Date(iso).getHours()).toBe(19)
+  })
+
+  it('describes recent activity', () => {
+    const now = Date.parse('2026-11-14T12:00:00Z')
+    expect(formatRelative('2026-11-14T09:00:00Z', now)).toBe('hace 3 horas')
+    expect(formatRelative('2026-11-12T12:00:00Z', now)).toBe('anteayer')
   })
 })

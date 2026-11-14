@@ -3,6 +3,7 @@ import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import { DateTime } from 'luxon'
 import type Tenant from '#models/tenant'
 import type UnitOccupant from '#models/unit_occupant'
+import ResourceException from '#exceptions/resource_exception'
 
 /** Today's date in the tenant's timezone (occupancy and due dates are local dates) */
 export function tenantToday(tenant: Tenant) {
@@ -58,4 +59,57 @@ export async function balancesFor(tenant: Tenant, unitIds: string[], today: stri
     })
   }
   return balances
+}
+
+/** Relationships that may manage the household (add family members, domestic workers…) */
+const HOUSEHOLD_MANAGERS: ReadonlySet<string> = new Set(['owner', 'renter'])
+
+export type ResidentOccupancy = {
+  unitId: string
+  relationship: string
+  isPrimaryContact: boolean
+}
+
+/**
+ * Units where the user is an active occupant today (the unit not deleted).
+ * Everything a resident can see or change hangs from these units.
+ */
+export async function residentOccupancies(tenant: Tenant, userId: string) {
+  const today = tenantToday(tenant)
+  const rows = await db
+    .from('unit_occupants as o')
+    .join('units as u', (join) => join.on('u.id', 'o.unit_id').andOn('u.tenant_id', 'o.tenant_id'))
+    .where('o.tenant_id', tenant.id)
+    .where('o.user_id', userId)
+    .whereNull('u.deleted_at')
+    .where((q) => q.whereNull('o.starts_on').orWhere('o.starts_on', '<=', today))
+    .where((q) => q.whereNull('o.ends_on').orWhere('o.ends_on', '>=', today))
+    .select('o.unit_id', 'o.relationship', 'o.is_primary_contact')
+
+  return rows.map((row): ResidentOccupancy => ({
+    unitId: row.unit_id,
+    relationship: row.relationship,
+    isPrimaryContact: row.is_primary_contact,
+  }))
+}
+
+/** Ids of the units where the user is an active occupant */
+export async function residentUnitIds(tenant: Tenant, userId: string) {
+  const occupancies = await residentOccupancies(tenant, userId)
+  return occupancies.map((o) => o.unitId)
+}
+
+export function canManageHousehold(occupancy: ResidentOccupancy) {
+  return HOUSEHOLD_MANAGERS.has(occupancy.relationship) || occupancy.isPrimaryContact
+}
+
+/**
+ * The resident's occupancy of `unitId`, or 404 (also for units that exist but
+ * are not theirs).
+ */
+export async function findOwnUnit(tenant: Tenant, userId: string, unitId: string) {
+  const occupancies = await residentOccupancies(tenant, userId)
+  const occupancy = occupancies.find((o) => o.unitId === unitId)
+  if (!occupancy) throw ResourceException.notFound('La unidad no existe')
+  return occupancy
 }

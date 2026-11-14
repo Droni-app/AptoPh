@@ -52,6 +52,30 @@ const router = createRouter({
           meta: { tenant: true, title: 'Mi unidad' },
         },
         {
+          path: 'porteria',
+          name: 'visits',
+          component: () => import('@/views/VisitsView.vue'),
+          meta: { tenant: true, title: 'Portería' },
+        },
+        {
+          path: 'reservas',
+          name: 'bookings',
+          component: () => import('@/views/BookingsView.vue'),
+          meta: { tenant: true, title: 'Reservas' },
+        },
+        {
+          path: 'pqrs',
+          name: 'tickets',
+          component: () => import('@/views/TicketsView.vue'),
+          meta: { tenant: true, title: 'PQRS' },
+        },
+        {
+          path: 'pqrs/:id',
+          name: 'ticket',
+          component: () => import('@/views/TicketView.vue'),
+          meta: { tenant: true, title: 'PQRS' },
+        },
+        {
           path: 'perfil',
           name: 'profile',
           component: () => import('@/views/ProfileView.vue'),

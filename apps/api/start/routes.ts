@@ -22,6 +22,13 @@ const UnitOccupantsController = () => import('#controllers/backoffice/unit_occup
 const MembersController = () => import('#controllers/backoffice/members_controller')
 const ResidentHomeController = () => import('#controllers/resident/home_controller')
 const ResidentUnitsController = () => import('#controllers/resident/units_controller')
+const ResidentVehiclesController = () => import('#controllers/resident/vehicles_controller')
+const ResidentPetsController = () => import('#controllers/resident/pets_controller')
+const ResidentHouseholdController = () => import('#controllers/resident/household_controller')
+const ResidentVisitsController = () => import('#controllers/resident/visits_controller')
+const ResidentParcelsController = () => import('#controllers/resident/parcels_controller')
+const ResidentBookingsController = () => import('#controllers/resident/bookings_controller')
+const ResidentTicketsController = () => import('#controllers/resident/tickets_controller')
 
 /**
  * Back-office permissions: every back-office role can read,
@@ -86,6 +93,49 @@ router
       .group(() => {
         router.get('home', [ResidentHomeController, 'show']).as('home')
         router.get('units/:id', [ResidentUnitsController, 'show']).as('units.show')
+
+        // Things of their own units
+        router
+          .post('units/:unitId/vehicles', [ResidentVehiclesController, 'store'])
+          .as('vehicles.store')
+        router.patch('vehicles/:id', [ResidentVehiclesController, 'update']).as('vehicles.update')
+        router
+          .delete('vehicles/:id', [ResidentVehiclesController, 'destroy'])
+          .as('vehicles.destroy')
+        router.post('units/:unitId/pets', [ResidentPetsController, 'store']).as('pets.store')
+        router.patch('pets/:id', [ResidentPetsController, 'update']).as('pets.update')
+        router.delete('pets/:id', [ResidentPetsController, 'destroy']).as('pets.destroy')
+        router
+          .post('units/:unitId/household', [ResidentHouseholdController, 'store'])
+          .as('household.store')
+        router
+          .patch('household/:id', [ResidentHouseholdController, 'update'])
+          .as('household.update')
+        router
+          .delete('household/:id', [ResidentHouseholdController, 'destroy'])
+          .as('household.destroy')
+
+        // Gate: visitors and parcels
+        router.get('visits', [ResidentVisitsController, 'index']).as('visits.index')
+        router.post('visits', [ResidentVisitsController, 'store']).as('visits.store')
+        router.delete('visits/:id', [ResidentVisitsController, 'destroy']).as('visits.destroy')
+        router.get('parcels', [ResidentParcelsController, 'index']).as('parcels.index')
+
+        // Common areas
+        router.get('amenities', [ResidentBookingsController, 'amenities']).as('amenities.index')
+        router.get('bookings', [ResidentBookingsController, 'index']).as('bookings.index')
+        router.post('bookings', [ResidentBookingsController, 'store']).as('bookings.store')
+        router
+          .delete('bookings/:id', [ResidentBookingsController, 'destroy'])
+          .as('bookings.destroy')
+
+        // PQRS
+        router.get('tickets', [ResidentTicketsController, 'index']).as('tickets.index')
+        router.post('tickets', [ResidentTicketsController, 'store']).as('tickets.store')
+        router.get('tickets/:id', [ResidentTicketsController, 'show']).as('tickets.show')
+        router
+          .post('tickets/:id/comments', [ResidentTicketsController, 'comment'])
+          .as('tickets.comments.store')
       })
       .prefix('resident')
       .as('resident')

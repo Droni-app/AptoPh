@@ -23,6 +23,45 @@ export interface ApiDefinition {
     units: {
       show: typeof routes['resident.units.show']
     }
+    vehicles: {
+      store: typeof routes['resident.vehicles.store']
+      update: typeof routes['resident.vehicles.update']
+      destroy: typeof routes['resident.vehicles.destroy']
+    }
+    pets: {
+      store: typeof routes['resident.pets.store']
+      update: typeof routes['resident.pets.update']
+      destroy: typeof routes['resident.pets.destroy']
+    }
+    household: {
+      store: typeof routes['resident.household.store']
+      update: typeof routes['resident.household.update']
+      destroy: typeof routes['resident.household.destroy']
+    }
+    visits: {
+      index: typeof routes['resident.visits.index']
+      store: typeof routes['resident.visits.store']
+      destroy: typeof routes['resident.visits.destroy']
+    }
+    parcels: {
+      index: typeof routes['resident.parcels.index']
+    }
+    amenities: {
+      index: typeof routes['resident.amenities.index']
+    }
+    bookings: {
+      index: typeof routes['resident.bookings.index']
+      store: typeof routes['resident.bookings.store']
+      destroy: typeof routes['resident.bookings.destroy']
+    }
+    tickets: {
+      index: typeof routes['resident.tickets.index']
+      store: typeof routes['resident.tickets.store']
+      show: typeof routes['resident.tickets.show']
+      comments: {
+        store: typeof routes['resident.tickets.comments.store']
+      }
+    }
   }
   dashboard: typeof routes['dashboard']
   buildings: {

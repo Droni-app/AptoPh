@@ -4,8 +4,14 @@
  */
 import type { EnrollmentRole } from './index.js'
 import type {
+  BookingStatus,
   ChargeStatus,
   DocumentType,
+  ParcelStatus,
+  TicketPriority,
+  TicketStatus,
+  TicketType,
+  VisitType,
   EnrollmentStatus,
   OccupantRelationship,
   PropertyType,
@@ -168,25 +174,53 @@ export type ResidentHome = {
   units: ResidentUnitSummary[]
 }
 
+export type ResidentVehicle = {
+  id: string
+  plate: string
+  type: VehicleType
+  brand: string | null
+  model: string | null
+  color: string | null
+}
+
+export type ResidentPet = {
+  id: string
+  name: string
+  species: PetSpecies
+  breed: string | null
+  isPotentiallyDangerous: boolean
+}
+
+/**
+ * Document and phone are only sent for members the viewer can edit (`editable`):
+ * family members, domestic workers and others without an account.
+ */
+export type HouseholdMember = {
+  id: string
+  fullName: string
+  relationship: OccupantRelationship
+  isPrimaryContact: boolean
+  isBillingResponsible: boolean
+  isMe: boolean
+  editable: boolean
+  documentType: DocumentType | null
+  documentNumber: string | null
+  phone: string | null
+}
+
+/** Relationships residents can give to the household members they add */
+export type HouseholdRelationship = Extract<
+  OccupantRelationship,
+  'family_member' | 'domestic_worker' | 'other'
+>
+
 export type ResidentUnitDetail = ResidentUnitSummary & {
   status: UnitStatus
-  household: Array<{
-    id: string
-    fullName: string
-    relationship: OccupantRelationship
-    isPrimaryContact: boolean
-    isBillingResponsible: boolean
-    isMe: boolean
-  }>
-  vehicles: Array<{
-    id: string
-    plate: string
-    type: VehicleType
-    brand: string | null
-    model: string | null
-    color: string | null
-  }>
-  pets: Array<{ id: string; name: string; species: PetSpecies; breed: string | null }>
+  /** Owners, renters and the primary contact may add or edit household members */
+  canManageHousehold: boolean
+  household: HouseholdMember[]
+  vehicles: ResidentVehicle[]
+  pets: ResidentPet[]
   openCharges: Array<{
     id: string
     concept: string
@@ -199,3 +233,99 @@ export type ResidentUnitDetail = ResidentUnitSummary & {
     isOverdue: boolean
   }>
 }
+
+/** Unit as referenced from visits, parcels, bookings and tickets */
+export type UnitRef = {
+  id: string
+  code: string
+  type: UnitType
+  building: { id: string; name: string } | null
+}
+
+/** Dates are ISO strings with offset */
+export type VisitStatus = 'expected' | 'inside' | 'completed' | 'expired'
+
+export type ResidentVisit = {
+  id: string
+  unit: UnitRef
+  visitorName: string
+  visitorDocument: string | null
+  vehiclePlate: string | null
+  type: VisitType
+  /** Only while the visit is expected */
+  accessCode: string | null
+  expectedAt: string | null
+  checkedInAt: string | null
+  checkedOutAt: string | null
+  status: VisitStatus
+  canCancel: boolean
+}
+
+export type ResidentParcel = {
+  id: string
+  unit: UnitRef
+  carrier: string | null
+  description: string | null
+  status: ParcelStatus
+  receivedAt: string
+  deliveredAt: string | null
+  deliveredToName: string | null
+}
+
+export type AmenityRules = {
+  maxHours?: number
+  /** "HH:mm", local to the conjunto */
+  opensAt?: string
+  closesAt?: string
+  /** Weekdays in English, lowercase ("monday") */
+  closedOn?: string[]
+  depositRequired?: boolean
+}
+
+export type ResidentAmenity = {
+  id: string
+  name: string
+  description: string | null
+  capacity: number | null
+  bookingFee: string | null
+  requiresApproval: boolean
+  rules: AmenityRules
+}
+
+export type ResidentBooking = {
+  id: string
+  amenity: { id: string; name: string }
+  unit: UnitRef
+  startsAt: string
+  endsAt: string
+  guestsCount: number | null
+  status: BookingStatus
+  bookingFee: string | null
+  isMine: boolean
+  canCancel: boolean
+}
+
+export type ResidentTicket = {
+  id: string
+  number: number
+  type: TicketType
+  subject: string
+  description: string
+  priority: TicketPriority
+  status: TicketStatus
+  unit: UnitRef | null
+  isMine: boolean
+  createdAt: string
+  updatedAt: string | null
+  resolvedAt: string | null
+}
+
+export type ResidentTicketComment = {
+  id: string
+  body: string
+  isMine: boolean
+  authorName: string
+  createdAt: string
+}
+
+export type ResidentTicketDetail = ResidentTicket & { comments: ResidentTicketComment[] }

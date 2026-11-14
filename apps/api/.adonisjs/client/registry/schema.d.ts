@@ -151,6 +151,279 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/units_controller').default['show']>>>
     }
   }
+  'resident.vehicles.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/units/:unitId/vehicles'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').createVehicleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').createVehicleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.vehicles.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/resident/vehicles/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').updateVehicleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').updateVehicleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.vehicles.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/resident/vehicles/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/vehicles_controller').default['destroy']>>>
+    }
+  }
+  'resident.pets.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/units/:unitId/pets'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').createPetValidator)>>
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').createPetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.pets.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/resident/pets/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').updatePetValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').updatePetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.pets.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/resident/pets/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/pets_controller').default['destroy']>>>
+    }
+  }
+  'resident.household.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/units/:unitId/household'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').createHouseholdMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').createHouseholdMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.household.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/resident/household/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').updateHouseholdMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').updateHouseholdMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.household.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/resident/household/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/household_controller').default['destroy']>>>
+    }
+  }
+  'resident.visits.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/visits'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['index']>>>
+    }
+  }
+  'resident.visits.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/visits'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').createVisitValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').createVisitValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.visits.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/resident/visits/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/visits_controller').default['destroy']>>>
+    }
+  }
+  'resident.parcels.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/parcels'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/parcels_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/parcels_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/parcels_controller').default['index']>>>
+    }
+  }
+  'resident.amenities.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/amenities'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['amenities']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['amenities']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['amenities']>>>
+    }
+  }
+  'resident.bookings.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/bookings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['index']>>>
+    }
+  }
+  'resident.bookings.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/bookings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').createBookingValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').createBookingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.bookings.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/resident/bookings/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/bookings_controller').default['destroy']>>>
+    }
+  }
+  'resident.tickets.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/tickets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['index']>>>
+    }
+  }
+  'resident.tickets.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/tickets'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').createTicketValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').createTicketValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.tickets.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/tickets/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['show']>>>
+    }
+  }
+  'resident.tickets.comments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/tickets/:id/comments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/resident').createTicketCommentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/resident').createTicketCommentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['comment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['comment']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['comment']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'dashboard': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'

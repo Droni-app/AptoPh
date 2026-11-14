@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { DuiAlert, DuiBadge, DuiButton, DuiCard, DuiSkeleton } from '@dronico/droni-kit'
+import {
+  DuiAlert,
+  DuiBadge,
+  DuiButton,
+  DuiCard,
+  DuiDropdown,
+  DuiDropdownItem,
+  DuiSkeleton,
+} from '@dronico/droni-kit'
 import {
   CHARGE_STATUS_LABELS,
   OCCUPANT_RELATIONSHIP_LABELS,
@@ -9,12 +17,20 @@ import {
   UNIT_STATUS_LABELS,
   UNIT_TYPE_LABELS,
   VEHICLE_TYPE_LABELS,
-  type ApiItem,
+  type HouseholdMember,
+  type ResidentPet,
   type ResidentUnitDetail,
+  type ResidentVehicle,
 } from '@apartadock/shared'
 import BalanceBadge from '@/components/BalanceBadge.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import HouseholdMemberModal from '@/components/HouseholdMemberModal.vue'
 import PageHeader from '@/components/PageHeader.vue'
-import { ApiError, api } from '@/lib/http'
+import PetFormModal from '@/components/PetFormModal.vue'
+import VehicleFormModal from '@/components/VehicleFormModal.vue'
+import { residentApi } from '@/api/resident'
+import { useSubmit } from '@/composables/useSubmit'
+import { ApiError } from '@/lib/http'
 import { errorMessage } from '@/lib/errors'
 import {
   formatArea,
@@ -47,9 +63,7 @@ async function load() {
   error.value = null
   notFound.value = false
   try {
-    const { data } = await api<ApiItem<ResidentUnitDetail>>(
-      `/api/v1/resident/units/${encodeURIComponent(String(route.params.id))}`,
-    )
+    const { data } = await residentApi.unit(String(route.params.id))
     unit.value = data
   } catch (e) {
     if (e instanceof ApiError && e.status === 404) notFound.value = true
@@ -58,6 +72,70 @@ async function load() {
 }
 
 onMounted(load)
+
+// Editing: one modal per kind, plus a shared delete confirmation
+const vehicleModal = ref(false)
+const editingVehicle = ref<ResidentVehicle | null>(null)
+const petModal = ref(false)
+const editingPet = ref<ResidentPet | null>(null)
+const memberModal = ref(false)
+const editingMember = ref<HouseholdMember | null>(null)
+
+function editVehicle(vehicle: ResidentVehicle | null) {
+  editingVehicle.value = vehicle
+  vehicleModal.value = true
+}
+function editPet(pet: ResidentPet | null) {
+  editingPet.value = pet
+  petModal.value = true
+}
+function editMember(member: HouseholdMember | null) {
+  editingMember.value = member
+  memberModal.value = true
+}
+
+type Removal = { title: string; message: string; confirmLabel: string; success: string; action: () => Promise<unknown> }
+const removal = ref<Removal | null>(null)
+const removalOpen = ref(false)
+const { saving: removing, run } = useSubmit()
+
+function askRemove(value: Removal) {
+  removal.value = value
+  removalOpen.value = true
+}
+async function confirmRemove() {
+  if (!removal.value) return
+  const { action, success } = removal.value
+  if (await run(action, success)) {
+    removalOpen.value = false
+    await load()
+  }
+}
+
+const removeVehicle = (vehicle: ResidentVehicle) =>
+  askRemove({
+    title: 'Eliminar vehículo',
+    message: `¿Eliminar el vehículo ${vehicle.plate} de la unidad?`,
+    confirmLabel: 'Eliminar',
+    success: 'Vehículo eliminado',
+    action: () => residentApi.vehicles.remove(vehicle.id),
+  })
+const removePet = (pet: ResidentPet) =>
+  askRemove({
+    title: 'Eliminar mascota',
+    message: `¿Eliminar a ${pet.name} del registro de mascotas?`,
+    confirmLabel: 'Eliminar',
+    success: 'Mascota eliminada',
+    action: () => residentApi.pets.remove(pet.id),
+  })
+const removeMember = (member: HouseholdMember) =>
+  askRemove({
+    title: 'Retirar del hogar',
+    message: `¿${member.fullName} ya no vive o trabaja en la unidad? Dejará de aparecer en el hogar.`,
+    confirmLabel: 'Retirar',
+    success: 'Persona retirada del hogar',
+    action: () => residentApi.household.remove(member.id),
+  })
 </script>
 
 <template>
@@ -181,22 +259,38 @@ onMounted(load)
     <div class="grid gap-8 lg:grid-cols-2">
       <!-- Hogar -->
       <section aria-labelledby="household-title" class="lg:row-span-2">
-        <h2 id="household-title" class="mb-3 text-lg font-semibold">Quiénes viven aquí</h2>
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 id="household-title" class="text-lg font-semibold">Quiénes viven aquí</h2>
+          <DuiButton v-if="unit.canManageHousehold" size="sm" variant="outline" @click="editMember(null)">
+            <span class="mr-1" aria-hidden="true"><i class="mdi mdi-account-plus-outline" /></span>Agregar
+          </DuiButton>
+        </div>
         <ul class="divide-y divide-navy-100 overflow-hidden rounded-2xl border border-navy-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-navy-900">
           <li v-for="person in unit.household" :key="person.id" class="flex items-start gap-3 p-4">
             <span class="grid size-9 shrink-0 place-items-center rounded-full bg-navy-100 text-sm font-semibold text-navy-700 dark:bg-white/10 dark:text-navy-100">
               {{ person.fullName.charAt(0).toUpperCase() }}
             </span>
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <p class="font-medium">
                 {{ person.fullName }}
                 <span v-if="person.isMe" class="text-sm font-normal text-navy-500 dark:text-navy-300">(tú)</span>
               </p>
-              <p class="text-sm text-navy-500 dark:text-navy-300">{{ OCCUPANT_RELATIONSHIP_LABELS[person.relationship] }}</p>
+              <p class="text-sm text-navy-500 dark:text-navy-300">
+                {{ OCCUPANT_RELATIONSHIP_LABELS[person.relationship] }}
+                <template v-if="person.phone"> · {{ person.phone }}</template>
+              </p>
               <span v-if="person.isPrimaryContact || person.isBillingResponsible" class="mt-1 flex flex-wrap gap-1">
                 <DuiBadge v-if="person.isPrimaryContact" label="Contacto principal" size="xs" color="primary" variant="soft" />
                 <DuiBadge v-if="person.isBillingResponsible" label="Responsable de pagos" size="xs" color="secondary" variant="soft" />
               </span>
+            </div>
+            <div v-if="person.editable" class="flex shrink-0 gap-1">
+              <DuiButton variant="ghost" size="sm" :aria-label="`Editar a ${person.fullName}`" @click="editMember(person)">
+                <span aria-hidden="true"><i class="mdi mdi-pencil-outline" /></span>
+              </DuiButton>
+              <DuiButton variant="ghost" size="sm" color="danger" :aria-label="`Retirar a ${person.fullName}`" @click="removeMember(person)">
+                <span aria-hidden="true"><i class="mdi mdi-account-remove-outline" /></span>
+              </DuiButton>
             </div>
           </li>
         </ul>
@@ -204,9 +298,14 @@ onMounted(load)
 
       <!-- Vehículos -->
       <section aria-labelledby="vehicles-title">
-        <h2 id="vehicles-title" class="mb-3 text-lg font-semibold">Vehículos</h2>
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 id="vehicles-title" class="text-lg font-semibold">Vehículos</h2>
+          <DuiButton size="sm" variant="outline" @click="editVehicle(null)">
+            <span class="mr-1" aria-hidden="true"><i class="mdi mdi-plus" /></span>Registrar
+          </DuiButton>
+        </div>
         <p v-if="unit.vehicles.length === 0" class="rounded-2xl border border-dashed border-navy-200 p-4 text-sm text-navy-500 dark:border-white/10 dark:text-navy-300">
-          No hay vehículos registrados.
+          No hay vehículos registrados. Regístralos para que portería los reconozca.
         </p>
         <ul v-else class="grid gap-3 sm:grid-cols-2">
           <li
@@ -215,19 +314,31 @@ onMounted(load)
             class="flex items-center gap-3 rounded-2xl border border-navy-100 bg-white p-4 dark:border-white/10 dark:bg-navy-900"
           >
             <span class="text-2xl text-teal-700 dark:text-teal-300" aria-hidden="true"><i :class="vehicleIcons[vehicle.type]" /></span>
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <p class="font-mono font-semibold tracking-wider">{{ vehicle.plate }}</p>
               <p class="truncate text-sm text-navy-500 dark:text-navy-300">
                 {{ [VEHICLE_TYPE_LABELS[vehicle.type], vehicle.brand, vehicle.model, vehicle.color].filter(Boolean).join(' · ') }}
               </p>
             </div>
+            <DuiDropdown placement="bottom-end" :aria-label="`Acciones de ${vehicle.plate}`">
+              <template #trigger>
+                <span class="grid size-8 place-items-center rounded-lg text-navy-500 hover:bg-navy-50 dark:hover:bg-white/10"><i class="mdi mdi-dots-vertical" /></span>
+              </template>
+              <DuiDropdownItem icon="mdi mdi-pencil-outline" label="Editar" @click="editVehicle(vehicle)" />
+              <DuiDropdownItem icon="mdi mdi-trash-can-outline" label="Eliminar" danger @click="removeVehicle(vehicle)" />
+            </DuiDropdown>
           </li>
         </ul>
       </section>
 
       <!-- Mascotas -->
       <section aria-labelledby="pets-title">
-        <h2 id="pets-title" class="mb-3 text-lg font-semibold">Mascotas</h2>
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 id="pets-title" class="text-lg font-semibold">Mascotas</h2>
+          <DuiButton size="sm" variant="outline" @click="editPet(null)">
+            <span class="mr-1" aria-hidden="true"><i class="mdi mdi-plus" /></span>Registrar
+          </DuiButton>
+        </div>
         <p v-if="unit.pets.length === 0" class="rounded-2xl border border-dashed border-navy-200 p-4 text-sm text-navy-500 dark:border-white/10 dark:text-navy-300">
           No hay mascotas registradas.
         </p>
@@ -238,19 +349,41 @@ onMounted(load)
             class="flex items-center gap-3 rounded-2xl border border-navy-100 bg-white p-4 dark:border-white/10 dark:bg-navy-900"
           >
             <span class="text-2xl text-teal-700 dark:text-teal-300" aria-hidden="true"><i :class="petIcons[pet.species]" /></span>
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <p class="font-medium">{{ pet.name }}</p>
               <p class="truncate text-sm text-navy-500 dark:text-navy-300">
                 {{ [PET_SPECIES_LABELS[pet.species], pet.breed].filter(Boolean).join(' · ') }}
               </p>
+              <DuiBadge v-if="pet.isPotentiallyDangerous" class="mt-1" label="Potencialmente peligrosa" size="xs" color="warning" variant="soft" />
             </div>
+            <DuiDropdown placement="bottom-end" :aria-label="`Acciones de ${pet.name}`">
+              <template #trigger>
+                <span class="grid size-8 place-items-center rounded-lg text-navy-500 hover:bg-navy-50 dark:hover:bg-white/10"><i class="mdi mdi-dots-vertical" /></span>
+              </template>
+              <DuiDropdownItem icon="mdi mdi-pencil-outline" label="Editar" @click="editPet(pet)" />
+              <DuiDropdownItem icon="mdi mdi-trash-can-outline" label="Eliminar" danger @click="removePet(pet)" />
+            </DuiDropdown>
           </li>
         </ul>
       </section>
     </div>
 
+    <VehicleFormModal v-model="vehicleModal" :unit-id="unit.id" :vehicle="editingVehicle" @saved="load" />
+    <PetFormModal v-model="petModal" :unit-id="unit.id" :pet="editingPet" @saved="load" />
+    <HouseholdMemberModal v-model="memberModal" :unit-id="unit.id" :member="editingMember" @saved="load" />
+    <ConfirmDialog
+      v-model="removalOpen"
+      :title="removal?.title ?? ''"
+      :message="removal?.message ?? ''"
+      :confirm-label="removal?.confirmLabel"
+      :loading="removing"
+      @confirm="confirmRemove"
+    />
+
     <p class="mt-8 text-xs text-navy-500 dark:text-navy-300">
-      ¿Algún dato no está correcto? Comunícate con la administración de tu conjunto para actualizarlo.
+      ¿Los datos de la unidad, el propietario o el estado de cuenta no son correctos?
+      <RouterLink :to="{ name: 'tickets', query: { nueva: '1', unidad: unit.id } }" class="font-medium text-teal-700 underline dark:text-teal-300">Radica una PQRS</RouterLink>
+      y la administración los revisará.
     </p>
   </template>
 

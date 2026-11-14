@@ -12,12 +12,14 @@ import {
 import BrandLogo from '@/components/BrandLogo.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
+import { useUnitsStore } from '@/stores/units'
 import { useTheme } from '@/composables/useTheme'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 const tenant = useTenantStore()
+const units = useUnitsStore()
 const { theme, toggle } = useTheme()
 
 const items = computed<NavbarItem[]>(() => [
@@ -27,10 +29,18 @@ const items = computed<NavbarItem[]>(() => [
     to: '/',
     active: route.name === 'home' || route.name === 'unit',
   },
-  { label: 'Mi perfil', icon: 'mdi mdi-account-outline', to: '/perfil', active: route.name === 'profile' },
+  { label: 'Portería', icon: 'mdi mdi-account-clock-outline', to: '/porteria', active: route.name === 'visits' },
+  { label: 'Reservas', icon: 'mdi mdi-calendar-check-outline', to: '/reservas', active: route.name === 'bookings' },
+  {
+    label: 'PQRS',
+    icon: 'mdi mdi-message-text-outline',
+    to: '/pqrs',
+    active: route.name === 'tickets' || route.name === 'ticket',
+  },
 ])
 
 async function switchTenant() {
+  units.reset()
   tenant.select(null)
   await router.push({ name: 'select-tenant' })
 }
