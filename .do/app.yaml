@@ -5,6 +5,7 @@
 #   admin.aptoph.com  → backoffice  (static, free)
 #   api.aptoph.com    → api         (service, basic 512 MB)
 #
+# Built with the App Platform Node.js buildpack (pnpm workspace at the repo root).
 # Secrets (APP_KEY, SMTP_*) are not in this file: they are set as encrypted
 # values on the app. Update with: doctl apps update <id> --spec .do/app.yaml
 # (re-set the secrets or keep them by passing the spec from `doctl apps spec get`).
@@ -54,14 +55,21 @@ databases:
 services:
   - name: api
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
-    dockerfile_path: deploy/api.Dockerfile
+    source_dir: /
+    environment_slug: node-js
+    build_command: pnpm turbo run build --filter=@apartadock/api...
+    run_command: cd apps/api/build && node bin/server.js
     http_port: 8080
     instance_count: 1
     instance_size_slug: apps-s-1vcpu-0.5gb
     health_check:
       http_path: /
     envs: &api_envs
-      - { key: NODE_ENV, value: production }
+      # Run time only: at build time pnpm must install the devDependencies (turbo, tsc, vite)
+      - { key: NODE_ENV, value: production, scope: RUN_TIME }
+      - { key: HOST, value: 0.0.0.0 }
+      - { key: PORT, value: "8080" }
+      - { key: TZ, value: UTC }
       - { key: LOG_LEVEL, value: info }
       - { key: APP_URL, value: https://api.aptoph.com }
       - { key: SESSION_DRIVER, value: cookie }
@@ -87,30 +95,32 @@ jobs:
   - name: migrate
     kind: PRE_DEPLOY
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
-    dockerfile_path: deploy/api.Dockerfile
+    source_dir: /
+    environment_slug: node-js
+    build_command: pnpm turbo run build --filter=@apartadock/api...
     instance_count: 1
     instance_size_slug: apps-s-1vcpu-0.5gb
-    run_command: sh -c "node ace migration:run --force && node ace db:seed --files database/seeders/production_seeder.ts"
+    run_command: cd apps/api/build && node ace migration:run --force && node ace db:seed --files database/seeders/production_seeder.ts
     envs: *api_envs
 
 static_sites:
   - name: landing
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
-    dockerfile_path: deploy/static.Dockerfile
-    output_dir: /app/dist
-    envs:
-      - { key: APP, value: landing, scope: BUILD_TIME }
+    source_dir: /
+    environment_slug: node-js
+    build_command: pnpm turbo run build --filter=@apartadock/landing...
+    output_dir: apps/landing/dist
   - name: web
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
-    dockerfile_path: deploy/static.Dockerfile
-    output_dir: /app/dist
+    source_dir: /
+    environment_slug: node-js
+    build_command: pnpm turbo run build --filter=@apartadock/web...
+    output_dir: apps/web/dist
     catchall_document: index.html
-    envs:
-      - { key: APP, value: web, scope: BUILD_TIME }
   - name: backoffice
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
-    dockerfile_path: deploy/static.Dockerfile
-    output_dir: /app/dist
+    source_dir: /
+    environment_slug: node-js
+    build_command: pnpm turbo run build --filter=@apartadock/backoffice...
+    output_dir: apps/backoffice/dist
     catchall_document: index.html
-    envs:
-      - { key: APP, value: backoffice, scope: BUILD_TIME }
