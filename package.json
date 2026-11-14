@@ -1,0 +1,24 @@
+{
+  "name": "apartadock",
+  "private": true,
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24.12.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:api": "turbo run dev --filter=@apartadock/api",
+    "dev:residents": "turbo run dev --filter=@apartadock/web-residents",
+    "dev:admin": "turbo run dev --filter=@apartadock/web-admin",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @apartadock/api db:migrate"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
+}
