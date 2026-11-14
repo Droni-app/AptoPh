@@ -1,0 +1,116 @@
+# AptoPH on DigitalOcean App Platform (region nyc, next to the aptoph-db cluster in nyc1)
+#
+#   aptoph.com        → landing     (static, free)
+#   web.aptoph.com    → web         (static, free)
+#   admin.aptoph.com  → backoffice  (static, free)
+#   api.aptoph.com    → api         (service, basic 512 MB)
+#
+# Secrets (APP_KEY, SMTP_*) are not in this file: they are set as encrypted
+# values on the app. Update with: doctl apps update <id> --spec .do/app.yaml
+# (re-set the secrets or keep them by passing the spec from `doctl apps spec get`).
+name: aptoph
+region: nyc
+
+domains:
+  - domain: aptoph.com
+    type: PRIMARY
+    zone: aptoph.com
+  - domain: web.aptoph.com
+    type: ALIAS
+    zone: aptoph.com
+  - domain: admin.aptoph.com
+    type: ALIAS
+    zone: aptoph.com
+  - domain: api.aptoph.com
+    type: ALIAS
+    zone: aptoph.com
+
+ingress:
+  rules:
+    - match:
+        authority: { exact: api.aptoph.com }
+        path: { prefix: / }
+      component: { name: api }
+    - match:
+        authority: { exact: web.aptoph.com }
+        path: { prefix: / }
+      component: { name: web }
+    - match:
+        authority: { exact: admin.aptoph.com }
+        path: { prefix: / }
+      component: { name: backoffice }
+    - match:
+        path: { prefix: / }
+      component: { name: landing }
+
+databases:
+  - name: db
+    engine: PG
+    production: true
+    cluster_name: aptoph-db
+    db_name: aptoph
+    db_user: doadmin
+
+services:
+  - name: api
+    github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
+    dockerfile_path: deploy/api.Dockerfile
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    health_check:
+      http_path: /
+    envs: &api_envs
+      - { key: NODE_ENV, value: production }
+      - { key: LOG_LEVEL, value: info }
+      - { key: APP_URL, value: https://api.aptoph.com }
+      - { key: SESSION_DRIVER, value: cookie }
+      - { key: CORS_ORIGINS, value: "https://web.aptoph.com,https://admin.aptoph.com" }
+      - { key: WEB_URL, value: https://web.aptoph.com }
+      - { key: BACKOFFICE_URL, value: https://admin.aptoph.com }
+      - { key: DB_HOST, value: "${db.HOSTNAME}" }
+      - { key: DB_PORT, value: "${db.PORT}" }
+      - { key: DB_USER, value: "${db.USERNAME}" }
+      - { key: DB_PASSWORD, value: "${db.PASSWORD}", type: SECRET }
+      - { key: DB_DATABASE, value: "${db.DATABASE}" }
+      - { key: DB_CA_CERT, value: "${db.CA_CERT}" }
+      - { key: MAIL_MAILER, value: smtp }
+      - { key: MAIL_FROM_NAME, value: __MAIL_FROM_NAME__ }
+      - { key: MAIL_FROM_ADDRESS, value: __MAIL_FROM_ADDRESS__ }
+      - { key: SMTP_HOST, value: in-v3.mailjet.com }
+      - { key: SMTP_PORT, value: "465" }
+      - { key: SMTP_USERNAME, value: __SMTP_USERNAME__, type: SECRET }
+      - { key: SMTP_PASSWORD, value: __SMTP_PASSWORD__, type: SECRET }
+      - { key: APP_KEY, value: __APP_KEY__, type: SECRET }
+
+jobs:
+  - name: migrate
+    kind: PRE_DEPLOY
+    github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
+    dockerfile_path: deploy/api.Dockerfile
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    run_command: sh -c "node ace migration:run --force && node ace db:seed --files database/seeders/production_seeder.ts"
+    envs: *api_envs
+
+static_sites:
+  - name: landing
+    github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
+    dockerfile_path: deploy/static.Dockerfile
+    output_dir: /app/dist
+    envs:
+      - { key: APP, value: landing, scope: BUILD_TIME }
+  - name: web
+    github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
+    dockerfile_path: deploy/static.Dockerfile
+    output_dir: /app/dist
+    catchall_document: index.html
+    envs:
+      - { key: APP, value: web, scope: BUILD_TIME }
+  - name: backoffice
+    github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
+    dockerfile_path: deploy/static.Dockerfile
+    output_dir: /app/dist
+    catchall_document: index.html
+    envs:
+      - { key: APP, value: backoffice, scope: BUILD_TIME }

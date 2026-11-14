@@ -14,6 +14,8 @@ const dbConfig = defineConfig({
         user: env.get('DB_USER'),
         password: env.get('DB_PASSWORD'),
         database: env.get('DB_DATABASE'),
+        // Managed PostgreSQL requires TLS; verify it against the provider's CA
+        ssl: env.get('DB_CA_CERT') ? { ca: env.get('DB_CA_CERT') } : undefined,
       },
       migrations: {
         naturalSort: true,

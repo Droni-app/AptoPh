@@ -46,7 +46,7 @@ const activity = [
       <span
         class="ml-3 rounded-md bg-white px-3 py-1 text-[11px] text-navy-400 ring-1 ring-navy-100"
       >
-        app.aptoph.com
+        web.aptoph.com
       </span>
     </div>
 
