@@ -1,0 +1,98 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useTenantStore } from '@/stores/tenant'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    /** Accessible without a session */
+    public?: boolean
+    /** Requires an active conjunto (X-Tenant-Id) */
+    tenant?: boolean
+    title?: string
+  }
+}
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior: () => ({ top: 0 }),
+  routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/LoginView.vue'),
+      meta: { public: true, title: 'Iniciar sesión' },
+    },
+    {
+      path: '/auth/callback',
+      name: 'auth-callback',
+      component: () => import('@/views/AuthCallbackView.vue'),
+      meta: { public: true },
+    },
+    {
+      path: '/conjuntos',
+      name: 'select-tenant',
+      component: () => import('@/views/SelectTenantView.vue'),
+      meta: { title: 'Selecciona tu conjunto' },
+    },
+    {
+      path: '/',
+      component: () => import('@/layouts/AppLayout.vue'),
+      meta: { tenant: true },
+      children: [
+        {
+          path: '',
+          name: 'home',
+          component: () => import('@/views/HomeView.vue'),
+          meta: { tenant: true, title: 'Inicio' },
+        },
+        {
+          path: 'unidades/:id',
+          name: 'unit',
+          component: () => import('@/views/UnitView.vue'),
+          meta: { tenant: true, title: 'Mi unidad' },
+        },
+        {
+          path: 'perfil',
+          name: 'profile',
+          component: () => import('@/views/ProfileView.vue'),
+          meta: { tenant: true, title: 'Mi perfil' },
+        },
+      ],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/views/NotFoundView.vue'),
+      meta: { public: true, title: 'Página no encontrada' },
+    },
+  ],
+})
+
+router.beforeEach(async (to) => {
+  if (to.meta.public) return true
+
+  const auth = useAuthStore()
+  if (!auth.isAuthenticated) {
+    return { name: 'login', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
+  }
+
+  const tenant = useTenantStore()
+  if (!tenant.loaded) {
+    try {
+      await Promise.all([auth.user ? null : auth.loadProfile(), tenant.load()])
+    } catch {
+      return auth.isAuthenticated ? true : { name: 'login' }
+    }
+  }
+
+  if (to.meta.tenant && !tenant.current) {
+    return { name: 'select-tenant', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
+  }
+  return true
+})
+
+router.afterEach((to) => {
+  document.title = to.meta.title ? `${to.meta.title} · AptoPH` : 'AptoPH · Residentes'
+})
+
+export default router

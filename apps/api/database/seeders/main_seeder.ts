@@ -18,14 +18,14 @@ export default class extends BaseSeeder {
   async run() {
     await OauthClient.updateOrCreateMany('clientId', [
       {
-        clientId: 'web-residents',
+        clientId: 'web',
         name: 'ApartaDock Residentes',
         type: 'public',
         redirectUris: ['http://localhost:5173/auth/callback'],
         postLogoutRedirectUris: ['http://localhost:5173/'],
       },
       {
-        clientId: 'web-admin',
+        clientId: 'backoffice',
         name: 'ApartaDock Administración',
         type: 'public',
         redirectUris: ['http://localhost:5174/auth/callback'],

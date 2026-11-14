@@ -18,6 +18,12 @@ export interface ApiDefinition {
   tenant: {
     current: typeof routes['tenant.current']
   }
+  resident: {
+    home: typeof routes['resident.home']
+    units: {
+      show: typeof routes['resident.units.show']
+    }
+  }
   dashboard: typeof routes['dashboard']
   buildings: {
     index: typeof routes['buildings.index']

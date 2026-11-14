@@ -13,6 +13,8 @@ export type ScannedRoutes = {
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'profile.logout': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
+    'resident.home': { paramsTuple?: []; params?: {} }
+    'resident.units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -36,6 +38,8 @@ export type ScannedRoutes = {
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
+    'resident.home': { paramsTuple?: []; params?: {} }
+    'resident.units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -50,6 +54,8 @@ export type ScannedRoutes = {
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
+    'resident.home': { paramsTuple?: []; params?: {} }
+    'resident.units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

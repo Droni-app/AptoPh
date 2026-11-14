@@ -1,7 +1,7 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 /**
- * OAuth clients are the applications (web-residents, web-admin, mobile…),
+ * OAuth clients are the applications (web, backoffice, mobile…),
  * not the tenants. They are global to the platform.
  */
 export default class extends BaseSchema {

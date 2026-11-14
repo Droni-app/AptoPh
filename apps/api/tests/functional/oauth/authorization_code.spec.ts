@@ -6,7 +6,7 @@ import Enrollment from '#models/enrollment'
 import Tenant from '#models/tenant'
 import User from '#models/user'
 
-const CLIENT_ID = 'web-residents'
+const CLIENT_ID = 'web'
 const REDIRECT_URI = 'http://localhost:5173/auth/callback'
 const PASSWORD = 'secret-password'
 
@@ -267,7 +267,7 @@ test.group('OAuth · authorization code + PKCE', (group) => {
 
     const response = await client.post('/oauth/token').form({
       grant_type: 'authorization_code',
-      client_id: 'web-admin',
+      client_id: 'backoffice',
       code,
       redirect_uri: REDIRECT_URI,
       code_verifier: verifier,

@@ -1,0 +1,56 @@
+/*
+ * AptoPH theme for @dronico/droni-kit
+ *
+ * droni-kit reads its colors from --dk-* variables. Import this file AFTER
+ * '@dronico/droni-kit/dist/droni-kit.css' to brand every component:
+ *
+ *   - primary → deep teal. The 500/600 shades carry white text, so they use
+ *     teal 700/800 (#0F766E: 5.5:1 on white, WCAG AA). The brand teal #14B8A6
+ *     is the 400 shade droni-kit uses in dark mode.
+ *   - secondary → sky blue, same shade logic as primary.
+ *   - neutral → the navy scale (text, borders, surfaces).
+ */
+:root,
+:host {
+  --dk-font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --dk-color-primary-50: #f0fdfa;
+  --dk-color-primary-100: #ccfbf1;
+  --dk-color-primary-200: #99f6e4;
+  --dk-color-primary-300: #5eead4;
+  --dk-color-primary-400: #14b8a6;
+  --dk-color-primary-500: #0f766e;
+  --dk-color-primary-600: #115e59;
+  --dk-color-primary-700: #134e4a;
+  --dk-color-primary-800: #0f3f3c;
+  --dk-color-primary-900: #0b2f2d;
+  --dk-color-primary-950: #042f2e;
+
+  /* secondary → cool sky blue, a companion to teal (droni-kit's default is pink) */
+  --dk-color-secondary-50: #f0f9ff;
+  --dk-color-secondary-100: #e0f2fe;
+  --dk-color-secondary-200: #bae6fd;
+  --dk-color-secondary-300: #7dd3fc;
+  --dk-color-secondary-400: #38bdf8;
+  --dk-color-secondary-500: #0369a1;
+  --dk-color-secondary-600: #075985;
+  --dk-color-secondary-700: #0c4a6e;
+  --dk-color-secondary-800: #0b3b57;
+  --dk-color-secondary-900: #082f49;
+  --dk-color-secondary-950: #051e30;
+
+  --dk-color-neutral-50: #f5f7fb;
+  --dk-color-neutral-100: #eef1f8;
+  --dk-color-neutral-200: #d9dfee;
+  --dk-color-neutral-300: #b3bfdd;
+  --dk-color-neutral-400: #8496c4;
+  --dk-color-neutral-500: #5a6fa6;
+  --dk-color-neutral-600: #3d5189;
+  --dk-color-neutral-700: #2c3c6c;
+  --dk-color-neutral-800: #1f2c55;
+  --dk-color-neutral-900: #0f1b3d;
+  --dk-color-neutral-950: #0a1229;
+
+  --dk-scrollbar-thumb-hover: #14b8a6;
+  --dk-scrollbar-thumb-hover-to: #0f766e;
+}

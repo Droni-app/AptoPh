@@ -50,3 +50,6 @@ export type EnrollmentStatus = ValueOf<typeof ENROLLMENT_STATUSES>
 export type TenantStatus = ValueOf<typeof TENANT_STATUSES>
 export type PropertyType = ValueOf<typeof PROPERTY_TYPES>
 export type DocumentType = ValueOf<typeof DOCUMENT_TYPES>
+export type VehicleType = ValueOf<typeof VEHICLE_TYPES>
+export type PetSpecies = ValueOf<typeof PET_SPECIES>
+export type ChargeStatus = ValueOf<typeof CHARGE_STATUSES>

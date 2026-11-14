@@ -8,8 +8,9 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:api": "turbo run dev --filter=@apartadock/api",
-    "dev:residents": "turbo run dev --filter=@apartadock/web-residents",
-    "dev:admin": "turbo run dev --filter=@apartadock/web-admin",
+    "dev:web": "turbo run dev --filter=@apartadock/web",
+    "dev:backoffice": "turbo run dev --filter=@apartadock/backoffice",
+    "dev:landing": "turbo run dev --filter=@apartadock/landing",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",

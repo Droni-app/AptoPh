@@ -20,6 +20,8 @@ const BuildingsController = () => import('#controllers/backoffice/buildings_cont
 const UnitsController = () => import('#controllers/backoffice/units_controller')
 const UnitOccupantsController = () => import('#controllers/backoffice/unit_occupants_controller')
 const MembersController = () => import('#controllers/backoffice/members_controller')
+const ResidentHomeController = () => import('#controllers/resident/home_controller')
+const ResidentUnitsController = () => import('#controllers/resident/units_controller')
 
 /**
  * Back-office permissions: every back-office role can read,
@@ -76,6 +78,18 @@ router
         router.get('tenant', [MyTenantsController, 'current']).as('tenant.current')
       })
       .use([middleware.auth(), middleware.tenant()])
+
+    /**
+     * Residents (web and mobile apps): only their own units
+     */
+    router
+      .group(() => {
+        router.get('home', [ResidentHomeController, 'show']).as('home')
+        router.get('units/:id', [ResidentUnitsController, 'show']).as('units.show')
+      })
+      .prefix('resident')
+      .as('resident')
+      .use([middleware.auth(), middleware.tenant({ roles: [EnrollmentRole.Resident] })])
 
     /**
      * Back-office: read

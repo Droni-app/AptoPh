@@ -62,6 +62,18 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"tenant"]],
     types: placeholder as Registry['tenant.current']['types'],
   },
+  'resident.home': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/resident/home',
+    tokens: [[0,"api"],[0,"v1"],[0,"resident"],[0,"home"]],
+    types: placeholder as Registry['resident.home']['types'],
+  },
+  'resident.units.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/resident/units/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"resident"],[0,"units"],[1,"id"]],
+    types: placeholder as Registry['resident.units.show']['types'],
+  },
   'dashboard': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/dashboard',

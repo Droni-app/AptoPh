@@ -4,13 +4,16 @@
  */
 import type { EnrollmentRole } from './index.js'
 import type {
+  ChargeStatus,
   DocumentType,
   EnrollmentStatus,
   OccupantRelationship,
   PropertyType,
   TenantStatus,
+  PetSpecies,
   UnitStatus,
   UnitType,
+  VehicleType,
 } from './domain.js'
 
 export type ApiItem<T> = { data: T }
@@ -128,4 +131,71 @@ export type DashboardSummary = {
   occupants: number
   staff: number
   openTickets: number
+}
+
+/*
+ * Resident app (GET /api/v1/resident/*). Only the units the user occupies.
+ */
+
+/** Money amounts are decimal strings ("350000.00") in the tenant currency */
+export type UnitBalance = { pending: string; overdue: string; openCharges: number }
+
+export type ResidentUnitSummary = {
+  id: string
+  code: string
+  type: UnitType
+  floor: number | null
+  privateArea: string | null
+  ownershipCoefficient: string
+  building: { id: string; name: string } | null
+  relationship: OccupantRelationship
+  isPrimaryContact: boolean
+  isBillingResponsible: boolean
+  balance: UnitBalance
+}
+
+export type ResidentHome = {
+  tenant: {
+    id: string
+    name: string
+    legalName: string | null
+    address: string | null
+    city: string | null
+    currency: string
+    buildingsCount: number
+    unitsCount: number
+  }
+  units: ResidentUnitSummary[]
+}
+
+export type ResidentUnitDetail = ResidentUnitSummary & {
+  status: UnitStatus
+  household: Array<{
+    id: string
+    fullName: string
+    relationship: OccupantRelationship
+    isPrimaryContact: boolean
+    isBillingResponsible: boolean
+    isMe: boolean
+  }>
+  vehicles: Array<{
+    id: string
+    plate: string
+    type: VehicleType
+    brand: string | null
+    model: string | null
+    color: string | null
+  }>
+  pets: Array<{ id: string; name: string; species: PetSpecies; breed: string | null }>
+  openCharges: Array<{
+    id: string
+    concept: string
+    description: string | null
+    period: string
+    amount: string
+    balance: string
+    dueOn: string
+    status: ChargeStatus
+    isOverdue: boolean
+  }>
 }

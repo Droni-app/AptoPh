@@ -2,7 +2,15 @@
  * Spanish labels for enum values, shared by the web apps
  */
 import type { EnrollmentRole } from './index.js'
-import type { EnrollmentStatus, OccupantRelationship, UnitStatus, UnitType } from './domain.js'
+import type {
+  ChargeStatus,
+  EnrollmentStatus,
+  OccupantRelationship,
+  PetSpecies,
+  UnitStatus,
+  UnitType,
+  VehicleType,
+} from './domain.js'
 
 export const ROLE_LABELS: Record<EnrollmentRole, string> = {
   administrator: 'Administración',
@@ -41,4 +49,24 @@ export const OCCUPANT_RELATIONSHIP_LABELS: Record<OccupantRelationship, string> 
   family_member: 'Familiar',
   domestic_worker: 'Empleado doméstico',
   other: 'Otro',
+}
+
+export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
+  car: 'Carro',
+  motorcycle: 'Moto',
+  bicycle: 'Bicicleta',
+  other: 'Otro',
+}
+
+export const PET_SPECIES_LABELS: Record<PetSpecies, string> = {
+  dog: 'Perro',
+  cat: 'Gato',
+  other: 'Otra',
+}
+
+export const CHARGE_STATUS_LABELS: Record<ChargeStatus, string> = {
+  pending: 'Pendiente',
+  partially_paid: 'Abonado',
+  paid: 'Pagado',
+  cancelled: 'Anulado',
 }

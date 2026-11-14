@@ -16,7 +16,7 @@ export const EnrollmentRole = {
 
 export type EnrollmentRole = (typeof EnrollmentRole)[keyof typeof EnrollmentRole]
 
-/** Roles con acceso al backoffice (web-admin). */
+/** Roles con acceso al backoffice (backoffice). */
 export const BACKOFFICE_ROLES: readonly EnrollmentRole[] = [
   EnrollmentRole.Administrator,
   EnrollmentRole.CouncilMember,

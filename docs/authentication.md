@@ -8,7 +8,7 @@ La API (`apps/api`) actúa como **servidor de autorización OAuth** propio. Toda
 
 | Concepto | Descripción |
 | --- | --- |
-| **Cliente OAuth** (`oauth_clients`) | Una **aplicación**: `web-residents`, `web-admin`, `mobile`. Es global, **no** pertenece a un tenant |
+| **Cliente OAuth** (`oauth_clients`) | Una **aplicación**: `web`, `backoffice`, `mobile`. Es global, **no** pertenece a un tenant |
 | **Usuario** (`users`) | Persona con una sola cuenta para toda la plataforma |
 | **Tenant** | Se elige **después** del login entre los conjuntos donde el usuario tiene `enrollments` activos |
 | **Access token** | Opaco (`oat_…`), dura 1 hora. Se envía como `Authorization: Bearer …` |
@@ -18,8 +18,8 @@ Clientes sembrados para desarrollo (`node ace db:seed`):
 
 | client_id | redirect_uri | post_logout_redirect_uri |
 | --- | --- | --- |
-| `web-residents` | `http://localhost:5173/auth/callback` | `http://localhost:5173/` |
-| `web-admin` | `http://localhost:5174/auth/callback` | `http://localhost:5174/` |
+| `web` | `http://localhost:5173/auth/callback` | `http://localhost:5173/` |
+| `backoffice` | `http://localhost:5174/auth/callback` | `http://localhost:5174/` |
 | `mobile` | `co.apartadock.mobile:/oauth/callback` | `co.apartadock.mobile:/logout` |
 
 Usuarios de desarrollo (contraseña `password123`): `admin@apartadock.test` (administrator) y
@@ -69,8 +69,8 @@ sequenceDiagram
 `Content-Type: application/x-www-form-urlencoded` (también acepta JSON).
 
 ```
-grant_type=authorization_code&client_id=web-residents&code=…&redirect_uri=…&code_verifier=…
-grant_type=refresh_token&client_id=web-residents&refresh_token=…
+grant_type=authorization_code&client_id=web&code=…&redirect_uri=…&code_verifier=…
+grant_type=refresh_token&client_id=web&refresh_token=…
 ```
 
 Respuesta `200`:
@@ -144,4 +144,4 @@ Seguridad:
 - Recuperación de contraseña y aceptación de invitaciones (`enrollments.invitation_token_hash`).
 - Comando `ace` para crear y administrar clientes OAuth en producción.
 - Scopes reales y pantalla de consentimiento si en el futuro hay clientes de terceros.
-- Cliente PKCE en `web-residents`, `web-admin` y `mobile`.
+- Cliente PKCE en `web`, `backoffice` y `mobile`.

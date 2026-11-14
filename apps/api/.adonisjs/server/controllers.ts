@@ -20,4 +20,8 @@ export const controllers = {
     Token: () => import('#controllers/oauth/token_controller'),
   },
   Profile: () => import('#controllers/profile_controller'),
+  resident: {
+    Home: () => import('#controllers/resident/home_controller'),
+    Units: () => import('#controllers/resident/units_controller'),
+  },
 }

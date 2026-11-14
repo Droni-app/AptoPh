@@ -147,7 +147,7 @@ Ver [authentication.md](authentication.md) para el flujo completo.
 | Columna | Tipo | Notas |
 | --- | --- | --- |
 | id | uuid PK | |
-| client_id | varchar(80) UNIQUE | `web-residents`, `web-admin`, `mobile` |
+| client_id | varchar(80) UNIQUE | `web`, `backoffice`, `mobile` |
 | name | varchar(100) | Se muestra en la página de login |
 | type | varchar(20) | `public` (PKCE, sin secreto) o `confidential` |
 | client_secret_hash | varchar NULL | Sólo confidenciales |
@@ -197,13 +197,13 @@ enrollment por rol.
 
 | Valor | Español | App |
 | --- | --- | --- |
-| `administrator` | Administrador(a) | web-admin |
-| `council_member` | Miembro del consejo de administración | web-admin |
-| `accountant` | Contador(a) | web-admin |
-| `fiscal_reviewer` | Revisor(a) fiscal | web-admin |
-| `staff` | Trabajador (mantenimiento, aseo, jardinería) | web-admin / móvil |
-| `security_guard` | Vigilante / portería | web-admin / móvil |
-| `resident` | Residente (propietario, arrendatario o familiar) | web-residents / móvil |
+| `administrator` | Administrador(a) | backoffice |
+| `council_member` | Miembro del consejo de administración | backoffice |
+| `accountant` | Contador(a) | backoffice |
+| `fiscal_reviewer` | Revisor(a) fiscal | backoffice |
+| `staff` | Trabajador (mantenimiento, aseo, jardinería) | backoffice / móvil |
+| `security_guard` | Vigilante / portería | backoffice / móvil |
+| `resident` | Residente (propietario, arrendatario o familiar) | web / móvil |
 
 > El enrollment dice **qué rol** tiene alguien en el conjunto. Su relación con una
 > unidad concreta (propietario o arrendatario del apto 302) va en `unit_occupants`.

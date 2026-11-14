@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+/* Brand tokens: navy/teal scales, Outfit + Inter (docs/brand/README.md) */
+@import '../../../../docs/brand/tokens.css';
+
+@theme {
+  --font-display: 'Outfit Variable', 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Sticky header height, so anchors are not hidden under it */
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  @apply bg-white font-sans text-navy-900 antialiased;
+}
+
+h1,
+h2,
+h3 {
+  @apply font-display tracking-tight text-balance;
+}
+
+/* Logo SVGs are inlined with v-html: let them scale with their wrapper */
+.logo-svg svg {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility eyebrow {
+  @apply text-sm font-semibold tracking-wide text-teal-700 uppercase;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2;
+}
+
+@utility btn-primary {
+  @apply btn bg-navy-900 text-white hover:bg-navy-700 focus-visible:outline-navy-900;
+}
+
+@utility btn-accent {
+  @apply btn bg-teal-500 text-navy-950 hover:bg-teal-400 focus-visible:outline-teal-400;
+}
+
+@utility btn-ghost {
+  @apply btn text-navy-900 ring-1 ring-navy-200 hover:bg-navy-50 focus-visible:outline-navy-900;
+}
