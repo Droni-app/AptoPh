@@ -119,6 +119,24 @@ Página pública de AptoPH, prerenderizada en el build para SEO (Open Graph, JSO
 Ajusta `VITE_SITE_URL` en `apps/landing/.env.production` con el dominio real antes de publicar.
 Detalles en [apps/landing/README.md](apps/landing/README.md).
 
+## Despliegue (DigitalOcean App Platform)
+
+Una sola app (`aptoph`, región `nyc`) definida en [`.do/app.yaml`](.do/app.yaml), con buildpack Node.js.
+Cada push a `main` despliega solo.
+
+| Dominio | Componente | Plan |
+| --- | --- | --- |
+| `aptoph.com` | landing (estático) | gratis |
+| `web.aptoph.com` | app de residentes (estático) | gratis |
+| `admin.aptoph.com` | backoffice (estático) | gratis |
+| `api.aptoph.com` | API AdonisJS | 512 MB, $5/mes |
+| — | PostgreSQL 18 administrado `aptoph-db` (nyc1), base `aptoph` | $15/mes |
+
+Antes de cada despliegue, el job `migrate` corre las migraciones y `production_seeder` (clientes OAuth
+con las URLs de producción). Los secretos (`APP_KEY`, `SMTP_*`) solo viven cifrados en la app: para
+cambiar la configuración parte de `doctl apps spec get <id>` en vez de reenviar `.do/app.yaml`, que
+tiene marcadores `__…__` en su lugar.
+
 ## Documentación
 
 - [Modelo de datos](docs/database-model.md)
