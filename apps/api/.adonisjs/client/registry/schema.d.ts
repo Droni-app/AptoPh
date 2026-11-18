@@ -73,6 +73,32 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/oauth/logout_controller').default['handle']>>>
     }
   }
+  'signup': {
+    methods: ["GET","HEAD"]
+    pattern: '/registro'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/signup_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/signup_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/signup_controller').default['show']>>>
+    }
+  }
+  'signup.store': {
+    methods: ["POST"]
+    pattern: '/registro'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/signup').signupValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/signup').signupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/signup_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/signup_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/signup_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'profile.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/account/profile'
@@ -513,6 +539,32 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['index']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['index']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['index']>>>
+    }
+  }
+  'subscription.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/subscription'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['show']>>>
+    }
+  }
+  'subscription.activation': {
+    methods: ["POST"]
+    pattern: '/api/v1/subscription/activation'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/subscription').activationRequestValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/subscription').activationRequestValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'buildings.store': {

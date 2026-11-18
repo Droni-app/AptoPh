@@ -12,12 +12,14 @@ import {
 import { ROLE_LABELS } from '@aptoph/shared'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
+import { useSubscriptionStore } from '@/stores/subscription'
 import { useTheme } from '@/composables/useTheme'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 const tenant = useTenantStore()
+const subscription = useSubscriptionStore()
 const { theme, toggle } = useTheme()
 
 const sections: Array<{ label: string; icon: string; to: string; match: string[] }> = [
@@ -25,16 +27,26 @@ const sections: Array<{ label: string; icon: string; to: string; match: string[]
   { label: 'Unidades', icon: 'mdi mdi-door', to: '/unidades', match: ['units', 'unit'] },
   { label: 'Torres', icon: 'mdi mdi-office-building-outline', to: '/torres', match: ['buildings'] },
   { label: 'Personas', icon: 'mdi mdi-account-group-outline', to: '/personas', match: ['members'] },
+  { label: 'Plan', icon: 'mdi mdi-card-account-details-star-outline', to: '/plan', match: ['plan'] },
 ]
 
 const items = computed<NavbarItem[]>(() =>
-  sections.map((section) => ({
+  sections
+    // Managed conjuntos (no subscription) have no plan page to show
+    .filter((section) => section.to !== '/plan' || subscription.current !== null)
+    .map((section) => ({
     label: section.label,
     icon: section.icon,
     to: section.to,
     active: section.match.includes(String(route.name)),
   })),
 )
+
+const trialChip = computed(() => {
+  const days = subscription.trialDaysLeft
+  if (subscription.current?.status !== 'trialing' || subscription.locked || days === null) return null
+  return `Prueba: ${days} ${days === 1 ? 'día' : 'días'}`
+})
 
 const roleLabel = computed(() => tenant.roles.map((role) => ROLE_LABELS[role]).join(' · '))
 
@@ -56,6 +68,13 @@ async function switchTenant() {
         </RouterLink>
       </template>
       <template #actions>
+        <RouterLink
+          v-if="trialChip"
+          to="/plan"
+          class="hidden rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-200 sm:inline-block dark:bg-violet-500/15 dark:text-violet-200"
+        >
+          <i class="mdi mdi-timer-sand" aria-hidden="true" /> {{ trialChip }}
+        </RouterLink>
         <DuiButton
           variant="ghost"
           size="sm"
@@ -94,6 +113,28 @@ async function switchTenant() {
         </DuiDropdown>
       </template>
     </DuiNavbar>
+
+    <div
+      v-if="subscription.locked || subscription.showTrialReminder"
+      role="status"
+      class="border-b px-4 py-2.5 text-center text-sm"
+      :class="
+        subscription.locked
+          ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200'
+          : 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100'
+      "
+    >
+      <template v-if="subscription.locked">
+        Tu periodo de prueba terminó. Tu información está a salvo en modo consulta.
+      </template>
+      <template v-else>
+        Te {{ subscription.trialDaysLeft === 1 ? 'queda 1 día' : `quedan ${subscription.trialDaysLeft} días` }}
+        de prueba gratis.
+      </template>
+      <RouterLink to="/plan" class="ml-1 font-semibold underline">
+        {{ subscription.locked ? 'Activar mi plan' : 'Elegir plan' }}
+      </RouterLink>
+    </div>
 
     <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
       <RouterView :key="tenant.currentId ?? ''" />

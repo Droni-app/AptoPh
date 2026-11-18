@@ -41,14 +41,13 @@ const highlights = [
         </p>
 
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a :href="links.demo" class="btn-primary px-6 py-3.5 text-base">
-            Solicitar una demostración
+          <a :href="links.signup" class="btn-primary px-6 py-3.5 text-base">
+            Prueba gratis 30 días
             <ArrowRight class="size-4" aria-hidden="true" />
           </a>
-          <a href="#demo" class="btn-ghost px-6 py-3.5 text-base">
-            Probar la demo
-          </a>
+          <a href="#demo" class="btn-ghost px-6 py-3.5 text-base"> Probar la demo </a>
         </div>
+        <p class="mt-3 text-sm text-navy-500">Sin tarjeta de crédito · Listo en 2 minutos</p>
 
         <ul class="mt-10 grid gap-3 text-sm text-navy-700 sm:grid-cols-1">
           <li v-for="item in highlights" :key="item" class="flex items-center gap-2.5">

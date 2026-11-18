@@ -96,6 +96,8 @@ export default class AuthorizeController {
   ) {
     const html = await ctx.view.render('oauth/login', {
       clientName: client.name,
+      // Only the administration can create a conjunto from the sign-up page
+      signupUrl: client.clientId === 'backoffice' ? '/registro' : null,
       params,
       email: extra.email ?? '',
       error: extra.error ?? null,

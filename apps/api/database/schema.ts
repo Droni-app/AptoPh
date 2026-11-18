@@ -475,6 +475,35 @@ export class PetSchema extends BaseModel {
   declare vaccinationFileKey: string | null
 }
 
+export class SubscriptionSchema extends BaseModel {
+  static $columns = ['activationRequestedAt', 'billingCycle', 'cancelledAt', 'createdAt', 'currentPeriodEndsAt', 'declaredUnits', 'id', 'plan', 'status', 'tenantId', 'trialEndsAt', 'updatedAt'] as const
+  $columns = SubscriptionSchema.$columns
+  @column.dateTime()
+  declare activationRequestedAt: DateTime | null
+  @column()
+  declare billingCycle: string
+  @column.dateTime()
+  declare cancelledAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare currentPeriodEndsAt: DateTime | null
+  @column()
+  declare declaredUnits: number
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare plan: string
+  @column()
+  declare status: string
+  @column()
+  declare tenantId: string
+  @column.dateTime()
+  declare trialEndsAt: DateTime | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class TenantSchema extends BaseModel {
   static $columns = ['address', 'city', 'countryCode', 'createdAt', 'currency', 'deletedAt', 'id', 'legalName', 'logoFileKey', 'name', 'propertyType', 'settings', 'slug', 'status', 'taxId', 'timezone', 'updatedAt'] as const
   $columns = TenantSchema.$columns

@@ -8,6 +8,7 @@ import type { InferData, InferVariants } from '@adonisjs/core/types/transformers
 import type BuildingTransformer from '#transformers/building_transformer'
 import type MemberTransformer from '#transformers/member_transformer'
 import type ResidentTransformer from '#transformers/resident'
+import type SubscriptionTransformer from '#transformers/subscription_transformer'
 import type TenantTransformer from '#transformers/tenant_transformer'
 import type UnitOccupantTransformer from '#transformers/unit_occupant_transformer'
 import type UnitTransformer from '#transformers/unit_transformer'
@@ -25,6 +26,10 @@ export namespace Data {
   export type Resident = InferData<ResidentTransformer>
   export namespace Resident {
     export type Variants = InferVariants<ResidentTransformer>
+  }
+  export type Subscription = InferData<SubscriptionTransformer>
+  export namespace Subscription {
+    export type Variants = InferVariants<SubscriptionTransformer>
   }
   export type Tenant = InferData<TenantTransformer>
   export namespace Tenant {

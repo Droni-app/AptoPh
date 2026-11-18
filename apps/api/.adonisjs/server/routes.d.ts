@@ -9,6 +9,8 @@ export type ScannedRoutes = {
     'oauth.token': { paramsTuple?: []; params?: {} }
     'oauth.revoke': { paramsTuple?: []; params?: {} }
     'oauth.logout': { paramsTuple?: []; params?: {} }
+    'signup': { paramsTuple?: []; params?: {} }
+    'signup.store': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'profile.logout': { paramsTuple?: []; params?: {} }
@@ -43,6 +45,8 @@ export type ScannedRoutes = {
     'units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'members.index': { paramsTuple?: []; params?: {} }
+    'subscription.show': { paramsTuple?: []; params?: {} }
+    'subscription.activation': { paramsTuple?: []; params?: {} }
     'buildings.store': { paramsTuple?: []; params?: {} }
     'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -56,6 +60,7 @@ export type ScannedRoutes = {
   GET: {
     'oauth.authorize': { paramsTuple?: []; params?: {} }
     'oauth.logout': { paramsTuple?: []; params?: {} }
+    'signup': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
@@ -74,10 +79,12 @@ export type ScannedRoutes = {
     'units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'members.index': { paramsTuple?: []; params?: {} }
+    'subscription.show': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'oauth.authorize': { paramsTuple?: []; params?: {} }
     'oauth.logout': { paramsTuple?: []; params?: {} }
+    'signup': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
@@ -96,11 +103,13 @@ export type ScannedRoutes = {
     'units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'members.index': { paramsTuple?: []; params?: {} }
+    'subscription.show': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'oauth.authorize.store': { paramsTuple?: []; params?: {} }
     'oauth.token': { paramsTuple?: []; params?: {} }
     'oauth.revoke': { paramsTuple?: []; params?: {} }
+    'signup.store': { paramsTuple?: []; params?: {} }
     'profile.logout': { paramsTuple?: []; params?: {} }
     'resident.vehicles.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.pets.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
@@ -109,6 +118,7 @@ export type ScannedRoutes = {
     'resident.bookings.store': { paramsTuple?: []; params?: {} }
     'resident.tickets.store': { paramsTuple?: []; params?: {} }
     'resident.tickets.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'subscription.activation': { paramsTuple?: []; params?: {} }
     'buildings.store': { paramsTuple?: []; params?: {} }
     'units.store': { paramsTuple?: []; params?: {} }
     'occupants.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }

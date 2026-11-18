@@ -1,6 +1,6 @@
 import { TenantSchema } from '#database/schema'
-import { hasMany } from '@adonisjs/lucid/orm'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { hasMany, hasOne } from '@adonisjs/lucid/orm'
+import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import type { TenantStatus } from '@aptoph/shared'
 import Enrollment from '#models/enrollment'
 import Building from '#models/building'
@@ -22,6 +22,7 @@ import Visit from '#models/visit'
 import Parcel from '#models/parcel'
 import Document from '#models/document'
 import AuditLog from '#models/audit_log'
+import Subscription from '#models/subscription'
 
 /**
  * A tenant is a horizontal-property community (conjunto).
@@ -32,6 +33,9 @@ import AuditLog from '#models/audit_log'
  */
 export default class Tenant extends TenantSchema {
   declare status: TenantStatus
+
+  @hasOne(() => Subscription)
+  declare subscription: HasOne<typeof Subscription>
 
   @hasMany(() => Enrollment)
   declare enrollments: HasMany<typeof Enrollment>

@@ -50,4 +50,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   SMTP_USERNAME: Env.schema.string.optional(),
   SMTP_PASSWORD: Env.schema.string.optional(),
   SMTP_REQUIRE_TLS: Env.schema.boolean.optional(),
+
+  // Sales inbox notified when a conjunto asks to activate a paid plan (optional)
+  SALES_EMAIL: Env.schema.string.optional({ format: 'email' }),
 })

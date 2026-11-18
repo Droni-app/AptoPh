@@ -25,7 +25,7 @@ const open = ref(false)
 
       <div class="hidden items-center gap-3 lg:flex">
         <a :href="links.login" class="btn-ghost py-2.5">Ingresar</a>
-        <a :href="links.demo" class="btn-primary py-2.5">Solicitar demo</a>
+        <a :href="links.signup" class="btn-primary py-2.5">Prueba gratis</a>
       </div>
 
       <button
@@ -58,7 +58,7 @@ const open = ref(false)
         </li>
         <li class="mt-2 grid grid-cols-2 gap-3 pb-2">
           <a :href="links.login" class="btn-ghost">Ingresar</a>
-          <a :href="links.demo" class="btn-primary">Solicitar demo</a>
+          <a :href="links.signup" class="btn-primary">Prueba gratis</a>
         </li>
       </ul>
     </nav>

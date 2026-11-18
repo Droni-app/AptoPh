@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, Mail } from '@lucide/vue'
+import { ArrowRight } from '@lucide/vue'
 import { links } from '@/links'
 </script>
 
@@ -18,20 +18,19 @@ import { links } from '@/links'
             Lleva la administración de tu conjunto al siguiente nivel
           </h2>
           <p class="mx-auto mt-4 max-w-xl text-lg text-navy-200">
-            Te mostramos AptoPH con la estructura de tu copropiedad y resolvemos tus dudas, sin
-            compromiso.
+            Crea la cuenta de tu conjunto y úsalo gratis durante 30 días, sin tarjeta. ¿Prefieres
+            que te lo mostremos? Agenda una demostración.
           </p>
           <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <a :href="links.demo" class="btn-accent px-6 py-3.5 text-base">
-              Solicitar una demostración
+            <a :href="links.signup" class="btn-accent px-6 py-3.5 text-base">
+              Empezar prueba gratis
               <ArrowRight class="size-4" aria-hidden="true" />
             </a>
             <a
-              :href="`mailto:${links.email}`"
+              :href="links.demo"
               class="btn px-6 py-3.5 text-base text-white ring-1 ring-white/25 hover:bg-white/10 focus-visible:outline-white"
             >
-              <Mail class="size-4" aria-hidden="true" />
-              {{ links.email }}
+              Solicitar una demostración
             </a>
           </div>
         </div>

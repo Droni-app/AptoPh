@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { DuiAlert, DuiButton, DuiCard } from '@dronico/droni-kit'
 import { useAuthStore } from '@/stores/auth'
+import { config } from '@/lib/config'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -14,6 +15,14 @@ async function signIn() {
   const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
   await auth.login(redirect)
 }
+
+const signupUrl = `${config.apiUrl}/registro`
+
+// Coming from the sign-up page: the API session already exists, so the OAuth
+// round trip comes back with a code without showing the login form
+onMounted(() => {
+  if (route.query.auto === '1' && !error) void signIn()
+})
 </script>
 
 <template>
@@ -37,6 +46,12 @@ async function signIn() {
           </DuiButton>
         </div>
       </DuiCard>
+      <p class="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
+        ¿Tu conjunto aún no usa AptoPH?
+        <a :href="signupUrl" class="font-medium text-violet-600 hover:underline dark:text-violet-400">
+          Prueba gratis 30 días
+        </a>
+      </p>
     </div>
   </main>
 </template>

@@ -20,6 +20,8 @@ const BuildingsController = () => import('#controllers/backoffice/buildings_cont
 const UnitsController = () => import('#controllers/backoffice/units_controller')
 const UnitOccupantsController = () => import('#controllers/backoffice/unit_occupants_controller')
 const MembersController = () => import('#controllers/backoffice/members_controller')
+const SubscriptionController = () => import('#controllers/backoffice/subscription_controller')
+const SignupController = () => import('#controllers/signup_controller')
 const ResidentHomeController = () => import('#controllers/resident/home_controller')
 const ResidentUnitsController = () => import('#controllers/resident/units_controller')
 const ResidentVehiclesController = () => import('#controllers/resident/vehicles_controller')
@@ -56,6 +58,14 @@ router
   })
   .prefix('oauth')
   .as('oauth')
+
+/*
+|--------------------------------------------------------------------------
+| Self-service sign-up (hosted page, starts the SSO session)
+|--------------------------------------------------------------------------
+*/
+router.get('registro', [SignupController, 'show']).as('signup')
+router.post('registro', [SignupController, 'store']).as('signup.store')
 
 /*
 |--------------------------------------------------------------------------
@@ -155,8 +165,17 @@ router
           .get('units/:unitId/occupants', [UnitOccupantsController, 'index'])
           .as('occupants.index')
         router.get('members', [MembersController, 'index']).as('members.index')
+        router.get('subscription', [SubscriptionController, 'show']).as('subscription.show')
       })
       .use([middleware.auth(), middleware.tenant(backofficeRead)])
+
+    /**
+     * Back-office: plan and billing (administration, also while the plan is locked)
+     */
+    router
+      .post('subscription/activation', [SubscriptionController, 'requestActivation'])
+      .as('subscription.activation')
+      .use([middleware.auth(), middleware.tenant(backofficeWrite)])
 
     /**
      * Back-office: write (administration)
@@ -179,7 +198,7 @@ router
           .delete('units/:unitId/occupants/:id', [UnitOccupantsController, 'destroy'])
           .as('occupants.destroy')
       })
-      .use([middleware.auth(), middleware.tenant(backofficeWrite)])
+      .use([middleware.auth(), middleware.tenant(backofficeWrite), middleware.subscription()])
   })
   .where('id', router.matchers.uuid())
   .where('unitId', router.matchers.uuid())

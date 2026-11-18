@@ -9,6 +9,7 @@ export const controllers = {
     Buildings: () => import('#controllers/backoffice/buildings_controller'),
     Dashboard: () => import('#controllers/backoffice/dashboard_controller'),
     Members: () => import('#controllers/backoffice/members_controller'),
+    Subscription: () => import('#controllers/backoffice/subscription_controller'),
     UnitOccupants: () => import('#controllers/backoffice/unit_occupants_controller'),
     Units: () => import('#controllers/backoffice/units_controller'),
   },
@@ -31,4 +32,5 @@ export const controllers = {
     Vehicles: () => import('#controllers/resident/vehicles_controller'),
     Visits: () => import('#controllers/resident/visits_controller'),
   },
+  Signup: () => import('#controllers/signup_controller'),
 }

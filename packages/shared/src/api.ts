@@ -329,3 +329,21 @@ export type ResidentTicketComment = {
 }
 
 export type ResidentTicketDetail = ResidentTicket & { comments: ResidentTicketComment[] }
+
+/** GET /api/v1/subscription — plan del conjunto activo */
+export type SubscriptionSummary = {
+  plan: import('./billing.js').PlanId
+  billingCycle: import('./billing.js').BillingCycle
+  status: import('./billing.js').SubscriptionStatus
+  /** El conjunto puede crear y modificar información (prueba vigente o plan activo) */
+  canWrite: boolean
+  /** Prueba vencida o pago pendiente: solo lectura hasta activar el plan */
+  locked: boolean
+  trialEndsAt: string | null
+  /** Días que quedan de prueba (0 si venció); `null` fuera de la prueba */
+  trialDaysLeft: number | null
+  currentPeriodEndsAt: string | null
+  activationRequestedAt: string | null
+  /** Unidades con las que se cotiza: las registradas o, si aún no hay, las declaradas */
+  billableUnits: number
+}

@@ -19,6 +19,25 @@ import {
   Wallet,
   Wrench,
 } from '@lucide/vue'
+import {
+  ANNUAL_BILLED_MONTHS,
+  MINIMUM_MONTHLY,
+  PRICE_TIERS,
+  formatCop,
+  tierLabel,
+} from '@aptoph/shared'
+
+/** FAQ answer built from the same prices as the pricing table (@aptoph/shared) */
+function pricingAnswer() {
+  const tiers = PRICE_TIERS.map(
+    (tier) => `${tierLabel(tier).toLowerCase()}, ${formatCop(tier.pricePerUnit)}`,
+  ).join('; ')
+  return (
+    `Se paga por unidad privada al mes, con todas las funciones incluidas. El precio de cada unidad depende del tamaño del conjunto: ${tiers}. ` +
+    `Los valores son antes de IVA, con un mínimo de ${formatCop(MINIMUM_MONTHLY)} al mes, y en el pago anual pagas ${ANNUAL_BILLED_MONTHS} meses y recibes 12. ` +
+    'Para administradoras con varias copropiedades hay un plan Empresarial a la medida.'
+  )
+}
 
 /**
  * Single source for the landing copy. Components render it and the prerender
@@ -42,6 +61,7 @@ export const nav: NavLink[] = [
   { href: '#funcionalidades', label: 'Funcionalidades' },
   { href: '#perfiles', label: 'Para quién' },
   { href: '#como-funciona', label: 'Cómo funciona' },
+  { href: '#precios', label: 'Precios' },
   { href: '#demo', label: 'Demo' },
   { href: '#seguridad', label: 'Seguridad' },
   { href: '#preguntas', label: 'Preguntas' },
@@ -349,10 +369,34 @@ export const faqs: Faq[] = [
       'Los datos de cada copropiedad están aislados, el acceso depende del perfil de cada persona, el inicio de sesión usa OAuth 2.1 con PKCE y las acciones importantes quedan registradas en una bitácora de auditoría.',
   },
   {
+    question: '¿Cuánto cuesta AptoPH?',
+    answer: pricingAnswer(),
+  },
+  {
+    question: '¿Cómo funciona la prueba gratis de 30 días?',
+    answer:
+      'Creas la cuenta de tu conjunto en un par de minutos, sin tarjeta de crédito, y usas todas las funciones durante 30 días. Al terminar eliges el plan. Si no lo activas, no perderás nada: la información queda guardada en modo consulta hasta que decidas continuar.',
+  },
+  {
+    question: '¿Tiene costo pasar la información desde Excel u otro software?',
+    answer:
+      'No. Migramos sin costo las torres, unidades, coeficientes y residentes desde tus hojas de cálculo o desde el software que usas hoy.',
+  },
+  {
     question: '¿Cómo empiezo a usar AptoPH?',
     answer:
-      'Solicita una demostración. Te mostramos la plataforma con los datos de tu conjunto y te acompañamos en la configuración inicial de torres, unidades, residentes y cobros.',
+      'Crea la cuenta de tu conjunto con la prueba gratis de 30 días y entra de una vez al panel de administración. Si prefieres, solicita una demostración y te acompañamos en la configuración inicial de torres, unidades, residentes y cobros.',
   },
+]
+
+/**
+ * Acquisition offers shown around the pricing table
+ */
+export const pricingPerks = [
+  { title: '30 días gratis', description: 'Todas las funciones, sin tarjeta de crédito.' },
+  { title: '2 meses gratis', description: 'Al pagar el año completo: pagas 10 y recibes 12.' },
+  { title: 'Migración sin costo', description: 'Pasamos tus datos desde Excel u otro software.' },
+  { title: 'Sin permanencia', description: 'Cambia de plan o cancela cuando quieras.' },
 ]
 
 /**

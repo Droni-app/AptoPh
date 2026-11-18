@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
+import { useSubscriptionStore } from '@/stores/subscription'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -68,6 +69,12 @@ const router = createRouter({
           component: () => import('@/views/MembersView.vue'),
           meta: { tenant: true, title: 'Personas' },
         },
+        {
+          path: 'plan',
+          name: 'plan',
+          component: () => import('@/views/PlanView.vue'),
+          meta: { tenant: true, title: 'Plan y facturación' },
+        },
       ],
     },
     {
@@ -98,6 +105,11 @@ router.beforeEach(async (to) => {
 
   if (to.meta.tenant && !tenant.current) {
     return { name: 'select-tenant', query: { redirect: to.fullPath } }
+  }
+
+  if (tenant.current) {
+    // The trial banner is informative: never block navigation if it fails
+    await useSubscriptionStore().load(tenant.current.id).catch(() => undefined)
   }
   return true
 })

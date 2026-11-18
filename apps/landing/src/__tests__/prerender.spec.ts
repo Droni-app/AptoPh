@@ -5,6 +5,7 @@ import { renderToString } from 'vue/server-renderer'
 import App from '../App.vue'
 import { demo, faqs, features } from '../content'
 import { headTags, structuredData } from '../seo'
+import { PRICE_TIERS, formatCop, tierLabel } from '@aptoph/shared'
 
 describe('landing prerender', () => {
   it('renders the whole content to HTML (crawlable without JavaScript)', async () => {
@@ -15,6 +16,17 @@ describe('landing prerender', () => {
     for (const faq of faqs) expect(html).toContain(faq.question)
     // Inline brand logo, no external request
     expect(html).toContain('aria-label="AptoPH"')
+  })
+
+  it('renders the price per unit by tier with the sign-up link', async () => {
+    const html = await renderToString(createSSRApp(App))
+
+    expect(html).toContain('id="precios"')
+    for (const tier of PRICE_TIERS) expect(html).toContain(tierLabel(tier))
+    expect(html).toContain('/registro?plan=completo&amp;unidades=120')
+    // Default: annual cycle, 120 units → $300 × 10 / 12
+    expect(html).toContain(formatCop(250))
+    expect(html).toContain('/ unidad al mes')
   })
 
   it('publishes the demo accounts', async () => {

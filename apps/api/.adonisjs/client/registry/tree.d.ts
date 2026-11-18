@@ -10,6 +10,9 @@ export interface ApiDefinition {
     revoke: typeof routes['oauth.revoke']
     logout: typeof routes['oauth.logout']
   }
+  signup: typeof routes['signup'] & {
+    store: typeof routes['signup.store']
+  }
   profile: {
     show: typeof routes['profile.show']
     tenants: typeof routes['profile.tenants']
@@ -86,5 +89,9 @@ export interface ApiDefinition {
   }
   members: {
     index: typeof routes['members.index']
+  }
+  subscription: {
+    show: typeof routes['subscription.show']
+    activation: typeof routes['subscription.activation']
   }
 }

@@ -112,6 +112,30 @@ erDiagram
 | settings | jsonb | Configuración flexible (intereses de mora, día de corte, etc.) |
 | created_at / updated_at / deleted_at | timestamptz | |
 
+### `subscriptions` — plan del conjunto (uno por tenant)
+
+Se crea con el registro autoservicio (`/registro`). Los tenants **sin** suscripción son cuentas
+administradas (demo, pilotos) y no tienen restricciones. Planes y precios en
+`packages/shared/src/billing.ts`.
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id | uuid PK | |
+| tenant_id | uuid UNIQUE FK → tenants | `ON DELETE CASCADE` |
+| plan | varchar(20) | `completo`, `empresarial` |
+| billing_cycle | varchar(10) | `monthly`, `annual` |
+| status | varchar(20) | `trialing`, `active`, `past_due`, `cancelled` |
+| declared_units | int | Unidades declaradas en el registro (cotización antes de cargar el censo) |
+| trial_ends_at | timestamptz NULL | Fin de la prueba (30 días) |
+| current_period_ends_at | timestamptz NULL | Fin del periodo pagado |
+| activation_requested_at | timestamptz NULL | Última solicitud de activación desde el backoffice |
+| cancelled_at | timestamptz NULL | |
+| created_at / updated_at | timestamptz | |
+
+Con la prueba vencida o el periodo pagado expirado, el backoffice queda en **solo lectura**: las
+rutas de escritura responden `402` con `rule: subscription_inactive`. La app de residentes sigue
+funcionando.
+
 ### `users` — personas con cuenta en la plataforma
 
 Un usuario es **global**: la misma persona puede vivir en un conjunto y trabajar o ser

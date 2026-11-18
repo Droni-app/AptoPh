@@ -38,6 +38,18 @@ const routes = {
     tokens: [[0,"oauth"],[0,"logout"]],
     types: placeholder as Registry['oauth.logout']['types'],
   },
+  'signup': {
+    methods: ["GET","HEAD"],
+    pattern: '/registro',
+    tokens: [[0,"registro"]],
+    types: placeholder as Registry['signup']['types'],
+  },
+  'signup.store': {
+    methods: ["POST"],
+    pattern: '/registro',
+    tokens: [[0,"registro"]],
+    types: placeholder as Registry['signup.store']['types'],
+  },
   'profile.show': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/account/profile',
@@ -241,6 +253,18 @@ const routes = {
     pattern: '/api/v1/members',
     tokens: [[0,"api"],[0,"v1"],[0,"members"]],
     types: placeholder as Registry['members.index']['types'],
+  },
+  'subscription.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/subscription',
+    tokens: [[0,"api"],[0,"v1"],[0,"subscription"]],
+    types: placeholder as Registry['subscription.show']['types'],
+  },
+  'subscription.activation': {
+    methods: ["POST"],
+    pattern: '/api/v1/subscription/activation',
+    tokens: [[0,"api"],[0,"v1"],[0,"subscription"],[0,"activation"]],
+    types: placeholder as Registry['subscription.activation']['types'],
   },
   'buildings.store': {
     methods: ["POST"],

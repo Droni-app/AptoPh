@@ -30,4 +30,5 @@ export const ENROLLMENT_ROLES = Object.values(EnrollmentRole)
 
 export * from './domain.js'
 export * from './labels.js'
+export * from './billing.js'
 export type * from './api.js'

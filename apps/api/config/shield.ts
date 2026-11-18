@@ -33,10 +33,10 @@ const shieldConfig = defineConfig({
     enabled: true,
 
     /**
-     * Only the hosted login form (cookie session) needs CSRF protection.
+     * Only the hosted forms (login and sign-up, cookie session) need CSRF protection.
      * The JSON API and the OAuth token/revoke endpoints are stateless.
      */
-    exceptRoutes: (ctx) => ctx.request.url() !== '/oauth/authorize',
+    exceptRoutes: (ctx) => !['/oauth/authorize', '/registro'].includes(ctx.request.url()),
 
     /**
      * Expose an encrypted XSRF-TOKEN cookie for frontend HTTP clients.

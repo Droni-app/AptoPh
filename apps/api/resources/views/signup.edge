@@ -1,0 +1,95 @@
+@component('components/auth_layout', { title: 'Crea tu cuenta', wide: true })
+  <span class="badge">{{ trialDays }} días gratis · sin tarjeta</span>
+  <h1>Crea la cuenta de tu conjunto</h1>
+  <p class="subtitle">Prueba todas las funciones de AptoPH durante {{ trialDays }} días. Al terminar eliges el plan; si no, tu información queda guardada en modo consulta.</p>
+
+  @if(Object.keys(errors).length)
+    <div class="error" role="alert">Revisa los campos marcados para continuar.</div>
+  @end
+
+  <form method="POST" action="/registro" novalidate>
+    {{ csrfField() }}
+
+    <div class="hp" aria-hidden="true">
+      <label for="website">No llenes este campo</label>
+      <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+
+    <label for="tenantName">Nombre del conjunto o edificio</label>
+    <input id="tenantName" name="tenantName" type="text" value="{{ values.tenantName ?? '' }}" placeholder="Conjunto Residencial Los Álamos" autocomplete="organization" required autofocus aria-invalid="{{ errors.tenantName ? 'true' : 'false' }}">
+    @if(errors.tenantName)
+      <p class="field-error">{{ errors.tenantName }}</p>
+    @end
+
+    <div class="row">
+      <div>
+        <label for="city">Ciudad</label>
+        <input id="city" name="city" type="text" value="{{ values.city ?? '' }}" autocomplete="address-level2" required aria-invalid="{{ errors.city ? 'true' : 'false' }}">
+        @if(errors.city)
+          <p class="field-error">{{ errors.city }}</p>
+        @end
+      </div>
+      <div>
+        <label for="units">Número de unidades</label>
+        <input id="units" name="units" type="number" min="1" max="20000" inputmode="numeric" value="{{ values.units ?? '' }}" placeholder="120" required aria-invalid="{{ errors.units ? 'true' : 'false' }}">
+        @if(errors.units)
+          <p class="field-error">{{ errors.units }}</p>
+        @end
+      </div>
+    </div>
+
+    <input type="hidden" name="plan" value="{{ plan }}">
+    <div class="pricing">
+      <p class="pricing-title">Precio por unidad privada al mes, después de la prueba</p>
+      <ul>
+        @each(tier in tiers)
+          <li><span>{{ tier.label }}</span><strong>{{ tier.price }}</strong></li>
+        @end
+      </ul>
+      <p class="hint" style="margin:8px 0 0">Mínimo {{ minimum }} al mes, antes de IVA. Pagando el año: 2 meses gratis. ¿Administras varias copropiedades? <a href="mailto:contacto@aptoph.com?subject=Plan%20Empresarial%20AptoPH">Habla con ventas</a>.</p>
+    </div>
+
+    <label for="fullName">Tu nombre completo</label>
+    <input id="fullName" name="fullName" type="text" value="{{ values.fullName ?? '' }}" autocomplete="name" required aria-invalid="{{ errors.fullName ? 'true' : 'false' }}">
+    @if(errors.fullName)
+      <p class="field-error">{{ errors.fullName }}</p>
+    @end
+
+    <div class="row">
+      <div>
+        <label for="email">Correo electrónico</label>
+        <input id="email" name="email" type="email" value="{{ values.email ?? '' }}" autocomplete="email" required aria-invalid="{{ errors.email ? 'true' : 'false' }}">
+        @if(errors.email)
+          <p class="field-error">{{ errors.email }}</p>
+        @end
+      </div>
+      <div>
+        <label for="phone">Celular</label>
+        <input id="phone" name="phone" type="tel" value="{{ values.phone ?? '' }}" autocomplete="tel" placeholder="300 123 4567" required aria-invalid="{{ errors.phone ? 'true' : 'false' }}">
+        @if(errors.phone)
+          <p class="field-error">{{ errors.phone }}</p>
+        @end
+      </div>
+    </div>
+
+    <label for="password">Contraseña</label>
+    <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required aria-invalid="{{ errors.password ? 'true' : 'false' }}">
+    @if(errors.password)
+      <p class="field-error">{{ errors.password }}</p>
+    @else
+      <p class="hint">Mínimo 8 caracteres.</p>
+    @end
+
+    <label class="check">
+      <input type="checkbox" name="acceptTerms" value="on" required>
+      <span>Acepto los términos del servicio y el tratamiento de datos personales (Ley 1581 de 2012).</span>
+    </label>
+    @if(errors.acceptTerms)
+      <p class="field-error">{{ errors.acceptTerms }}</p>
+    @end
+
+    <button type="submit">Empezar prueba gratis</button>
+  </form>
+
+  <p class="footnote">¿Ya tienes cuenta? <a href="{{ loginUrl }}">Inicia sesión</a></p>
+@end

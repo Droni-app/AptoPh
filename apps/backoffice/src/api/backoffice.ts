@@ -1,5 +1,8 @@
 import type {
   ApiItem,
+  BillingCycle,
+  PlanId,
+  SubscriptionSummary,
   ApiPaginated,
   Building,
   DashboardSummary,
@@ -73,4 +76,10 @@ export const occupantsApi = {
 export const membersApi = {
   list: (query: { group?: 'staff' | 'residents'; page?: number; perPage?: number }) =>
     api<ApiPaginated<Member>>('/api/v1/members', { query }),
+}
+
+export const subscriptionApi = {
+  show: () => api<ApiItem<SubscriptionSummary>>('/api/v1/subscription'),
+  requestActivation: (body: { plan: PlanId; billingCycle: BillingCycle }) =>
+    api<ApiItem<SubscriptionSummary>>('/api/v1/subscription/activation', { method: 'POST', body }),
 }

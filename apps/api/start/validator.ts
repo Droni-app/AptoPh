@@ -41,6 +41,10 @@ vine.messagesProvider = new SimpleMessagesProvider({
   'withoutDecimals': 'Debe ser un número entero',
   'date': 'Debe ser una fecha válida',
   'date.afterField': 'Debe ser posterior a {{ otherField }}',
+  'regex': 'El formato no es válido',
+  'accepted': 'Debes aceptar para continuar',
+  'acceptTerms.required': 'Debes aceptar para continuar',
+  'phone.regex': 'Escribe un teléfono válido, p. ej. 300 123 4567',
   'database.unique': 'Ya existe un registro con este valor',
   'database.exists': 'El registro seleccionado no existe',
 })
