@@ -1,128 +1,71 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { ApiItem, OAuthTokens, UserProfile } from '@aptoph/shared'
-import { config } from '@/lib/config'
+import type {
+  ApiItem,
+  AuthSession,
+  LoginInput,
+  SignupInput,
+  SignupSession,
+  UserProfile,
+} from '@aptoph/shared'
 import { api } from '@/lib/http'
-import { codeChallengeFor, randomString } from '@/lib/pkce'
 import { readJson, writeJson } from '@/lib/storage'
 
-type Session = { accessToken: string; refreshToken: string; expiresAt: number }
-type PendingAuthorization = { state: string; verifier: string; redirectTo: string }
+type Session = { token: string; expiresAt: string | null }
 
 const SESSION_KEY = 'aptoph.backoffice.session'
-const PENDING_KEY = 'aptoph.backoffice.oauth'
-/** Refresh the access token this long before it expires */
-const EXPIRY_MARGIN_MS = 30_000
-
-export class OAuthCallbackError extends Error {}
+/** Label of the token in the API (auth_access_tokens.name) */
+const DEVICE = 'Backoffice'
 
 /**
- * OAuth 2.1 Authorization Code + PKCE against the AptoPH API.
- * See docs/authentication.md.
+ * Email + password session with an AdonisJS access token (see docs/authentication.md).
+ * The token lives in localStorage until it expires or the user signs out.
  */
 export const useAuthStore = defineStore('auth', () => {
-  const session = ref<Session | null>(readJson<Session>(localStorage, SESSION_KEY))
+  // Ignores anything else stored under the key (e.g. an old OAuth session)
+  const stored = readJson<Session>(localStorage, SESSION_KEY)
+  const session = ref<Session | null>(typeof stored?.token === 'string' ? stored : null)
   const user = ref<UserProfile | null>(null)
 
-  const isAuthenticated = computed(() => session.value !== null)
+  const isAuthenticated = computed(() => {
+    if (!session.value) return false
+    return !session.value.expiresAt || new Date(session.value.expiresAt).getTime() > Date.now()
+  })
+  const token = computed(() => (isAuthenticated.value ? session.value!.token : null))
 
-  function setSession(value: Session | null) {
-    session.value = value
-    writeJson(localStorage, SESSION_KEY, value)
+  function start(data: AuthSession) {
+    session.value = { token: data.token, expiresAt: data.expiresAt }
+    writeJson(localStorage, SESSION_KEY, session.value)
+    user.value = data.user
   }
 
   function clear() {
-    setSession(null)
+    session.value = null
     user.value = null
+    writeJson(localStorage, SESSION_KEY, null)
   }
 
-  /**
-   * Redirects the browser to the hosted login page
-   */
-  async function login(redirectTo = '/') {
-    const verifier = randomString()
-    const state = randomString(16)
-    writeJson(sessionStorage, PENDING_KEY, { state, verifier, redirectTo } satisfies PendingAuthorization)
-
-    const url = new URL(`${config.apiUrl}/oauth/authorize`)
-    url.search = new URLSearchParams({
-      response_type: 'code',
-      client_id: config.oauth.clientId,
-      redirect_uri: config.oauth.redirectUri,
-      code_challenge: await codeChallengeFor(verifier),
-      code_challenge_method: 'S256',
-      state,
-    }).toString()
-
-    window.location.assign(url)
-  }
-
-  async function tokenRequest(params: Record<string, string>) {
-    const response = await fetch(`${config.apiUrl}/oauth/token`, {
+  async function login(input: Omit<LoginInput, 'device'>) {
+    const { data } = await api<ApiItem<AuthSession>>('/api/v1/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-      body: new URLSearchParams({ client_id: config.oauth.clientId, ...params }),
+      body: { ...input, device: DEVICE },
+      tenant: false,
+      auth: false,
     })
-    const body = await response.json().catch(() => ({}))
-    if (!response.ok) {
-      throw new OAuthCallbackError(body.error_description ?? body.error ?? 'No se pudo iniciar sesión')
-    }
-    const tokens = body as OAuthTokens
-    setSession({
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-      expiresAt: Date.now() + tokens.expires_in * 1000,
-    })
+    start(data)
+    return data
   }
 
-  /**
-   * Handles /auth/callback. Returns the path to continue to.
-   */
-  async function handleCallback(query: URLSearchParams) {
-    const pending = readJson<PendingAuthorization>(sessionStorage, PENDING_KEY)
-    writeJson(sessionStorage, PENDING_KEY, null)
-
-    if (query.get('error')) {
-      throw new OAuthCallbackError(query.get('error_description') ?? 'Inicio de sesión cancelado')
-    }
-    const code = query.get('code')
-    if (!pending || !code || query.get('state') !== pending.state) {
-      throw new OAuthCallbackError('La respuesta de inicio de sesión no es válida. Intenta de nuevo.')
-    }
-
-    await tokenRequest({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: config.oauth.redirectUri,
-      code_verifier: pending.verifier,
+  /** Creates the administrator's account, the conjunto and the trial */
+  async function signup(input: Omit<SignupInput, 'device'>) {
+    const { data } = await api<ApiItem<SignupSession>>('/api/v1/auth/signup', {
+      method: 'POST',
+      body: { ...input, device: DEVICE },
+      tenant: false,
+      auth: false,
     })
-    return pending.redirectTo
-  }
-
-  let refreshing: Promise<boolean> | null = null
-
-  /**
-   * Rotates the refresh token. Concurrent calls share the same request,
-   * since a refresh token can only be used once.
-   */
-  function refresh(): Promise<boolean> {
-    if (!session.value) return Promise.resolve(false)
-    refreshing ??= tokenRequest({ grant_type: 'refresh_token', refresh_token: session.value.refreshToken })
-      .then(() => true)
-      .catch(() => {
-        clear()
-        return false
-      })
-      .finally(() => {
-        refreshing = null
-      })
-    return refreshing
-  }
-
-  async function getAccessToken() {
-    if (!session.value) return null
-    if (session.value.expiresAt - Date.now() < EXPIRY_MARGIN_MS) await refresh()
-    return session.value?.accessToken ?? null
+    start(data)
+    return data
   }
 
   async function loadProfile() {
@@ -131,38 +74,14 @@ export const useAuthStore = defineStore('auth', () => {
     return data
   }
 
-  /**
-   * Revokes the tokens and ends the SSO session on the API
-   */
+  /** Revokes the token on the API (best effort) and goes back to the login page */
   async function logout() {
-    const refreshToken = session.value?.refreshToken
-    clear()
-    if (refreshToken) {
-      await fetch(`${config.apiUrl}/oauth/revoke`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ client_id: config.oauth.clientId, token: refreshToken }),
-      }).catch(() => undefined)
+    if (token.value) {
+      await api('/api/v1/auth/logout', { method: 'POST', tenant: false }).catch(() => undefined)
     }
-
-    const url = new URL(`${config.apiUrl}/oauth/logout`)
-    url.search = new URLSearchParams({
-      client_id: config.oauth.clientId,
-      post_logout_redirect_uri: config.oauth.postLogoutRedirectUri,
-    }).toString()
-    window.location.assign(url)
+    clear()
+    window.location.assign('/login')
   }
 
-  return {
-    session,
-    user,
-    isAuthenticated,
-    login,
-    handleCallback,
-    refresh,
-    getAccessToken,
-    loadProfile,
-    logout,
-    clear,
-  }
+  return { session, user, token, isAuthenticated, login, signup, loadProfile, logout, clear }
 })

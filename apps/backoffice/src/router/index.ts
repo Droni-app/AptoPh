@@ -7,6 +7,8 @@ declare module 'vue-router' {
   interface RouteMeta {
     /** Accessible without a session */
     public?: boolean
+    /** Login and sign-up: a signed-in user goes straight to the app */
+    guest?: boolean
     /** Requires an active tenant (X-Tenant-Id) */
     tenant?: boolean
     title?: string
@@ -20,13 +22,13 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
-      meta: { public: true, title: 'Iniciar sesión' },
+      meta: { public: true, guest: true, title: 'Iniciar sesión' },
     },
     {
-      path: '/auth/callback',
-      name: 'auth-callback',
-      component: () => import('@/views/AuthCallbackView.vue'),
-      meta: { public: true },
+      path: '/registro',
+      name: 'signup',
+      component: () => import('@/views/SignupView.vue'),
+      meta: { public: true, guest: true, title: 'Crea la cuenta de tu conjunto' },
     },
     {
       path: '/conjuntos',
@@ -87,9 +89,10 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  const auth = useAuthStore()
+  if (to.meta.guest && auth.isAuthenticated) return { path: '/' }
   if (to.meta.public) return true
 
-  const auth = useAuthStore()
   if (!auth.isAuthenticated) {
     return { name: 'login', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
   }
@@ -109,7 +112,9 @@ router.beforeEach(async (to) => {
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails
-    await useSubscriptionStore().load(tenant.current.id).catch(() => undefined)
+    await useSubscriptionStore()
+      .load(tenant.current.id)
+      .catch(() => undefined)
   }
   return true
 })

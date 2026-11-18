@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { DuiAlert, DuiButton, DuiTable, useToast, type TableColumn } from '@dronico/droni-kit'
 import type { Building } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import BuildingFormModal from '@/components/BuildingFormModal.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { buildingsApi } from '@/api/backoffice'
@@ -83,13 +84,21 @@ onMounted(load)
   <DuiTable :columns="columns" :rows="buildings" :loading="loading">
     <template #floors="{ floors }">{{ floors ?? '—' }}</template>
     <template #unitsCount="{ id, unitsCount }">
-      <RouterLink :to="{ name: 'units', query: { buildingId: id } }" class="text-violet-600 hover:underline dark:text-violet-300">
+      <RouterLink
+        :to="{ name: 'units', query: { buildingId: id } }"
+        class="font-medium text-brand-600 hover:underline dark:text-brand-200"
+      >
         {{ unitsCount ?? 0 }}
       </RouterLink>
     </template>
     <template #actions="row">
       <div class="flex justify-end gap-1">
-        <DuiButton variant="ghost" size="sm" :aria-label="`Editar ${row.name}`" @click="openForm(row as Building)">
+        <DuiButton
+          variant="ghost"
+          size="sm"
+          :aria-label="`Editar ${row.name}`"
+          @click="openForm(row as Building)"
+        >
           <span class="mdi mdi-pencil-outline" />
         </DuiButton>
         <DuiButton
@@ -103,7 +112,12 @@ onMounted(load)
         </DuiButton>
       </div>
     </template>
-    <template #empty>Aún no hay torres registradas.</template>
+    <template #empty
+      ><EmptyState
+        art="bienvenida"
+        title="Aún no hay torres registradas"
+        description="Crea las torres, bloques o etapas del conjunto para empezar a cargar las unidades."
+    /></template>
   </DuiTable>
 
   <BuildingFormModal v-model="formOpen" :building="editing" @saved="load" />

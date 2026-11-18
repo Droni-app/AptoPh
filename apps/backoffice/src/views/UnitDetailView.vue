@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiBadge, DuiButton, DuiCard, DuiSkeleton, DuiTable, useToast, type TableColumn } from '@dronico/droni-kit'
+import {
+  DuiAlert,
+  DuiBadge,
+  DuiButton,
+  DuiCard,
+  DuiSkeleton,
+  DuiTable,
+  useToast,
+  type TableColumn,
+} from '@dronico/droni-kit'
 import {
   OCCUPANT_RELATIONSHIP_LABELS,
   UNIT_STATUS_LABELS,
@@ -11,6 +20,7 @@ import {
   type UnitOccupant,
 } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import UnitFormModal from '@/components/UnitFormModal.vue'
 import OccupantFormModal from '@/components/OccupantFormModal.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
@@ -116,7 +126,10 @@ onMounted(() => {
       :subtitle="[UNIT_TYPE_LABELS[unit.type], unit.building?.name].filter(Boolean).join(' · ')"
     >
       <template #before>
-        <RouterLink :to="{ name: 'units' }" class="mb-1 inline-block text-sm text-neutral-500 hover:underline">
+        <RouterLink
+          :to="{ name: 'units' }"
+          class="mb-1 inline-block text-sm text-neutral-500 hover:underline"
+        >
           <span class="mdi mdi-arrow-left" aria-hidden="true" /> Unidades
         </RouterLink>
       </template>
@@ -124,7 +137,9 @@ onMounted(() => {
         <DuiButton variant="outline" @click="unitFormOpen = true">
           <span class="mdi mdi-pencil-outline mr-1" aria-hidden="true" />Editar
         </DuiButton>
-        <DuiButton variant="ghost" color="danger" @click="deleteUnitOpen = true">Eliminar</DuiButton>
+        <DuiButton variant="ghost" color="danger" @click="deleteUnitOpen = true"
+          >Eliminar</DuiButton
+        >
       </template>
     </PageHeader>
 
@@ -132,7 +147,9 @@ onMounted(() => {
       <dl class="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <dt class="text-neutral-500 dark:text-neutral-400">Estado</dt>
-          <dd class="mt-1"><DuiBadge :label="UNIT_STATUS_LABELS[unit.status]" variant="soft" size="sm" /></dd>
+          <dd class="mt-1">
+            <DuiBadge :label="UNIT_STATUS_LABELS[unit.status]" variant="soft" size="sm" />
+          </dd>
         </div>
         <div>
           <dt class="text-neutral-500 dark:text-neutral-400">Piso</dt>
@@ -140,12 +157,19 @@ onMounted(() => {
         </div>
         <div>
           <dt class="text-neutral-500 dark:text-neutral-400">Área privada</dt>
-          <dd class="mt-1 font-medium">{{ unit.privateArea ? `${Number(unit.privateArea).toLocaleString('es-CO')} m²` : '—' }}</dd>
+          <dd class="mt-1 font-medium">
+            {{ unit.privateArea ? `${Number(unit.privateArea).toLocaleString('es-CO')} m²` : '—' }}
+          </dd>
         </div>
         <div>
           <dt class="text-neutral-500 dark:text-neutral-400">Coeficiente</dt>
           <dd class="mt-1 font-medium tabular-nums">
-            {{ (Number(unit.ownershipCoefficient) * 100).toLocaleString('es-CO', { maximumFractionDigits: 4 }) }} %
+            {{
+              (Number(unit.ownershipCoefficient) * 100).toLocaleString('es-CO', {
+                maximumFractionDigits: 4,
+              })
+            }}
+            %
           </dd>
         </div>
         <div>
@@ -153,7 +177,10 @@ onMounted(() => {
           <dd class="mt-1 font-medium">{{ unit.occupants?.length ?? 0 }}</dd>
         </div>
       </dl>
-      <p v-if="unit.notes" class="mt-4 border-t border-neutral-200 pt-4 text-sm whitespace-pre-line dark:border-white/10">
+      <p
+        v-if="unit.notes"
+        class="mt-4 border-t border-neutral-200 pt-4 text-sm whitespace-pre-line dark:border-white/10"
+      >
         {{ unit.notes }}
       </p>
     </DuiCard>
@@ -169,8 +196,20 @@ onMounted(() => {
       <template #fullName="{ fullName, isPrimaryContact, isBillingResponsible }">
         <span class="font-medium">{{ fullName }}</span>
         <span class="mt-1 flex flex-wrap gap-1">
-          <DuiBadge v-if="isPrimaryContact" label="Contacto principal" size="xs" color="primary" variant="soft" />
-          <DuiBadge v-if="isBillingResponsible" label="Responsable de pagos" size="xs" color="secondary" variant="soft" />
+          <DuiBadge
+            v-if="isPrimaryContact"
+            label="Contacto principal"
+            size="xs"
+            color="primary"
+            variant="soft"
+          />
+          <DuiBadge
+            v-if="isBillingResponsible"
+            label="Responsable de pagos"
+            size="xs"
+            color="secondary"
+            variant="soft"
+          />
         </span>
       </template>
       <template #relationship="{ relationship }">
@@ -185,7 +224,12 @@ onMounted(() => {
       </template>
       <template #actions="row">
         <div class="flex justify-end gap-1">
-          <DuiButton variant="ghost" size="sm" :aria-label="`Editar ${row.fullName}`" @click="editOccupant(row as UnitOccupant)">
+          <DuiButton
+            variant="ghost"
+            size="sm"
+            :aria-label="`Editar ${row.fullName}`"
+            @click="editOccupant(row as UnitOccupant)"
+          >
             <span class="mdi mdi-pencil-outline" />
           </DuiButton>
           <DuiButton
@@ -199,11 +243,21 @@ onMounted(() => {
           </DuiButton>
         </div>
       </template>
-      <template #empty>No hay ocupantes registrados en esta unidad.</template>
+      <template #empty
+        ><EmptyState
+          art="sin-mensajes"
+          title="Sin ocupantes registrados"
+          description="Agrega al propietario, los arrendatarios y quienes viven en la unidad."
+      /></template>
     </DuiTable>
 
     <UnitFormModal v-model="unitFormOpen" :unit="unit" :buildings="buildings" @saved="load" />
-    <OccupantFormModal v-model="occupantFormOpen" :unit-id="unitId" :occupant="editingOccupant" @saved="load" />
+    <OccupantFormModal
+      v-model="occupantFormOpen"
+      :unit-id="unitId"
+      :occupant="editingOccupant"
+      @saved="load"
+    />
     <ConfirmDialog
       v-model="deleteOccupantOpen"
       title="Eliminar ocupante"

@@ -1,14 +1,14 @@
 @import 'tailwindcss';
+/* Brand tokens: blue/mint/coral scales, Plus Jakarta Sans + Inter (branding/README.md) */
+@import '../../../../branding/tokens.css';
+/* droni-kit and neutral grays in the brand palette (shared with apps/web) */
+@import '../../../../branding/droni-kit-theme.css';
 
 /*
  * droni-kit components use their own `dk:`-prefixed classes (imported in main.ts).
  * Tailwind here is only for the app layout.
  */
 @custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --font-sans: var(--dk-font-sans, 'Inter', ui-sans-serif, system-ui, sans-serif);
-}
 
 html,
 body,
@@ -17,8 +17,14 @@ body,
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+  @apply bg-cream text-ink antialiased dark:bg-neutral-950 dark:text-neutral-100;
   font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
 }
 
 /*

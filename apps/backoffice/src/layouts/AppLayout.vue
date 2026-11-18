@@ -14,6 +14,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
 import { useSubscriptionStore } from '@/stores/subscription'
 import { useTheme } from '@/composables/useTheme'
+import BrandLogo from '@/components/BrandLogo.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -27,7 +28,12 @@ const sections: Array<{ label: string; icon: string; to: string; match: string[]
   { label: 'Unidades', icon: 'mdi mdi-door', to: '/unidades', match: ['units', 'unit'] },
   { label: 'Torres', icon: 'mdi mdi-office-building-outline', to: '/torres', match: ['buildings'] },
   { label: 'Personas', icon: 'mdi mdi-account-group-outline', to: '/personas', match: ['members'] },
-  { label: 'Plan', icon: 'mdi mdi-card-account-details-star-outline', to: '/plan', match: ['plan'] },
+  {
+    label: 'Plan',
+    icon: 'mdi mdi-card-account-details-star-outline',
+    to: '/plan',
+    match: ['plan'],
+  },
 ]
 
 const items = computed<NavbarItem[]>(() =>
@@ -35,16 +41,17 @@ const items = computed<NavbarItem[]>(() =>
     // Managed conjuntos (no subscription) have no plan page to show
     .filter((section) => section.to !== '/plan' || subscription.current !== null)
     .map((section) => ({
-    label: section.label,
-    icon: section.icon,
-    to: section.to,
-    active: section.match.includes(String(route.name)),
-  })),
+      label: section.label,
+      icon: section.icon,
+      to: section.to,
+      active: section.match.includes(String(route.name)),
+    })),
 )
 
 const trialChip = computed(() => {
   const days = subscription.trialDaysLeft
-  if (subscription.current?.status !== 'trialing' || subscription.locked || days === null) return null
+  if (subscription.current?.status !== 'trialing' || subscription.locked || days === null)
+    return null
   return `Prueba: ${days} ${days === 1 ? 'día' : 'días'}`
 })
 
@@ -60,18 +67,16 @@ async function switchTenant() {
   <div class="flex min-h-full flex-col">
     <DuiNavbar :items="items" class="sticky top-0 z-30">
       <template #brand>
-        <RouterLink to="/" class="flex items-center gap-2 font-semibold">
-          <span class="text-2xl text-violet-600 dark:text-violet-400" aria-hidden="true">
-            <i class="mdi mdi-office-building-cog" />
-          </span>
-          <span class="hidden sm:inline">AptoPH</span>
+        <RouterLink to="/" class="flex h-8 items-center" aria-label="AptoPH, ir al inicio">
+          <span class="h-8 sm:hidden"><BrandLogo kind="symbol" /></span>
+          <span class="hidden h-8 sm:block"><BrandLogo /></span>
         </RouterLink>
       </template>
       <template #actions>
         <RouterLink
           v-if="trialChip"
           to="/plan"
-          class="hidden rounded-full bg-violet-100 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-200 sm:inline-block dark:bg-violet-500/15 dark:text-violet-200"
+          class="hidden rounded-full bg-coral-50 px-3 py-1 text-xs font-semibold text-coral-700 ring-1 ring-coral-100 hover:bg-coral-100 sm:inline-block dark:bg-coral-400/15 dark:text-coral-300 dark:ring-coral-400/20"
         >
           <i class="mdi mdi-timer-sand" aria-hidden="true" /> {{ trialChip }}
         </RouterLink>
@@ -82,13 +87,15 @@ async function switchTenant() {
           :aria-label="theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro'"
           @click="toggle"
         >
-          <span class="text-lg"><i :class="theme === 'dark' ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night'" /></span>
+          <span class="text-lg"
+            ><i :class="theme === 'dark' ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night'"
+          /></span>
         </DuiButton>
         <DuiDropdown placement="bottom-end" min-width="16rem" aria-label="Menú de usuario">
           <template #trigger>
             <span class="flex items-center gap-2">
               <span
-                class="grid size-8 place-items-center rounded-full bg-violet-100 text-xs font-semibold text-violet-700 dark:bg-violet-500/20 dark:text-violet-200"
+                class="grid size-8 place-items-center rounded-full bg-mint-100 text-xs font-semibold text-mint-800 dark:bg-mint-400/20 dark:text-mint-200"
               >
                 {{ auth.user?.initials ?? '…' }}
               </span>
@@ -100,7 +107,7 @@ async function switchTenant() {
           <div class="px-3 py-2 text-sm">
             <p class="font-medium">{{ auth.user?.fullName }}</p>
             <p class="truncate text-neutral-500 dark:text-neutral-400">{{ auth.user?.email }}</p>
-            <p class="mt-1 text-xs text-violet-600 dark:text-violet-300">{{ roleLabel }}</p>
+            <p class="mt-1 text-xs font-medium text-mint-700 dark:text-mint-300">{{ roleLabel }}</p>
           </div>
           <DuiDropdownSeparator />
           <DuiDropdownItem
@@ -109,7 +116,12 @@ async function switchTenant() {
             label="Cambiar de conjunto"
             @click="switchTenant"
           />
-          <DuiDropdownItem icon="mdi mdi-logout" label="Cerrar sesión" danger @click="auth.logout()" />
+          <DuiDropdownItem
+            icon="mdi mdi-logout"
+            label="Cerrar sesión"
+            danger
+            @click="auth.logout()"
+          />
         </DuiDropdown>
       </template>
     </DuiNavbar>
@@ -128,7 +140,12 @@ async function switchTenant() {
         Tu periodo de prueba terminó. Tu información está a salvo en modo consulta.
       </template>
       <template v-else>
-        Te {{ subscription.trialDaysLeft === 1 ? 'queda 1 día' : `quedan ${subscription.trialDaysLeft} días` }}
+        Te
+        {{
+          subscription.trialDaysLeft === 1
+            ? 'queda 1 día'
+            : `quedan ${subscription.trialDaysLeft} días`
+        }}
         de prueba gratis.
       </template>
       <RouterLink to="/plan" class="ml-1 font-semibold underline">

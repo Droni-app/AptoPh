@@ -1,57 +1,92 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { DuiAlert, DuiButton, DuiCard } from '@dronico/droni-kit'
+import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel } from '@dronico/droni-kit'
+import AuthShell from '@/components/AuthShell.vue'
 import { useAuthStore } from '@/stores/auth'
-import { config } from '@/lib/config'
+import { useTenantStore } from '@/stores/tenant'
+import { ApiError } from '@/lib/http'
+import { errorMessage, fieldErrors } from '@/lib/errors'
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
-const redirecting = ref(false)
-const error = typeof route.query.error === 'string' ? route.query.error : null
+const tenant = useTenantStore()
 
-async function signIn() {
-  redirecting.value = true
-  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
-  await auth.login(redirect)
+const form = ref({ email: '', password: '' })
+const errors = ref<Record<string, string>>({})
+const error = ref<string | null>(null)
+const loading = ref(false)
+
+async function submit() {
+  loading.value = true
+  errors.value = {}
+  error.value = null
+  try {
+    await auth.login(form.value)
+    // Another account may have used this browser: reload its conjuntos
+    tenant.reset()
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+    await router.replace(redirect.startsWith('/') ? redirect : '/')
+  } catch (e) {
+    errors.value = fieldErrors(e)
+    // Wrong credentials (400) and blocked accounts (403) come with their own message
+    error.value =
+      e instanceof ApiError && (e.status === 400 || e.status === 403)
+        ? e.message
+        : Object.keys(errors.value).length
+          ? null
+          : errorMessage(e)
+  } finally {
+    loading.value = false
+  }
 }
-
-const signupUrl = `${config.apiUrl}/registro`
-
-// Coming from the sign-up page: the API session already exists, so the OAuth
-// round trip comes back with a code without showing the login form
-onMounted(() => {
-  if (route.query.auto === '1' && !error) void signIn()
-})
 </script>
 
 <template>
-  <main class="grid min-h-full place-items-center px-4 py-12">
-    <div class="w-full max-w-sm">
-      <div class="mb-8 text-center">
-        <span class="text-5xl text-violet-600 dark:text-violet-400" aria-hidden="true">
-          <i class="mdi mdi-office-building-cog" />
-        </span>
-        <h1 class="mt-2 text-2xl font-semibold tracking-tight">AptoPH</h1>
-        <p class="text-sm text-neutral-500 dark:text-neutral-400">Administración de copropiedades</p>
-      </div>
-      <DuiCard>
-        <div class="flex flex-col gap-4">
-          <p class="text-sm text-neutral-600 dark:text-neutral-300">
-            Panel para administración, consejo, contabilidad y personal del conjunto.
-          </p>
-          <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-          <DuiButton color="primary" block :loading="redirecting" @click="signIn">
-            Iniciar sesión
-          </DuiButton>
-        </div>
-      </DuiCard>
-      <p class="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
-        ¿Tu conjunto aún no usa AptoPH?
-        <a :href="signupUrl" class="font-medium text-violet-600 hover:underline dark:text-violet-400">
-          Prueba gratis 30 días
-        </a>
-      </p>
-    </div>
-  </main>
+  <AuthShell>
+    <h1
+      class="text-[2rem] leading-tight font-extrabold tracking-tight text-brand-700 dark:text-white"
+    >
+      Hola de nuevo
+    </h1>
+    <p class="mt-2 text-neutral-600 dark:text-neutral-300">
+      Entra al panel de tu conjunto: administración, consejo, contabilidad y portería.
+    </p>
+
+    <DuiForm class="mt-8" :loading="loading" @submit="submit">
+      <DuiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</DuiAlert>
+      <DuiLabel title="Correo electrónico" :error="errors.email">
+        <DuiInput
+          v-model="form.email"
+          type="email"
+          autocomplete="username"
+          required
+          autofocus
+          block
+        />
+      </DuiLabel>
+      <DuiLabel title="Contraseña" :error="errors.password">
+        <DuiInput
+          v-model="form.password"
+          type="password"
+          autocomplete="current-password"
+          required
+          block
+        />
+      </DuiLabel>
+      <DuiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
+        Iniciar sesión
+      </DuiButton>
+    </DuiForm>
+
+    <p
+      class="mt-8 rounded-2xl bg-mint-50 px-4 py-3 text-sm text-mint-800 dark:bg-mint-400/10 dark:text-mint-200"
+    >
+      ¿Tu conjunto aún no usa AptoPH?
+      <RouterLink to="/registro" class="font-semibold underline underline-offset-2">
+        Prueba gratis 30 días
+      </RouterLink>
+    </p>
+  </AuthShell>
 </template>

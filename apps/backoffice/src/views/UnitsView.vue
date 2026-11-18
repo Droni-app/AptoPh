@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiBadge, DuiButton, DuiInput, DuiSelect, DuiTable, type TableColumn } from '@dronico/droni-kit'
+import {
+  DuiAlert,
+  DuiBadge,
+  DuiButton,
+  DuiInput,
+  DuiSelect,
+  DuiTable,
+  type TableColumn,
+} from '@dronico/droni-kit'
 import {
   UNIT_STATUSES,
   UNIT_STATUS_LABELS,
@@ -14,6 +22,7 @@ import {
   type UnitType,
 } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import UnitFormModal from '@/components/UnitFormModal.vue'
 import { buildingsApi, unitsApi } from '@/api/backoffice'
 import { errorMessage } from '@/lib/errors'
@@ -30,7 +39,8 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const formOpen = ref(false)
 
-const queryString = (key: string) => (typeof route.query[key] === 'string' ? (route.query[key] as string) : '')
+const queryString = (key: string) =>
+  typeof route.query[key] === 'string' ? (route.query[key] as string) : ''
 
 const filters = ref({
   search: queryString('search'),
@@ -70,7 +80,11 @@ const statusColor: Record<UnitStatus, 'success' | 'neutral' | 'warning'> = {
 
 const pagination = computed(() =>
   result.value
-    ? { page: result.value.metadata.currentPage, perPage: result.value.metadata.perPage, total: result.value.metadata.total }
+    ? {
+        page: result.value.metadata.currentPage,
+        perPage: result.value.metadata.perPage,
+        total: result.value.metadata.total,
+      }
     : undefined,
 )
 
@@ -108,7 +122,9 @@ watch(
 /** Keeps filters in the URL so they survive reloads and back navigation */
 function sync() {
   const query = Object.fromEntries(
-    Object.entries(filters.value).filter(([key, value]) => value !== '' && !(key === 'page' && value === 1)),
+    Object.entries(filters.value).filter(
+      ([key, value]) => value !== '' && !(key === 'page' && value === 1),
+    ),
   )
   router.replace({ query })
   load()
@@ -142,7 +158,12 @@ onMounted(async () => {
   </PageHeader>
 
   <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <DuiInput v-model="filters.search" type="search" placeholder="Buscar por código…" aria-label="Buscar por código" />
+    <DuiInput
+      v-model="filters.search"
+      type="search"
+      placeholder="Buscar por código…"
+      aria-label="Buscar por código"
+    />
     <DuiSelect v-model="filters.buildingId" :options="buildingOptions" aria-label="Torre" />
     <DuiSelect v-model="filters.type" :options="typeOptions" aria-label="Tipo" />
     <DuiSelect v-model="filters.status" :options="statusOptions" aria-label="Estado" />
@@ -158,7 +179,10 @@ onMounted(async () => {
     @paginate="paginate"
   >
     <template #code="{ id, code }">
-      <RouterLink :to="{ name: 'unit', params: { id } }" class="font-medium text-violet-600 hover:underline dark:text-violet-300">
+      <RouterLink
+        :to="{ name: 'unit', params: { id } }"
+        class="font-medium text-brand-600 hover:underline dark:text-brand-200"
+      >
         {{ code }}
       </RouterLink>
     </template>
@@ -169,9 +193,18 @@ onMounted(async () => {
       <span class="tabular-nums">{{ percent(ownershipCoefficient) }}</span>
     </template>
     <template #status="{ status }">
-      <DuiBadge :label="UNIT_STATUS_LABELS[status as UnitStatus]" :color="statusColor[status as UnitStatus]" variant="soft" size="sm" />
+      <DuiBadge
+        :label="UNIT_STATUS_LABELS[status as UnitStatus]"
+        :color="statusColor[status as UnitStatus]"
+        variant="soft"
+        size="sm"
+      />
     </template>
-    <template #empty>No hay unidades que coincidan con los filtros.</template>
+    <template #empty
+      ><EmptyState
+        title="No hay unidades que coincidan"
+        description="Prueba con otros filtros o crea una unidad nueva."
+    /></template>
   </DuiTable>
 
   <UnitFormModal

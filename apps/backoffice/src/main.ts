@@ -1,3 +1,5 @@
+import '@fontsource-variable/inter'
+import '@fontsource-variable/plus-jakarta-sans'
 import '@dronico/droni-kit/dist/droni-kit.css'
 import './assets/main.css'
 

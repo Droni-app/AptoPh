@@ -1,0 +1,113 @@
+/* AptoPH: droni-kit components and neutral grays in the brand palette.
+ * Import after tailwindcss and tokens.css, in apps that use droni-kit (backoffice, web):
+ *   @import '../../../../branding/droni-kit-theme.css';
+ * Requires class-based dark mode (`.dark` on <html>), as droni-kit does. */
+
+/*
+ * Neutrals tinted with the brand blue, so grays, borders and the dark mode surfaces
+ * (navy, like the brand's ink) match the rest of the palette.
+ */
+@theme {
+  --color-neutral-50: #f6f8fb;
+  --color-neutral-100: #edf1f6;
+  --color-neutral-200: #dde3ec;
+  --color-neutral-300: #c2cbd8;
+  --color-neutral-400: #92a0b4;
+  --color-neutral-500: #63748b;
+  --color-neutral-600: #4a607a;
+  --color-neutral-700: #33465d;
+  --color-neutral-800: #1c2b40;
+  --color-neutral-900: #132136;
+  --color-neutral-950: #0b1526;
+}
+
+/*
+ * droni-kit theme: its violet/magenta/cyan defaults replaced by the AptoPH palette.
+ * primary = brand blue, secondary = coral, accent (focus rings) = mint, success = mint.
+ */
+:root {
+  --dk-font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --dk-color-primary-50: #eef3f9;
+  --dk-color-primary-100: #d6e2f0;
+  --dk-color-primary-200: #a9c9e8;
+  --dk-color-primary-300: #7ea6cf;
+  --dk-color-primary-400: #4f78a5;
+  --dk-color-primary-500: #2f5583;
+  --dk-color-primary-600: #1e3a5f;
+  --dk-color-primary-700: #162c49;
+  --dk-color-primary-800: #102038;
+  --dk-color-primary-900: #0c192d;
+  --dk-color-primary-950: #08111f;
+
+  --dk-color-secondary-50: #fff3ee;
+  --dk-color-secondary-100: #ffe0d5;
+  --dk-color-secondary-200: #ffcab8;
+  --dk-color-secondary-300: #ffb39b;
+  --dk-color-secondary-400: #ff8a65;
+  --dk-color-secondary-500: #f06a43;
+  --dk-color-secondary-600: #d9552f;
+  --dk-color-secondary-700: #b5431f;
+  --dk-color-secondary-800: #8f3519;
+  --dk-color-secondary-900: #6e2a15;
+  --dk-color-secondary-950: #3d160a;
+
+  --dk-color-accent-300: #6ad8bd;
+  --dk-color-accent-400: #3cc8a8;
+  --dk-color-accent-500: #27ad8f;
+  --dk-color-accent-600: #1f9e84;
+  --dk-color-accent-700: #187a66;
+
+  --dk-color-success-50: #ebfaf6;
+  --dk-color-success-100: #cdf3e9;
+  --dk-color-success-200: #9de7d4;
+  --dk-color-success-300: #6ad8bd;
+  --dk-color-success-400: #3cc8a8;
+  --dk-color-success-500: #27ad8f;
+  --dk-color-success-600: #1f9e84;
+  --dk-color-success-700: #187a66;
+  --dk-color-success-800: #145f50;
+  --dk-color-success-900: #0f4a3e;
+  --dk-color-success-950: #08291f;
+
+  --dk-color-neutral-50: #f6f8fb;
+  --dk-color-neutral-100: #edf1f6;
+  --dk-color-neutral-200: #dde3ec;
+  --dk-color-neutral-300: #c2cbd8;
+  --dk-color-neutral-400: #92a0b4;
+  --dk-color-neutral-500: #63748b;
+  --dk-color-neutral-600: #4a607a;
+  --dk-color-neutral-700: #33465d;
+  --dk-color-neutral-800: #1c2b40;
+  --dk-color-neutral-900: #132136;
+  --dk-color-neutral-950: #0b1526;
+
+  /* Friendlier, rounder corners, as in the brand illustrations */
+  --dk-radius-md: 0.5rem;
+  --dk-radius-lg: 0.75rem;
+  --dk-radius-xl: 1.25rem;
+
+  --dk-scrollbar-thumb-hover: #4f78a5;
+  --dk-scrollbar-thumb-hover-to: #3cc8a8;
+}
+
+/* On the navy surfaces the brand blue needs to step up to stay visible */
+.dark {
+  --dk-color-primary-300: #a9c9e8;
+  --dk-color-primary-400: #7ea6cf;
+  --dk-color-primary-500: #4f78a5;
+  --dk-color-primary-600: #3f6895;
+  --dk-scrollbar-thumb-hover: #7ea6cf;
+  --dk-scrollbar-thumb-hover-to: #3cc8a8;
+}
+
+/*
+ * In dark mode droni-kit adds a neon glow with hard-coded violet/magenta fallbacks.
+ * Give each glow the brand color instead.
+ */
+.dark [class*='shadow-glow-primary'] {
+  --tw-shadow-color: rgb(79 120 165 / 0.45);
+}
+.dark [class*='shadow-glow-secondary'] {
+  --tw-shadow-color: rgb(255 138 101 / 0.4);
+}

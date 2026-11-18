@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { DuiAlert, DuiBadge, DuiTable, DuiTabs, type TableColumn } from '@dronico/droni-kit'
-import { ENROLLMENT_STATUS_LABELS, ROLE_LABELS, type ApiPaginated, type Member } from '@aptoph/shared'
+import {
+  ENROLLMENT_STATUS_LABELS,
+  ROLE_LABELS,
+  type ApiPaginated,
+  type Member,
+} from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import { membersApi } from '@/api/backoffice'
 import { errorMessage } from '@/lib/errors'
 
@@ -26,11 +32,20 @@ const columns: TableColumn[] = [
   { name: 'status', label: 'Estado', classes: 'w-32' },
 ]
 
-const statusColor = { active: 'success', invited: 'warning', suspended: 'danger', revoked: 'neutral' } as const
+const statusColor = {
+  active: 'success',
+  invited: 'warning',
+  suspended: 'danger',
+  revoked: 'neutral',
+} as const
 
 const pagination = computed(() =>
   result.value
-    ? { page: result.value.metadata.currentPage, perPage: result.value.metadata.perPage, total: result.value.metadata.total }
+    ? {
+        page: result.value.metadata.currentPage,
+        perPage: result.value.metadata.perPage,
+        total: result.value.metadata.total,
+      }
     : undefined,
 )
 
@@ -92,6 +107,6 @@ onMounted(load)
         size="sm"
       />
     </template>
-    <template #empty>No hay personas en este grupo.</template>
+    <template #empty><EmptyState title="No hay personas en este grupo" /></template>
   </DuiTable>
 </template>
