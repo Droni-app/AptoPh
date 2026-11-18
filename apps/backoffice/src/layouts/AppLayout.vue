@@ -15,6 +15,7 @@ import { useTenantStore } from '@/stores/tenant'
 import { useSubscriptionStore } from '@/stores/subscription'
 import { useTheme } from '@/composables/useTheme'
 import BrandLogo from '@/components/BrandLogo.vue'
+import EmailVerificationNotice from '@/components/account/EmailVerificationNotice.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -111,6 +112,16 @@ async function switchTenant() {
           </div>
           <DuiDropdownSeparator />
           <DuiDropdownItem
+            icon="mdi mdi-account-outline"
+            label="Mi perfil"
+            @click="router.push({ name: 'profile' })"
+          />
+          <DuiDropdownItem
+            icon="mdi mdi-cog-outline"
+            label="Configuración del conjunto"
+            @click="router.push({ name: 'settings' })"
+          />
+          <DuiDropdownItem
             v-if="tenant.backofficeTenants.length > 1"
             icon="mdi mdi-swap-horizontal"
             label="Cambiar de conjunto"
@@ -152,6 +163,8 @@ async function switchTenant() {
         {{ subscription.locked ? 'Activar mi plan' : 'Elegir plan' }}
       </RouterLink>
     </div>
+
+    <EmailVerificationNotice v-if="route.name !== 'profile'" compact />
 
     <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
       <RouterView :key="tenant.currentId ?? ''" />

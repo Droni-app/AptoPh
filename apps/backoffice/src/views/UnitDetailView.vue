@@ -23,6 +23,7 @@ import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import UnitFormModal from '@/components/UnitFormModal.vue'
 import OccupantFormModal from '@/components/OccupantFormModal.vue'
+import MemberFormModal from '@/components/MemberFormModal.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { buildingsApi, occupantsApi, unitsApi } from '@/api/backoffice'
 import { errorMessage } from '@/lib/errors'
@@ -44,6 +45,8 @@ const occupantFormOpen = ref(false)
 const editingOccupant = ref<UnitOccupant | null>(null)
 const deletingOccupant = ref<UnitOccupant | null>(null)
 const deleteOccupantOpen = ref(false)
+const inviteOpen = ref(false)
+const invitingOccupant = ref<UnitOccupant | null>(null)
 const busy = ref(false)
 
 const occupantColumns: TableColumn[] = [
@@ -51,7 +54,7 @@ const occupantColumns: TableColumn[] = [
   { name: 'relationship', label: 'Vínculo' },
   { name: 'contact', label: 'Contacto' },
   { name: 'period', label: 'Vigencia' },
-  ...(tenant.canManage ? [{ name: 'actions', label: '', classes: 'w-28 text-right' }] : []),
+  ...(tenant.canManage ? [{ name: 'actions', label: '', classes: 'w-36 text-right' }] : []),
 ]
 
 async function load() {
@@ -66,6 +69,12 @@ async function load() {
 function editOccupant(occupant: UnitOccupant | null) {
   editingOccupant.value = occupant
   occupantFormOpen.value = true
+}
+
+/** Gives the occupant access to the residents portal, linked to this unit */
+function inviteOccupant(occupant: UnitOccupant) {
+  invitingOccupant.value = occupant
+  inviteOpen.value = true
 }
 
 function askDeleteOccupant(occupant: UnitOccupant) {
@@ -215,15 +224,33 @@ onMounted(() => {
       <template #relationship="{ relationship }">
         {{ OCCUPANT_RELATIONSHIP_LABELS[relationship as UnitOccupant['relationship']] }}
       </template>
-      <template #contact="{ email, phone }">
+      <template #contact="{ email, phone, userId }">
         <span class="block">{{ email ?? '' }}</span>
         <span class="block text-neutral-500">{{ phone ?? '' }}</span>
+        <DuiBadge
+          v-if="userId"
+          label="Cuenta vinculada"
+          size="xs"
+          color="success"
+          variant="soft"
+          class="mt-1"
+        />
       </template>
       <template #period="{ startsOn, endsOn }">
         {{ formatDate(startsOn) ?? '—' }} → {{ formatDate(endsOn) ?? 'actual' }}
       </template>
       <template #actions="row">
         <div class="flex justify-end gap-1">
+          <DuiButton
+            v-if="!row.userId"
+            variant="ghost"
+            size="sm"
+            :title="`Invitar a ${row.fullName} al portal de residentes`"
+            :aria-label="`Invitar a ${row.fullName} al portal de residentes`"
+            @click="inviteOccupant(row as UnitOccupant)"
+          >
+            <span class="mdi mdi-email-plus-outline" />
+          </DuiButton>
           <DuiButton
             variant="ghost"
             size="sm"
@@ -256,6 +283,20 @@ onMounted(() => {
       v-model="occupantFormOpen"
       :unit-id="unitId"
       :occupant="editingOccupant"
+      @saved="load"
+    />
+    <MemberFormModal
+      v-model="inviteOpen"
+      :preset="
+        invitingOccupant
+          ? {
+              email: invitingOccupant.email ?? undefined,
+              fullName: invitingOccupant.fullName,
+              role: 'resident',
+              occupantId: invitingOccupant.id,
+            }
+          : undefined
+      "
       @saved="load"
     />
     <ConfirmDialog

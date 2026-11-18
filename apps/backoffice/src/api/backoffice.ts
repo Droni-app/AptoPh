@@ -6,8 +6,14 @@ import type {
   ApiPaginated,
   Building,
   DashboardSummary,
+  InviteMemberInput,
   Member,
+  MemberStatusChange,
+  EnrollmentStatus,
+  TenantSettings,
+  TenantSettingsInput,
   Unit,
+  UpdateMemberInput,
   UnitOccupant,
   UnitStatus,
   UnitType,
@@ -55,7 +61,8 @@ export const buildingsApi = {
 export const unitsApi = {
   list: (filters: UnitFilters) => api<ApiPaginated<Unit>>('/api/v1/units', { query: filters }),
   show: (id: string) => api<ApiItem<Unit>>(`/api/v1/units/${id}`),
-  create: (input: UnitInput) => api<ApiItem<Unit>>('/api/v1/units', { method: 'POST', body: input }),
+  create: (input: UnitInput) =>
+    api<ApiItem<Unit>>('/api/v1/units', { method: 'POST', body: input }),
   update: (id: string, input: Partial<UnitInput>) =>
     api<ApiItem<Unit>>(`/api/v1/units/${id}`, { method: 'PATCH', body: input }),
   remove: (id: string) => api<void>(`/api/v1/units/${id}`, { method: 'DELETE' }),
@@ -63,7 +70,10 @@ export const unitsApi = {
 
 export const occupantsApi = {
   create: (unitId: string, input: OccupantInput) =>
-    api<ApiItem<UnitOccupant>>(`/api/v1/units/${unitId}/occupants`, { method: 'POST', body: input }),
+    api<ApiItem<UnitOccupant>>(`/api/v1/units/${unitId}/occupants`, {
+      method: 'POST',
+      body: input,
+    }),
   update: (unitId: string, id: string, input: OccupantInput) =>
     api<ApiItem<UnitOccupant>>(`/api/v1/units/${unitId}/occupants/${id}`, {
       method: 'PATCH',
@@ -73,9 +83,30 @@ export const occupantsApi = {
     api<void>(`/api/v1/units/${unitId}/occupants/${id}`, { method: 'DELETE' }),
 }
 
+export type MemberFilters = {
+  group?: 'staff' | 'residents'
+  status?: EnrollmentStatus | ''
+  search?: string
+  page?: number
+  perPage?: number
+}
+
 export const membersApi = {
-  list: (query: { group?: 'staff' | 'residents'; page?: number; perPage?: number }) =>
-    api<ApiPaginated<Member>>('/api/v1/members', { query }),
+  list: (query: MemberFilters) => api<ApiPaginated<Member>>('/api/v1/members', { query }),
+  invite: (input: InviteMemberInput) =>
+    api<ApiItem<Member>>('/api/v1/members', { method: 'POST', body: input }),
+  update: (id: string, input: UpdateMemberInput) =>
+    api<ApiItem<Member>>(`/api/v1/members/${id}`, { method: 'PATCH', body: input }),
+  changeStatus: (id: string, status: MemberStatusChange) =>
+    api<ApiItem<Member>>(`/api/v1/members/${id}/status`, { method: 'PATCH', body: { status } }),
+  resendInvitation: (id: string) =>
+    api<ApiItem<Member>>(`/api/v1/members/${id}/invitation`, { method: 'POST' }),
+}
+
+export const settingsApi = {
+  tenant: () => api<ApiItem<TenantSettings>>('/api/v1/settings/tenant'),
+  updateTenant: (input: TenantSettingsInput) =>
+    api<ApiItem<TenantSettings>>('/api/v1/settings/tenant', { method: 'PATCH', body: input }),
 }
 
 export const subscriptionApi = {

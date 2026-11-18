@@ -75,6 +75,14 @@ async function submit() {
           block
         />
       </DuiLabel>
+      <p class="-mt-1 text-right text-sm">
+        <RouterLink
+          to="/recuperar-contrasena"
+          class="font-semibold text-brand-700 underline-offset-2 hover:underline dark:text-brand-200"
+        >
+          ¿Olvidaste tu contraseña?
+        </RouterLink>
+      </p>
       <DuiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
         Iniciar sesión
       </DuiButton>
