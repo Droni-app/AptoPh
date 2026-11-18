@@ -24,6 +24,7 @@ import {
 } from '@aptoph/shared'
 import BalanceBadge from '@/components/BalanceBadge.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import HouseholdMemberModal from '@/components/HouseholdMemberModal.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import PetFormModal from '@/components/PetFormModal.vue'
@@ -57,7 +58,11 @@ const vehicleIcons: Record<string, string> = {
   bicycle: 'mdi mdi-bicycle',
   other: 'mdi mdi-car-side',
 }
-const petIcons: Record<string, string> = { dog: 'mdi mdi-dog', cat: 'mdi mdi-cat', other: 'mdi mdi-paw' }
+const petIcons: Record<string, string> = {
+  dog: 'mdi mdi-dog',
+  cat: 'mdi mdi-cat',
+  other: 'mdi mdi-paw',
+}
 
 async function load() {
   error.value = null
@@ -94,7 +99,13 @@ function editMember(member: HouseholdMember | null) {
   memberModal.value = true
 }
 
-type Removal = { title: string; message: string; confirmLabel: string; success: string; action: () => Promise<unknown> }
+type Removal = {
+  title: string
+  message: string
+  confirmLabel: string
+  success: string
+  action: () => Promise<unknown>
+}
 const removal = ref<Removal | null>(null)
 const removalOpen = ref(false)
 const { saving: removing, run } = useSubmit()
@@ -141,14 +152,16 @@ const removeMember = (member: HouseholdMember) =>
 <template>
   <RouterLink
     to="/"
-    class="mb-2 inline-flex items-center gap-1 text-sm text-navy-500 hover:text-teal-700 hover:underline dark:text-navy-300 dark:hover:text-teal-300"
+    class="mb-2 inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-mint-700 hover:underline dark:text-neutral-300 dark:hover:text-mint-300"
   >
     <span aria-hidden="true"><i class="mdi mdi-arrow-left" /></span> Inicio
   </RouterLink>
 
   <DuiCard v-if="notFound">
     <div class="flex flex-col items-center gap-2 py-6 text-center">
-      <span class="text-4xl text-navy-300" aria-hidden="true"><i class="mdi mdi-door-closed-lock" /></span>
+      <span class="text-4xl text-neutral-300" aria-hidden="true"
+        ><i class="mdi mdi-door-closed-lock"
+      /></span>
       <p class="font-medium">Esta unidad no está asociada a tu cuenta</p>
       <DuiButton class="mt-2" color="primary" to="/">Ver mis unidades</DuiButton>
     </div>
@@ -162,7 +175,11 @@ const removeMember = (member: HouseholdMember) =>
   <template v-else-if="unit">
     <PageHeader
       :title="`${UNIT_TYPE_LABELS[unit.type]} ${unit.code}`"
-      :subtitle="[unit.building?.name, OCCUPANT_RELATIONSHIP_LABELS[unit.relationship]].filter(Boolean).join(' · ')"
+      :subtitle="
+        [unit.building?.name, OCCUPANT_RELATIONSHIP_LABELS[unit.relationship]]
+          .filter(Boolean)
+          .join(' · ')
+      "
     >
       <template #actions>
         <BalanceBadge :balance="unit.balance" />
@@ -172,20 +189,22 @@ const removeMember = (member: HouseholdMember) =>
     <DuiCard class="mb-8">
       <dl class="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
         <div>
-          <dt class="text-navy-500 dark:text-navy-300">Estado</dt>
+          <dt class="text-neutral-500 dark:text-neutral-300">Estado</dt>
           <dd class="mt-1 font-medium">{{ UNIT_STATUS_LABELS[unit.status] }}</dd>
         </div>
         <div>
-          <dt class="text-navy-500 dark:text-navy-300">Piso</dt>
+          <dt class="text-neutral-500 dark:text-neutral-300">Piso</dt>
           <dd class="mt-1 font-medium">{{ unit.floor ?? '—' }}</dd>
         </div>
         <div>
-          <dt class="text-navy-500 dark:text-navy-300">Área privada</dt>
+          <dt class="text-neutral-500 dark:text-neutral-300">Área privada</dt>
           <dd class="mt-1 font-medium tabular-nums">{{ formatArea(unit.privateArea) }}</dd>
         </div>
         <div>
-          <dt class="text-navy-500 dark:text-navy-300">Coeficiente de copropiedad</dt>
-          <dd class="mt-1 font-medium tabular-nums">{{ formatCoefficient(unit.ownershipCoefficient) }}</dd>
+          <dt class="text-neutral-500 dark:text-neutral-300">Coeficiente de copropiedad</dt>
+          <dd class="mt-1 font-medium tabular-nums">
+            {{ formatCoefficient(unit.ownershipCoefficient) }}
+          </dd>
         </div>
       </dl>
     </DuiCard>
@@ -194,19 +213,23 @@ const removeMember = (member: HouseholdMember) =>
     <section aria-labelledby="account-title" class="mb-8">
       <h2 id="account-title" class="mb-3 text-lg font-semibold">Estado de cuenta</h2>
       <div class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-        <div class="col-span-2 rounded-2xl bg-navy-900 p-4 text-white sm:col-span-1 sm:p-5">
-          <p class="text-xs tracking-wide text-navy-200 uppercase">Saldo pendiente</p>
-          <p class="font-display text-2xl font-semibold tabular-nums">{{ money(unit.balance.pending) }}</p>
+        <div class="col-span-2 rounded-2xl bg-neutral-900 p-4 text-white sm:col-span-1 sm:p-5">
+          <p class="text-xs tracking-wide text-neutral-200 uppercase">Saldo pendiente</p>
+          <p class="font-display text-2xl font-semibold tabular-nums">
+            {{ money(unit.balance.pending) }}
+          </p>
         </div>
         <div
           class="rounded-2xl border p-4 sm:p-5"
           :class="
             isZero(unit.balance.overdue)
-              ? 'border-navy-100 bg-white dark:border-white/10 dark:bg-navy-900'
+              ? 'border-neutral-100 bg-white dark:border-white/10 dark:bg-neutral-900'
               : 'border-red-200 bg-red-50 dark:border-red-400/30 dark:bg-red-500/10'
           "
         >
-          <p class="text-xs tracking-wide text-navy-500 uppercase dark:text-navy-300">Vencido</p>
+          <p class="text-xs tracking-wide text-neutral-500 uppercase dark:text-neutral-300">
+            Vencido
+          </p>
           <p
             class="font-display text-2xl font-semibold tabular-nums"
             :class="{ 'text-red-700 dark:text-red-300': !isZero(unit.balance.overdue) }"
@@ -214,40 +237,69 @@ const removeMember = (member: HouseholdMember) =>
             {{ money(unit.balance.overdue) }}
           </p>
         </div>
-        <div class="rounded-2xl border border-navy-100 bg-white p-4 sm:p-5 dark:border-white/10 dark:bg-navy-900">
-          <p class="text-xs tracking-wide text-navy-500 uppercase dark:text-navy-300">Cobros abiertos</p>
-          <p class="font-display text-2xl font-semibold tabular-nums">{{ unit.balance.openCharges }}</p>
+        <div
+          class="rounded-2xl border border-neutral-100 bg-white p-4 sm:p-5 dark:border-white/10 dark:bg-neutral-900"
+        >
+          <p class="text-xs tracking-wide text-neutral-500 uppercase dark:text-neutral-300">
+            Cobros abiertos
+          </p>
+          <p class="font-display text-2xl font-semibold tabular-nums">
+            {{ unit.balance.openCharges }}
+          </p>
         </div>
       </div>
 
-      <DuiCard v-if="unit.openCharges.length === 0">
-        <p class="flex items-center gap-2 text-sm">
-          <span class="text-xl text-teal-600" aria-hidden="true"><i class="mdi mdi-check-circle-outline" /></span>
-          Estás al día. No tienes cobros pendientes en esta unidad.
-        </p>
-      </DuiCard>
+      <EmptyState
+        v-if="unit.openCharges.length === 0"
+        class="rounded-2xl border border-neutral-100 bg-white dark:border-white/10 dark:bg-neutral-900"
+        art="al-dia"
+        title="Estás al día"
+        description="No tienes cobros pendientes en esta unidad."
+      />
 
       <ul
         v-else
-        class="divide-y divide-navy-100 overflow-hidden rounded-2xl border border-navy-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-navy-900"
+        class="divide-y divide-neutral-100 overflow-hidden rounded-2xl border border-neutral-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-neutral-900"
       >
-        <li v-for="charge in unit.openCharges" :key="charge.id" class="flex flex-wrap items-center justify-between gap-3 p-4">
+        <li
+          v-for="charge in unit.openCharges"
+          :key="charge.id"
+          class="flex flex-wrap items-center justify-between gap-3 p-4"
+        >
           <div class="min-w-0">
             <p class="font-medium">{{ charge.concept }} · {{ formatPeriod(charge.period) }}</p>
-            <p v-if="charge.description" class="text-sm text-navy-500 dark:text-navy-300">{{ charge.description }}</p>
-            <p class="mt-1 text-xs" :class="charge.isOverdue ? 'font-medium text-red-700 dark:text-red-300' : 'text-navy-500 dark:text-navy-300'">
+            <p v-if="charge.description" class="text-sm text-neutral-500 dark:text-neutral-300">
+              {{ charge.description }}
+            </p>
+            <p
+              class="mt-1 text-xs"
+              :class="
+                charge.isOverdue
+                  ? 'font-medium text-red-700 dark:text-red-300'
+                  : 'text-neutral-500 dark:text-neutral-300'
+              "
+            >
               {{ charge.isOverdue ? 'Venció el' : 'Vence el' }} {{ formatDate(charge.dueOn) }}
             </p>
           </div>
           <div class="text-right">
             <p class="font-semibold tabular-nums">{{ money(charge.balance) }}</p>
-            <p v-if="charge.balance !== charge.amount" class="text-xs text-navy-500 tabular-nums dark:text-navy-300">
+            <p
+              v-if="charge.balance !== charge.amount"
+              class="text-xs text-neutral-500 tabular-nums dark:text-neutral-300"
+            >
               de {{ money(charge.amount) }}
             </p>
             <DuiBadge
               class="mt-1"
               :label="charge.isOverdue ? 'Vencido' : CHARGE_STATUS_LABELS[charge.status]"
-              :color="charge.isOverdue ? 'danger' : charge.status === 'partially_paid' ? 'primary' : 'warning'"
+              :color="
+                charge.isOverdue
+                  ? 'danger'
+                  : charge.status === 'partially_paid'
+                    ? 'primary'
+                    : 'warning'
+              "
               variant="soft"
               size="xs"
             />
@@ -261,34 +313,74 @@ const removeMember = (member: HouseholdMember) =>
       <section aria-labelledby="household-title" class="lg:row-span-2">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="household-title" class="text-lg font-semibold">Quiénes viven aquí</h2>
-          <DuiButton v-if="unit.canManageHousehold" size="sm" variant="outline" @click="editMember(null)">
-            <span class="mr-1" aria-hidden="true"><i class="mdi mdi-account-plus-outline" /></span>Agregar
+          <DuiButton
+            v-if="unit.canManageHousehold"
+            size="sm"
+            variant="outline"
+            @click="editMember(null)"
+          >
+            <span class="mr-1" aria-hidden="true"><i class="mdi mdi-account-plus-outline" /></span
+            >Agregar
           </DuiButton>
         </div>
-        <ul class="divide-y divide-navy-100 overflow-hidden rounded-2xl border border-navy-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-navy-900">
+        <ul
+          class="divide-y divide-neutral-100 overflow-hidden rounded-2xl border border-neutral-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-neutral-900"
+        >
           <li v-for="person in unit.household" :key="person.id" class="flex items-start gap-3 p-4">
-            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-navy-100 text-sm font-semibold text-navy-700 dark:bg-white/10 dark:text-navy-100">
+            <span
+              class="grid size-9 shrink-0 place-items-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-700 dark:bg-white/10 dark:text-neutral-100"
+            >
               {{ person.fullName.charAt(0).toUpperCase() }}
             </span>
             <div class="min-w-0 flex-1">
               <p class="font-medium">
                 {{ person.fullName }}
-                <span v-if="person.isMe" class="text-sm font-normal text-navy-500 dark:text-navy-300">(tú)</span>
+                <span
+                  v-if="person.isMe"
+                  class="text-sm font-normal text-neutral-500 dark:text-neutral-300"
+                  >(tú)</span
+                >
               </p>
-              <p class="text-sm text-navy-500 dark:text-navy-300">
+              <p class="text-sm text-neutral-500 dark:text-neutral-300">
                 {{ OCCUPANT_RELATIONSHIP_LABELS[person.relationship] }}
                 <template v-if="person.phone"> · {{ person.phone }}</template>
               </p>
-              <span v-if="person.isPrimaryContact || person.isBillingResponsible" class="mt-1 flex flex-wrap gap-1">
-                <DuiBadge v-if="person.isPrimaryContact" label="Contacto principal" size="xs" color="primary" variant="soft" />
-                <DuiBadge v-if="person.isBillingResponsible" label="Responsable de pagos" size="xs" color="secondary" variant="soft" />
+              <span
+                v-if="person.isPrimaryContact || person.isBillingResponsible"
+                class="mt-1 flex flex-wrap gap-1"
+              >
+                <DuiBadge
+                  v-if="person.isPrimaryContact"
+                  label="Contacto principal"
+                  size="xs"
+                  color="primary"
+                  variant="soft"
+                />
+                <DuiBadge
+                  v-if="person.isBillingResponsible"
+                  label="Responsable de pagos"
+                  size="xs"
+                  color="secondary"
+                  variant="soft"
+                />
               </span>
             </div>
             <div v-if="person.editable" class="flex shrink-0 gap-1">
-              <DuiButton variant="ghost" size="sm" :aria-label="`Editar a ${person.fullName}`" @click="editMember(person)">
+              <DuiButton
+                variant="ghost"
+                size="sm"
+                :aria-label="`Editar a ${person.fullName}`"
+                @click="editMember(person)"
+              >
                 <span aria-hidden="true"><i class="mdi mdi-pencil-outline" /></span>
               </DuiButton>
-              <DuiButton variant="ghost" size="sm" color="danger" :aria-label="`Retirar a ${person.fullName}`" @click="removeMember(person)">
+              <DuiButton
+                variant="ghost"
+                size="sm"
+                color="danger"
+                :aria-label="`Retirar a ${person.fullName}`"
+                @click="removeMember(person)"
+              >
                 <span aria-hidden="true"><i class="mdi mdi-account-remove-outline" /></span>
               </DuiButton>
             </div>
@@ -304,28 +396,49 @@ const removeMember = (member: HouseholdMember) =>
             <span class="mr-1" aria-hidden="true"><i class="mdi mdi-plus" /></span>Registrar
           </DuiButton>
         </div>
-        <p v-if="unit.vehicles.length === 0" class="rounded-2xl border border-dashed border-navy-200 p-4 text-sm text-navy-500 dark:border-white/10 dark:text-navy-300">
+        <p
+          v-if="unit.vehicles.length === 0"
+          class="rounded-2xl border border-dashed border-neutral-200 p-4 text-sm text-neutral-500 dark:border-white/10 dark:text-neutral-300"
+        >
           No hay vehículos registrados. Regístralos para que portería los reconozca.
         </p>
         <ul v-else class="grid gap-3 sm:grid-cols-2">
           <li
             v-for="vehicle in unit.vehicles"
             :key="vehicle.id"
-            class="flex items-center gap-3 rounded-2xl border border-navy-100 bg-white p-4 dark:border-white/10 dark:bg-navy-900"
+            class="flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white p-4 dark:border-white/10 dark:bg-neutral-900"
           >
-            <span class="text-2xl text-teal-700 dark:text-teal-300" aria-hidden="true"><i :class="vehicleIcons[vehicle.type]" /></span>
+            <span class="text-2xl text-mint-700 dark:text-mint-300" aria-hidden="true"
+              ><i :class="vehicleIcons[vehicle.type]"
+            /></span>
             <div class="min-w-0 flex-1">
               <p class="font-mono font-semibold tracking-wider">{{ vehicle.plate }}</p>
-              <p class="truncate text-sm text-navy-500 dark:text-navy-300">
-                {{ [VEHICLE_TYPE_LABELS[vehicle.type], vehicle.brand, vehicle.model, vehicle.color].filter(Boolean).join(' · ') }}
+              <p class="truncate text-sm text-neutral-500 dark:text-neutral-300">
+                {{
+                  [VEHICLE_TYPE_LABELS[vehicle.type], vehicle.brand, vehicle.model, vehicle.color]
+                    .filter(Boolean)
+                    .join(' · ')
+                }}
               </p>
             </div>
             <DuiDropdown placement="bottom-end" :aria-label="`Acciones de ${vehicle.plate}`">
               <template #trigger>
-                <span class="grid size-8 place-items-center rounded-lg text-navy-500 hover:bg-navy-50 dark:hover:bg-white/10"><i class="mdi mdi-dots-vertical" /></span>
+                <span
+                  class="grid size-8 place-items-center rounded-lg text-neutral-500 hover:bg-neutral-50 dark:hover:bg-white/10"
+                  ><i class="mdi mdi-dots-vertical"
+                /></span>
               </template>
-              <DuiDropdownItem icon="mdi mdi-pencil-outline" label="Editar" @click="editVehicle(vehicle)" />
-              <DuiDropdownItem icon="mdi mdi-trash-can-outline" label="Eliminar" danger @click="removeVehicle(vehicle)" />
+              <DuiDropdownItem
+                icon="mdi mdi-pencil-outline"
+                label="Editar"
+                @click="editVehicle(vehicle)"
+              />
+              <DuiDropdownItem
+                icon="mdi mdi-trash-can-outline"
+                label="Eliminar"
+                danger
+                @click="removeVehicle(vehicle)"
+              />
             </DuiDropdown>
           </li>
         </ul>
@@ -339,38 +452,68 @@ const removeMember = (member: HouseholdMember) =>
             <span class="mr-1" aria-hidden="true"><i class="mdi mdi-plus" /></span>Registrar
           </DuiButton>
         </div>
-        <p v-if="unit.pets.length === 0" class="rounded-2xl border border-dashed border-navy-200 p-4 text-sm text-navy-500 dark:border-white/10 dark:text-navy-300">
+        <p
+          v-if="unit.pets.length === 0"
+          class="rounded-2xl border border-dashed border-neutral-200 p-4 text-sm text-neutral-500 dark:border-white/10 dark:text-neutral-300"
+        >
           No hay mascotas registradas.
         </p>
         <ul v-else class="grid gap-3 sm:grid-cols-2">
           <li
             v-for="pet in unit.pets"
             :key="pet.id"
-            class="flex items-center gap-3 rounded-2xl border border-navy-100 bg-white p-4 dark:border-white/10 dark:bg-navy-900"
+            class="flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white p-4 dark:border-white/10 dark:bg-neutral-900"
           >
-            <span class="text-2xl text-teal-700 dark:text-teal-300" aria-hidden="true"><i :class="petIcons[pet.species]" /></span>
+            <span class="text-2xl text-mint-700 dark:text-mint-300" aria-hidden="true"
+              ><i :class="petIcons[pet.species]"
+            /></span>
             <div class="min-w-0 flex-1">
               <p class="font-medium">{{ pet.name }}</p>
-              <p class="truncate text-sm text-navy-500 dark:text-navy-300">
+              <p class="truncate text-sm text-neutral-500 dark:text-neutral-300">
                 {{ [PET_SPECIES_LABELS[pet.species], pet.breed].filter(Boolean).join(' · ') }}
               </p>
-              <DuiBadge v-if="pet.isPotentiallyDangerous" class="mt-1" label="Potencialmente peligrosa" size="xs" color="warning" variant="soft" />
+              <DuiBadge
+                v-if="pet.isPotentiallyDangerous"
+                class="mt-1"
+                label="Potencialmente peligrosa"
+                size="xs"
+                color="warning"
+                variant="soft"
+              />
             </div>
             <DuiDropdown placement="bottom-end" :aria-label="`Acciones de ${pet.name}`">
               <template #trigger>
-                <span class="grid size-8 place-items-center rounded-lg text-navy-500 hover:bg-navy-50 dark:hover:bg-white/10"><i class="mdi mdi-dots-vertical" /></span>
+                <span
+                  class="grid size-8 place-items-center rounded-lg text-neutral-500 hover:bg-neutral-50 dark:hover:bg-white/10"
+                  ><i class="mdi mdi-dots-vertical"
+                /></span>
               </template>
               <DuiDropdownItem icon="mdi mdi-pencil-outline" label="Editar" @click="editPet(pet)" />
-              <DuiDropdownItem icon="mdi mdi-trash-can-outline" label="Eliminar" danger @click="removePet(pet)" />
+              <DuiDropdownItem
+                icon="mdi mdi-trash-can-outline"
+                label="Eliminar"
+                danger
+                @click="removePet(pet)"
+              />
             </DuiDropdown>
           </li>
         </ul>
       </section>
     </div>
 
-    <VehicleFormModal v-model="vehicleModal" :unit-id="unit.id" :vehicle="editingVehicle" @saved="load" />
+    <VehicleFormModal
+      v-model="vehicleModal"
+      :unit-id="unit.id"
+      :vehicle="editingVehicle"
+      @saved="load"
+    />
     <PetFormModal v-model="petModal" :unit-id="unit.id" :pet="editingPet" @saved="load" />
-    <HouseholdMemberModal v-model="memberModal" :unit-id="unit.id" :member="editingMember" @saved="load" />
+    <HouseholdMemberModal
+      v-model="memberModal"
+      :unit-id="unit.id"
+      :member="editingMember"
+      @saved="load"
+    />
     <ConfirmDialog
       v-model="removalOpen"
       :title="removal?.title ?? ''"
@@ -380,9 +523,13 @@ const removeMember = (member: HouseholdMember) =>
       @confirm="confirmRemove"
     />
 
-    <p class="mt-8 text-xs text-navy-500 dark:text-navy-300">
+    <p class="mt-8 text-xs text-neutral-500 dark:text-neutral-300">
       ¿Los datos de la unidad, el propietario o el estado de cuenta no son correctos?
-      <RouterLink :to="{ name: 'tickets', query: { nueva: '1', unidad: unit.id } }" class="font-medium text-teal-700 underline dark:text-teal-300">Radica una PQRS</RouterLink>
+      <RouterLink
+        :to="{ name: 'tickets', query: { nueva: '1', unidad: unit.id } }"
+        class="font-medium text-mint-700 underline dark:text-mint-300"
+        >Radica una PQRS</RouterLink
+      >
       y la administración los revisará.
     </p>
   </template>

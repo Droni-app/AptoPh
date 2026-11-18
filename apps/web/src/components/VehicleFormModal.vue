@@ -1,7 +1,20 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect } from '@dronico/droni-kit'
-import { VEHICLE_TYPES, VEHICLE_TYPE_LABELS, type ResidentVehicle, type VehicleType } from '@aptoph/shared'
+import {
+  DuiAlert,
+  DuiButton,
+  DuiForm,
+  DuiInput,
+  DuiLabel,
+  DuiModal,
+  DuiSelect,
+} from '@dronico/droni-kit'
+import {
+  VEHICLE_TYPES,
+  VEHICLE_TYPE_LABELS,
+  type ResidentVehicle,
+  type VehicleType,
+} from '@aptoph/shared'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
 
@@ -18,7 +31,13 @@ watch(open, (isOpen) => {
   if (!isOpen) return
   const v = props.vehicle
   form.value = v
-    ? { plate: v.plate, type: v.type, brand: v.brand ?? '', model: v.model ?? '', color: v.color ?? '' }
+    ? {
+        plate: v.plate,
+        type: v.type,
+        brand: v.brand ?? '',
+        model: v.model ?? '',
+        color: v.color ?? '',
+      }
     : empty()
   reset()
 })
@@ -47,12 +66,23 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal v-model="open" :title="vehicle ? 'Editar vehículo' : 'Registrar vehículo'" :persistent="saving">
+  <DuiModal
+    v-model="open"
+    :title="vehicle ? 'Editar vehículo' : 'Registrar vehículo'"
+    :persistent="saving"
+  >
     <DuiForm :loading="saving" @submit="submit">
       <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
         <DuiLabel title="Placa" required :error="errors.plate">
-          <DuiInput v-model="form.plate" required maxlength="12" autocomplete="off" class="uppercase" placeholder="ABC123" />
+          <DuiInput
+            v-model="form.plate"
+            required
+            maxlength="12"
+            autocomplete="off"
+            class="uppercase"
+            placeholder="ABC123"
+          />
         </DuiLabel>
         <DuiLabel title="Tipo" required :error="errors.type">
           <DuiSelect v-model="form.type" :options="typeOptions" />

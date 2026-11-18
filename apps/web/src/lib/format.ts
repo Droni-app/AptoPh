@@ -59,7 +59,11 @@ export function formatArea(area: string | null) {
 }
 
 /** "Torre 1 · Apartamento 101" (or just "Apartamento 101" without a building) */
-export function unitName(unit: { code: string; type: UnitType; building: { name: string } | null }) {
+export function unitName(unit: {
+  code: string
+  type: UnitType
+  building: { name: string } | null
+}) {
   const label = `${UNIT_TYPE_LABELS[unit.type]} ${unit.code}`
   return unit.building ? `${unit.building.name} · ${label}` : label
 }
@@ -77,7 +81,9 @@ export function formatDateTime(iso: string) {
 
 /** "7:00 p. m." */
 export function formatTime(iso: string) {
-  return new Intl.DateTimeFormat(LOCALE, { hour: 'numeric', minute: '2-digit' }).format(new Date(iso))
+  return new Intl.DateTimeFormat(LOCALE, { hour: 'numeric', minute: '2-digit' }).format(
+    new Date(iso),
+  )
 }
 
 /** "hace 3 h", "hace 2 días"… for activity feeds */

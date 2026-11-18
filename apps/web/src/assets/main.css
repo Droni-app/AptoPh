@@ -1,15 +1,10 @@
 @import 'tailwindcss';
-/* Brand tokens: navy/teal scales, Outfit + Inter (docs/brand/README.md) */
-@import '../../../../docs/brand/tokens.css';
-/* droni-kit components in AptoPH colors (after droni-kit.css, imported in main.ts) */
-@import '../../../../docs/brand/droni-kit-theme.css';
+/* Brand tokens: blue/mint/coral scales, Plus Jakarta Sans + Inter (branding/README.md) */
+@import '../../../../branding/tokens.css';
+/* droni-kit and neutral grays in the brand palette (shared with apps/backoffice) */
+@import '../../../../branding/droni-kit-theme.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --font-display: 'Outfit Variable', 'Outfit', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
-}
 
 html,
 body,
@@ -18,7 +13,7 @@ body,
 }
 
 body {
-  @apply bg-navy-50/50 font-sans text-navy-900 antialiased dark:bg-navy-950 dark:text-navy-50;
+  @apply bg-cream font-sans text-ink antialiased dark:bg-neutral-950 dark:text-neutral-100;
 }
 
 h1,

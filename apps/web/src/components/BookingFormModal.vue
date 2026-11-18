@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect } from '@dronico/droni-kit'
+import {
+  DuiAlert,
+  DuiButton,
+  DuiForm,
+  DuiInput,
+  DuiLabel,
+  DuiModal,
+  DuiSelect,
+} from '@dronico/droni-kit'
 import type { ResidentAmenity, ResidentBooking } from '@aptoph/shared'
 import UnitPicker from '@/components/UnitPicker.vue'
 import { residentApi } from '@/api/resident'
@@ -67,20 +75,41 @@ async function submit() {
         </DuiLabel>
         <div
           v-if="amenity"
-          class="rounded-xl bg-navy-50 p-3 text-sm text-navy-600 sm:col-span-2 dark:bg-white/5 dark:text-navy-200"
+          class="rounded-xl bg-neutral-50 p-3 text-sm text-neutral-600 sm:col-span-2 dark:bg-white/5 dark:text-neutral-200"
         >
           <p v-if="amenity.description">{{ amenity.description }}</p>
           <p class="mt-1 text-xs">
-            {{ [describeRules(amenity.rules), amenity.capacity ? `aforo ${amenity.capacity}` : ''].filter(Boolean).join(' · ') }}
+            {{
+              [describeRules(amenity.rules), amenity.capacity ? `aforo ${amenity.capacity}` : '']
+                .filter(Boolean)
+                .join(' · ')
+            }}
           </p>
           <p class="mt-1 text-xs font-medium">
-            {{ amenity.bookingFee ? `Tarifa ${formatMoney(amenity.bookingFee, tenant.current?.currency)}` : 'Sin costo' }}
-            · {{ amenity.requiresApproval ? 'la administración debe aprobarla' : 'se confirma al instante' }}
+            {{
+              amenity.bookingFee
+                ? `Tarifa ${formatMoney(amenity.bookingFee, tenant.current?.currency)}`
+                : 'Sin costo'
+            }}
+            ·
+            {{
+              amenity.requiresApproval
+                ? 'la administración debe aprobarla'
+                : 'se confirma al instante'
+            }}
           </p>
         </div>
-        <div class="sm:col-span-2 empty:hidden"><UnitPicker v-model="form.unitId" :error="errors.unitId" /></div>
+        <div class="sm:col-span-2 empty:hidden">
+          <UnitPicker v-model="form.unitId" :error="errors.unitId" />
+        </div>
         <DuiLabel title="Fecha" required :error="errors.startsAt" class="sm:col-span-2">
-          <DuiInput v-model="form.date" type="date" required :min="todayInput()" :max="todayInput(90)" />
+          <DuiInput
+            v-model="form.date"
+            type="date"
+            required
+            :min="todayInput()"
+            :max="todayInput(90)"
+          />
         </DuiLabel>
         <DuiLabel title="Desde" required>
           <DuiInput v-model="form.start" type="time" required />

@@ -29,8 +29,18 @@ const items = computed<NavbarItem[]>(() => [
     to: '/',
     active: route.name === 'home' || route.name === 'unit',
   },
-  { label: 'Portería', icon: 'mdi mdi-account-clock-outline', to: '/porteria', active: route.name === 'visits' },
-  { label: 'Reservas', icon: 'mdi mdi-calendar-check-outline', to: '/reservas', active: route.name === 'bookings' },
+  {
+    label: 'Portería',
+    icon: 'mdi mdi-account-clock-outline',
+    to: '/porteria',
+    active: route.name === 'visits',
+  },
+  {
+    label: 'Reservas',
+    icon: 'mdi mdi-calendar-check-outline',
+    to: '/reservas',
+    active: route.name === 'bookings',
+  },
   {
     label: 'PQRS',
     icon: 'mdi mdi-message-text-outline',
@@ -62,13 +72,15 @@ async function switchTenant() {
           :aria-label="theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro'"
           @click="toggle"
         >
-          <span class="text-lg"><i :class="theme === 'dark' ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night'" /></span>
+          <span class="text-lg"
+            ><i :class="theme === 'dark' ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night'"
+          /></span>
         </DuiButton>
         <DuiDropdown placement="bottom-end" min-width="16rem" aria-label="Menú de usuario">
           <template #trigger>
             <span class="flex items-center gap-2">
               <span
-                class="grid size-8 place-items-center rounded-full bg-teal-100 text-xs font-semibold text-teal-800 dark:bg-teal-500/20 dark:text-teal-200"
+                class="grid size-8 place-items-center rounded-full bg-mint-100 text-xs font-semibold text-mint-800 dark:bg-mint-500/20 dark:text-mint-200"
               >
                 {{ auth.user?.initials ?? '…' }}
               </span>
@@ -79,18 +91,27 @@ async function switchTenant() {
           </template>
           <div class="px-3 py-2 text-sm">
             <p class="font-medium">{{ auth.user?.fullName }}</p>
-            <p class="truncate text-navy-500 dark:text-navy-300">{{ auth.user?.email }}</p>
-            <p class="mt-1 text-xs text-teal-700 dark:text-teal-300">{{ tenant.current?.name }}</p>
+            <p class="truncate text-neutral-500 dark:text-neutral-300">{{ auth.user?.email }}</p>
+            <p class="mt-1 text-xs text-mint-700 dark:text-mint-300">{{ tenant.current?.name }}</p>
           </div>
           <DuiDropdownSeparator />
-          <DuiDropdownItem icon="mdi mdi-account-outline" label="Mi perfil" @click="router.push({ name: 'profile' })" />
+          <DuiDropdownItem
+            icon="mdi mdi-account-outline"
+            label="Mi perfil"
+            @click="router.push({ name: 'profile' })"
+          />
           <DuiDropdownItem
             v-if="tenant.residentTenants.length > 1"
             icon="mdi mdi-swap-horizontal"
             label="Cambiar de conjunto"
             @click="switchTenant"
           />
-          <DuiDropdownItem icon="mdi mdi-logout" label="Cerrar sesión" danger @click="auth.logout()" />
+          <DuiDropdownItem
+            icon="mdi mdi-logout"
+            label="Cerrar sesión"
+            danger
+            @click="auth.logout()"
+          />
         </DuiDropdown>
       </template>
     </DuiNavbar>
@@ -99,8 +120,6 @@ async function switchTenant() {
       <RouterView :key="tenant.currentId ?? ''" />
     </main>
 
-    <footer class="py-6 text-center text-xs text-navy-400">
-      AptoPH · Portal de residentes
-    </footer>
+    <footer class="py-6 text-center text-xs text-neutral-400">AptoPH · Portal de residentes</footer>
   </div>
 </template>

@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect } from '@dronico/droni-kit'
+import {
+  DuiAlert,
+  DuiButton,
+  DuiForm,
+  DuiInput,
+  DuiLabel,
+  DuiModal,
+  DuiSelect,
+} from '@dronico/droni-kit'
 import {
   DOCUMENT_TYPES,
   DOCUMENT_TYPE_LABELS,
@@ -17,7 +25,10 @@ const open = defineModel<boolean>({ required: true })
 const emit = defineEmits<{ saved: [] }>()
 
 const RELATIONSHIPS: HouseholdRelationship[] = ['family_member', 'domestic_worker', 'other']
-const relationshipOptions = RELATIONSHIPS.map((value) => ({ value, label: OCCUPANT_RELATIONSHIP_LABELS[value] }))
+const relationshipOptions = RELATIONSHIPS.map((value) => ({
+  value,
+  label: OCCUPANT_RELATIONSHIP_LABELS[value],
+}))
 const documentOptions = [
   { value: '', label: 'Sin documento' },
   ...DOCUMENT_TYPES.map((value) => ({ value, label: DOCUMENT_TYPE_LABELS[value] })),
@@ -97,7 +108,7 @@ async function submit() {
           <DuiInput v-model="form.documentNumber" maxlength="30" :disabled="!form.documentType" />
         </DuiLabel>
       </div>
-      <p class="text-xs text-navy-500 dark:text-navy-300">
+      <p class="text-xs text-neutral-500 dark:text-neutral-300">
         Los propietarios, arrendatarios y responsables de pago los registra la administración.
       </p>
       <template #footer>

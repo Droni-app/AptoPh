@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect } from '@dronico/droni-kit'
+import {
+  DuiAlert,
+  DuiButton,
+  DuiForm,
+  DuiInput,
+  DuiLabel,
+  DuiModal,
+  DuiSelect,
+} from '@dronico/droni-kit'
 import { VISIT_TYPES, VISIT_TYPE_LABELS, type ResidentVisit, type VisitType } from '@aptoph/shared'
 import UnitPicker from '@/components/UnitPicker.vue'
 import { residentApi } from '@/api/resident'
@@ -73,8 +81,15 @@ async function submit() {
     <DuiForm :loading="saving" @submit="submit">
       <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <div class="sm:col-span-2 empty:hidden"><UnitPicker v-model="form.unitId" :error="errors.unitId" /></div>
-        <DuiLabel title="Nombre del visitante" required :error="errors.visitorName" class="sm:col-span-2">
+        <div class="sm:col-span-2 empty:hidden">
+          <UnitPicker v-model="form.unitId" :error="errors.unitId" />
+        </div>
+        <DuiLabel
+          title="Nombre del visitante"
+          required
+          :error="errors.visitorName"
+          class="sm:col-span-2"
+        >
           <DuiInput v-model="form.visitorName" required minlength="2" maxlength="150" />
         </DuiLabel>
         <DuiLabel title="Tipo de visita" required :error="errors.type">
@@ -84,13 +99,24 @@ async function submit() {
           <DuiInput v-model="form.visitorDocument" maxlength="30" />
         </DuiLabel>
         <DuiLabel title="Fecha" required :error="errors.expectedAt">
-          <DuiInput v-model="form.date" type="date" required :min="todayInput()" :max="todayInput(60)" />
+          <DuiInput
+            v-model="form.date"
+            type="date"
+            required
+            :min="todayInput()"
+            :max="todayInput(60)"
+          />
         </DuiLabel>
         <DuiLabel title="Hora aproximada" required>
           <DuiInput v-model="form.time" type="time" required />
         </DuiLabel>
         <DuiLabel title="Placa del vehículo" :error="errors.vehiclePlate" class="sm:col-span-2">
-          <DuiInput v-model="form.vehiclePlate" maxlength="12" class="uppercase" placeholder="Si llega en carro o moto" />
+          <DuiInput
+            v-model="form.vehiclePlate"
+            maxlength="12"
+            class="uppercase"
+            placeholder="Si llega en carro o moto"
+          />
         </DuiLabel>
       </div>
       <template #footer>

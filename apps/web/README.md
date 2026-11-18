@@ -1,6 +1,6 @@
 # AptoPH · App web de residentes
 
-Portal para residentes y propietarios: inicio de sesión con OAuth 2.1 + PKCE contra la API y consulta
+Portal para residentes y propietarios: inicio de sesión con correo y contraseña contra la API y consulta
 de la información de su conjunto.
 
 ```bash
@@ -15,7 +15,7 @@ Usuario de prueba local (seeder `conjunto_grande_seeder`): `residente@conjuntogr
 
 | Ruta | Qué muestra | API |
 | --- | --- | --- |
-| `/login`, `/auth/callback` | Inicio de sesión (página alojada por la API) | `/oauth/*` |
+| `/login` | Inicio de sesión con correo y contraseña | `POST /api/v1/auth/login` |
 | `/conjuntos` | Selector, si el usuario es residente en más de un conjunto | `GET /api/v1/account/tenants` |
 | `/` | Conjunto (torres, unidades), mis unidades con saldo y estado (al día / pendiente / en mora) | `GET /api/v1/resident/home` |
 | `/unidades/:id` | Datos de la unidad, estado de cuenta, hogar, vehículos y mascotas | `GET /api/v1/resident/units/:id` |
@@ -25,21 +25,22 @@ El hogar se muestra sin documentos ni datos de contacto de los demás ocupantes.
 
 ## Estructura
 
-- `src/stores/auth.ts`: sesión OAuth (tokens en `localStorage`, refresh con rotación).
+- `src/stores/auth.ts`: access token de la API en `localStorage` (dura 30 días; ver `docs/authentication.md`).
 - `src/stores/tenant.ts`: conjuntos donde el usuario tiene rol `resident`; el activo va en `X-Tenant-Id`.
 - `src/lib/format.ts`: dinero (COP), fechas, periodos, coeficientes y áreas en `es-CO`.
-- `src/components/BrandLogo.vue`: logo de `docs/brand/logo` (versión blanca en modo oscuro).
-- Estilos: Tailwind 4 + `docs/brand/tokens.css` (escala `navy`/`teal`, Outfit/Inter) y
-  `docs/brand/droni-kit-theme.css` para los componentes de droni-kit.
+- `src/components/BrandLogo.vue`: logo de `branding/logo` (versión blanca en modo oscuro).
+- Estilos: Tailwind 4 + `branding/tokens.css` (escalas `brand`/`mint`/`coral`, Plus Jakarta Sans e
+  Inter) y `branding/droni-kit-theme.css` (compartido con el backoffice) para los componentes de
+  droni-kit.
+- Ilustraciones de `branding/` en `src/assets/img`: cabeceras de Reservas, Portería y PQRS
+  (`PageHeader` con `art`), la de comunidad en el login y el inicio, y los estados vacíos
+  (`EmptyState`).
 
 ## Variables (`.env.development`)
 
 | Variable | Valor local |
 | --- | --- |
 | `VITE_API_URL` | `http://localhost:3333` |
-| `VITE_OAUTH_CLIENT_ID` | `web` |
-| `VITE_OAUTH_REDIRECT_URI` | `http://localhost:5173/auth/callback` |
-| `VITE_OAUTH_POST_LOGOUT_REDIRECT_URI` | `http://localhost:5173/` |
 
 ## Scripts
 

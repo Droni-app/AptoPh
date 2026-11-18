@@ -10,6 +10,7 @@ import {
 import BookingFormModal from '@/components/BookingFormModal.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import PageHeader from '@/components/PageHeader.vue'
+import EmptyState from '@/components/EmptyState.vue'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
 import { describeRules } from '@/lib/amenities'
@@ -41,14 +42,20 @@ const upcoming = computed(() =>
     .filter((b) => new Date(b.endsAt).getTime() >= now)
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
 )
-const past = computed(() => (bookings.value ?? []).filter((b) => new Date(b.endsAt).getTime() < now))
+const past = computed(() =>
+  (bookings.value ?? []).filter((b) => new Date(b.endsAt).getTime() < now),
+)
 const showUnit = computed(() => (units.home?.units.length ?? 0) > 1)
 const money = (amount: string) => formatMoney(amount, tenant.current?.currency)
 
 async function load() {
   error.value = null
   try {
-    const [a, b] = await Promise.all([residentApi.amenities(), residentApi.bookings.list(), units.load()])
+    const [a, b] = await Promise.all([
+      residentApi.amenities(),
+      residentApi.bookings.list(),
+      units.load(),
+    ])
     amenities.value = a.data
     bookings.value = b.data
   } catch (e) {
@@ -89,10 +96,11 @@ onMounted(load)
 </script>
 
 <template>
-  <PageHeader title="Reservas" subtitle="Zonas comunes de tu conjunto">
+  <PageHeader title="Reservas" subtitle="Zonas comunes de tu conjunto" art="reservas">
     <template #actions>
       <DuiButton color="primary" :disabled="!amenities?.length" @click="book(null)">
-        <span class="mr-1" aria-hidden="true"><i class="mdi mdi-calendar-plus" /></span>Nueva reserva
+        <span class="mr-1" aria-hidden="true"><i class="mdi mdi-calendar-plus" /></span>Nueva
+        reserva
       </DuiButton>
     </template>
   </PageHeader>
@@ -109,33 +117,65 @@ onMounted(load)
   <template v-else>
     <section aria-labelledby="mine-title" class="mb-10">
       <h2 id="mine-title" class="mb-3 text-lg font-semibold">Mis reservas</h2>
-      <p v-if="upcoming.length === 0" class="rounded-2xl border border-dashed border-navy-200 p-6 text-center text-sm text-navy-500 dark:border-white/10 dark:text-navy-300">
-        No tienes reservas próximas.
-      </p>
-      <ul v-else class="divide-y divide-navy-100 overflow-hidden rounded-2xl border border-navy-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-navy-900">
-        <li v-for="booking in upcoming" :key="booking.id" class="flex flex-wrap items-center justify-between gap-3 p-4">
+      <EmptyState
+        v-if="upcoming.length === 0"
+        class="rounded-2xl border border-neutral-100 bg-white dark:border-white/10 dark:bg-neutral-900"
+        title="No tienes reservas próximas"
+        description="Elige una zona común abajo y aparta tu horario."
+      />
+      <ul
+        v-else
+        class="divide-y divide-neutral-100 overflow-hidden rounded-2xl border border-neutral-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-neutral-900"
+      >
+        <li
+          v-for="booking in upcoming"
+          :key="booking.id"
+          class="flex flex-wrap items-center justify-between gap-3 p-4"
+        >
           <div class="min-w-0">
             <p class="font-medium">{{ booking.amenity.name }}</p>
-            <p class="text-sm text-navy-500 dark:text-navy-300">
+            <p class="text-sm text-neutral-500 dark:text-neutral-300">
               {{ formatDateTime(booking.startsAt) }} – {{ formatTime(booking.endsAt) }}
               <template v-if="booking.guestsCount"> · {{ booking.guestsCount }} personas</template>
               <template v-if="showUnit"> · {{ unitName(booking.unit) }}</template>
             </p>
-            <p v-if="booking.bookingFee && booking.status !== 'cancelled' && booking.status !== 'rejected'" class="text-xs text-navy-500 dark:text-navy-300">
+            <p
+              v-if="
+                booking.bookingFee &&
+                booking.status !== 'cancelled' &&
+                booking.status !== 'rejected'
+              "
+              class="text-xs text-neutral-500 dark:text-neutral-300"
+            >
               Tarifa {{ money(booking.bookingFee) }}
             </p>
           </div>
           <div class="flex items-center gap-2">
-            <DuiBadge :label="BOOKING_STATUS_LABELS[booking.status]" :color="STATUS_COLORS[booking.status]" variant="soft" size="sm" />
-            <DuiButton v-if="booking.canCancel" size="sm" variant="ghost" color="danger" @click="askCancel(booking)">Cancelar</DuiButton>
+            <DuiBadge
+              :label="BOOKING_STATUS_LABELS[booking.status]"
+              :color="STATUS_COLORS[booking.status]"
+              variant="soft"
+              size="sm"
+            />
+            <DuiButton
+              v-if="booking.canCancel"
+              size="sm"
+              variant="ghost"
+              color="danger"
+              @click="askCancel(booking)"
+              >Cancelar</DuiButton
+            >
           </div>
         </li>
       </ul>
       <details v-if="past.length" class="mt-3 text-sm">
-        <summary class="cursor-pointer text-navy-500 dark:text-navy-300">Reservas anteriores ({{ past.length }})</summary>
-        <ul class="mt-2 space-y-1 text-navy-600 dark:text-navy-200">
+        <summary class="cursor-pointer text-neutral-500 dark:text-neutral-300">
+          Reservas anteriores ({{ past.length }})
+        </summary>
+        <ul class="mt-2 space-y-1 text-neutral-600 dark:text-neutral-200">
           <li v-for="booking in past" :key="booking.id">
-            {{ booking.amenity.name }} · {{ formatDateTime(booking.startsAt) }} · {{ BOOKING_STATUS_LABELS[booking.status] }}
+            {{ booking.amenity.name }} · {{ formatDateTime(booking.startsAt) }} ·
+            {{ BOOKING_STATUS_LABELS[booking.status] }}
           </li>
         </ul>
       </details>
@@ -143,29 +183,48 @@ onMounted(load)
 
     <section aria-labelledby="amenities-title">
       <h2 id="amenities-title" class="mb-3 text-lg font-semibold">Zonas comunes</h2>
-      <p v-if="amenities.length === 0" class="text-sm text-navy-500">El conjunto aún no tiene zonas comunes para reservar.</p>
+      <p v-if="amenities.length === 0" class="text-sm text-neutral-500">
+        El conjunto aún no tiene zonas comunes para reservar.
+      </p>
       <ul class="grid gap-4 sm:grid-cols-2">
         <li
           v-for="amenity in amenities"
           :key="amenity.id"
-          class="flex flex-col rounded-2xl border border-navy-100 bg-white p-5 dark:border-white/10 dark:bg-navy-900"
+          class="flex flex-col rounded-2xl border border-neutral-100 bg-white p-5 dark:border-white/10 dark:bg-neutral-900"
         >
           <div class="flex items-start justify-between gap-3">
             <h3 class="text-lg font-semibold">{{ amenity.name }}</h3>
-            <span class="shrink-0 text-sm font-medium text-teal-700 dark:text-teal-300">
+            <span class="shrink-0 text-sm font-medium text-mint-700 dark:text-mint-300">
               {{ amenity.bookingFee ? money(amenity.bookingFee) : 'Sin costo' }}
             </span>
           </div>
-          <p v-if="amenity.description" class="mt-1 text-sm text-navy-600 dark:text-navy-200">{{ amenity.description }}</p>
-          <p class="mt-2 text-xs text-navy-500 dark:text-navy-300">
-            {{ [describeRules(amenity.rules), amenity.capacity ? `aforo ${amenity.capacity}` : '', amenity.requiresApproval ? 'requiere aprobación' : ''].filter(Boolean).join(' · ') }}
+          <p v-if="amenity.description" class="mt-1 text-sm text-neutral-600 dark:text-neutral-200">
+            {{ amenity.description }}
           </p>
-          <DuiButton class="mt-4 self-start" size="sm" variant="outline" @click="book(amenity.id)">Reservar</DuiButton>
+          <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-300">
+            {{
+              [
+                describeRules(amenity.rules),
+                amenity.capacity ? `aforo ${amenity.capacity}` : '',
+                amenity.requiresApproval ? 'requiere aprobación' : '',
+              ]
+                .filter(Boolean)
+                .join(' · ')
+            }}
+          </p>
+          <DuiButton class="mt-4 self-start" size="sm" variant="outline" @click="book(amenity.id)"
+            >Reservar</DuiButton
+          >
         </li>
       </ul>
     </section>
 
-    <BookingFormModal v-model="formOpen" :amenities="amenities" :amenity-id="selectedAmenity" @saved="onSaved" />
+    <BookingFormModal
+      v-model="formOpen"
+      :amenities="amenities"
+      :amenity-id="selectedAmenity"
+      @saved="onSaved"
+    />
   </template>
 
   <ConfirmDialog

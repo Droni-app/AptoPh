@@ -14,7 +14,12 @@ const options = computed(() => units.options())
 </script>
 
 <template>
-  <DuiLabel v-if="options.length > 1 || optional" title="Unidad" :required="!optional" :error="error">
+  <DuiLabel
+    v-if="options.length > 1 || optional"
+    title="Unidad"
+    :required="!optional"
+    :error="error"
+  >
     <DuiSelect
       v-model="model"
       :options="optional ? [{ value: '', label: optionalLabel }, ...options] : options"

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import logoColor from '../../../../docs/brand/logo/aptoph-logo-horizontal.svg?raw'
-import logoWhite from '../../../../docs/brand/logo/aptoph-logo-horizontal-white.svg?raw'
+import logoColor from '../../../../branding/logo/aptoph-logo-horizontal.svg?raw'
+import logoWhite from '../../../../branding/logo/aptoph-logo-horizontal-white.svg?raw'
 </script>
 
 <template>
   <!-- Color logo on light theme, white logo on dark theme -->
   <span class="logo-svg inline-flex" role="img" aria-label="AptoPH">
-    <!-- eslint-disable-next-line vue/no-v-html -- trusted SVG from docs/brand -->
+    <!-- eslint-disable-next-line vue/no-v-html -- trusted SVG from branding/logo -->
     <span class="contents dark:hidden" aria-hidden="true" v-html="logoColor" />
-    <!-- eslint-disable-next-line vue/no-v-html -- trusted SVG from docs/brand -->
+    <!-- eslint-disable-next-line vue/no-v-html -- trusted SVG from branding/logo -->
     <span class="hidden dark:contents" aria-hidden="true" v-html="logoWhite" />
   </span>
 </template>

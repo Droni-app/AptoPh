@@ -8,7 +8,7 @@ const emit = defineEmits<{ confirm: [] }>()
 
 <template>
   <DuiModal v-model="open" :title="title" size="sm" :persistent="loading">
-    <p class="text-sm text-navy-600 dark:text-navy-200">{{ message }}</p>
+    <p class="text-sm text-neutral-600 dark:text-neutral-200">{{ message }}</p>
     <template #footer>
       <div class="flex justify-end gap-2">
         <DuiButton variant="ghost" :disabled="loading" @click="open = false">Cancelar</DuiButton>

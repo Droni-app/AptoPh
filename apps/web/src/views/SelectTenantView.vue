@@ -22,25 +22,27 @@ async function choose(id: string) {
     <BrandLogo class="mb-8 h-8 self-start" />
     <div class="mb-6">
       <h1 class="text-2xl font-semibold">Selecciona tu conjunto</h1>
-      <p class="text-sm text-navy-500 dark:text-navy-300">
+      <p class="text-sm text-neutral-500 dark:text-neutral-300">
         Hola{{ auth.user ? `, ${auth.user.fullName}` : '' }}. ¿Qué conjunto quieres consultar?
       </p>
     </div>
 
     <DuiAlert v-if="tenant.residentTenants.length === 0" color="warning" variant="soft">
-      Tu cuenta no está registrada como residente en ningún conjunto. Pídele a la administración
-      que te vincule a tu unidad.
+      Tu cuenta no está registrada como residente en ningún conjunto. Pídele a la administración que
+      te vincule a tu unidad.
     </DuiAlert>
 
     <ul class="flex flex-col gap-3">
       <li v-for="item in tenant.residentTenants" :key="item.id">
         <button
           type="button"
-          class="w-full rounded-xl border border-navy-100 bg-white p-4 text-left transition hover:border-teal-500 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-teal-600 dark:border-white/10 dark:bg-navy-900 dark:hover:border-teal-400"
+          class="w-full rounded-xl border border-neutral-100 bg-white p-4 text-left transition hover:border-mint-500 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-mint-600 dark:border-white/10 dark:bg-neutral-900 dark:hover:border-mint-400"
           @click="choose(item.id)"
         >
           <span class="block font-medium">{{ item.name }}</span>
-          <span v-if="item.city" class="block text-sm text-navy-500 dark:text-navy-300">{{ item.city }}</span>
+          <span v-if="item.city" class="block text-sm text-neutral-500 dark:text-neutral-300">{{
+            item.city
+          }}</span>
         </button>
       </li>
     </ul>

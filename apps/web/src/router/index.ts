@@ -6,6 +6,8 @@ declare module 'vue-router' {
   interface RouteMeta {
     /** Accessible without a session */
     public?: boolean
+    /** Login: a signed-in user goes straight to the app */
+    guest?: boolean
     /** Requires an active conjunto (X-Tenant-Id) */
     tenant?: boolean
     title?: string
@@ -20,13 +22,7 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
-      meta: { public: true, title: 'Iniciar sesión' },
-    },
-    {
-      path: '/auth/callback',
-      name: 'auth-callback',
-      component: () => import('@/views/AuthCallbackView.vue'),
-      meta: { public: true },
+      meta: { public: true, guest: true, title: 'Iniciar sesión' },
     },
     {
       path: '/conjuntos',
@@ -93,9 +89,10 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
+  const auth = useAuthStore()
+  if (to.meta.guest && auth.isAuthenticated) return { path: '/' }
   if (to.meta.public) return true
 
-  const auth = useAuthStore()
   if (!auth.isAuthenticated) {
     return { name: 'login', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
   }

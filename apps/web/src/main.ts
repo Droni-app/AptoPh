@@ -1,6 +1,6 @@
 import '@dronico/droni-kit/dist/droni-kit.css'
 import '@fontsource-variable/inter'
-import '@fontsource-variable/outfit'
+import '@fontsource-variable/plus-jakarta-sans'
 import './assets/main.css'
 
 import { createApp } from 'vue'

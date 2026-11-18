@@ -30,28 +30,29 @@ export type RequestOptions = {
   query?: Query
   /** Send the active tenant in `X-Tenant-Id` (default: true) */
   tenant?: boolean
+  /** Send the access token, and treat a 401 as an expired session (default: true) */
+  auth?: boolean
 }
 
 function buildUrl(path: string, query?: Query) {
   const url = new URL(`${config.apiUrl}${path}`)
   for (const [key, value] of Object.entries(query ?? {})) {
-    if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, String(value))
+    if (value !== undefined && value !== null && value !== '')
+      url.searchParams.set(key, String(value))
   }
   return url
 }
 
 /**
- * Calls the API with the user's access token (refreshing it when needed)
- * and the active tenant header.
+ * Calls the API with the user's access token and the active tenant header.
  */
 export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const auth = useAuthStore()
   const tenant = useTenantStore()
 
   const send = async () => {
-    const token = await auth.getAccessToken()
     const headers: Record<string, string> = { Accept: 'application/json' }
-    if (token) headers.Authorization = `Bearer ${token}`
+    if (options.auth !== false && auth.token) headers.Authorization = `Bearer ${auth.token}`
     if (options.tenant !== false && tenant.currentId) headers['X-Tenant-Id'] = tenant.currentId
     if (options.body !== undefined) headers['Content-Type'] = 'application/json'
 
@@ -62,13 +63,10 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
     })
   }
 
-  let response = await send()
+  const response = await send()
 
-  if (response.status === 401 && (await auth.refresh())) {
-    response = await send()
-  }
-
-  if (response.status === 401) {
+  // Expired or revoked token: back to the login page
+  if (response.status === 401 && options.auth !== false) {
     auth.clear()
     await router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } })
     throw new ApiError(401, null)

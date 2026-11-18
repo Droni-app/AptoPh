@@ -1,7 +1,21 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect, DuiTextarea } from '@dronico/droni-kit'
-import { TICKET_TYPES, TICKET_TYPE_LABELS, type ResidentTicketDetail, type TicketType } from '@aptoph/shared'
+import {
+  DuiAlert,
+  DuiButton,
+  DuiForm,
+  DuiInput,
+  DuiLabel,
+  DuiModal,
+  DuiSelect,
+  DuiTextarea,
+} from '@dronico/droni-kit'
+import {
+  TICKET_TYPES,
+  TICKET_TYPE_LABELS,
+  type ResidentTicketDetail,
+  type TicketType,
+} from '@aptoph/shared'
 import UnitPicker from '@/components/UnitPicker.vue'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
@@ -14,7 +28,8 @@ const emit = defineEmits<{ saved: [ticket: ResidentTicketDetail] }>()
 const units = useUnitsStore()
 const { saving, errors, error, run, reset } = useSubmit()
 const HINTS: Record<TicketType, string> = {
-  petition: 'Solicita información, documentos (p. ej. paz y salvo) o una actuación de la administración.',
+  petition:
+    'Solicita información, documentos (p. ej. paz y salvo) o una actuación de la administración.',
   complaint: 'Manifiesta tu inconformidad con una situación o con la atención recibida.',
   claim: 'Pide que se corrija algo, por ejemplo un cobro que no corresponde.',
   suggestion: 'Propón una mejora para el conjunto.',
@@ -40,7 +55,10 @@ watch(open, async (isOpen) => {
 async function submit() {
   let created: ResidentTicketDetail | null = null
   const ok = await run(async () => {
-    const { data } = await residentApi.tickets.create({ ...form.value, unitId: form.value.unitId || null })
+    const { data } = await residentApi.tickets.create({
+      ...form.value,
+      unitId: form.value.unitId || null,
+    })
     created = data
   }, 'Solicitud radicada')
   if (ok && created) {
@@ -58,13 +76,27 @@ async function submit() {
         <DuiLabel title="Tipo de solicitud" required :error="errors.type">
           <DuiSelect v-model="form.type" :options="typeOptions" />
         </DuiLabel>
-        <UnitPicker v-model="form.unitId" optional optional-label="Zonas comunes / general" :error="errors.unitId" />
-        <p class="text-xs text-navy-500 sm:col-span-2 dark:text-navy-300">{{ HINTS[form.type] }}</p>
+        <UnitPicker
+          v-model="form.unitId"
+          optional
+          optional-label="Zonas comunes / general"
+          :error="errors.unitId"
+        />
+        <p class="text-xs text-neutral-500 sm:col-span-2 dark:text-neutral-300">
+          {{ HINTS[form.type] }}
+        </p>
         <DuiLabel title="Asunto" required :error="errors.subject" class="sm:col-span-2">
           <DuiInput v-model="form.subject" required minlength="5" maxlength="200" />
         </DuiLabel>
         <DuiLabel title="Descripción" required :error="errors.description" class="sm:col-span-2">
-          <DuiTextarea v-model="form.description" required minlength="10" maxlength="5000" rows="6" autoheight />
+          <DuiTextarea
+            v-model="form.description"
+            required
+            minlength="10"
+            maxlength="5000"
+            rows="6"
+            autoheight
+          />
         </DuiLabel>
       </div>
       <template #footer>
