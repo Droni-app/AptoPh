@@ -69,7 +69,7 @@ test.group('OAuth · authorization code + PKCE', (group) => {
     const response = await client.get('/oauth/authorize').qs(authorizeParams(challenge))
 
     response.assertStatus(200)
-    response.assertTextIncludes('ApartaDock Residentes')
+    response.assertTextIncludes('AptoPH Residentes')
     response.assertTextIncludes("name='_csrf'")
   })
 

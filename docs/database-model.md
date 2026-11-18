@@ -1,4 +1,4 @@
-# Modelo de datos — ApartaDock
+# Modelo de datos — AptoPH
 
 > Estado: **propuesta** · Motor: PostgreSQL 18 · ORM: AdonisJS Lucid
 >

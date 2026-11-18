@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect } from '@dronico/droni-kit'
-import type { ResidentAmenity, ResidentBooking } from '@apartadock/shared'
+import type { ResidentAmenity, ResidentBooking } from '@aptoph/shared'
 import UnitPicker from '@/components/UnitPicker.vue'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'

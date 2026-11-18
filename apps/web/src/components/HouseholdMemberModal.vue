@@ -8,7 +8,7 @@ import {
   type DocumentType,
   type HouseholdMember,
   type HouseholdRelationship,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
 

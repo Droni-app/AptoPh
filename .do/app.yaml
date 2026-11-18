@@ -57,7 +57,7 @@ services:
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
     source_dir: /
     environment_slug: node-js
-    build_command: pnpm turbo run build --filter=@apartadock/api...
+    build_command: pnpm turbo run build --filter=@aptoph/api...
     run_command: cd apps/api/build && node bin/server.js
     http_port: 8080
     instance_count: 1
@@ -83,8 +83,8 @@ services:
       - { key: DB_DATABASE, value: "${db.DATABASE}" }
       - { key: DB_CA_CERT, value: "${db.CA_CERT}" }
       - { key: MAIL_MAILER, value: smtp }
-      - { key: MAIL_FROM_NAME, value: __MAIL_FROM_NAME__ }
-      - { key: MAIL_FROM_ADDRESS, value: __MAIL_FROM_ADDRESS__ }
+      - { key: MAIL_FROM_NAME, value: AptoPH }
+      - { key: MAIL_FROM_ADDRESS, value: noreply@aptoph.com }
       - { key: SMTP_HOST, value: in-v3.mailjet.com }
       - { key: SMTP_PORT, value: "465" }
       - { key: SMTP_USERNAME, value: __SMTP_USERNAME__, type: SECRET }
@@ -97,7 +97,7 @@ jobs:
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
     source_dir: /
     environment_slug: node-js
-    build_command: pnpm turbo run build --filter=@apartadock/api...
+    build_command: pnpm turbo run build --filter=@aptoph/api...
     instance_count: 1
     instance_size_slug: apps-s-1vcpu-0.5gb
     run_command: cd apps/api/build && node ace migration:run --force && node ace db:seed --files database/seeders/production_seeder.ts --files database/seeders/demo_seeder.ts
@@ -108,19 +108,19 @@ static_sites:
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
     source_dir: /
     environment_slug: node-js
-    build_command: pnpm turbo run build --filter=@apartadock/landing...
+    build_command: pnpm turbo run build --filter=@aptoph/landing...
     output_dir: apps/landing/dist
   - name: web
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
     source_dir: /
     environment_slug: node-js
-    build_command: pnpm turbo run build --filter=@apartadock/web...
+    build_command: pnpm turbo run build --filter=@aptoph/web...
     output_dir: apps/web/dist
     catchall_document: index.html
   - name: backoffice
     github: { repo: Droni-app/AptoPh, branch: main, deploy_on_push: true }
     source_dir: /
     environment_slug: node-js
-    build_command: pnpm turbo run build --filter=@apartadock/backoffice...
+    build_command: pnpm turbo run build --filter=@aptoph/backoffice...
     output_dir: apps/backoffice/dist
     catchall_document: index.html

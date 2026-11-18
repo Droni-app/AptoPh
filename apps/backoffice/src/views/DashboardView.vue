@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { DuiAlert, DuiCard, DuiSkeleton } from '@dronico/droni-kit'
-import type { DashboardSummary } from '@apartadock/shared'
+import type { DashboardSummary } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import { dashboardApi } from '@/api/backoffice'
 import { errorMessage } from '@/lib/errors'

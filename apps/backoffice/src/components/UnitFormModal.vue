@@ -20,7 +20,7 @@ import {
   type Unit,
   type UnitStatus,
   type UnitType,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import { unitsApi } from '@/api/backoffice'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 

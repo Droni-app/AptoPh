@@ -6,7 +6,7 @@
 
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
-import { BACKOFFICE_ROLES, EnrollmentRole } from '@apartadock/shared'
+import { BACKOFFICE_ROLES, EnrollmentRole } from '@aptoph/shared'
 
 const AuthorizeController = () => import('#controllers/oauth/authorize_controller')
 const TokenController = () => import('#controllers/oauth/token_controller')
@@ -38,7 +38,7 @@ const backofficeRead = { roles: [...BACKOFFICE_ROLES] }
 const backofficeWrite = { roles: [EnrollmentRole.Administrator] }
 
 router.get('/', () => {
-  return { name: 'ApartaDock API' }
+  return { name: 'AptoPH API' }
 })
 
 /*

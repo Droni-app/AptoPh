@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { VEHICLE_TYPES } from '@apartadock/shared'
+import { VEHICLE_TYPES } from '@aptoph/shared'
 import { checkIn, tenantForeign, tenantTable, timestamps } from '#database/tenant_schema'
 
 export default class extends BaseSchema {

@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 
 type Theme = 'light' | 'dark'
-const KEY = 'apartadock.backoffice.theme'
+const KEY = 'aptoph.backoffice.theme'
 
 const theme = ref<Theme>('light')
 

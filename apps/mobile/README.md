@@ -1,11 +1,11 @@
-# ApartaDock Mobile (Flutter)
+# AptoPH Mobile (Flutter)
 
 App móvil para residentes. Aún sin generar: Flutter no estaba instalado cuando se creó el monorepo.
 
 Para generarla (desde la raíz del repo):
 
 ```bash
-flutter create --org co.apartadock --project-name apartadock_mobile --platforms android,ios apps/mobile
+flutter create --org co.aptoph --project-name aptoph_mobile --platforms android,ios apps/mobile
 ```
 
 Notas:

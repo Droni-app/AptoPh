@@ -1,4 +1,4 @@
-# @apartadock/landing
+# @aptoph/landing
 
 Landing pública de **AptoPH**: Vue 3 + Vite + Tailwind 4, **prerenderizada** en el build. Los
 buscadores y las redes sociales reciben el HTML completo sin ejecutar JavaScript, y después Vue
@@ -6,8 +6,8 @@ hidrata la página para lo interactivo (menú móvil).
 
 ```bash
 pnpm dev:landing                              # desde la raíz → http://localhost:5175
-pnpm --filter @apartadock/landing build       # dist/ listo para un hosting estático
-pnpm --filter @apartadock/landing preview
+pnpm --filter @aptoph/landing build       # dist/ listo para un hosting estático
+pnpm --filter @aptoph/landing preview
 ```
 
 ## Cómo se construye

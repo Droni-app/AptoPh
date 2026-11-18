@@ -1,7 +1,7 @@
 import { ChargeSchema } from '#database/schema'
 import { belongsTo, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
-import type { CHARGE_STATUSES, ValueOf } from '@apartadock/shared'
+import type { CHARGE_STATUSES, ValueOf } from '@aptoph/shared'
 import Unit from '#models/unit'
 import ChargeConcept from '#models/charge_concept'
 import User from '#models/user'

@@ -1,5 +1,5 @@
 import vine from '@vinejs/vine'
-import { UNIT_STATUSES, UNIT_TYPES } from '@apartadock/shared'
+import { UNIT_STATUSES, UNIT_TYPES } from '@aptoph/shared'
 
 const unitFields = {
   buildingId: vine.string().uuid().nullable(),

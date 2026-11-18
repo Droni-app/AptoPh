@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { DuiAlert, DuiButton, DuiCheckbox, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect } from '@dronico/droni-kit'
-import { PET_SPECIES, PET_SPECIES_LABELS, type PetSpecies, type ResidentPet } from '@apartadock/shared'
+import { PET_SPECIES, PET_SPECIES_LABELS, type PetSpecies, type ResidentPet } from '@aptoph/shared'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
 

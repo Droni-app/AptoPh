@@ -19,24 +19,24 @@ export default class extends BaseSeeder {
     await OauthClient.updateOrCreateMany('clientId', [
       {
         clientId: 'web',
-        name: 'ApartaDock Residentes',
+        name: 'AptoPH Residentes',
         type: 'public',
         redirectUris: ['http://localhost:5173/auth/callback'],
         postLogoutRedirectUris: ['http://localhost:5173/'],
       },
       {
         clientId: 'backoffice',
-        name: 'ApartaDock Administración',
+        name: 'AptoPH Administración',
         type: 'public',
         redirectUris: ['http://localhost:5174/auth/callback'],
         postLogoutRedirectUris: ['http://localhost:5174/'],
       },
       {
         clientId: 'mobile',
-        name: 'ApartaDock Móvil',
+        name: 'AptoPH Móvil',
         type: 'public',
-        redirectUris: ['co.apartadock.mobile:/oauth/callback'],
-        postLogoutRedirectUris: ['co.apartadock.mobile:/logout'],
+        redirectUris: ['co.aptoph.mobile:/oauth/callback'],
+        postLogoutRedirectUris: ['co.aptoph.mobile:/logout'],
       },
     ])
 
@@ -48,15 +48,15 @@ export default class extends BaseSeeder {
     )
 
     const admin = await User.updateOrCreate(
-      { email: 'admin@apartadock.test' },
+      { email: 'admin@aptoph.test' },
       { fullName: 'Ana Administradora', password: 'password123' }
     )
     const guard = await User.updateOrCreate(
-      { email: 'vigilante@apartadock.test' },
+      { email: 'vigilante@aptoph.test' },
       { fullName: 'Víctor Vigilante', password: 'password123' }
     )
     const resident = await User.updateOrCreate(
-      { email: 'residente@apartadock.test' },
+      { email: 'residente@aptoph.test' },
       { fullName: 'Rafael Residente', password: 'password123' }
     )
 

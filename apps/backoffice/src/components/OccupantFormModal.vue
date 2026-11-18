@@ -17,7 +17,7 @@ import {
   OCCUPANT_RELATIONSHIP_LABELS,
   type OccupantRelationship,
   type UnitOccupant,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import { occupantsApi } from '@/api/backoffice'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 

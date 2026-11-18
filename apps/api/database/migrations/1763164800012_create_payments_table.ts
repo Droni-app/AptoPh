@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { PAYMENT_METHODS, PAYMENT_STATUSES } from '@apartadock/shared'
+import { PAYMENT_METHODS, PAYMENT_STATUSES } from '@aptoph/shared'
 import {
   checkIn,
   tenantForeign,

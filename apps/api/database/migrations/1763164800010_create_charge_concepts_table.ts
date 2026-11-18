@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { CHARGE_CALCULATIONS, CHARGE_CONCEPT_TYPES } from '@apartadock/shared'
+import { CHARGE_CALCULATIONS, CHARGE_CONCEPT_TYPES } from '@aptoph/shared'
 import { checkIn, tenantTable, timestamps } from '#database/tenant_schema'
 
 export default class extends BaseSchema {

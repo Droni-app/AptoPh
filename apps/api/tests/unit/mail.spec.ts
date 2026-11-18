@@ -12,8 +12,8 @@ test.group('Mail', (group) => {
 
     mails.assertSent(TestMail, (message) => {
       message.message.assertTo('someone@example.com')
-      message.message.assertSubject('Correo de prueba · ApartaDock')
-      message.message.assertFrom('no-reply@apartadock.test', 'ApartaDock')
+      message.message.assertSubject('Correo de prueba · AptoPH')
+      message.message.assertFrom('no-reply@aptoph.test', 'AptoPH')
       return true
     })
 

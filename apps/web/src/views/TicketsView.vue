@@ -7,7 +7,7 @@ import {
   TICKET_TYPE_LABELS,
   type ResidentTicket,
   type ResidentTicketDetail,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import TicketFormModal from '@/components/TicketFormModal.vue'
 import { residentApi } from '@/api/resident'

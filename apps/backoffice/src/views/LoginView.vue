@@ -23,7 +23,7 @@ async function signIn() {
         <span class="text-5xl text-violet-600 dark:text-violet-400" aria-hidden="true">
           <i class="mdi mdi-office-building-cog" />
         </span>
-        <h1 class="mt-2 text-2xl font-semibold tracking-tight">ApartaDock</h1>
+        <h1 class="mt-2 text-2xl font-semibold tracking-tight">AptoPH</h1>
         <p class="text-sm text-neutral-500 dark:text-neutral-400">Administración de copropiedades</p>
       </div>
       <DuiCard>

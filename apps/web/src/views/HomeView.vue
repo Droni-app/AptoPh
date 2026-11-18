@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { DuiAlert, DuiButton, DuiCard, DuiSkeleton } from '@dronico/droni-kit'
-import { OCCUPANT_RELATIONSHIP_LABELS, type ApiItem, type ResidentHome } from '@apartadock/shared'
+import { OCCUPANT_RELATIONSHIP_LABELS, type ApiItem, type ResidentHome } from '@aptoph/shared'
 import BalanceBadge from '@/components/BalanceBadge.vue'
 import { api } from '@/lib/http'
 import { errorMessage } from '@/lib/errors'

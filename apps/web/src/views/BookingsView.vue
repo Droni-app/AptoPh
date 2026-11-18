@@ -6,7 +6,7 @@ import {
   type BookingStatus,
   type ResidentAmenity,
   type ResidentBooking,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import BookingFormModal from '@/components/BookingFormModal.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import PageHeader from '@/components/PageHeader.vue'

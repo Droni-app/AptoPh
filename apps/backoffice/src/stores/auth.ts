@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { ApiItem, OAuthTokens, UserProfile } from '@apartadock/shared'
+import type { ApiItem, OAuthTokens, UserProfile } from '@aptoph/shared'
 import { config } from '@/lib/config'
 import { api } from '@/lib/http'
 import { codeChallengeFor, randomString } from '@/lib/pkce'
@@ -9,15 +9,15 @@ import { readJson, writeJson } from '@/lib/storage'
 type Session = { accessToken: string; refreshToken: string; expiresAt: number }
 type PendingAuthorization = { state: string; verifier: string; redirectTo: string }
 
-const SESSION_KEY = 'apartadock.backoffice.session'
-const PENDING_KEY = 'apartadock.backoffice.oauth'
+const SESSION_KEY = 'aptoph.backoffice.session'
+const PENDING_KEY = 'aptoph.backoffice.oauth'
 /** Refresh the access token this long before it expires */
 const EXPIRY_MARGIN_MS = 30_000
 
 export class OAuthCallbackError extends Error {}
 
 /**
- * OAuth 2.1 Authorization Code + PKCE against the ApartaDock API.
+ * OAuth 2.1 Authorization Code + PKCE against the AptoPH API.
  * See docs/authentication.md.
  */
 export const useAuthStore = defineStore('auth', () => {

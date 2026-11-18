@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
-import type { EnrollmentRole } from '@apartadock/shared'
+import type { EnrollmentRole } from '@aptoph/shared'
 import { DateTime } from 'luxon'
 import Enrollment from '#models/enrollment'
 import type Tenant from '#models/tenant'

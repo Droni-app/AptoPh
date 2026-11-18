@@ -1,4 +1,4 @@
-import { UNIT_TYPE_LABELS, type UnitType } from '@apartadock/shared'
+import { UNIT_TYPE_LABELS, type UnitType } from '@aptoph/shared'
 
 const LOCALE = 'es-CO'
 

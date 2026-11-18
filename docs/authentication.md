@@ -20,10 +20,10 @@ Clientes sembrados para desarrollo (`node ace db:seed`):
 | --- | --- | --- |
 | `web` | `http://localhost:5173/auth/callback` | `http://localhost:5173/` |
 | `backoffice` | `http://localhost:5174/auth/callback` | `http://localhost:5174/` |
-| `mobile` | `co.apartadock.mobile:/oauth/callback` | `co.apartadock.mobile:/logout` |
+| `mobile` | `co.aptoph.mobile:/oauth/callback` | `co.aptoph.mobile:/logout` |
 
-Usuarios de desarrollo (contraseña `password123`): `admin@apartadock.test` (administrator) y
-`residente@apartadock.test` (resident + council_member), ambos en el tenant `reservas-del-bosque`.
+Usuarios de desarrollo (contraseña `password123`): `admin@aptoph.test` (administrator) y
+`residente@aptoph.test` (resident + council_member), ambos en el tenant `reservas-del-bosque`.
 
 ## Flujo
 

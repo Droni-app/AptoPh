@@ -1,7 +1,7 @@
 import { UnitSchema } from '#database/schema'
 import { belongsTo, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
-import type { UnitStatus, UnitType } from '@apartadock/shared'
+import type { UnitStatus, UnitType } from '@aptoph/shared'
 import Tenant from '#models/tenant'
 import Building from '#models/building'
 import UnitOccupant from '#models/unit_occupant'

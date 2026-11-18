@@ -1,4 +1,4 @@
-# ApartaDock
+# AptoPH
 
 SaaS para la administración de conjuntos de propiedad horizontal.
 
@@ -29,10 +29,10 @@ Monorepo con **pnpm workspaces** + **Turborepo**.
 
 ```bash
 pnpm install
-# Requiere PostgreSQL local con las bases `apartadock` y `apartadock_test` creadas
+# Requiere PostgreSQL local con las bases `aptoph` y `aptoph_test` creadas
 cp apps/api/.env.example apps/api/.env   # si no existe; luego: node ace generate:key
 pnpm db:migrate
-pnpm --filter @apartadock/api exec node ace db:seed   # clientes OAuth + datos demo
+pnpm --filter @aptoph/api exec node ace db:seed   # clientes OAuth + datos demo
 pnpm dev            # levanta api + ambas webs + shared en watch
 ```
 
@@ -46,7 +46,7 @@ pnpm dev            # levanta api + ambas webs + shared en watch
 | `pnpm lint` / `typecheck` / `test` | Calidad en todo el monorepo |
 | `pnpm db:migrate` | Migraciones de la API |
 
-Para ejecutar comandos dentro de una app: `pnpm --filter @apartadock/api exec node ace make:model Unit`.
+Para ejecutar comandos dentro de una app: `pnpm --filter @aptoph/api exec node ace make:model Unit`.
 
 ## Base de datos
 
@@ -54,7 +54,7 @@ Para ejecutar comandos dentro de una app: `pnpm --filter @apartadock/api exec no
 | --- | --- |
 | Host | `127.0.0.1:5432` |
 | Usuario / contraseña | Los de tu instalación local (`DB_USER` / `DB_PASSWORD` en `apps/api/.env`) |
-| Bases | `apartadock` (dev), `apartadock_test` (tests) |
+| Bases | `aptoph` (dev), `aptoph_test` (tests) |
 
 ## Correo (SMTP · Mailjet)
 
@@ -67,7 +67,7 @@ Configurado con `@adonisjs/mail` en `apps/api/config/mail.ts`. Completa en `apps
 | `SMTP_PASSWORD` | Secret key de Mailjet |
 | `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Remitente, que debe estar validado en Mailjet |
 
-Verificar: `pnpm --filter @apartadock/api exec node ace mail:test tu@correo.com`
+Verificar: `pnpm --filter @aptoph/api exec node ace mail:test tu@correo.com`
 
 Plantillas: `apps/api/resources/views/emails/` (usan `components/email_layout.edge`) y clases en `apps/api/app/mails/`.
 
@@ -77,23 +77,23 @@ Tras `node ace db:seed` (contraseña `password123`), en el conjunto *Reservas de
 
 | Correo | Rol |
 | --- | --- |
-| `admin@apartadock.test` | Administración (lectura y escritura en el backoffice) |
-| `vigilante@apartadock.test` | Vigilancia (solo lectura en el backoffice) |
-| `residente@apartadock.test` | Residente + consejo de administración |
+| `admin@aptoph.test` | Administración (lectura y escritura en el backoffice) |
+| `vigilante@aptoph.test` | Vigilancia (solo lectura en el backoffice) |
+| `residente@aptoph.test` | Residente + consejo de administración |
 
-Conjunto grande para pruebas locales, **Fontibón Reservado**: 5 torres de 20 pisos, 8 apartamentos
+Conjunto grande para pruebas locales, **Conjunto Grande**: 5 torres de 20 pisos, 8 apartamentos
 por piso (800 unidades, códigos `101`–`2008`) y coeficientes de copropiedad que suman 1. Lo crea
-`database/seeders/fontibon_reservado_seeder.ts`, que solo se ejecuta en `development` y también
+`database/seeders/conjunto_grande_seeder.ts`, que solo se ejecuta en `development` y también
 corre con `node ace db:seed`. Para ejecutarlo solo:
 
 ```bash
-pnpm --filter @apartadock/api exec node ace db:seed --files database/seeders/fontibon_reservado_seeder.ts
+pnpm --filter @aptoph/api exec node ace db:seed --files database/seeders/conjunto_grande_seeder.ts
 ```
 
 | Correo (contraseña `password123`) | Rol |
 | --- | --- |
-| `admin@fontibonreservado.test` | Administración |
-| `residente@fontibonreservado.test` | Residente, propietario de Torre 1 · 101 |
+| `admin@conjuntogrande.test` | Administración |
+| `residente@conjuntogrande.test` | Residente, propietario de Torre 1 · 101 |
 
 La unidad 101 trae además un familiar, dos vehículos, una mascota y dos cuotas de administración
 (la del mes anterior abonada y vencida, la del mes actual pendiente) para ver la app de residentes.

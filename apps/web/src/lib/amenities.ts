@@ -1,4 +1,4 @@
-import type { AmenityRules } from '@apartadock/shared'
+import type { AmenityRules } from '@aptoph/shared'
 
 const WEEKDAYS: Record<string, string> = {
   monday: 'lunes',

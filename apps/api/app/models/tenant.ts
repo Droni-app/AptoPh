@@ -1,7 +1,7 @@
 import { TenantSchema } from '#database/schema'
 import { hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
-import type { TenantStatus } from '@apartadock/shared'
+import type { TenantStatus } from '@aptoph/shared'
 import Enrollment from '#models/enrollment'
 import Building from '#models/building'
 import Unit from '#models/unit'

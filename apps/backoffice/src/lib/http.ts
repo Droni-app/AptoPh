@@ -1,4 +1,4 @@
-import type { ApiErrorBody } from '@apartadock/shared'
+import type { ApiErrorBody } from '@aptoph/shared'
 import { config } from '@/lib/config'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'

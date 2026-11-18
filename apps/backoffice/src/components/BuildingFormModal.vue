@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, useToast } from '@dronico/droni-kit'
-import type { Building } from '@apartadock/shared'
+import type { Building } from '@aptoph/shared'
 import { buildingsApi } from '@/api/backoffice'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 

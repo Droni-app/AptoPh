@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { DuiAlert, DuiButton, DuiTable, useToast, type TableColumn } from '@dronico/droni-kit'
-import type { Building } from '@apartadock/shared'
+import type { Building } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import BuildingFormModal from '@/components/BuildingFormModal.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'

@@ -1,7 +1,7 @@
 import { DocumentSchema } from '#database/schema'
 import { belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import type { DOCUMENT_CATEGORIES, DOCUMENT_VISIBILITIES, ValueOf } from '@apartadock/shared'
+import type { DOCUMENT_CATEGORIES, DOCUMENT_VISIBILITIES, ValueOf } from '@aptoph/shared'
 import User from '#models/user'
 
 export default class Document extends DocumentSchema {

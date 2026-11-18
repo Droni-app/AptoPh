@@ -1,7 +1,7 @@
 import { EnrollmentSchema } from '#database/schema'
 import { belongsTo, scope } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import type { EnrollmentRole } from '@apartadock/shared'
+import type { EnrollmentRole } from '@aptoph/shared'
 import Tenant from '#models/tenant'
 import User from '#models/user'
 

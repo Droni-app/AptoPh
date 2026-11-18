@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { ResidentHome } from '@apartadock/shared'
+import type { ResidentHome } from '@aptoph/shared'
 import { residentApi } from '@/api/resident'
 import { unitName } from '@/lib/format'
 

@@ -1,5 +1,5 @@
 import vine from '@vinejs/vine'
-import { DOCUMENT_TYPES, OCCUPANT_RELATIONSHIPS } from '@apartadock/shared'
+import { DOCUMENT_TYPES, OCCUPANT_RELATIONSHIPS } from '@aptoph/shared'
 
 const fields = () => ({
   fullName: vine.string().trim().minLength(2).maxLength(150),

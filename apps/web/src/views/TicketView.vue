@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { DuiAlert, DuiBadge, DuiButton, DuiCard, DuiForm, DuiSkeleton, DuiTextarea } from '@dronico/droni-kit'
-import { TICKET_STATUS_LABELS, TICKET_TYPE_LABELS, type ResidentTicketDetail } from '@apartadock/shared'
+import { TICKET_STATUS_LABELS, TICKET_TYPE_LABELS, type ResidentTicketDetail } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'

@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import vine from '@vinejs/vine'
-import { BACKOFFICE_ROLES, ENROLLMENT_STATUSES, EnrollmentRole } from '@apartadock/shared'
+import { BACKOFFICE_ROLES, ENROLLMENT_STATUSES, EnrollmentRole } from '@aptoph/shared'
 import MemberTransformer from '#transformers/member_transformer'
 
 const listMembersValidator = vine.create({

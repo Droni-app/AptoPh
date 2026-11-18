@@ -12,7 +12,7 @@ import {
   type Unit,
   type UnitStatus,
   type UnitType,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import UnitFormModal from '@/components/UnitFormModal.vue'
 import { buildingsApi, unitsApi } from '@/api/backoffice'

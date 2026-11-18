@@ -1,7 +1,7 @@
 import { AmenityBookingSchema } from '#database/schema'
 import { belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import type { BOOKING_STATUSES, ValueOf } from '@apartadock/shared'
+import type { BOOKING_STATUSES, ValueOf } from '@aptoph/shared'
 import Amenity from '#models/amenity'
 import Unit from '#models/unit'
 import User from '#models/user'

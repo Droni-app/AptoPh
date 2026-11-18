@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { DuiAlert, DuiBadge, DuiButton } from '@dronico/droni-kit'
-import { ROLE_LABELS } from '@apartadock/shared'
+import { ROLE_LABELS } from '@aptoph/shared'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
 

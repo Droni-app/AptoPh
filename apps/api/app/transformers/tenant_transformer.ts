@@ -1,5 +1,5 @@
 import type Tenant from '#models/tenant'
-import type { EnrollmentRole } from '@apartadock/shared'
+import type { EnrollmentRole } from '@aptoph/shared'
 import { BaseTransformer } from '@adonisjs/core/transformers'
 
 /**

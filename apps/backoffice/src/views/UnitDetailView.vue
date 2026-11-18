@@ -9,7 +9,7 @@ import {
   type Building,
   type Unit,
   type UnitOccupant,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import UnitFormModal from '@/components/UnitFormModal.vue'
 import OccupantFormModal from '@/components/OccupantFormModal.vue'

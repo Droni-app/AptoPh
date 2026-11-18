@@ -18,7 +18,7 @@ import type {
   TicketType,
   VehicleType,
   VisitType,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import { api } from '@/lib/http'
 
 /**

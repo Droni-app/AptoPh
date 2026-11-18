@@ -1,5 +1,5 @@
 {
-  "name": "apartadock",
+  "name": "aptoph",
   "private": true,
   "packageManager": "pnpm@12.18.0",
   "engines": {
@@ -7,15 +7,15 @@
   },
   "scripts": {
     "dev": "turbo run dev",
-    "dev:api": "turbo run dev --filter=@apartadock/api",
-    "dev:web": "turbo run dev --filter=@apartadock/web",
-    "dev:backoffice": "turbo run dev --filter=@apartadock/backoffice",
-    "dev:landing": "turbo run dev --filter=@apartadock/landing",
+    "dev:api": "turbo run dev --filter=@aptoph/api",
+    "dev:web": "turbo run dev --filter=@aptoph/web",
+    "dev:backoffice": "turbo run dev --filter=@aptoph/backoffice",
+    "dev:landing": "turbo run dev --filter=@aptoph/landing",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "db:migrate": "pnpm --filter @apartadock/api db:migrate"
+    "db:migrate": "pnpm --filter @aptoph/api db:migrate"
   },
   "devDependencies": {
     "turbo": "^2.5.0"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DuiButton, DuiCard } from '@dronico/droni-kit'
-import { ROLE_LABELS } from '@apartadock/shared'
+import { ROLE_LABELS } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'

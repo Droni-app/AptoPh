@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { DuiAlert, DuiBadge, DuiTable, DuiTabs, type TableColumn } from '@dronico/droni-kit'
-import { ENROLLMENT_STATUS_LABELS, ROLE_LABELS, type ApiPaginated, type Member } from '@apartadock/shared'
+import { ENROLLMENT_STATUS_LABELS, ROLE_LABELS, type ApiPaginated, type Member } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import { membersApi } from '@/api/backoffice'
 import { errorMessage } from '@/lib/errors'

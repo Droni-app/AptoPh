@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { PARCEL_STATUSES } from '@apartadock/shared'
+import { PARCEL_STATUSES } from '@aptoph/shared'
 import {
   checkIn,
   tenantForeign,

@@ -1,7 +1,7 @@
 import { ChargeConceptSchema } from '#database/schema'
 import { hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
-import type { CHARGE_CALCULATIONS, CHARGE_CONCEPT_TYPES, ValueOf } from '@apartadock/shared'
+import type { CHARGE_CALCULATIONS, CHARGE_CONCEPT_TYPES, ValueOf } from '@aptoph/shared'
 import Charge from '#models/charge'
 
 export default class ChargeConcept extends ChargeConceptSchema {

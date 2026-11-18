@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { DOCUMENT_TYPES, OCCUPANT_RELATIONSHIPS } from '@apartadock/shared'
+import { DOCUMENT_TYPES, OCCUPANT_RELATIONSHIPS } from '@aptoph/shared'
 import {
   checkIn,
   tenantForeign,

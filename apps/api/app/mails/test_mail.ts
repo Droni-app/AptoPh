@@ -4,7 +4,7 @@ import { BaseMail } from '@adonisjs/mail'
  * Used by `node ace mail:test <email>` to verify the SMTP configuration
  */
 export default class TestMail extends BaseMail {
-  subject = 'Correo de prueba · ApartaDock'
+  subject = 'Correo de prueba · AptoPH'
 
   constructor(private recipient: string) {
     super()
@@ -16,6 +16,6 @@ export default class TestMail extends BaseMail {
     this.message
       .to(this.recipient)
       .htmlView('emails/test', { sentAt })
-      .text(`Correo de prueba de ApartaDock. El envío SMTP funciona. Enviado el ${sentAt}.`)
+      .text(`Correo de prueba de AptoPH. El envío SMTP funciona. Enviado el ${sentAt}.`)
   }
 }

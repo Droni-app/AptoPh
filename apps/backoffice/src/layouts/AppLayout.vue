@@ -9,7 +9,7 @@ import {
   DuiNavbar,
   type NavbarItem,
 } from '@dronico/droni-kit'
-import { ROLE_LABELS } from '@apartadock/shared'
+import { ROLE_LABELS } from '@aptoph/shared'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
 import { useTheme } from '@/composables/useTheme'
@@ -52,7 +52,7 @@ async function switchTenant() {
           <span class="text-2xl text-violet-600 dark:text-violet-400" aria-hidden="true">
             <i class="mdi mdi-office-building-cog" />
           </span>
-          <span class="hidden sm:inline">ApartaDock</span>
+          <span class="hidden sm:inline">AptoPH</span>
         </RouterLink>
       </template>
       <template #actions>

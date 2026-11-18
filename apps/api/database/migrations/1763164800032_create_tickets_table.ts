@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { TICKET_PRIORITIES, TICKET_STATUSES, TICKET_TYPES } from '@apartadock/shared'
+import { TICKET_PRIORITIES, TICKET_STATUSES, TICKET_TYPES } from '@aptoph/shared'
 import {
   checkIn,
   tenantForeign,

@@ -103,7 +103,7 @@ router.beforeEach(async (to) => {
 })
 
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} · ApartaDock` : 'ApartaDock · Administración'
+  document.title = to.meta.title ? `${to.meta.title} · AptoPH` : 'AptoPH · Administración'
 })
 
 export default router

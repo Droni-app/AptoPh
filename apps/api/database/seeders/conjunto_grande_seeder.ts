@@ -13,10 +13,10 @@ import Charge from '#models/charge'
 import { DateTime } from 'luxon'
 
 /**
- * LOCAL TEST DATA ONLY: "Fontibón Reservado", 5 towers x 20 floors x 8 apartments = 800 units,
+ * LOCAL TEST DATA ONLY: "Conjunto Grande", 5 towers x 20 floors x 8 apartments = 800 units,
  * plus an administrator and a resident to log in with.
  *
- *   node ace db:seed --files database/seeders/fontibon_reservado_seeder.ts
+ *   node ace db:seed --files database/seeders/conjunto_grande_seeder.ts
  *
  * Idempotent: running it again updates the same rows instead of duplicating them.
  */
@@ -27,7 +27,7 @@ const FLOORS = 20
 const AREAS_BY_POSITION = [82.4, 64.1, 64.1, 71.3, 71.3, 64.1, 64.1, 82.4]
 const UNITS_PER_FLOOR = AREAS_BY_POSITION.length
 
-export const FONTIBON_PASSWORD = 'password123'
+export const CONJUNTO_GRANDE_PASSWORD = 'password123'
 
 /** Unit code: floor + 2-digit position, e.g. floor 1 → 101..108, floor 20 → 2001..2008 */
 function unitCode(floor: number, position: number) {
@@ -51,10 +51,10 @@ export default class extends BaseSeeder {
 
   async run() {
     const tenant = await Tenant.updateOrCreate(
-      { slug: 'fontibon-reservado' },
+      { slug: 'conjunto-grande' },
       {
-        name: 'Fontibón Reservado',
-        legalName: 'Conjunto Residencial Fontibón Reservado P.H.',
+        name: 'Conjunto Grande',
+        legalName: 'Conjunto Residencial Grande P.H.',
         propertyType: 'residential',
         city: 'Bogotá',
         countryCode: 'CO',
@@ -63,12 +63,12 @@ export default class extends BaseSeeder {
     )
 
     const admin = await User.updateOrCreate(
-      { email: 'admin@fontibonreservado.test' },
-      { fullName: 'Andrea Administradora', password: FONTIBON_PASSWORD }
+      { email: 'admin@conjuntogrande.test' },
+      { fullName: 'Andrea Administradora', password: CONJUNTO_GRANDE_PASSWORD }
     )
     const resident = await User.updateOrCreate(
-      { email: 'residente@fontibonreservado.test' },
-      { fullName: 'Ricardo Residente', password: FONTIBON_PASSWORD }
+      { email: 'residente@conjuntogrande.test' },
+      { fullName: 'Ricardo Residente', password: CONJUNTO_GRANDE_PASSWORD }
     )
 
     await Enrollment.updateOrCreateMany(

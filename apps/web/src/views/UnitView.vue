@@ -21,7 +21,7 @@ import {
   type ResidentPet,
   type ResidentUnitDetail,
   type ResidentVehicle,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import BalanceBadge from '@/components/BalanceBadge.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import HouseholdMemberModal from '@/components/HouseholdMemberModal.vue'

@@ -8,7 +8,7 @@ import {
   type ResidentParcel,
   type ResidentVisit,
   type VisitStatus,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import VisitFormModal from '@/components/VisitFormModal.vue'

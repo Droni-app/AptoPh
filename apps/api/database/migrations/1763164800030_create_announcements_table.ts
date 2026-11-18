@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { ANNOUNCEMENT_AUDIENCES } from '@apartadock/shared'
+import { ANNOUNCEMENT_AUDIENCES } from '@aptoph/shared'
 import { checkIn, tenantTable, timestamps, userForeign } from '#database/tenant_schema'
 
 export default class extends BaseSchema {

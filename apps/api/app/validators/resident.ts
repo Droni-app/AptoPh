@@ -5,7 +5,7 @@ import {
   TICKET_TYPES,
   VEHICLE_TYPES,
   VISIT_TYPES,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 
 /**
  * Validators for the resident app (/api/v1/resident/*)

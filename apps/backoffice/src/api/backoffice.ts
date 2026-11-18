@@ -8,7 +8,7 @@ import type {
   UnitOccupant,
   UnitStatus,
   UnitType,
-} from '@apartadock/shared'
+} from '@aptoph/shared'
 import { api } from '@/lib/http'
 
 export type BuildingInput = { name: string; floors?: number | null; sortOrder?: number }

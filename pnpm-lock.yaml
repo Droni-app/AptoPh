@@ -193,7 +193,7 @@ importers:
       '@adonisjs/shield':
         specifier: ^9.0.0
         version: 9.0.0(3fa134cf3271f89afad03041906e854e)
-      '@apartadock/shared':
+      '@aptoph/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@japa/api-client':
@@ -272,7 +272,7 @@ importers:
 
   apps/backoffice:
     dependencies:
-      '@apartadock/shared':
+      '@aptoph/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@dronico/droni-kit':
@@ -451,7 +451,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@apartadock/shared':
+      '@aptoph/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@dronico/droni-kit':

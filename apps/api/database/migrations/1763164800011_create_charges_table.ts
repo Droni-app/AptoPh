@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { CHARGE_STATUSES } from '@apartadock/shared'
+import { CHARGE_STATUSES } from '@aptoph/shared'
 import {
   checkIn,
   tenantForeign,

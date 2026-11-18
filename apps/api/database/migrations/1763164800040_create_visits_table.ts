@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { VISIT_TYPES } from '@apartadock/shared'
+import { VISIT_TYPES } from '@aptoph/shared'
 import {
   checkIn,
   tenantForeign,

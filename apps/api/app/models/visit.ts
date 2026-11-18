@@ -1,7 +1,7 @@
 import { VisitSchema } from '#database/schema'
 import { belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import type { VISIT_TYPES, ValueOf } from '@apartadock/shared'
+import type { VISIT_TYPES, ValueOf } from '@aptoph/shared'
 import Unit from '#models/unit'
 import User from '#models/user'
 

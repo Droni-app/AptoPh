@@ -8,7 +8,7 @@ pnpm dev:api   # API en :3333
 pnpm dev:web   # esta app en http://localhost:5173
 ```
 
-Usuario de prueba local (seeder `fontibon_reservado_seeder`): `residente@fontibonreservado.test` /
+Usuario de prueba local (seeder `conjunto_grande_seeder`): `residente@conjuntogrande.test` /
 `password123`.
 
 ## Pantallas

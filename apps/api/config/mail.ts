@@ -18,7 +18,7 @@ const mailConfig = defineConfig({
    * Shared with every email template
    */
   globals: {
-    brandName: 'ApartaDock',
+    brandName: 'AptoPH',
     appUrl: env.get('APP_URL'),
   },
 

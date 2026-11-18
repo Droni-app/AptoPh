@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { BACKOFFICE_ROLES, type EnrollmentRole, type TenantSummary } from '@apartadock/shared'
+import { BACKOFFICE_ROLES, type EnrollmentRole, type TenantSummary } from '@aptoph/shared'
 import { api } from '@/lib/http'
 
-const CURRENT_KEY = 'apartadock.backoffice.tenant'
+const CURRENT_KEY = 'aptoph.backoffice.tenant'
 
 function readCurrent() {
   try {

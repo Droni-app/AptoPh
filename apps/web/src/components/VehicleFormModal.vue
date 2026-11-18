@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, DuiSelect } from '@dronico/droni-kit'
-import { VEHICLE_TYPES, VEHICLE_TYPE_LABELS, type ResidentVehicle, type VehicleType } from '@apartadock/shared'
+import { VEHICLE_TYPES, VEHICLE_TYPE_LABELS, type ResidentVehicle, type VehicleType } from '@aptoph/shared'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
 
