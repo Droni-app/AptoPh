@@ -4,6 +4,7 @@ import db from '@adonisjs/lucid/services/db'
 import Enrollment from '#models/enrollment'
 import Tenant from '#models/tenant'
 import User from '#models/user'
+import { resetRateLimits } from '#tests/helpers'
 
 const PASSWORD = 'secret-password'
 
@@ -27,6 +28,7 @@ async function createResident() {
 
 test.group('Auth · login and logout', (group) => {
   group.each.setup(() => testUtils.db().withGlobalTransaction())
+  group.each.setup(() => resetRateLimits())
 
   test('returns an access token and the profile; the token opens the API', async ({
     client,

@@ -18,6 +18,23 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   @hasMany(() => Enrollment)
   declare enrollments: HasMany<typeof Enrollment>
 
+  /** Invited users have no password until they accept the invitation */
+  get hasPassword() {
+    return Boolean(this.password)
+  }
+
+  /**
+   * Users without a password cannot sign in. Hashes anyway so the response takes
+   * as long as a wrong password (no hint that the account exists).
+   */
+  override async verifyPassword(plainPassword: string) {
+    if (!this.password) {
+      await hash.make(plainPassword)
+      return false
+    }
+    return super.verifyPassword(plainPassword)
+  }
+
   get isBlocked() {
     return this.status === 'blocked' || this.deletedAt !== null
   }

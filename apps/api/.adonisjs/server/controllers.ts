@@ -4,15 +4,18 @@
  */
 
 export const controllers = {
+  Account: () => import('#controllers/account_controller'),
   Auth: () => import('#controllers/auth_controller'),
   backoffice: {
     Buildings: () => import('#controllers/backoffice/buildings_controller'),
     Dashboard: () => import('#controllers/backoffice/dashboard_controller'),
     Members: () => import('#controllers/backoffice/members_controller'),
     Subscription: () => import('#controllers/backoffice/subscription_controller'),
+    TenantSettings: () => import('#controllers/backoffice/tenant_settings_controller'),
     UnitOccupants: () => import('#controllers/backoffice/unit_occupants_controller'),
     Units: () => import('#controllers/backoffice/units_controller'),
   },
+  Invitations: () => import('#controllers/invitations_controller'),
   MyTenants: () => import('#controllers/my_tenants_controller'),
   Profile: () => import('#controllers/profile_controller'),
   resident: {

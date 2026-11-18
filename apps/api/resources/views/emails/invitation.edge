@@ -1,0 +1,13 @@
+@component('components/email_layout', { title: 'Invitación a ' + tenantName })
+  <h1 style="margin:0 0 12px;font-size:20px;">Hola, {{ firstName }}</h1>
+  <p style="margin:0 0 12px;">
+    @if(invitedBy)
+      {{ invitedBy }} te invitó a <strong>{{ tenantName }}</strong> en {{ brandName }} como <strong>{{ roleLabel }}</strong>.
+    @else
+      Te invitaron a <strong>{{ tenantName }}</strong> en {{ brandName }} como <strong>{{ roleLabel }}</strong>.
+    @end
+  </p>
+  <p style="margin:0 0 20px;">{{ purpose }}</p>
+  @!component('components/email_button', { url: acceptUrl, label: needsPassword ? 'Aceptar y crear mi contraseña' : 'Aceptar invitación' })
+  <p style="margin:0;color:#5b6475;font-size:13px;">El enlace vence el {{ expiresOn }}. Si no esperabas esta invitación, puedes ignorar este correo.</p>
+@end

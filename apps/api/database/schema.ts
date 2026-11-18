@@ -258,7 +258,7 @@ export class DocumentSchema extends BaseModel {
 }
 
 export class EnrollmentSchema extends BaseModel {
-  static $columns = ['acceptedAt', 'createdAt', 'endsOn', 'id', 'invitationTokenHash', 'invitedById', 'role', 'startsOn', 'status', 'tenantId', 'title', 'updatedAt', 'userId'] as const
+  static $columns = ['acceptedAt', 'createdAt', 'endsOn', 'id', 'invitationExpiresAt', 'invitationSentAt', 'invitationTokenHash', 'invitedById', 'role', 'startsOn', 'status', 'tenantId', 'title', 'updatedAt', 'userId'] as const
   $columns = EnrollmentSchema.$columns
   @column.dateTime()
   declare acceptedAt: DateTime | null
@@ -268,6 +268,10 @@ export class EnrollmentSchema extends BaseModel {
   declare endsOn: DateTime | null
   @column({ isPrimary: true })
   declare id: string
+  @column.dateTime()
+  declare invitationExpiresAt: DateTime | null
+  @column.dateTime()
+  declare invitationSentAt: DateTime | null
   @column()
   declare invitationTokenHash: string | null
   @column()
@@ -392,6 +396,17 @@ export class PetSchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column()
   declare vaccinationFileKey: string | null
+}
+
+export class RateLimitSchema extends BaseModel {
+  static $columns = ['expire', 'key', 'points'] as const
+  $columns = RateLimitSchema.$columns
+  @column()
+  declare expire: bigint | number | null
+  @column({ isPrimary: true })
+  declare key: string
+  @column()
+  declare points: number
 }
 
 export class SubscriptionSchema extends BaseModel {
@@ -586,6 +601,25 @@ export class UnitSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class UserTokenSchema extends BaseModel {
+  static $columns = ['createdAt', 'expiresAt', 'id', 'tokenHash', 'type', 'usedAt', 'userId'] as const
+  $columns = UserTokenSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare expiresAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare tokenHash: string
+  @column()
+  declare type: string
+  @column.dateTime()
+  declare usedAt: DateTime | null
+  @column()
+  declare userId: string
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['avatarFileKey', 'createdAt', 'deletedAt', 'documentNumber', 'documentType', 'email', 'emailVerifiedAt', 'fullName', 'id', 'isPlatformAdmin', 'lastLoginAt', 'password', 'phone', 'status', 'updatedAt'] as const
   $columns = UserSchema.$columns
@@ -612,7 +646,7 @@ export class UserSchema extends BaseModel {
   @column.dateTime()
   declare lastLoginAt: DateTime | null
   @column({ serializeAs: null })
-  declare password: string
+  declare password: string | null
   @column()
   declare phone: string | null
   @column()

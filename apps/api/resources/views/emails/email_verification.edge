@@ -1,0 +1,6 @@
+@component('components/email_layout', { title: 'Confirma tu correo' })
+  <h1 style="margin:0 0 12px;font-size:20px;">Hola, {{ firstName }}</h1>
+  <p style="margin:0 0 20px;">Confirma que <strong>{{ email }}</strong> es tu correo. Así podremos enviarte avisos importantes y ayudarte a recuperar tu cuenta.</p>
+  @!component('components/email_button', { url: verifyUrl, label: 'Confirmar mi correo' })
+  <p style="margin:0;color:#5b6475;font-size:13px;">El enlace vence en {{ validFor }}.</p>
+@end

@@ -14,6 +14,7 @@ import type {
   EnrollmentStatus,
   OccupantRelationship,
   PetSpecies,
+  PropertyType,
   UnitStatus,
   UnitType,
   VehicleType,
@@ -29,11 +30,28 @@ export const ROLE_LABELS: Record<EnrollmentRole, string> = {
   resident: 'Residente',
 }
 
+/** What each role can do, shown when inviting someone */
+export const ROLE_DESCRIPTIONS: Record<EnrollmentRole, string> = {
+  administrator: 'Gestiona todo el conjunto: censo, personas, cartera y configuración.',
+  council_member: 'Consulta la información del conjunto en el panel de administración.',
+  accountant: 'Consulta la información del conjunto en el panel de administración.',
+  fiscal_reviewer: 'Consulta la información del conjunto en el panel de administración.',
+  staff: 'Consulta la información del conjunto en el panel de administración.',
+  security_guard: 'Consulta la información del conjunto en el panel de administración.',
+  resident: 'Usa el portal de residentes: estado de cuenta, reservas, visitas y PQRS.',
+}
+
 export const ENROLLMENT_STATUS_LABELS: Record<EnrollmentStatus, string> = {
   invited: 'Invitado',
   active: 'Activo',
   suspended: 'Suspendido',
-  revoked: 'Revocado',
+  revoked: 'Retirado',
+}
+
+export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
+  residential: 'Residencial',
+  commercial: 'Comercial',
+  mixed: 'Mixto',
 }
 
 export const UNIT_TYPE_LABELS: Record<UnitType, string> = {

@@ -26,11 +26,77 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"logout"]],
     types: placeholder as Registry['auth.logout']['types'],
   },
+  'auth.password.forgot': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/password/forgot',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"password"],[0,"forgot"]],
+    types: placeholder as Registry['auth.password.forgot']['types'],
+  },
+  'auth.password.reset': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/password/reset',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"password"],[0,"reset"]],
+    types: placeholder as Registry['auth.password.reset']['types'],
+  },
+  'auth.email.verify': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/email/verify',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"email"],[0,"verify"]],
+    types: placeholder as Registry['auth.email.verify']['types'],
+  },
+  'invitations.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/invitations/:token',
+    tokens: [[0,"api"],[0,"v1"],[0,"invitations"],[1,"token"]],
+    types: placeholder as Registry['invitations.show']['types'],
+  },
+  'invitations.accept': {
+    methods: ["POST"],
+    pattern: '/api/v1/invitations/accept',
+    tokens: [[0,"api"],[0,"v1"],[0,"invitations"],[0,"accept"]],
+    types: placeholder as Registry['invitations.accept']['types'],
+  },
   'profile.show': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/account/profile',
     tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"profile"]],
     types: placeholder as Registry['profile.show']['types'],
+  },
+  'profile.update': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/account/profile',
+    tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"profile"]],
+    types: placeholder as Registry['profile.update']['types'],
+  },
+  'profile.password': {
+    methods: ["PUT"],
+    pattern: '/api/v1/account/password',
+    tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"password"]],
+    types: placeholder as Registry['profile.password']['types'],
+  },
+  'profile.sessions.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/account/sessions',
+    tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"sessions"]],
+    types: placeholder as Registry['profile.sessions.index']['types'],
+  },
+  'profile.sessions.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/account/sessions/:sessionId',
+    tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"sessions"],[1,"sessionId"]],
+    types: placeholder as Registry['profile.sessions.destroy']['types'],
+  },
+  'profile.sessions.destroyOthers': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/account/sessions',
+    tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"sessions"]],
+    types: placeholder as Registry['profile.sessions.destroyOthers']['types'],
+  },
+  'profile.email.verification': {
+    methods: ["POST"],
+    pattern: '/api/v1/account/email/verification',
+    tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"email"],[0,"verification"]],
+    types: placeholder as Registry['profile.email.verification']['types'],
   },
   'profile.tenants': {
     methods: ["GET","HEAD"],
@@ -230,6 +296,12 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"subscription"]],
     types: placeholder as Registry['subscription.show']['types'],
   },
+  'settings.tenant': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/settings/tenant',
+    tokens: [[0,"api"],[0,"v1"],[0,"settings"],[0,"tenant"]],
+    types: placeholder as Registry['settings.tenant']['types'],
+  },
   'subscription.activation': {
     methods: ["POST"],
     pattern: '/api/v1/subscription/activation',
@@ -289,6 +361,36 @@ const routes = {
     pattern: '/api/v1/units/:unitId/occupants/:id',
     tokens: [[0,"api"],[0,"v1"],[0,"units"],[1,"unitId"],[0,"occupants"],[1,"id"]],
     types: placeholder as Registry['occupants.destroy']['types'],
+  },
+  'members.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/members',
+    tokens: [[0,"api"],[0,"v1"],[0,"members"]],
+    types: placeholder as Registry['members.store']['types'],
+  },
+  'members.update': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/members/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"members"],[1,"id"]],
+    types: placeholder as Registry['members.update']['types'],
+  },
+  'members.status': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/members/:id/status',
+    tokens: [[0,"api"],[0,"v1"],[0,"members"],[1,"id"],[0,"status"]],
+    types: placeholder as Registry['members.status']['types'],
+  },
+  'members.invitation': {
+    methods: ["POST"],
+    pattern: '/api/v1/members/:id/invitation',
+    tokens: [[0,"api"],[0,"v1"],[0,"members"],[1,"id"],[0,"invitation"]],
+    types: placeholder as Registry['members.invitation']['types'],
+  },
+  'settings.tenant.update': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/settings/tenant',
+    tokens: [[0,"api"],[0,"v1"],[0,"settings"],[0,"tenant"]],
+    types: placeholder as Registry['settings.tenant.update']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

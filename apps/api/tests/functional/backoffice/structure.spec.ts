@@ -164,7 +164,7 @@ test.group('Back-office · permissions', (group) => {
       .header('X-Tenant-Id', tenant.id)
     staff.assertStatus(200)
     assert.sameMembers(
-      staff.body().data.map((member: { role: string }) => member.role),
+      (staff.body().data as Array<{ role: string }>).map((member) => member.role),
       ['administrator', 'staff']
     )
   })

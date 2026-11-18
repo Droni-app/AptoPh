@@ -25,8 +25,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   // CORS: comma-separated origins allowed outside development (the web apps)
   CORS_ORIGINS: Env.schema.string.optional(),
 
-  // Public URL of the back-office, linked from the welcome mail (default: http://localhost:5174)
+  // Public URLs of the web apps, for links sent by email (invitations, password reset…)
+  // Defaults: http://localhost:5174 (back-office) and http://localhost:5173 (residents)
   BACKOFFICE_URL: Env.schema.string.optional({ format: 'url', tld: false }),
+  RESIDENTS_URL: Env.schema.string.optional({ format: 'url', tld: false }),
 
   // Database (PostgreSQL)
   DB_HOST: Env.schema.string({ format: 'host' }),
@@ -49,4 +51,11 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Sales inbox notified when a conjunto asks to activate a paid plan (optional)
   SALES_EMAIL: Env.schema.string.optional({ format: 'email' }),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the limiter package
+  |----------------------------------------------------------
+  */
+  LIMITER_STORE: Env.schema.enum(['database', 'memory'] as const),
 })

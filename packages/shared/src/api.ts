@@ -72,11 +72,108 @@ export type UserProfile = {
   fullName: string
   email: string
   phone: string | null
+  documentType: DocumentType | null
+  documentNumber: string | null
+  /** null until the person confirms the email (link sent by email) */
+  emailVerifiedAt: string | null
   isPlatformAdmin: boolean
   initials: string
   createdAt: string
   updatedAt: string | null
 }
+
+/** PATCH /api/v1/account/profile (the email is the login and does not change here) */
+export type ProfileInput = {
+  fullName: string
+  phone: string | null
+  documentType: DocumentType | null
+  documentNumber: string | null
+}
+
+/** PUT /api/v1/account/password */
+export type ChangePasswordInput = { currentPassword: string; password: string }
+
+/** GET /api/v1/account/sessions: open sessions (access tokens) of the person */
+export type AccountSession = {
+  id: string
+  /** Label sent at login: "Backoffice", "Portal de residentes"… */
+  device: string
+  createdAt: string
+  lastUsedAt: string | null
+  expiresAt: string | null
+  current: boolean
+}
+
+/** Web app that asks for an email link; the link opens in that app */
+export type ClientApp = 'backoffice' | 'web'
+
+/** POST /api/v1/auth/password/forgot */
+export type ForgotPasswordInput = { email: string; app?: ClientApp }
+
+/** POST /api/v1/auth/password/reset (answers with an `AuthSession`) */
+export type ResetPasswordInput = { token: string; password: string; device?: string }
+
+/** GET /api/v1/invitations/:token */
+export type InvitationPreview = {
+  tenant: { id: string; name: string }
+  role: EnrollmentRole
+  roleLabel: string
+  title: string | null
+  email: string
+  fullName: string
+  invitedBy: string | null
+  /** New accounts create their password when accepting */
+  needsPassword: boolean
+  expiresAt: string
+}
+
+/** POST /api/v1/invitations/accept */
+export type AcceptInvitationInput = {
+  token: string
+  fullName?: string
+  password?: string
+  device?: string
+}
+
+export type InvitationSession = AuthSession & { tenantId: string; role: EnrollmentRole }
+
+/** POST /api/v1/members */
+export type InviteMemberInput = {
+  email: string
+  fullName: string
+  role: EnrollmentRole
+  title?: string | null
+  startsOn?: string | null
+  endsOn?: string | null
+  /** Residents: link the account to an occupant of a unit */
+  occupantId?: string | null
+}
+
+/** PATCH /api/v1/members/:id */
+export type UpdateMemberInput = { title?: string | null; startsOn?: string | null; endsOn?: string | null }
+
+/** PATCH /api/v1/members/:id/status */
+export type MemberStatusChange = 'active' | 'suspended' | 'revoked'
+
+/** GET/PATCH /api/v1/settings/tenant */
+export type TenantSettings = {
+  id: string
+  name: string
+  slug: string
+  legalName: string | null
+  taxId: string | null
+  propertyType: PropertyType
+  address: string | null
+  city: string | null
+  countryCode: string
+  timezone: string
+  currency: string
+}
+
+export type TenantSettingsInput = Pick<
+  TenantSettings,
+  'name' | 'legalName' | 'taxId' | 'propertyType' | 'address' | 'city'
+>
 
 export type TenantSummary = {
   id: string
@@ -144,6 +241,11 @@ export type Member = {
   startsOn: string | null
   endsOn: string | null
   acceptedAt: string | null
+  /** Pending invitations: when the last email went out and when its link expires */
+  invitationSentAt: string | null
+  invitationExpiresAt: string | null
+  invitationExpired: boolean
+  invitedBy: { id: string; fullName: string } | null
   createdAt: string
   user: { id: string; fullName: string; email: string; phone: string | null } | null
 }

@@ -47,6 +47,71 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['logout']>>>
     }
   }
+  'auth.password.forgot': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/password/forgot'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').forgotPasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').forgotPasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['forgotPassword']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['forgotPassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['forgotPassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auth.password.reset': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/password/reset'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').resetPasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').resetPasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['resetPassword']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['resetPassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['resetPassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auth.email.verify': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/email/verify'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').verifyEmailValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').verifyEmailValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['verifyEmail']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['verifyEmail']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth_controller').default['verifyEmail']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'invitations.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/invitations/:token'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/invitations_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/invitations_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/invitations_controller').default['show']>>>
+    }
+  }
+  'invitations.accept': {
+    methods: ["POST"]
+    pattern: '/api/v1/invitations/accept'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').acceptInvitationValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').acceptInvitationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/invitations_controller').default['accept']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/invitations_controller').default['accept']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/invitations_controller').default['accept']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'profile.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/account/profile'
@@ -58,6 +123,84 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/profile_controller').default['show']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/profile_controller').default['show']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/profile_controller').default['show']>>>
+    }
+  }
+  'profile.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/account/profile'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').updateProfileValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').updateProfileValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account_controller').default['updateProfile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account_controller').default['updateProfile']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/account_controller').default['updateProfile']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.password': {
+    methods: ["PUT"]
+    pattern: '/api/v1/account/password'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').changePasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').changePasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account_controller').default['changePassword']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account_controller').default['changePassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/account_controller').default['changePassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.sessions.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/account/sessions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account_controller').default['sessions']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account_controller').default['sessions']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/account_controller').default['sessions']>>>
+    }
+  }
+  'profile.sessions.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/account/sessions/:sessionId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { sessionId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account_controller').default['destroySession']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account_controller').default['destroySession']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/account_controller').default['destroySession']>>>
+    }
+  }
+  'profile.sessions.destroyOthers': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/account/sessions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account_controller').default['destroyOtherSessions']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account_controller').default['destroyOtherSessions']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/account_controller').default['destroyOtherSessions']>>>
+    }
+  }
+  'profile.email.verification': {
+    methods: ["POST"]
+    pattern: '/api/v1/account/email/verification'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').sendVerificationValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').sendVerificationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/account_controller').default['sendVerification']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/account_controller').default['sendVerification']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/account_controller').default['sendVerification']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'profile.tenants': {
@@ -489,6 +632,19 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['show']>>>
     }
   }
+  'settings.tenant': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/settings/tenant'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['show']>>>
+    }
+  }
   'subscription.activation': {
     methods: ["POST"]
     pattern: '/api/v1/subscription/activation'
@@ -617,6 +773,71 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['destroy']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/unit_occupants_controller').default['destroy']>>>
+    }
+  }
+  'members.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/members'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/member').inviteMemberValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/member').inviteMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'members.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/members/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/member').updateMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/member').updateMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'members.status': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/members/:id/status'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/member').changeMemberStatusValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/member').changeMemberStatusValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['changeStatus']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['changeStatus']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['changeStatus']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'members.invitation': {
+    methods: ["POST"]
+    pattern: '/api/v1/members/:id/invitation'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['resendInvitation']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['resendInvitation']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/members_controller').default['resendInvitation']>>>
+    }
+  }
+  'settings.tenant.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/settings/tenant'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['update']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['update']>>>
     }
   }
 }

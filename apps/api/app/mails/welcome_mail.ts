@@ -14,7 +14,8 @@ export default class WelcomeMail extends BaseMail {
     private user: User,
     private tenant: Tenant,
     private subscription: Subscription,
-    private backofficeUrl: string
+    private backofficeUrl: string,
+    readonly verifyUrl: string
   ) {
     super()
   }
@@ -37,6 +38,7 @@ export default class WelcomeMail extends BaseMail {
         trialDays: TRIAL_DAYS,
         trialEndsOn,
         backofficeUrl: this.backofficeUrl,
+        verifyUrl: this.verifyUrl,
       })
       .text(
         [
@@ -44,6 +46,7 @@ export default class WelcomeMail extends BaseMail {
           `Ya creamos ${this.tenant.name} en AptoPH. Tienes ${TRIAL_DAYS} días de prueba gratis, hasta el ${trialEndsOn}, con todas las funciones.`,
           `Entra al panel de administración: ${this.backofficeUrl}`,
           'Primeros pasos: crea las torres, carga las unidades e invita al consejo.',
+          `Confirma tu correo: ${this.verifyUrl}`,
         ].join('\n\n')
       )
   }

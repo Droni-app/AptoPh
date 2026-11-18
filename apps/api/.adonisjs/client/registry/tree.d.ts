@@ -6,9 +6,30 @@ export interface ApiDefinition {
     login: typeof routes['auth.login']
     signup: typeof routes['auth.signup']
     logout: typeof routes['auth.logout']
+    password: {
+      forgot: typeof routes['auth.password.forgot']
+      reset: typeof routes['auth.password.reset']
+    }
+    email: {
+      verify: typeof routes['auth.email.verify']
+    }
+  }
+  invitations: {
+    show: typeof routes['invitations.show']
+    accept: typeof routes['invitations.accept']
   }
   profile: {
     show: typeof routes['profile.show']
+    update: typeof routes['profile.update']
+    password: typeof routes['profile.password']
+    sessions: {
+      index: typeof routes['profile.sessions.index']
+      destroy: typeof routes['profile.sessions.destroy']
+      destroyOthers: typeof routes['profile.sessions.destroyOthers']
+    }
+    email: {
+      verification: typeof routes['profile.email.verification']
+    }
     tenants: typeof routes['profile.tenants']
   }
   tenant: {
@@ -82,9 +103,18 @@ export interface ApiDefinition {
   }
   members: {
     index: typeof routes['members.index']
+    store: typeof routes['members.store']
+    update: typeof routes['members.update']
+    status: typeof routes['members.status']
+    invitation: typeof routes['members.invitation']
   }
   subscription: {
     show: typeof routes['subscription.show']
     activation: typeof routes['subscription.activation']
+  }
+  settings: {
+    tenant: typeof routes['settings.tenant'] & {
+      update: typeof routes['settings.tenant.update']
+    }
   }
 }

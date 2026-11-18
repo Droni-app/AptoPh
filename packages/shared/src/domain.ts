@@ -10,6 +10,8 @@ export type ValueOf<T extends readonly string[]> = T[number]
 export const TENANT_STATUSES = values('trial', 'active', 'suspended', 'cancelled')
 export const PROPERTY_TYPES = values('residential', 'commercial', 'mixed')
 export const ENROLLMENT_STATUSES = values('invited', 'active', 'suspended', 'revoked')
+/** Single-use tokens sent by email */
+export const USER_TOKEN_TYPES = values('password_reset', 'email_verification')
 
 // Physical structure
 export const UNIT_TYPES = values('apartment', 'house', 'commercial', 'parking', 'storage')
@@ -47,6 +49,7 @@ export type UnitType = ValueOf<typeof UNIT_TYPES>
 export type UnitStatus = ValueOf<typeof UNIT_STATUSES>
 export type OccupantRelationship = ValueOf<typeof OCCUPANT_RELATIONSHIPS>
 export type EnrollmentStatus = ValueOf<typeof ENROLLMENT_STATUSES>
+export type UserTokenType = ValueOf<typeof USER_TOKEN_TYPES>
 export type TenantStatus = ValueOf<typeof TENANT_STATUSES>
 export type PropertyType = ValueOf<typeof PROPERTY_TYPES>
 export type DocumentType = ValueOf<typeof DOCUMENT_TYPES>

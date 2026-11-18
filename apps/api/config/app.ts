@@ -20,6 +20,12 @@ export const http = defineConfig({
   generateRequestId: true,
 
   /**
+   * The API is only reachable through DigitalOcean's load balancer: trust its
+   * X-Forwarded-For so request.ip() is the client's IP (used by the rate limits).
+   */
+  trustProxy: () => true,
+
+  /**
    * Allow HTTP method spoofing via the "_method" form/query parameter.
    * This lets HTML forms target PUT/PATCH/DELETE routes while still
    * submitting with POST.

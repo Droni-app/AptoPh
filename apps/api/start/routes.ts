@@ -7,9 +7,12 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import { BACKOFFICE_ROLES, EnrollmentRole } from '@aptoph/shared'
+import { throttlePublic, throttleSignup } from '#start/limiter'
 
 const AuthController = () => import('#controllers/auth_controller')
+const InvitationsController = () => import('#controllers/invitations_controller')
 const ProfileController = () => import('#controllers/profile_controller')
+const AccountController = () => import('#controllers/account_controller')
 const MyTenantsController = () => import('#controllers/my_tenants_controller')
 const DashboardController = () => import('#controllers/backoffice/dashboard_controller')
 const BuildingsController = () => import('#controllers/backoffice/buildings_controller')
@@ -17,6 +20,7 @@ const UnitsController = () => import('#controllers/backoffice/units_controller')
 const UnitOccupantsController = () => import('#controllers/backoffice/unit_occupants_controller')
 const MembersController = () => import('#controllers/backoffice/members_controller')
 const SubscriptionController = () => import('#controllers/backoffice/subscription_controller')
+const TenantSettingsController = () => import('#controllers/backoffice/tenant_settings_controller')
 const ResidentHomeController = () => import('#controllers/resident/home_controller')
 const ResidentUnitsController = () => import('#controllers/resident/units_controller')
 const ResidentVehiclesController = () => import('#controllers/resident/vehicles_controller')
@@ -50,12 +54,32 @@ router
      */
     router
       .group(() => {
+        // Failed logins are limited per email and IP inside the controller
         router.post('login', [AuthController, 'login']).as('login')
-        router.post('signup', [AuthController, 'signup']).as('signup')
+        router.post('signup', [AuthController, 'signup']).as('signup').use(throttleSignup)
         router.post('logout', [AuthController, 'logout']).as('logout').use(middleware.auth())
+        router
+          .group(() => {
+            router.post('password/forgot', [AuthController, 'forgotPassword']).as('password.forgot')
+            router.post('password/reset', [AuthController, 'resetPassword']).as('password.reset')
+            router.post('email/verify', [AuthController, 'verifyEmail']).as('email.verify')
+          })
+          .use(throttlePublic)
       })
       .prefix('auth')
       .as('auth')
+
+    /**
+     * Invitation links (public): see the invitation, accept it
+     */
+    router
+      .group(() => {
+        router.get(':token', [InvitationsController, 'show']).as('show')
+        router.post('accept', [InvitationsController, 'accept']).as('accept')
+      })
+      .prefix('invitations')
+      .as('invitations')
+      .use(throttlePublic)
 
     /**
      * Authenticated user, no tenant needed
@@ -63,6 +87,19 @@ router
     router
       .group(() => {
         router.get('profile', [ProfileController, 'show']).as('show')
+        router.patch('profile', [AccountController, 'updateProfile']).as('update')
+        router.put('password', [AccountController, 'changePassword']).as('password')
+        router.get('sessions', [AccountController, 'sessions']).as('sessions.index')
+        router
+          .delete('sessions/:sessionId', [AccountController, 'destroySession'])
+          .as('sessions.destroy')
+          .where('sessionId', router.matchers.number())
+        router
+          .delete('sessions', [AccountController, 'destroyOtherSessions'])
+          .as('sessions.destroyOthers')
+        router
+          .post('email/verification', [AccountController, 'sendVerification'])
+          .as('email.verification')
         router.get('tenants', [MyTenantsController, 'index']).as('tenants')
       })
       .prefix('account')
@@ -148,6 +185,7 @@ router
           .as('occupants.index')
         router.get('members', [MembersController, 'index']).as('members.index')
         router.get('subscription', [SubscriptionController, 'show']).as('subscription.show')
+        router.get('settings/tenant', [TenantSettingsController, 'show']).as('settings.tenant')
       })
       .use([middleware.auth(), middleware.tenant(backofficeRead)])
 
@@ -179,6 +217,15 @@ router
         router
           .delete('units/:unitId/occupants/:id', [UnitOccupantsController, 'destroy'])
           .as('occupants.destroy')
+        router.post('members', [MembersController, 'store']).as('members.store')
+        router.patch('members/:id', [MembersController, 'update']).as('members.update')
+        router.patch('members/:id/status', [MembersController, 'changeStatus']).as('members.status')
+        router
+          .post('members/:id/invitation', [MembersController, 'resendInvitation'])
+          .as('members.invitation')
+        router
+          .patch('settings/tenant', [TenantSettingsController, 'update'])
+          .as('settings.tenant.update')
       })
       .use([middleware.auth(), middleware.tenant(backofficeWrite), middleware.subscription()])
   })
