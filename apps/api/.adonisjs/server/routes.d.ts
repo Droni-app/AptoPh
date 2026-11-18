@@ -4,16 +4,11 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
-    'oauth.authorize': { paramsTuple?: []; params?: {} }
-    'oauth.authorize.store': { paramsTuple?: []; params?: {} }
-    'oauth.token': { paramsTuple?: []; params?: {} }
-    'oauth.revoke': { paramsTuple?: []; params?: {} }
-    'oauth.logout': { paramsTuple?: []; params?: {} }
-    'signup': { paramsTuple?: []; params?: {} }
-    'signup.store': { paramsTuple?: []; params?: {} }
+    'auth.login': { paramsTuple?: []; params?: {} }
+    'auth.signup': { paramsTuple?: []; params?: {} }
+    'auth.logout': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
-    'profile.logout': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
     'resident.home': { paramsTuple?: []; params?: {} }
     'resident.units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -58,9 +53,6 @@ export type ScannedRoutes = {
     'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
   }
   GET: {
-    'oauth.authorize': { paramsTuple?: []; params?: {} }
-    'oauth.logout': { paramsTuple?: []; params?: {} }
-    'signup': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
@@ -82,9 +74,6 @@ export type ScannedRoutes = {
     'subscription.show': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
-    'oauth.authorize': { paramsTuple?: []; params?: {} }
-    'oauth.logout': { paramsTuple?: []; params?: {} }
-    'signup': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
@@ -106,11 +95,9 @@ export type ScannedRoutes = {
     'subscription.show': { paramsTuple?: []; params?: {} }
   }
   POST: {
-    'oauth.authorize.store': { paramsTuple?: []; params?: {} }
-    'oauth.token': { paramsTuple?: []; params?: {} }
-    'oauth.revoke': { paramsTuple?: []; params?: {} }
-    'signup.store': { paramsTuple?: []; params?: {} }
-    'profile.logout': { paramsTuple?: []; params?: {} }
+    'auth.login': { paramsTuple?: []; params?: {} }
+    'auth.signup': { paramsTuple?: []; params?: {} }
+    'auth.logout': { paramsTuple?: []; params?: {} }
     'resident.vehicles.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.pets.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.household.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }

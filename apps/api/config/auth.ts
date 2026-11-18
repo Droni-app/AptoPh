@@ -1,7 +1,12 @@
 import { defineConfig } from '@adonisjs/auth'
-import { sessionGuard, sessionUserProvider } from '@adonisjs/auth/session'
 import { tokensGuard, tokensUserProvider } from '@adonisjs/auth/access_tokens'
 import type { InferAuthenticators, InferAuthEvents, Authenticators } from '@adonisjs/auth/types'
+
+/**
+ * Lifetime of the access tokens issued at login/sign-up (opaque `oat_…` bearer tokens).
+ * There are no refresh tokens: when it expires, the user signs in again.
+ */
+export const ACCESS_TOKEN_TTL = '30 days'
 
 const authConfig = defineConfig({
   /**
@@ -16,20 +21,6 @@ const authConfig = defineConfig({
     api: tokensGuard({
       provider: tokensUserProvider({
         tokens: 'accessTokens',
-        model: () => import('#models/user'),
-      }),
-    }),
-
-    /**
-     * Session-based guard for browser authentication.
-     */
-    web: sessionGuard({
-      /**
-       * Enable persistent login using remember-me tokens.
-       */
-      useRememberMeTokens: false,
-
-      provider: sessionUserProvider({
         model: () => import('#models/user'),
       }),
     }),

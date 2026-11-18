@@ -2,21 +2,14 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
-  oauth: {
-    authorize: typeof routes['oauth.authorize'] & {
-      store: typeof routes['oauth.authorize.store']
-    }
-    token: typeof routes['oauth.token']
-    revoke: typeof routes['oauth.revoke']
-    logout: typeof routes['oauth.logout']
-  }
-  signup: typeof routes['signup'] & {
-    store: typeof routes['signup.store']
+  auth: {
+    login: typeof routes['auth.login']
+    signup: typeof routes['auth.signup']
+    logout: typeof routes['auth.logout']
   }
   profile: {
     show: typeof routes['profile.show']
     tenants: typeof routes['profile.tenants']
-    logout: typeof routes['profile.logout']
   }
   tenant: {
     current: typeof routes['tenant.current']

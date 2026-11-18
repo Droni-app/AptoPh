@@ -1,6 +1,5 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import app from '@adonisjs/core/services/app'
-import OauthClient from '#models/oauth_client'
 import Tenant from '#models/tenant'
 import User from '#models/user'
 import Enrollment from '#models/enrollment'
@@ -9,37 +8,13 @@ import Unit from '#models/unit'
 import UnitOccupant from '#models/unit_occupant'
 
 /**
- * Development data: first-party OAuth clients, a demo tenant and users.
+ * Development data: a demo tenant and users.
  * Run with: node ace db:seed
  */
 export default class extends BaseSeeder {
   static environment = ['development', 'test']
 
   async run() {
-    await OauthClient.updateOrCreateMany('clientId', [
-      {
-        clientId: 'web',
-        name: 'AptoPH Residentes',
-        type: 'public',
-        redirectUris: ['http://localhost:5173/auth/callback'],
-        postLogoutRedirectUris: ['http://localhost:5173/'],
-      },
-      {
-        clientId: 'backoffice',
-        name: 'AptoPH Administración',
-        type: 'public',
-        redirectUris: ['http://localhost:5174/auth/callback'],
-        postLogoutRedirectUris: ['http://localhost:5174/'],
-      },
-      {
-        clientId: 'mobile',
-        name: 'AptoPH Móvil',
-        type: 'public',
-        redirectUris: ['co.aptoph.mobile:/oauth/callback'],
-        postLogoutRedirectUris: ['co.aptoph.mobile:/logout'],
-      },
-    ])
-
     if (app.inTest) return
 
     const tenant = await Tenant.updateOrCreate(

@@ -318,7 +318,7 @@ export const security = [
     icon: KeyRound,
     title: 'Acceso seguro',
     description:
-      'Inicio de sesión con el estándar OAuth 2.1 y PKCE, sesiones que expiran y credenciales que nunca se guardan en texto plano.',
+      'Contraseñas cifradas que nunca se guardan en texto plano y sesiones con tokens que expiran y se pueden cerrar en cualquier momento.',
   },
   {
     icon: History,
@@ -366,7 +366,7 @@ export const faqs: Faq[] = [
   {
     question: '¿Cómo protege AptoPH la información del conjunto?',
     answer:
-      'Los datos de cada copropiedad están aislados, el acceso depende del perfil de cada persona, el inicio de sesión usa OAuth 2.1 con PKCE y las acciones importantes quedan registradas en una bitácora de auditoría.',
+      'Los datos de cada copropiedad están aislados, el acceso depende del perfil de cada persona, las contraseñas se guardan cifradas, las sesiones expiran y las acciones importantes quedan registradas en una bitácora de auditoría.',
   },
   {
     question: '¿Cuánto cuesta AptoPH?',

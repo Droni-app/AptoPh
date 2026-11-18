@@ -5,12 +5,12 @@ import { hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { type AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
-import oauthConfig from '#config/oauth'
+import { ACCESS_TOKEN_TTL } from '#config/auth'
 import Enrollment from '#models/enrollment'
 
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   static accessTokens = DbAccessTokensProvider.forModel(User, {
-    expiresIn: oauthConfig.accessTokenTtl,
+    expiresIn: ACCESS_TOKEN_TTL,
     prefix: 'oat_',
   })
   declare currentAccessToken?: AccessToken

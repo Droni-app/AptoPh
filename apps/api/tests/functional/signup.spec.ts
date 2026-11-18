@@ -8,52 +8,43 @@ import Tenant from '#models/tenant'
 import User from '#models/user'
 import WelcomeMail from '#mails/welcome_mail'
 
-const form = (overrides: Record<string, string> = {}) => ({
-  tenantName: 'Conjunto Álamos del Río',
-  city: 'Medellín',
-  units: '120',
-  plan: 'completo',
-  fullName: 'Laura Gómez',
-  email: 'Laura@Example.com',
-  phone: '300 123 4567',
-  password: 'super-secret',
-  acceptTerms: 'on',
-  ...overrides,
-})
+/**
+ * Typed loosely on purpose (`as never`): some tests send invalid values on purpose
+ */
+const payload = (overrides: Record<string, unknown> = {}) =>
+  ({
+    tenantName: 'Conjunto Álamos del Río',
+    city: 'Medellín',
+    units: 120,
+    plan: 'completo',
+    fullName: 'Laura Gómez',
+    email: 'Laura@Example.com',
+    phone: '300 123 4567',
+    password: 'super-secret',
+    acceptTerms: true,
+    ...overrides,
+  }) as never
 
 test.group('Sign-up', (group) => {
   group.each.setup(() => testUtils.db().withGlobalTransaction())
   group.each.teardown(() => mail.restore())
 
-  test('renders the form with the price table and the units from the query string', async ({
-    client,
-  }) => {
-    const response = await client.get('/registro').qs({ unidades: '80' })
-
-    response.assertStatus(200)
-    response.assertTextIncludes('Crea la cuenta de tu conjunto')
-    response.assertTextIncludes('Hasta 200 unidades')
-    response.assertTextIncludes('Más de 500 unidades')
-    response.assertTextIncludes('value="80"')
-    response.assertTextIncludes("name='_csrf'")
-  })
-
-  test('creates account, conjunto and trial, then hands off to the back-office', async ({
+  test('creates account, conjunto and trial, and signs the administrator in', async ({
     client,
     assert,
   }) => {
     const { mails } = mail.fake()
 
-    const response = await client.post('/registro').form(form()).withCsrfToken().redirects(0)
+    const response = await client.post('/api/v1/auth/signup').json(payload())
 
-    response.assertStatus(302)
-    const location = new URL(response.header('location')!)
-    assert.equal(location.origin, 'http://localhost:5174')
-    assert.equal(location.pathname, '/login')
-    assert.equal(location.searchParams.get('auto'), '1')
+    response.assertStatus(201)
+    const { data } = response.body()
+    assert.match(data.token, /^oat_/)
 
     const user = await User.findByOrFail('email', 'laura@example.com')
     const tenant = await Tenant.findByOrFail('slug', 'conjunto-alamos-del-rio')
+    assert.equal(data.user.id, user.id)
+    assert.equal(data.tenantId, tenant.id)
     assert.equal(tenant.status, 'trial')
     assert.equal(tenant.city, 'Medellín')
 
@@ -71,13 +62,20 @@ test.group('Sign-up', (group) => {
     assert.isAbove(days, 29.9)
     assert.isBelow(days, 30.1)
 
+    // The token works right away for the new conjunto
+    const current = await client
+      .get('/api/v1/tenant')
+      .header('Authorization', `Bearer ${data.token}`)
+      .header('X-Tenant-Id', tenant.id)
+    current.assertStatus(200)
+
     mails.assertQueued(WelcomeMail, ({ message }) => {
       message.assertTo('laura@example.com', 'Laura Gómez')
       return true
     })
   })
 
-  test('rejects an email that already has an account', async ({ client }) => {
+  test('rejects an email that already has an account', async ({ client, assert }) => {
     mail.fake()
     await User.create({
       fullName: 'Ya Existe',
@@ -85,31 +83,27 @@ test.group('Sign-up', (group) => {
       password: 'x'.repeat(10),
     })
 
-    const response = await client.post('/registro').form(form()).withCsrfToken()
+    const response = await client.post('/api/v1/auth/signup').json(payload())
 
     response.assertStatus(422)
-    response.assertTextIncludes('Ya existe una cuenta con este correo')
-    response.assertTextIncludes('value="Conjunto Álamos del Río"')
+    response.assertBodyContains({ errors: [{ field: 'email' }] })
+    assert.isNull(await Tenant.findBy('slug', 'conjunto-alamos-del-rio'))
   })
 
-  test('shows field errors and keeps the values', async ({ client, assert }) => {
+  test('returns field errors', async ({ client, assert }) => {
     const response = await client
-      .post('/registro')
-      .form(form({ email: 'no-es-correo', password: '123', acceptTerms: '' }))
-      .withCsrfToken()
+      .post('/api/v1/auth/signup')
+      .json(payload({ email: 'no-es-correo', password: '123', acceptTerms: false }))
 
     response.assertStatus(422)
-    response.assertTextIncludes('Debe ser un correo electrónico válido')
-    response.assertTextIncludes('Debe tener al menos 8 caracteres')
-    response.assertTextIncludes('Debes aceptar para continuar')
+    const { errors } = response.body() as unknown as { errors: Array<{ field: string }> }
+    const fields = errors.map((error) => error.field)
+    assert.includeMembers(fields, ['email', 'password', 'acceptTerms'])
     assert.isNull(await Tenant.findBy('slug', 'conjunto-alamos-del-rio'))
   })
 
   test('only self-serve plans can be started from the form', async ({ client }) => {
-    const response = await client
-      .post('/registro')
-      .form(form({ plan: 'empresarial' }))
-      .withCsrfToken()
+    const response = await client.post('/api/v1/auth/signup').json(payload({ plan: 'empresarial' }))
 
     response.assertStatus(422)
   })
@@ -118,16 +112,9 @@ test.group('Sign-up', (group) => {
     mail.fake()
     await Tenant.create({ name: 'Otro', slug: 'conjunto-alamos-del-rio', status: 'active' })
 
-    const response = await client.post('/registro').form(form()).withCsrfToken().redirects(0)
+    const response = await client.post('/api/v1/auth/signup').json(payload())
 
-    response.assertStatus(302)
+    response.assertStatus(201)
     assert.isNotNull(await Tenant.findBy('slug', 'conjunto-alamos-del-rio-2'))
-  })
-
-  test('requires the CSRF token', async ({ client, assert }) => {
-    const response = await client.post('/registro').form(form()).redirects(0)
-
-    assert.notInclude(response.header('location') ?? '', 'localhost:5174')
-    assert.isNull(await User.findBy('email', 'laura@example.com'))
   })
 })

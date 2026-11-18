@@ -8,12 +8,8 @@ import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import { BACKOFFICE_ROLES, EnrollmentRole } from '@aptoph/shared'
 
-const AuthorizeController = () => import('#controllers/oauth/authorize_controller')
-const TokenController = () => import('#controllers/oauth/token_controller')
-const RevokeController = () => import('#controllers/oauth/revoke_controller')
-const LogoutController = () => import('#controllers/oauth/logout_controller')
+const AuthController = () => import('#controllers/auth_controller')
 const ProfileController = () => import('#controllers/profile_controller')
-const AccessTokensController = () => import('#controllers/access_tokens_controller')
 const MyTenantsController = () => import('#controllers/my_tenants_controller')
 const DashboardController = () => import('#controllers/backoffice/dashboard_controller')
 const BuildingsController = () => import('#controllers/backoffice/buildings_controller')
@@ -21,7 +17,6 @@ const UnitsController = () => import('#controllers/backoffice/units_controller')
 const UnitOccupantsController = () => import('#controllers/backoffice/unit_occupants_controller')
 const MembersController = () => import('#controllers/backoffice/members_controller')
 const SubscriptionController = () => import('#controllers/backoffice/subscription_controller')
-const SignupController = () => import('#controllers/signup_controller')
 const ResidentHomeController = () => import('#controllers/resident/home_controller')
 const ResidentUnitsController = () => import('#controllers/resident/units_controller')
 const ResidentVehiclesController = () => import('#controllers/resident/vehicles_controller')
@@ -45,35 +40,23 @@ router.get('/', () => {
 
 /*
 |--------------------------------------------------------------------------
-| OAuth 2.1 authorization server (Authorization Code + PKCE)
-|--------------------------------------------------------------------------
-*/
-router
-  .group(() => {
-    router.get('authorize', [AuthorizeController, 'show']).as('authorize')
-    router.post('authorize', [AuthorizeController, 'store']).as('authorize.store')
-    router.post('token', [TokenController]).as('token')
-    router.post('revoke', [RevokeController]).as('revoke')
-    router.get('logout', [LogoutController]).as('logout')
-  })
-  .prefix('oauth')
-  .as('oauth')
-
-/*
-|--------------------------------------------------------------------------
-| Self-service sign-up (hosted page, starts the SSO session)
-|--------------------------------------------------------------------------
-*/
-router.get('registro', [SignupController, 'show']).as('signup')
-router.post('registro', [SignupController, 'store']).as('signup.store')
-
-/*
-|--------------------------------------------------------------------------
 | API v1
 |--------------------------------------------------------------------------
 */
 router
   .group(() => {
+    /**
+     * Authentication: AdonisJS access tokens (email + password)
+     */
+    router
+      .group(() => {
+        router.post('login', [AuthController, 'login']).as('login')
+        router.post('signup', [AuthController, 'signup']).as('signup')
+        router.post('logout', [AuthController, 'logout']).as('logout').use(middleware.auth())
+      })
+      .prefix('auth')
+      .as('auth')
+
     /**
      * Authenticated user, no tenant needed
      */
@@ -81,7 +64,6 @@ router
       .group(() => {
         router.get('profile', [ProfileController, 'show']).as('show')
         router.get('tenants', [MyTenantsController, 'index']).as('tenants')
-        router.post('logout', [AccessTokensController, 'destroy']).as('logout')
       })
       .prefix('account')
       .as('profile')

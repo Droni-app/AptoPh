@@ -40,13 +40,31 @@ export type ApiErrorBody = {
   errors: Array<{ message: string; field?: string; rule?: string }>
 }
 
-/** OAuth token endpoint response */
-export type OAuthTokens = {
-  access_token: string
-  token_type: 'Bearer'
-  expires_in: number
-  refresh_token: string
-  scope?: string
+/** POST /api/v1/auth/login and /api/v1/auth/signup (`data`) */
+export type AuthSession = {
+  /** Opaque bearer token (`oat_…`), sent as `Authorization: Bearer <token>` */
+  token: string
+  type: 'bearer'
+  expiresAt: string | null
+  user: UserProfile
+}
+
+/** POST /api/v1/auth/signup also returns the conjunto it created */
+export type SignupSession = AuthSession & { tenantId: string }
+
+export type LoginInput = { email: string; password: string; device?: string }
+
+export type SignupInput = {
+  tenantName: string
+  city: string
+  units: number
+  plan: string
+  fullName: string
+  email: string
+  phone: string
+  password: string
+  acceptTerms: boolean
+  device?: string
 }
 
 export type UserProfile = {

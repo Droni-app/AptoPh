@@ -10,6 +10,10 @@ export default class ResourceException extends Exception {
     return new ResourceException(message, { status: 404, code: 'E_NOT_FOUND' })
   }
 
+  static badRequest(message: string) {
+    return new ResourceException(message, { status: 400, code: 'E_BAD_REQUEST' })
+  }
+
   static forbidden(message: string) {
     return new ResourceException(message, { status: 403, code: 'E_FORBIDDEN' })
   }

@@ -45,7 +45,8 @@ const corsConfig = defineConfig({
   /**
    * Allow cookies/authorization headers on cross-origin requests.
    */
-  credentials: true,
+  // Bearer tokens travel in the Authorization header: no cookies to share
+  credentials: false,
 
   /**
    * Cache CORS preflight response for N seconds.

@@ -4,7 +4,7 @@
  */
 
 export const controllers = {
-  AccessTokens: () => import('#controllers/access_tokens_controller'),
+  Auth: () => import('#controllers/auth_controller'),
   backoffice: {
     Buildings: () => import('#controllers/backoffice/buildings_controller'),
     Dashboard: () => import('#controllers/backoffice/dashboard_controller'),
@@ -14,12 +14,6 @@ export const controllers = {
     Units: () => import('#controllers/backoffice/units_controller'),
   },
   MyTenants: () => import('#controllers/my_tenants_controller'),
-  oauth: {
-    Authorize: () => import('#controllers/oauth/authorize_controller'),
-    Logout: () => import('#controllers/oauth/logout_controller'),
-    Revoke: () => import('#controllers/oauth/revoke_controller'),
-    Token: () => import('#controllers/oauth/token_controller'),
-  },
   Profile: () => import('#controllers/profile_controller'),
   resident: {
     Bookings: () => import('#controllers/resident/bookings_controller'),
@@ -32,5 +26,4 @@ export const controllers = {
     Vehicles: () => import('#controllers/resident/vehicles_controller'),
     Visits: () => import('#controllers/resident/visits_controller'),
   },
-  Signup: () => import('#controllers/signup_controller'),
 }

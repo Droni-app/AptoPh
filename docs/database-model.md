@@ -14,7 +14,7 @@
 - Un **tenant** es una copropiedad (conjunto residencial, edificio, centro comercial…).
 - **Todas** las tablas de negocio llevan `tenant_id NOT NULL` con FK a `tenants.id`.
 - Las únicas tablas **globales** (sin `tenant_id`) son: `tenants`, `users`,
-  `auth_access_tokens`, las tablas OAuth (`oauth_*`) y las tablas de plataforma del SaaS
+  `auth_access_tokens` y las tablas de plataforma del SaaS
   (planes, suscripciones — fase posterior).
 - **Aislamiento a nivel de base de datos (no sólo de aplicación):**
   - Cada tabla de tenant tiene, además de su PK, un índice único `(tenant_id, id)`.
@@ -60,8 +60,6 @@ erDiagram
     tenants ||--o{ enrollments : "tiene"
     users ||--o{ enrollments : "participa en"
     users ||--o{ auth_access_tokens : "tiene"
-    oauth_clients ||--o{ oauth_refresh_tokens : ""
-    users ||--o{ oauth_refresh_tokens : ""
 
     tenants ||--o{ buildings : ""
     tenants ||--o{ units : ""
@@ -159,36 +157,9 @@ consejera en otro, con una sola cuenta.
 
 ### `auth_access_tokens`
 
-La gestiona `@adonisjs/auth`. `tokenable_id` es `uuid` y `name` guarda el `client_id` OAuth que
-pidió el token.
-
-### Tablas OAuth
-
-Ver [authentication.md](authentication.md) para el flujo completo.
-
-**`oauth_clients`** — aplicaciones (no tenants)
-
-| Columna | Tipo | Notas |
-| --- | --- | --- |
-| id | uuid PK | |
-| client_id | varchar(80) UNIQUE | `web`, `backoffice`, `mobile` |
-| name | varchar(100) | Se muestra en la página de login |
-| type | varchar(20) | `public` (PKCE, sin secreto) o `confidential` |
-| client_secret_hash | varchar NULL | Sólo confidenciales |
-| redirect_uris | text[] | Coincidencia exacta |
-| post_logout_redirect_uris | text[] | |
-| is_active | boolean | |
-| created_at / updated_at | timestamptz | |
-
-**`oauth_authorization_codes`** — códigos de un solo uso (60 s)
-
-`id, code_hash (sha256, UNIQUE), oauth_client_id, user_id, redirect_uri, code_challenge,
-code_challenge_method, scope, expires_at, consumed_at, created_at, updated_at`
-
-**`oauth_refresh_tokens`** — rotación con detección de reutilización
-
-`id, token_hash (sha256, UNIQUE), family_id, oauth_client_id, user_id, access_token_id
-(FK auth_access_tokens, SET NULL), scope, expires_at, revoked_at, created_at, updated_at`
+La gestiona `@adonisjs/auth`: un access token por sesión iniciada (ver
+[authentication.md](authentication.md)). `tokenable_id` es `uuid` y `name` guarda la app que lo pidió
+(`Backoffice`, `Portal de residentes`…).
 
 ## 4. Pertenencia y roles
 
@@ -540,7 +511,7 @@ Lucid (`apps/api/app/models`). Notas:
 1. ✅ `users` y `auth_access_tokens` (uuid)
 2. ✅ `tenants`
 3. ✅ `enrollments`
-3b. ✅ `oauth_clients` → `oauth_authorization_codes` → `oauth_refresh_tokens`
+3b. ✅ `oauth_*` (creadas y luego eliminadas al pasar a access tokens)
 4. ✅ `buildings` → `units` → `unit_occupants` → `vehicles` → `pets`
 5. ✅ `charge_concepts` → `charges` → `payments` → `payment_allocations`
 6. ✅ `amenities` → `amenity_bookings`

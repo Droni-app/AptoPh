@@ -14,6 +14,18 @@ import Vehicle from '#models/vehicle'
 import Visit from '#models/visit'
 import { createMember } from '#tests/helpers'
 
+/**
+ * Sends the request and asserts the status (keeps the await out of a member access)
+ */
+async function expectStatus(
+  request: PromiseLike<{ assertStatus(status: number): void }>,
+  status: number
+) {
+  const response = await request
+  response.assertStatus(status)
+  return response
+}
+
 async function createUnit(tenant: Tenant, building: Building, code: string) {
   return Unit.create({
     tenantId: tenant.id,
@@ -92,10 +104,11 @@ test.group('Resident · vehicles and pets', (group) => {
     updated.assertStatus(200)
     assert.equal(updated.body().data.color, 'Rojo')
 
-    ;(await as(client.delete(`/api/v1/resident/vehicles/${id}`))).assertStatus(204)
+    await expectStatus(as(client.delete(`/api/v1/resident/vehicles/${id}`)), 204)
     const detail = await as(client.get(`/api/v1/resident/units/${mine.id}`))
     assert.lengthOf(detail.body().data.vehicles, 0)
-    assert.isNotNull((await Vehicle.findOrFail(id)).deletedAt)
+    const deleted = await Vehicle.findOrFail(id)
+    assert.isNotNull(deleted.deletedAt)
   })
 
   test('plates are unique in the conjunto', async ({ client }) => {
@@ -119,16 +132,18 @@ test.group('Resident · vehicles and pets', (group) => {
       type: 'car',
     })
 
-    ;(
-      await as(client.post(`/api/v1/resident/units/${theirs.id}/vehicles`)).json({
+    await expectStatus(
+      as(client.post(`/api/v1/resident/units/${theirs.id}/vehicles`)).json({
         plate: 'AAA111',
         type: 'car',
-      })
-    ).assertStatus(404)
-    ;(
-      await as(client.patch(`/api/v1/resident/vehicles/${vehicle.id}`)).json({ color: 'Azul' })
-    ).assertStatus(404)
-    ;(await as(client.delete(`/api/v1/resident/vehicles/${vehicle.id}`))).assertStatus(404)
+      }),
+      404
+    )
+    await expectStatus(
+      as(client.patch(`/api/v1/resident/vehicles/${vehicle.id}`)).json({ color: 'Azul' }),
+      404
+    )
+    await expectStatus(as(client.delete(`/api/v1/resident/vehicles/${vehicle.id}`)), 404)
   })
 
   test('manages pets, including the potentially dangerous flag', async ({ client, assert }) => {
@@ -143,10 +158,11 @@ test.group('Resident · vehicles and pets', (group) => {
     assert.isTrue(created.body().data.isPotentiallyDangerous)
 
     const id = created.body().data.id
-    ;(await as(client.patch(`/api/v1/resident/pets/${id}`)).json({ name: 'Toby II' })).assertStatus(
+    await expectStatus(
+      as(client.patch(`/api/v1/resident/pets/${id}`)).json({ name: 'Toby II' }),
       200
     )
-    ;(await as(client.delete(`/api/v1/resident/pets/${id}`))).assertStatus(204)
+    await expectStatus(as(client.delete(`/api/v1/resident/pets/${id}`)), 204)
     const detail = await as(client.get(`/api/v1/resident/units/${mine.id}`))
     assert.lengthOf(detail.body().data.pets, 0)
   })
@@ -173,12 +189,13 @@ test.group('Resident · household', (group) => {
     assert.equal(lucia.documentNumber, '1012345678')
     assert.isTrue(detail.body().data.canManageHousehold)
 
-    ;(
-      await as(client.patch(`/api/v1/resident/household/${id}`)).json({
+    await expectStatus(
+      as(client.patch(`/api/v1/resident/household/${id}`)).json({
         relationship: 'domestic_worker',
-      })
-    ).assertStatus(200)
-    ;(await as(client.delete(`/api/v1/resident/household/${id}`))).assertStatus(204)
+      }),
+      200
+    )
+    await expectStatus(as(client.delete(`/api/v1/resident/household/${id}`)), 204)
 
     const after = await as(client.get(`/api/v1/resident/units/${mine.id}`))
     assert.notInclude(
@@ -246,19 +263,20 @@ test.group('Resident · visits and parcels', (group) => {
       [visit.id]
     )
 
-    ;(await as(client.delete(`/api/v1/resident/visits/${visit.id}`))).assertStatus(204)
+    await expectStatus(as(client.delete(`/api/v1/resident/visits/${visit.id}`)), 204)
   })
 
   test('rejects past dates and visits that already arrived', async ({ client }) => {
     const { tenant, mine, as } = await setup()
-    ;(
-      await as(client.post('/api/v1/resident/visits')).json({
+    await expectStatus(
+      as(client.post('/api/v1/resident/visits')).json({
         unitId: mine.id,
         visitorName: 'Tarde',
         type: 'guest',
         expectedAt: DateTime.now().minus({ days: 1 }).toISO(),
-      })
-    ).assertStatus(422)
+      }),
+      422
+    )
 
     const arrived = await Visit.create({
       tenantId: tenant.id,
@@ -267,7 +285,7 @@ test.group('Resident · visits and parcels', (group) => {
       type: 'guest',
       checkedInAt: DateTime.now(),
     })
-    ;(await as(client.delete(`/api/v1/resident/visits/${arrived.id}`))).assertStatus(409)
+    await expectStatus(as(client.delete(`/api/v1/resident/visits/${arrived.id}`)), 409)
   })
 
   test("never shows a neighbour's visits", async ({ client, assert }) => {
@@ -281,7 +299,7 @@ test.group('Resident · visits and parcels', (group) => {
     })
     const list = await as(client.get('/api/v1/resident/visits'))
     assert.lengthOf(list.body().data, 0)
-    ;(await as(client.delete(`/api/v1/resident/visits/${visit.id}`))).assertStatus(404)
+    await expectStatus(as(client.delete(`/api/v1/resident/visits/${visit.id}`)), 404)
   })
 })
 
@@ -337,9 +355,9 @@ test.group('Resident · bookings', (group) => {
         guestsCount,
       })
 
-    ;(await book(tomorrowAt(6), tomorrowAt(9))).assertStatus(422) // before opening
-    ;(await book(tomorrowAt(10), tomorrowAt(18))).assertStatus(422) // over 6 hours
-    ;(await book(tomorrowAt(10), tomorrowAt(12), 80)).assertStatus(422) // over capacity
+    await expectStatus(book(tomorrowAt(6), tomorrowAt(9)), 422) // before opening
+    await expectStatus(book(tomorrowAt(10), tomorrowAt(18)), 422) // over 6 hours
+    await expectStatus(book(tomorrowAt(10), tomorrowAt(12), 80), 422) // over capacity
   })
 
   test('amenities without approval are approved at once; the slot is still exclusive', async ({
@@ -366,8 +384,8 @@ test.group('Resident · bookings', (group) => {
     const first = await book(user, mine.id, 6, 7)
     first.assertStatus(201)
     assert.equal(first.body().data.status, 'approved')
-    ;(await book(neighbour, theirs.id, 6, 8)).assertStatus(409)
-    ;(await book(neighbour, theirs.id, 7, 8)).assertStatus(201)
+    await expectStatus(book(neighbour, theirs.id, 6, 8), 409)
+    await expectStatus(book(neighbour, theirs.id, 7, 8), 201)
   })
 
   test('cancels its own future booking', async ({ client, assert }) => {
@@ -385,7 +403,7 @@ test.group('Resident · bookings', (group) => {
     const response = await as(client.delete(`/api/v1/resident/bookings/${booking.id}`))
     response.assertStatus(200)
     assert.equal(response.body().data.status, 'cancelled')
-    ;(await as(client.delete(`/api/v1/resident/bookings/${booking.id}`))).assertStatus(409)
+    await expectStatus(as(client.delete(`/api/v1/resident/bookings/${booking.id}`)), 409)
   })
 })
 
@@ -471,7 +489,7 @@ test.group('Resident · PQRS', (group) => {
       priority: 'medium',
       status: 'open',
     })
-    ;(await as(client.get(`/api/v1/resident/tickets/${ticket.id}`))).assertStatus(404)
+    await expectStatus(as(client.get(`/api/v1/resident/tickets/${ticket.id}`)), 404)
     const list = await as(client.get('/api/v1/resident/tickets'))
     assert.lengthOf(list.body().data, 0)
   })

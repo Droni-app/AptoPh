@@ -32,7 +32,7 @@ pnpm install
 # Requiere PostgreSQL local con las bases `aptoph` y `aptoph_test` creadas
 cp apps/api/.env.example apps/api/.env   # si no existe; luego: node ace generate:key
 pnpm db:migrate
-pnpm --filter @aptoph/api exec node ace db:seed   # clientes OAuth + datos demo
+pnpm --filter @aptoph/api exec node ace db:seed   # datos demo
 pnpm dev            # levanta api + ambas webs + shared en watch
 ```
 
@@ -115,15 +115,16 @@ demo (los usuarios demo solo pertenecen a ese conjunto).
 
 ## Backoffice (`apps/backoffice`)
 
-Vue 3 + [droni-kit](https://www.npmjs.com/package/@dronico/droni-kit) + Tailwind 4. Inicia sesión con
-OAuth (PKCE) contra la API; la configuración está en `apps/backoffice/.env.development`.
+Vue 3 + [droni-kit](https://www.npmjs.com/package/@dronico/droni-kit) + Tailwind 4. Inicio de sesión
+(`/login`) y registro de conjuntos nuevos (`/registro`) con correo y contraseña contra la API, que
+entrega un access token. La URL de la API está en `apps/backoffice/.env.development`.
 
 Módulos: inicio (indicadores), unidades (+ ocupantes), torres y personas (personal y residentes).
 Todo el personal del backoffice puede consultar; solo la administración puede crear, editar y eliminar.
 
 ## App de residentes (`apps/web`)
 
-Vue 3 + droni-kit con la marca AptoPH. El residente inicia sesión con OAuth (PKCE, cliente `web`) y ve
+Vue 3 + droni-kit con la marca AptoPH. El residente inicia sesión con correo y contraseña y ve
 su conjunto, sus unidades con el saldo, y el detalle de cada unidad: estado de cuenta (cobros
 abiertos y vencidos), quiénes viven ahí, vehículos y mascotas. Solo ve las unidades donde es ocupante
 activo (la API responde 404 para las demás). Detalles en [apps/web/README.md](apps/web/README.md).
@@ -149,10 +150,10 @@ Todas las unidades pagan el precio del tramo que corresponde al tamaño del conj
 al mes; el pago anual cuesta 10 meses (2 gratis). El plan **Empresarial** (administradoras con varias
 copropiedades) es a la medida.
 
-Flujo: landing (`#precios`) → `GET /registro?unidades=…` (página de la API) → crea usuario,
-conjunto (`trial`), rol de administración y suscripción de prueba por 30 días, abre la sesión SSO y
-envía el correo de bienvenida → `admin…/login?auto=1` completa OAuth sin pedir la contraseña →
-panel con la guía de primeros pasos. Desde **Plan** el administrador solicita la activación (llega
+Flujo: landing (`#precios`) → `admin…/registro?plan=completo&unidades=…` (backoffice) →
+`POST /api/v1/auth/signup` crea usuario, conjunto (`trial`), rol de administración y suscripción de
+prueba por 30 días, envía el correo de bienvenida y devuelve la sesión iniciada → panel con la guía
+de primeros pasos. Desde **Plan** el administrador solicita la activación (llega
 un correo a `SALES_EMAIL`); tras recibir el pago:
 
 ```bash
@@ -172,13 +173,13 @@ Cada push a `main` despliega solo.
 | `api.aptoph.com` | API AdonisJS | 512 MB, $5/mes |
 | — | PostgreSQL 18 administrado `aptoph-db` (nyc1), base `aptoph` | $15/mes |
 
-Antes de cada despliegue, el job `migrate` corre las migraciones, `production_seeder` (clientes OAuth
-con las URLs de producción) y `demo_seeder`, que reinicia el conjunto demo público. Los secretos (`APP_KEY`, `SMTP_*`) solo viven cifrados en la app: para
+Antes de cada despliegue, el job `migrate` corre las migraciones y `demo_seeder`, que reinicia el
+conjunto demo público. Los secretos (`APP_KEY`, `SMTP_*`) solo viven cifrados en la app: para
 cambiar la configuración parte de `doctl apps spec get <id>` en vez de reenviar `.do/app.yaml`, que
 tiene marcadores `__…__` en su lugar.
 
 ## Documentación
 
 - [Modelo de datos](docs/database-model.md)
-- [Autenticación (OAuth 2.1 + PKCE)](docs/authentication.md)
-- [Identidad de marca AptoPH](docs/brand/README.md) — logos, colores, tipografía y tokens
+- [Autenticación (access tokens)](docs/authentication.md)
+- [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens

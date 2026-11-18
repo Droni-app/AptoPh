@@ -8,47 +8,23 @@ export type { Route, Path } from './schema.d.ts'
 const placeholder: any = {}
 
 const routes = {
-  'oauth.authorize': {
-    methods: ["GET","HEAD"],
-    pattern: '/oauth/authorize',
-    tokens: [[0,"oauth"],[0,"authorize"]],
-    types: placeholder as Registry['oauth.authorize']['types'],
-  },
-  'oauth.authorize.store': {
+  'auth.login': {
     methods: ["POST"],
-    pattern: '/oauth/authorize',
-    tokens: [[0,"oauth"],[0,"authorize"]],
-    types: placeholder as Registry['oauth.authorize.store']['types'],
+    pattern: '/api/v1/auth/login',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"login"]],
+    types: placeholder as Registry['auth.login']['types'],
   },
-  'oauth.token': {
+  'auth.signup': {
     methods: ["POST"],
-    pattern: '/oauth/token',
-    tokens: [[0,"oauth"],[0,"token"]],
-    types: placeholder as Registry['oauth.token']['types'],
+    pattern: '/api/v1/auth/signup',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"signup"]],
+    types: placeholder as Registry['auth.signup']['types'],
   },
-  'oauth.revoke': {
+  'auth.logout': {
     methods: ["POST"],
-    pattern: '/oauth/revoke',
-    tokens: [[0,"oauth"],[0,"revoke"]],
-    types: placeholder as Registry['oauth.revoke']['types'],
-  },
-  'oauth.logout': {
-    methods: ["GET","HEAD"],
-    pattern: '/oauth/logout',
-    tokens: [[0,"oauth"],[0,"logout"]],
-    types: placeholder as Registry['oauth.logout']['types'],
-  },
-  'signup': {
-    methods: ["GET","HEAD"],
-    pattern: '/registro',
-    tokens: [[0,"registro"]],
-    types: placeholder as Registry['signup']['types'],
-  },
-  'signup.store': {
-    methods: ["POST"],
-    pattern: '/registro',
-    tokens: [[0,"registro"]],
-    types: placeholder as Registry['signup.store']['types'],
+    pattern: '/api/v1/auth/logout',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"logout"]],
+    types: placeholder as Registry['auth.logout']['types'],
   },
   'profile.show': {
     methods: ["GET","HEAD"],
@@ -61,12 +37,6 @@ const routes = {
     pattern: '/api/v1/account/tenants',
     tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"tenants"]],
     types: placeholder as Registry['profile.tenants']['types'],
-  },
-  'profile.logout': {
-    methods: ["POST"],
-    pattern: '/api/v1/account/logout',
-    tokens: [[0,"api"],[0,"v1"],[0,"account"],[0,"logout"]],
-    types: placeholder as Registry['profile.logout']['types'],
   },
   'tenant.current': {
     methods: ["GET","HEAD"],

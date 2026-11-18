@@ -72,9 +72,7 @@ services:
       - { key: TZ, value: UTC }
       - { key: LOG_LEVEL, value: info }
       - { key: APP_URL, value: https://api.aptoph.com }
-      - { key: SESSION_DRIVER, value: cookie }
       - { key: CORS_ORIGINS, value: "https://web.aptoph.com,https://admin.aptoph.com" }
-      - { key: WEB_URL, value: https://web.aptoph.com }
       - { key: BACKOFFICE_URL, value: https://admin.aptoph.com }
       - { key: DB_HOST, value: "${db.HOSTNAME}" }
       - { key: DB_PORT, value: "${db.PORT}" }
@@ -101,7 +99,7 @@ jobs:
     build_command: pnpm turbo run build --filter=@aptoph/api...
     instance_count: 1
     instance_size_slug: apps-s-1vcpu-0.5gb
-    run_command: cd apps/api/build && node ace migration:run --force && node ace db:seed --files database/seeders/production_seeder.ts --files database/seeders/demo_seeder.ts
+    run_command: cd apps/api/build && node ace migration:run --force && node ace db:seed --files database/seeders/demo_seeder.ts
     envs: *api_envs
 
 static_sites:

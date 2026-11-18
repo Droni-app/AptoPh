@@ -1,5 +1,6 @@
 import vine from '@vinejs/vine'
 import { PLANS } from '@aptoph/shared'
+import { deviceField } from '#validators/auth'
 
 /** Plans that can be started from the sign-up form (Empresarial goes through sales) */
 export const SELF_SERVE_PLAN_IDS = PLANS.filter((plan) => plan.selfServe).map((plan) => plan.id)
@@ -18,4 +19,5 @@ export const signupValidator = vine.create({
   units: vine.number().withoutDecimals().min(1).max(20_000),
   plan: vine.enum(SELF_SERVE_PLAN_IDS),
   acceptTerms: vine.accepted(),
+  device: deviceField,
 })

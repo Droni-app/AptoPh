@@ -1,7 +1,5 @@
 import app from '@adonisjs/core/services/app'
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
-import { errors as shieldErrors } from '@adonisjs/shield'
-import { pickAuthorizeParams, redirectTo } from '#services/oauth_authorize_request'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -15,18 +13,6 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
-    /**
-     * Expired/missing CSRF token on the hosted login form: show the form again
-     * (keeping the OAuth parameters) instead of redirecting to "/".
-     */
-    if (
-      error instanceof shieldErrors.E_BAD_CSRF_TOKEN &&
-      ctx.request.url() === '/oauth/authorize'
-    ) {
-      const query = new URLSearchParams(pickAuthorizeParams(ctx.request.all()))
-      return redirectTo(ctx, `/oauth/authorize?${query.toString()}`)
-    }
-
     const dbError = toDatabaseError(error)
     if (dbError) {
       return ctx.response.status(dbError.status).send({ errors: [{ message: dbError.message }] })
