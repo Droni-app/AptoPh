@@ -1,0 +1,59 @@
+/* AptoPH — tokens de la gráfica 2026 ("Comunidad cercana").
+ * Importa este archivo en el CSS de cada app (Tailwind 4 lee las variables de @theme).
+ * Las fuentes se cargan aparte: @fontsource-variable/plus-jakarta-sans e @fontsource-variable/inter
+ * (o Google Fonts). Los nombres de familia de abajo cubren las dos opciones. */
+
+@theme {
+  /* Azul profundo: marca, texto principal, navbar */
+  --color-brand-50: #eef3f9;
+  --color-brand-100: #d6e2f0;
+  --color-brand-200: #a9c9e8; /* cielo: fondos de ilustración, chips */
+  --color-brand-300: #7ea6cf;
+  --color-brand-400: #4f78a5;
+  --color-brand-500: #2f5583;
+  --color-brand-600: #24476f;
+  --color-brand-700: #1e3a5f; /* primario */
+  --color-brand-800: #162c49;
+  --color-brand-900: #102038;
+
+  /* Menta: comunidad, acciones, estados activos */
+  --color-mint-50: #ebfaf6;
+  --color-mint-100: #cdf3e9;
+  --color-mint-200: #9de7d4;
+  --color-mint-300: #6ad8bd;
+  --color-mint-400: #3cc8a8; /* acento gráfico */
+  --color-mint-500: #27ad8f;
+  --color-mint-600: #1f9e84; /* "PH" del logotipo */
+  --color-mint-700: #187a66; /* texto menta sobre fondo claro */
+  --color-mint-800: #145f50;
+
+  /* Coral: calidez, destacados puntuales, notificaciones */
+  --color-coral-50: #fff3ee;
+  --color-coral-100: #ffe0d5;
+  --color-coral-300: #ffb39b;
+  --color-coral-400: #ff8a65; /* acento */
+  --color-coral-500: #f06a43;
+  --color-coral-700: #b5431f; /* texto coral sobre fondo claro */
+
+  /* Neutros cálidos */
+  --color-cream: #faf7f2; /* fondo de página */
+  --color-sand: #f1ece3; /* tarjetas secundarias, separadores */
+  --color-slate: #4a607a; /* texto secundario */
+  --color-ink: #102038; /* texto sobre crema */
+
+  /* Semánticos */
+  --color-success: #1f9e84;
+  --color-warning: #e0a100;
+  --color-danger: #d64545;
+  --color-info: #2f5583;
+
+  --font-display:
+    'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --shadow-soft: 0 8px 24px -8px rgb(30 58 95 / 0.18);
+}
