@@ -8,6 +8,9 @@ import type {
   ResidentBooking,
   ResidentHome,
   ResidentParcel,
+  ResidentPayment,
+  ReportPaymentInput,
+  UnitStatement,
   ResidentPet,
   ResidentTicket,
   ResidentTicketComment,
@@ -72,6 +75,19 @@ export type TicketInput = {
 export const residentApi = {
   home: () => api<ApiItem<ResidentHome>>(`${base}/home`),
   unit: (id: string) => api<ApiItem<ResidentUnitDetail>>(`${base}/units/${encodeURIComponent(id)}`),
+
+  finance: {
+    statement: (unitId: string, query: { from?: string; to?: string } = {}) =>
+      api<ApiItem<UnitStatement>>(`${base}/units/${encodeURIComponent(unitId)}/statement`, {
+        query,
+      }),
+    payments: () => api<List<ResidentPayment>>(`${base}/payments`),
+    report: (unitId: string, body: ReportPaymentInput) =>
+      api<ApiItem<ResidentPayment>>(`${base}/units/${encodeURIComponent(unitId)}/payments`, {
+        method: 'POST',
+        body,
+      }),
+  },
 
   vehicles: {
     create: (unitId: string, body: VehicleInput) =>
