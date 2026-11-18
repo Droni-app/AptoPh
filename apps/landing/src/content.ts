@@ -49,7 +49,7 @@ export const site = {
   title: 'AptoPH | Software de administración de propiedad horizontal',
   description:
     'Administra tu conjunto residencial o edificio en una sola plataforma: cuotas de administración, pagos, zonas comunes, PQRS, portería y documentos.',
-  tagline: 'La administración de tu conjunto, en orden.',
+  tagline: 'La administración de tu conjunto, simple y cercana.',
 }
 
 export interface NavLink {
@@ -426,4 +426,100 @@ export const demo = {
       cta: 'Abrir la app de residentes',
     },
   ],
+}
+
+/* ------------------------------------------------------------------ */
+/* 2026 redesign: groupings and copy for the illustrated sections      */
+/* ------------------------------------------------------------------ */
+
+/** Flat icon art (src/assets/img/icons) for each module and upcoming feature */
+export const featureArt: Record<string, string> = {
+  unidades: 'unidades',
+  cartera: 'estado-de-cuenta',
+  pagos: 'pagos',
+  'zonas-comunes': 'zonas-comunes',
+  comunicados: 'comunicados',
+  pqrs: 'pqrs',
+  porteria: 'visitantes',
+  paqueteria: 'paquetes',
+  documentos: 'documentos',
+  'Asambleas virtuales': 'asambleas',
+  'Notificaciones push': 'notificaciones',
+  'Presupuesto y gastos': 'reportes',
+}
+
+export interface Chapter {
+  id: string
+  title: string
+  description: string
+  art: 'headerPagos' | 'headerReservas' | 'headerPorteria'
+  featureIds: string[]
+}
+
+/** The nine modules, grouped by the job they do for the conjunto */
+export const chapters: Chapter[] = [
+  {
+    id: 'cuentas',
+    title: 'Las cuentas del conjunto, claras',
+    description: 'Quién vive dónde, cuánto debe cada unidad y qué pagos ya entraron.',
+    art: 'headerPagos',
+    featureIds: ['unidades', 'cartera', 'pagos'],
+  },
+  {
+    id: 'comunidad',
+    title: 'La vida en comunidad, organizada',
+    description: 'Reservas sin cruces, avisos que sí se leen y solicitudes con seguimiento.',
+    art: 'headerReservas',
+    featureIds: ['zonas-comunes', 'comunicados', 'pqrs'],
+  },
+  {
+    id: 'porteria-archivo',
+    title: 'Portería y archivo, bajo control',
+    description: 'Cada visita, cada paquete y cada documento, registrados y a la mano.',
+    art: 'headerPorteria',
+    featureIds: ['porteria', 'paqueteria', 'documentos'],
+  },
+]
+
+/** Product events shown over the hero illustration (sample data, decorative) */
+export const heroEvents = [
+  { kind: 'pago', title: 'Pago confirmado', detail: 'Apto 302, Torre 2' },
+  { kind: 'reserva', title: 'Reserva aprobada', detail: 'Zona BBQ, sábado 3:00 p. m.' },
+  { kind: 'paquete', title: 'Paquete en portería', detail: 'Apto 1104, Torre 1' },
+] as const
+
+/** Before/after: each pain maps to the module that solves it */
+export const beforeAfter = {
+  before: [
+    'Recibos en papel y cuadres de cartera a mano',
+    'Reservas del salón social que se cruzan',
+    'PQRS perdidas en el chat del conjunto',
+    'Paquetes y visitas sin registro en portería',
+  ],
+  after: [
+    'Cada pago aplicado a la deuda correcta',
+    'Reservas en línea que no se cruzan',
+    'Cada caso con responsable y seguimiento',
+    'Visitas y paquetes registrados, con foto',
+  ],
+}
+
+/** Facts shown right under the hero */
+export const proofPoints = [
+  { title: 'Hecho para la Ley 675', description: 'Coeficientes, consejo, revisor fiscal y actas' },
+  { title: 'Nueve módulos conectados', description: 'De la cuota al pago, sin cuadres manuales' },
+  { title: 'Web y app móvil', description: 'Para el equipo y para cada residente' },
+  { title: 'Datos aislados por conjunto', description: 'Permisos por perfil y auditoría' },
+]
+
+/** Illustration for each profile tab */
+export const profileArt: Record<
+  string,
+  'administracion' | 'headerComunicados' | 'despues' | 'headerPorteria' | 'appMovil'
+> = {
+  Administración: 'administracion',
+  'Consejo de administración': 'headerComunicados',
+  'Contador y revisor fiscal': 'despues',
+  'Portería y personal': 'headerPorteria',
+  Residentes: 'appMovil',
 }

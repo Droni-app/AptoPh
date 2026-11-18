@@ -31,9 +31,9 @@ for (const marker of ['<!--head-tags-->', '<!--json-ld-->', '<!--app-html-->']) 
   if (!template.includes(marker)) throw new Error(`index.html is missing ${marker}`)
 }
 
-// Preload the two Latin font files used above the fold (Outfit headings, Inter text)
+// Preload the two Latin font files used above the fold (Plus Jakarta Sans headings, Inter text)
 const assets = await readdir(`${dist}assets`)
-const preloads = ['outfit-latin-wght', 'inter-latin-wght']
+const preloads = ['plus-jakarta-sans-latin-wght-normal', 'inter-latin-wght-normal']
   .map((prefix) => assets.find((file) => file.startsWith(prefix) && file.endsWith('.woff2')))
   .filter((file): file is string => Boolean(file))
   .map(

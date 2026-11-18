@@ -7,19 +7,20 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
-  <footer class="bg-navy-950 text-navy-200">
+  <footer class="bg-brand-900 text-brand-100">
     <div class="container-page grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
       <div>
-        <BrandLogo variant="white" class="h-9" />
-        <p class="mt-5 max-w-sm text-sm leading-relaxed">
+        <BrandLogo variant="white" class="h-10" />
+        <p class="mt-5 max-w-sm leading-relaxed">
           {{ site.tagline }} Software para la administración de conjuntos residenciales, edificios y
           copropiedades en Colombia.
         </p>
+        <a :href="links.signup" class="btn-mint mt-7">Prueba gratis</a>
       </div>
 
       <nav aria-label="Funcionalidades">
-        <h2 class="font-display text-sm font-semibold text-white">Funcionalidades</h2>
-        <ul class="mt-4 space-y-2.5 text-sm">
+        <h2 class="font-display text-base font-bold text-white">Funcionalidades</h2>
+        <ul class="mt-4 space-y-2.5 text-[0.95rem]">
           <li v-for="feature in features" :key="feature.id">
             <a :href="`#${feature.id}`" class="hover:text-white">{{ feature.title }}</a>
           </li>
@@ -27,8 +28,8 @@ const year = new Date().getFullYear()
       </nav>
 
       <nav aria-label="AptoPH">
-        <h2 class="font-display text-sm font-semibold text-white">AptoPH</h2>
-        <ul class="mt-4 space-y-2.5 text-sm">
+        <h2 class="font-display text-base font-bold text-white">AptoPH</h2>
+        <ul class="mt-4 space-y-2.5 text-[0.95rem]">
           <li v-for="link in nav" :key="link.href">
             <a :href="link.href" class="hover:text-white">{{ link.label }}</a>
           </li>
@@ -38,7 +39,7 @@ const year = new Date().getFullYear()
       </nav>
     </div>
     <div class="border-t border-white/10">
-      <p class="container-page py-6 text-xs text-navy-300">
+      <p class="container-page py-6 text-sm text-brand-200">
         © {{ year }} AptoPH. Todos los derechos reservados.
       </p>
     </div>

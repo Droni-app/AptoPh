@@ -1,33 +1,61 @@
 <script setup lang="ts">
+import { ArrowRight } from '@lucide/vue'
+import { TRIAL_DAYS } from '@aptoph/shared'
+import { art } from '@/art'
 import { steps } from '@/content'
+import { links } from '@/links'
 </script>
 
 <template>
   <section id="como-funciona" class="py-20 sm:py-28" aria-labelledby="steps-title">
-    <div class="container-page">
-      <div class="mx-auto max-w-2xl text-center">
-        <p class="eyebrow">Cómo funciona</p>
-        <h2 id="steps-title" class="mt-3 text-3xl font-semibold sm:text-4xl">
-          Tu conjunto en marcha en tres pasos
-        </h2>
+    <div
+      class="container-page grid gap-12 lg:grid-cols-[1fr_1.35fr] lg:items-center lg:gap-20 [&>*]:min-w-0"
+    >
+      <div>
+        <h2 id="steps-title" class="heading-section">Tu conjunto en marcha en tres pasos</h2>
+        <p class="lead mt-5">
+          No necesitas instalar nada ni contratar a nadie. Si prefieres, te acompañamos en la
+          configuración inicial y migramos tus datos sin costo.
+        </p>
+        <img
+          :src="art.bienvenida.src"
+          :width="art.bienvenida.width"
+          :height="art.bienvenida.height"
+          alt=""
+          class="mt-8 hidden w-72 lg:block"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
 
-      <ol class="mt-14 grid gap-8 md:grid-cols-3">
-        <li v-for="(step, index) in steps" :key="step.title" class="relative">
-          <div
-            v-if="index < steps.length - 1"
-            class="absolute top-6 left-16 hidden h-px w-[calc(100%-3rem)] bg-linear-to-r from-teal-500 to-navy-100 md:block"
+      <div>
+        <!-- A real sequence, so the steps are numbered and joined by a line -->
+        <div class="relative">
+          <span
+            class="absolute top-6 bottom-6 left-6 w-0.5 bg-linear-to-b from-mint-400 to-brand-100"
             aria-hidden="true"
           />
-          <span
-            class="relative grid size-12 place-items-center rounded-2xl bg-navy-900 font-display text-xl font-semibold text-teal-400"
-          >
-            {{ index + 1 }}
-          </span>
-          <h3 class="mt-6 text-xl font-semibold">{{ step.title }}</h3>
-          <p class="mt-2 leading-relaxed text-navy-600">{{ step.description }}</p>
-        </li>
-      </ol>
+          <ol class="relative space-y-8">
+            <li v-for="(step, index) in steps" :key="step.title" class="relative flex gap-6">
+              <span
+                class="relative grid size-12 shrink-0 place-items-center rounded-full bg-brand-700 font-display text-xl font-extrabold text-white ring-8 ring-cream"
+                aria-hidden="true"
+              >
+                {{ index + 1 }}
+              </span>
+              <div class="pt-2">
+                <h3 class="text-xl font-bold">{{ step.title }}</h3>
+                <p class="mt-2 text-slate">{{ step.description }}</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <a :href="links.signup" class="btn-primary btn-lg mt-10 sm:ml-18">
+          Crear la cuenta de mi conjunto
+          <ArrowRight class="size-4.5" aria-hidden="true" />
+        </a>
+        <p class="mt-3 text-sm text-slate sm:ml-18">{{ TRIAL_DAYS }} días gratis, sin tarjeta.</p>
+      </div>
     </div>
   </section>
 </template>

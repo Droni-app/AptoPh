@@ -1,67 +1,133 @@
 <script setup lang="ts">
-import { ArrowRight, Check } from '@lucide/vue'
-import ProductMockup from './ProductMockup.vue'
+import { ArrowRight, CalendarCheck, Check, Package, Wallet } from '@lucide/vue'
+import { PRICE_TIERS, TRIAL_DAYS, formatCop } from '@aptoph/shared'
+import { art } from '@/art'
+import { heroEvents, proofPoints } from '@/content'
 import { links } from '@/links'
 
-const highlights = [
-  'Cartera, pagos y cuotas por coeficiente',
-  'Reservas, PQRS, portería y paquetes',
-  'Web para el equipo y app para residentes',
+const fromPrice = formatCop(PRICE_TIERS[0]!.pricePerUnit)
+
+const trust = [
+  'Sin tarjeta de crédito',
+  'Migramos tus datos gratis',
+  `Desde ${fromPrice} por unidad al mes`,
 ]
+
+/** Where each notification lands on the illustration, and how it looks */
+const chips = {
+  pago: {
+    icon: Wallet,
+    tone: 'bg-mint-100 text-mint-700',
+    place: 'left-[6%] top-[14%] sm:left-[10%]',
+    delay: '350ms',
+  },
+  reserva: {
+    icon: CalendarCheck,
+    tone: 'bg-brand-100 text-brand-600',
+    place: 'right-[5%] top-[24%] hidden sm:flex',
+    delay: '900ms',
+  },
+  paquete: {
+    icon: Package,
+    tone: 'bg-coral-100 text-coral-700',
+    place: 'bottom-[12%] left-[26%] hidden sm:flex lg:bottom-[24%]',
+    delay: '1450ms',
+  },
+}
 </script>
 
 <template>
-  <section id="inicio" class="relative overflow-hidden" aria-labelledby="hero-title">
-    <!-- Decorative background: blueprint grid + teal glow -->
+  <section id="inicio" class="relative -mt-18 overflow-hidden pt-18" aria-labelledby="hero-title">
     <div
-      class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,var(--color-navy-50)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-navy-50)_1px,transparent_1px)] mask-[radial-gradient(ellipse_at_top,black_30%,transparent_75%)] bg-size-[44px_44px]"
-      aria-hidden="true"
-    />
-    <div
-      class="pointer-events-none absolute -top-40 right-0 -z-10 size-[36rem] rounded-full bg-teal-300/25 blur-3xl"
-      aria-hidden="true"
-    />
-
-    <div
-      class="container-page grid items-center gap-14 pt-14 pb-20 sm:pt-20 lg:grid-cols-[1.05fr_1fr] lg:pb-28"
+      class="container-page relative z-10 pt-8 pb-10 sm:pt-14 lg:min-h-[43rem] lg:pt-24 lg:pb-28"
     >
-      <div>
-        <p class="eyebrow">Software para propiedad horizontal</p>
+      <div class="max-w-[34rem]">
+        <p class="text-[0.95rem] font-semibold text-mint-700">Software para propiedad horizontal</p>
         <h1
           id="hero-title"
-          class="mt-4 text-4xl leading-[1.08] font-semibold sm:text-5xl lg:text-[3.4rem]"
+          class="mt-4 text-[2.55rem] leading-[1.04] font-extrabold tracking-[-0.035em] sm:text-[3.4rem] lg:text-[3.9rem]"
         >
-          Administra tu conjunto residencial
-          <span class="text-teal-700">sin papeles ni hojas de cálculo</span>
+          Administra tu conjunto residencial en un solo lugar
         </h1>
-        <p class="mt-6 max-w-xl text-lg leading-relaxed text-navy-600">
-          AptoPH reúne la administración de conjuntos residenciales y edificios en una sola
-          plataforma: cuotas de administración, pagos, zonas comunes, PQRS, portería y documentos.
-          La administración, el consejo y los residentes trabajan con la misma información.
+        <p class="lead mt-6 max-w-[31rem]">
+          Cuotas, pagos, reservas, PQRS, portería y documentos en una plataforma que entienden la
+          administración, el consejo y cada residente.
         </p>
 
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a :href="links.signup" class="btn-primary px-6 py-3.5 text-base">
-            Prueba gratis 30 días
-            <ArrowRight class="size-4" aria-hidden="true" />
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <a :href="links.signup" class="btn-primary btn-lg">
+            Empieza gratis {{ TRIAL_DAYS }} días
+            <ArrowRight class="size-4.5" aria-hidden="true" />
           </a>
-          <a href="#demo" class="btn-ghost px-6 py-3.5 text-base"> Probar la demo </a>
+          <a href="#demo" class="btn-ghost btn-lg">Ver la demo en vivo</a>
         </div>
-        <p class="mt-3 text-sm text-navy-500">Sin tarjeta de crédito · Listo en 2 minutos</p>
 
-        <ul class="mt-10 grid gap-3 text-sm text-navy-700 sm:grid-cols-1">
-          <li v-for="item in highlights" :key="item" class="flex items-center gap-2.5">
-            <span class="grid size-5 place-items-center rounded-full bg-teal-500 text-navy-950">
-              <Check class="size-3.5" stroke-width="3" aria-hidden="true" />
-            </span>
+        <ul
+          class="mt-7 flex flex-col gap-2.5 text-[0.95rem] text-slate sm:flex-row sm:flex-wrap sm:gap-x-6"
+        >
+          <li v-for="item in trust" :key="item" class="flex items-center gap-2">
+            <Check class="size-4.5 shrink-0 text-mint-600" stroke-width="2.75" aria-hidden="true" />
             {{ item }}
           </li>
         </ul>
       </div>
+    </div>
 
-      <div class="relative">
-        <ProductMockup />
-      </div>
+    <!-- The community illustration: full-bleed to the right on desktop, below the copy on mobile -->
+    <div
+      class="relative mx-4 aspect-[4/3] overflow-hidden rounded-[2rem] sm:mx-6 sm:aspect-[16/10] lg:absolute lg:inset-y-0 lg:right-0 lg:mx-0 lg:aspect-auto lg:w-[66%] lg:rounded-none xl:w-[63%]"
+    >
+      <img
+        :src="art.hero.src"
+        :srcset="art.hero.srcset"
+        sizes="(min-width: 1024px) 66vw, 100vw"
+        :width="art.hero.width"
+        :height="art.hero.height"
+        alt="Residentes de un conjunto conversan en la zona verde mientras la administradora atiende a una vecina con su tableta"
+        class="size-full object-cover object-[78%_center] lg:object-[70%_center]"
+        fetchpriority="high"
+        decoding="async"
+      />
+      <div
+        class="pointer-events-none absolute inset-y-0 left-0 hidden w-40 bg-linear-to-r from-cream to-cream/0 lg:block"
+        aria-hidden="true"
+      />
+
+      <ul aria-label="Así se ve la actividad de un conjunto en AptoPH">
+        <li
+          v-for="event in heroEvents"
+          :key="event.kind"
+          class="chip-in absolute flex items-center gap-3 rounded-2xl bg-white/95 py-2.5 pr-4 pl-2.5 shadow-[0_18px_40px_-18px_rgb(16_32_56/0.45)] ring-1 ring-brand-900/5 backdrop-blur"
+          :class="chips[event.kind].place"
+          :style="{ animationDelay: chips[event.kind].delay }"
+        >
+          <span
+            class="grid size-9 shrink-0 place-items-center rounded-xl"
+            :class="chips[event.kind].tone"
+          >
+            <component :is="chips[event.kind].icon" class="size-4.5" aria-hidden="true" />
+          </span>
+          <span class="leading-tight">
+            <span class="block text-sm font-semibold text-brand-700">{{ event.title }}</span>
+            <span class="block text-xs text-slate">{{ event.detail }}</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- What AptoPH is, in four facts -->
+    <div class="relative z-10 container-page pt-10 pb-6 lg:pt-0">
+      <ul
+        class="grid gap-x-8 gap-y-6 rounded-[1.75rem] bg-white px-6 py-7 shadow-[0_24px_60px_-36px_rgb(30_58_95/0.5)] ring-1 ring-brand-900/5 sm:grid-cols-2 sm:px-8 lg:-mt-14 lg:grid-cols-4"
+      >
+        <li v-for="point in proofPoints" :key="point.title" class="flex gap-3">
+          <span class="mt-1.5 size-2 shrink-0 rounded-full bg-mint-400" aria-hidden="true" />
+          <span>
+            <span class="block font-display font-bold text-brand-700">{{ point.title }}</span>
+            <span class="mt-0.5 block text-sm text-slate">{{ point.description }}</span>
+          </span>
+        </li>
+      </ul>
     </div>
   </section>
 </template>

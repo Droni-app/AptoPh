@@ -1,63 +1,126 @@
 <script setup lang="ts">
-import { ChevronRight } from '@lucide/vue'
-import { profiles } from '@/content'
+import { nextTick, ref } from 'vue'
+import { Check } from '@lucide/vue'
+import { art } from '@/art'
+import { profileArt, profiles } from '@/content'
+
+const active = ref(0)
+const tabs = ref<HTMLButtonElement[]>([])
+
+/** Arrow keys move between tabs (WAI-ARIA tabs pattern, automatic activation) */
+async function onKey(event: KeyboardEvent, index: number) {
+  const last = profiles.length - 1
+  const next =
+    event.key === 'ArrowRight' || event.key === 'ArrowDown'
+      ? index === last
+        ? 0
+        : index + 1
+      : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
+        ? index === 0
+          ? last
+          : index - 1
+        : event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? last
+            : null
+  if (next === null) return
+  event.preventDefault()
+  active.value = next
+  await nextTick()
+  tabs.value[next]?.focus()
+}
+
+const slug = (role: string) =>
+  role
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z]+/g, '-')
 </script>
 
 <template>
   <section id="perfiles" class="py-20 sm:py-28" aria-labelledby="profiles-title">
     <div class="container-page">
-      <div class="max-w-2xl">
-        <p class="eyebrow">Para quién</p>
-        <h2 id="profiles-title" class="mt-3 text-3xl font-semibold sm:text-4xl">
-          Cada persona del conjunto, con las herramientas de su rol
-        </h2>
-        <p class="mt-4 text-lg text-navy-600">
-          Una misma persona puede tener varios perfiles. Por ejemplo, un propietario que además es
-          miembro del consejo entra con una sola cuenta.
-        </p>
+      <div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div class="max-w-2xl">
+          <h2 id="profiles-title" class="heading-section">
+            Cada persona del conjunto, con las herramientas de su rol
+          </h2>
+          <p class="lead mt-5">
+            Una misma persona puede tener varios perfiles. Por ejemplo, un propietario que además es
+            miembro del consejo entra con una sola cuenta.
+          </p>
+        </div>
       </div>
 
-      <!-- 6-column grid on desktop: 3 cards on the first row, 2 wider ones on the second -->
-      <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-6">
-        <article
+      <div
+        role="tablist"
+        aria-label="Perfiles"
+        class="-mx-4 mt-12 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
+      >
+        <button
           v-for="(profile, index) in profiles"
+          :id="`tab-${slug(profile.role)}`"
           :key="profile.role"
-          class="rounded-2xl p-6 ring-1"
-          :class="[
-            index < 3 ? 'lg:col-span-2' : 'lg:col-span-3',
-            index === profiles.length - 1
-              ? 'bg-navy-900 text-white ring-navy-900 sm:col-span-2'
-              : 'bg-white ring-navy-100',
-          ]"
+          ref="tabs"
+          type="button"
+          role="tab"
+          :aria-selected="active === index"
+          :aria-controls="`panel-${slug(profile.role)}`"
+          :tabindex="active === index ? 0 : -1"
+          class="flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-[0.95rem] font-semibold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700"
+          :class="
+            active === index
+              ? 'bg-brand-700 text-white'
+              : 'bg-white text-brand-700 ring-1 ring-brand-100 hover:ring-brand-300'
+          "
+          @click="active = index"
+          @keydown="onKey($event, index)"
         >
-          <span
-            class="grid size-11 place-items-center rounded-xl"
-            :class="
-              index === profiles.length - 1
-                ? 'bg-teal-500 text-navy-950'
-                : 'bg-teal-50 text-teal-700'
-            "
-          >
-            <component :is="profile.icon" class="size-5" aria-hidden="true" />
-          </span>
-          <h3 class="mt-5 text-lg font-semibold">{{ profile.role }}</h3>
-          <p
-            class="mt-2 text-sm leading-relaxed"
-            :class="index === profiles.length - 1 ? 'text-navy-200' : 'text-navy-600'"
-          >
-            {{ profile.pitch }}
-          </p>
-          <ul class="mt-5 space-y-2 text-sm">
-            <li v-for="item in profile.can" :key="item" class="flex gap-2">
-              <ChevronRight
-                class="mt-0.5 size-4 shrink-0"
-                :class="index === profiles.length - 1 ? 'text-teal-400' : 'text-teal-600'"
-                aria-hidden="true"
-              />
-              <span>{{ item }}</span>
+          <component :is="profile.icon" class="size-4.5" aria-hidden="true" />
+          {{ profile.role }}
+        </button>
+      </div>
+
+      <!-- Every panel is in the HTML (crawlable); only the active one is shown -->
+      <div
+        v-for="(profile, index) in profiles"
+        v-show="active === index"
+        :id="`panel-${slug(profile.role)}`"
+        :key="profile.role"
+        role="tabpanel"
+        :aria-labelledby="`tab-${slug(profile.role)}`"
+        tabindex="0"
+        class="mt-6 grid overflow-hidden rounded-[2rem] bg-white ring-1 ring-brand-900/5 focus-visible:outline-2 focus-visible:outline-brand-700 lg:grid-cols-[1fr_1.15fr]"
+      >
+        <div class="order-2 p-7 sm:p-10 lg:order-1 lg:p-12">
+          <h3 class="text-[1.75rem] leading-tight font-extrabold">{{ profile.role }}</h3>
+          <p class="lead mt-3">{{ profile.pitch }}</p>
+          <ul class="mt-7 space-y-3.5">
+            <li v-for="item in profile.can" :key="item" class="flex gap-3 text-ink">
+              <span
+                class="mt-0.5 grid size-5.5 shrink-0 place-items-center rounded-full bg-mint-100 text-mint-700"
+              >
+                <Check class="size-3.5" stroke-width="3" aria-hidden="true" />
+              </span>
+              {{ item }}
             </li>
           </ul>
-        </article>
+        </div>
+        <div class="order-1 bg-cream lg:order-2">
+          <img
+            :src="art[profileArt[profile.role]!].src"
+            :srcset="art[profileArt[profile.role]!].srcset"
+            sizes="(min-width: 1024px) 40rem, 100vw"
+            :width="art[profileArt[profile.role]!].width"
+            :height="art[profileArt[profile.role]!].height"
+            alt=""
+            class="aspect-[16/10] size-full object-cover object-right lg:aspect-auto"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </div>
     </div>
   </section>
