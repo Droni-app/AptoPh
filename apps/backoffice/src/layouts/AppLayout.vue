@@ -27,6 +27,26 @@ const { theme, toggle } = useTheme()
 const sections: Array<{ label: string; icon: string; to: string; match: string[] }> = [
   { label: 'Inicio', icon: 'mdi mdi-view-dashboard-outline', to: '/', match: ['dashboard'] },
   { label: 'Unidades', icon: 'mdi mdi-door', to: '/unidades', match: ['units', 'unit'] },
+  {
+    label: 'Finanzas',
+    icon: 'mdi mdi-cash-multiple',
+    to: '/finanzas',
+    match: [
+      'finance',
+      'finance-billing',
+      'finance-fees',
+      'finance-payments',
+      'finance-receivables',
+      'finance-statement',
+      'finance-expenses',
+      'finance-banks',
+      'finance-budgets',
+      'finance-budget',
+      'finance-accounting',
+      'finance-reports',
+      'finance-settings',
+    ],
+  },
   { label: 'Torres', icon: 'mdi mdi-office-building-outline', to: '/torres', match: ['buildings'] },
   { label: 'Personas', icon: 'mdi mdi-account-group-outline', to: '/personas', match: ['members'] },
   {
@@ -41,6 +61,7 @@ const items = computed<NavbarItem[]>(() =>
   sections
     // Managed conjuntos (no subscription) have no plan page to show
     .filter((section) => section.to !== '/plan' || subscription.current !== null)
+    .filter((section) => section.to !== '/finanzas' || tenant.canReadFinance)
     .map((section) => ({
       label: section.label,
       icon: section.icon,

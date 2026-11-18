@@ -11,6 +11,8 @@ declare module 'vue-router' {
     guest?: boolean
     /** Requires an active tenant (X-Tenant-Id) */
     tenant?: boolean
+    /** Finance pages: administration, accounting, council and fiscal reviewer */
+    finance?: boolean
     title?: string
   }
 }
@@ -97,6 +99,91 @@ const router = createRouter({
           meta: { tenant: true, title: 'Personas' },
         },
         {
+          path: 'finanzas',
+          component: () => import('@/layouts/FinanceLayout.vue'),
+          meta: { tenant: true, finance: true },
+          children: [
+            {
+              path: '',
+              name: 'finance',
+              component: () => import('@/views/finance/FinanceSummaryView.vue'),
+              meta: { tenant: true, finance: true, title: 'Finanzas' },
+            },
+            {
+              path: 'facturacion',
+              name: 'finance-billing',
+              component: () => import('@/views/finance/BillingView.vue'),
+              meta: { tenant: true, finance: true, title: 'Facturación' },
+            },
+            {
+              path: 'tarifas',
+              name: 'finance-fees',
+              component: () => import('@/views/finance/FeesView.vue'),
+              meta: { tenant: true, finance: true, title: 'Tarifas y cuotas' },
+            },
+            {
+              path: 'recaudo',
+              name: 'finance-payments',
+              component: () => import('@/views/finance/PaymentsView.vue'),
+              meta: { tenant: true, finance: true, title: 'Recaudo' },
+            },
+            {
+              path: 'cartera',
+              name: 'finance-receivables',
+              component: () => import('@/views/finance/ReceivablesView.vue'),
+              meta: { tenant: true, finance: true, title: 'Cartera' },
+            },
+            {
+              path: 'cartera/:unitId',
+              name: 'finance-statement',
+              component: () => import('@/views/finance/UnitStatementView.vue'),
+              meta: { tenant: true, finance: true, title: 'Estado de cuenta' },
+            },
+            {
+              path: 'gastos',
+              name: 'finance-expenses',
+              component: () => import('@/views/finance/ExpensesView.vue'),
+              meta: { tenant: true, finance: true, title: 'Gastos y proveedores' },
+            },
+            {
+              path: 'bancos',
+              name: 'finance-banks',
+              component: () => import('@/views/finance/BanksView.vue'),
+              meta: { tenant: true, finance: true, title: 'Bancos y caja' },
+            },
+            {
+              path: 'presupuesto',
+              name: 'finance-budgets',
+              component: () => import('@/views/finance/BudgetsView.vue'),
+              meta: { tenant: true, finance: true, title: 'Presupuesto' },
+            },
+            {
+              path: 'presupuesto/:id',
+              name: 'finance-budget',
+              component: () => import('@/views/finance/BudgetDetailView.vue'),
+              meta: { tenant: true, finance: true, title: 'Presupuesto' },
+            },
+            {
+              path: 'contabilidad',
+              name: 'finance-accounting',
+              component: () => import('@/views/finance/AccountingView.vue'),
+              meta: { tenant: true, finance: true, title: 'Contabilidad' },
+            },
+            {
+              path: 'informes',
+              name: 'finance-reports',
+              component: () => import('@/views/finance/ReportsView.vue'),
+              meta: { tenant: true, finance: true, title: 'Informes contables' },
+            },
+            {
+              path: 'configuracion',
+              name: 'finance-settings',
+              component: () => import('@/views/finance/FinanceSettingsView.vue'),
+              meta: { tenant: true, finance: true, title: 'Configuración financiera' },
+            },
+          ],
+        },
+        {
           path: 'perfil',
           name: 'profile',
           component: () => import('@/views/ProfileView.vue'),
@@ -146,6 +233,7 @@ router.beforeEach(async (to) => {
   if (to.meta.tenant && !tenant.current) {
     return { name: 'select-tenant', query: { redirect: to.fullPath } }
   }
+  if (to.meta.finance && !tenant.canReadFinance) return { name: 'dashboard' }
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails

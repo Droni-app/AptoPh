@@ -142,13 +142,24 @@ onMounted(() => {
           <span class="mdi mdi-arrow-left" aria-hidden="true" /> Unidades
         </RouterLink>
       </template>
-      <template v-if="tenant.canManage" #actions>
-        <DuiButton variant="outline" @click="unitFormOpen = true">
-          <span class="mdi mdi-pencil-outline mr-1" aria-hidden="true" />Editar
-        </DuiButton>
-        <DuiButton variant="ghost" color="danger" @click="deleteUnitOpen = true"
-          >Eliminar</DuiButton
+      <template v-if="tenant.canManage || tenant.canReadFinance" #actions>
+        <RouterLink
+          v-if="tenant.canReadFinance"
+          :to="{ name: 'finance-statement', params: { unitId: unit.id } }"
         >
+          <DuiButton variant="outline">
+            <span class="mr-1"><i class="mdi mdi-account-cash-outline" aria-hidden="true" /></span
+            >Estado de cuenta
+          </DuiButton>
+        </RouterLink>
+        <template v-if="tenant.canManage">
+          <DuiButton variant="outline" @click="unitFormOpen = true">
+            <span class="mdi mdi-pencil-outline mr-1" aria-hidden="true" />Editar
+          </DuiButton>
+          <DuiButton variant="ghost" color="danger" @click="deleteUnitOpen = true"
+            >Eliminar</DuiButton
+          >
+        </template>
       </template>
     </PageHeader>
 

@@ -1,6 +1,12 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { BACKOFFICE_ROLES, type EnrollmentRole, type TenantSummary } from '@aptoph/shared'
+import {
+  BACKOFFICE_ROLES,
+  FINANCE_READ_ROLES,
+  FINANCE_WRITE_ROLES,
+  type EnrollmentRole,
+  type TenantSummary,
+} from '@aptoph/shared'
 import { api } from '@/lib/http'
 
 const CURRENT_KEY = 'aptoph.backoffice.tenant'
@@ -33,9 +39,13 @@ export const useTenantStore = defineStore('tenant', () => {
   const roles = computed<EnrollmentRole[]>(() => current.value?.roles ?? [])
   const hasRole = (...wanted: EnrollmentRole[]) => roles.value.some((role) => wanted.includes(role))
   const canManage = computed(() => hasRole('administrator'))
+  const canReadFinance = computed(() => hasRole(...FINANCE_READ_ROLES))
+  const canManageFinance = computed(() => hasRole(...FINANCE_WRITE_ROLES))
 
   async function load() {
-    const { data } = await api<{ data: TenantSummary[] }>('/api/v1/account/tenants', { tenant: false })
+    const { data } = await api<{ data: TenantSummary[] }>('/api/v1/account/tenants', {
+      tenant: false,
+    })
     tenants.value = data
     loaded.value = true
 
@@ -60,5 +70,19 @@ export const useTenantStore = defineStore('tenant', () => {
     loaded.value = false
   }
 
-  return { tenants, loaded, currentId, backofficeTenants, current, roles, hasRole, canManage, load, select, reset }
+  return {
+    tenants,
+    loaded,
+    currentId,
+    backofficeTenants,
+    current,
+    roles,
+    hasRole,
+    canManage,
+    canReadFinance,
+    canManageFinance,
+    load,
+    select,
+    reset,
+  }
 })
