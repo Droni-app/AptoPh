@@ -186,4 +186,5 @@ tiene marcadores `__…__` en su lugar.
 
 - [Modelo de datos](docs/database-model.md)
 - [Autenticación (access tokens)](docs/authentication.md)
+- [Finanzas y contabilidad](docs/finance.md)
 - [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens

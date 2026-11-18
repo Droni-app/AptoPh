@@ -26,8 +26,8 @@ residentes ya consume varios módulos que nadie puede administrar desde la web.
 | --- | --- | --- | --- | --- |
 | Cuenta, acceso y suscripción | 🟡 login, registro, logout, plan | 🟡 login, registro, plan | 🟡 login, perfil | ⬜ |
 | Estructura y censo | ✅ torres, unidades, ocupantes | ✅ | ✅ hogar, vehículos, mascotas | ⬜ |
-| Cartera (cuotas) | 🟡 solo lectura para el residente | ⬜ | ✅ estado de cuenta | ⬜ |
-| Pagos y recaudo | ⬜ | ⬜ | ⬜ | ⬜ |
+| Cartera (cuotas) | ✅ | ✅ | ✅ estado de cuenta | ⬜ |
+| Pagos y recaudo | 🟡 manual, sin pasarela | ✅ | ✅ reportar pago | ⬜ |
 | Zonas comunes y reservas | 🟡 solo residente | ⬜ | ✅ | ⬜ |
 | Comunicados | ⬜ (solo tablas) | ⬜ | ⬜ | ⬜ |
 | PQRS y mantenimiento | 🟡 solo residente | ⬜ | ✅ | ⬜ |
@@ -36,7 +36,7 @@ residentes ya consume varios módulos que nadie puede administrar desde la web.
 | Auditoría y reportes | ⬜ (solo tablas) | ⬜ | — | — |
 | Notificaciones | 🟡 correo de bienvenida | — | ⬜ | ⬜ |
 | Asambleas | ⬜ | ⬜ | ⬜ | ⬜ |
-| Presupuesto y gastos | ⬜ | ⬜ | — | — |
+| Presupuesto, gastos y contabilidad | ✅ | ✅ | — | — |
 
 ✅ hecho · 🟡 parcial · ⬜ sin empezar · — no aplica
 
@@ -56,9 +56,9 @@ Sin esto un administrador no puede operar ni invitar a su gente.
 
 1. ✅ **Cuenta y acceso**: invitaciones de personal y residentes, recuperación de contraseña, límite de
    intentos de login. *(módulo 4.1)*
-2. **Cartera desde el backoffice**: conceptos de cobro, generación mensual de cuotas por
+2. ✅ **Cartera desde el backoffice**: conceptos de cobro, generación mensual de cuotas por
    coeficiente, cobros puntuales e intereses de mora. Es el corazón del producto. *(4.3)*
-3. **Registro manual de pagos** con aplicación a cargos y paz y salvo. *(4.4)*
+3. ✅ **Registro manual de pagos** con aplicación a cargos y paz y salvo. *(4.4)*
 4. **Gestión de PQRS en el backoffice**: los residentes ya radican y nadie las responde. *(4.7)*
 5. **Gestión de reservas en el backoffice**: zonas comunes y aprobación de reservas. *(4.5)*
 
@@ -79,7 +79,7 @@ Sin esto un administrador no puede operar ni invitar a su gente.
 13. **Pagos en línea** (PSE/tarjeta) con conciliación automática. *(4.4)*
 14. **App móvil** (Flutter) y notificaciones push. *(4.12)*
 15. **Asambleas virtuales** con quórum y votación por coeficiente. *(4.13)*
-16. **Presupuesto, gastos y proveedores**. *(4.14)*
+16. ✅ **Presupuesto, gastos y proveedores** (con contabilidad por partida doble). *(4.14)*
 17. **Plan Empresarial**: administradoras con varias copropiedades. *(4.1)*
 
 > La landing anuncia como "próximamente" asambleas, push y presupuesto. Si cambia el orden de las
@@ -145,7 +145,8 @@ conjunto, pantalla de plan con solicitud de activación, comando `subscription:a
 - [x] Configuración del conjunto: nombre, razón social, NIT, tipo, dirección y ciudad.
 
 **Falta**
-- [ ] Logo del conjunto, día de corte y tasa de mora (`tenants.settings`): se hacen con Cartera (4.3).
+- [x] Día de corte, tasa de mora y demás reglas financieras: Finanzas → Configuración (4.3).
+- [ ] Logo del conjunto.
 - [ ] Cambio de correo con confirmación.
 - [ ] Facturación del SaaS (P1): facturas del plan, pago y activación automática; recordatorios al
       vencer la prueba; estados `past_due` y `suspended`.
@@ -182,50 +183,47 @@ el residente gestiona su hogar, vehículos y mascotas.
 
 ### 4.3 Cartera: cuotas y cobros
 
-**Hay hoy:** tablas `charge_concepts`, `charges`; el residente ve sus cobros abiertos y vencidos.
+**Hecho** (ver `docs/finance.md`)
+- [x] Conceptos de cobro con sus cuentas contables, mora y pronto pago.
+- [x] Calculadora de cuotas: coeficiente, módulos de contribución (conjuntos mixtos), área, partes
+      iguales o valor fijo por tipo; desde un valor o desde el presupuesto aprobado; anexos sumados
+      a su unidad principal; redondeo configurable; vista previa con la cuota actual.
+- [x] Tarifas por unidad con vigencia (parqueaderos asignados, cuotas pactadas).
+- [x] **Facturación mensual** idempotente con vista previa, completar, cerrar y reabrir.
+- [x] Cobros puntuales a varias unidades o a todo un tipo; anulación y notas crédito con motivo.
+- [x] Intereses de mora sobre capital vencido (nunca sobre intereses) y descuento por pronto pago.
+- [x] Estado de cuenta por unidad (backoffice y portal) y cartera por edades, con CSV.
+- [x] `ChargeService.create` con `idempotencyKey` para que parqueaderos, visitantes y reservas
+      generen sus cobros (ya lo usa la reserva del demo).
 
 **Falta**
-- [ ] Conceptos de cobro en el backoffice (ordinaria, extraordinaria, multa, intereses, servicio).
-- [ ] **Generación mensual de cuotas** (P0): monto total del presupuesto repartido por coeficiente,
-      o valor fijo por tipo de unidad; vista previa antes de emitir; no duplicar el periodo.
-- [ ] Cobros puntuales a una o varias unidades (multas, extraordinarias, alquiler de salón).
-- [ ] **Intereses de mora** (P0): cálculo mensual sobre saldo vencido, configurable por conjunto.
-- [ ] Descuento por pronto pago (opcional por conjunto).
-- [ ] Anular un cobro con motivo (nunca borrarlo).
-- [ ] Estado de cuenta por unidad descargable en PDF.
-- [ ] Cartera por edades (0–30, 31–60, 61–90, +90 días) y listado de morosos.
+- [ ] Estado de cuenta, cuenta de cobro y paz y salvo en PDF; envío por correo.
+- [ ] Cobros automáticos de parqueadero de visitantes y reservas cuando existan esos flujos.
+- [ ] Importar saldos iniciales de cartera desde Excel (fase 2).
 
 **Tener en cuenta**
-- La tasa de mora no puede superar el máximo legal vigente (tasa de usura que certifica la
-  Superintendencia Financiera); validar la regla con un contador antes de liberar.
-- Los cobros emitidos son inmutables: las correcciones se hacen con notas o anulaciones.
-- Redondeo: definir una sola regla (al peso) en `packages/shared` y usarla en API y UI.
-- La generación debe ser un proceso idempotente (repetirla no crea cobros duplicados) y correr en
-  una transacción.
-- Permisos: `accountant` debería poder emitir y anular; `fiscal_reviewer` y consejo, solo leer.
+- La tasa de mora tiene un tope del sistema (5 %), pero el máximo legal cambia cada mes: el
+  conjunto debe mantenerla actualizada.
 
 ---
 
 ### 4.4 Pagos y recaudo
 
-**Hay hoy:** tablas `payments` y `payment_allocations`; nada de API ni UI.
+**Hecho**
+- [x] Registro manual con recibo de caja numerado y cuenta donde entró el dinero.
+- [x] Aplicación automática (intereses primero o lo más antiguo primero) y saldo a favor que se
+      aplica solo al facturar.
+- [x] El residente reporta su pago; la administración lo confirma (eligiendo la cuenta) o lo
+      rechaza con motivo.
+- [x] Reversión de pagos (cheque devuelto) que devuelve el saldo a los cargos.
 
 **Falta**
-- [ ] **Registro manual de pagos** (P0): unidad, valor, fecha, medio, referencia y soporte
-      (archivo).
-- [ ] **Aplicación automática a cargos** (P0) con regla definida, más ajuste manual.
-- [ ] Recibo de pago en PDF y **paz y salvo** por unidad.
-- [ ] El residente reporta un pago con su soporte y la administración lo confirma.
-- [ ] Saldo a favor cuando el pago supera lo adeudado.
+- [ ] Soporte adjunto del pago (cuando haya almacenamiento de archivos).
+- [ ] Recibo y paz y salvo en PDF.
 - [ ] Importar extracto bancario y conciliar por referencia (P1).
-- [ ] **Pagos en línea** (P2): PSE y tarjeta con una pasarela colombiana; webhook que registra y
-      aplica el pago.
+- [ ] **Pagos en línea** (P2): PSE y tarjeta; webhook que registra y aplica el pago.
 
 **Tener en cuenta**
-- Orden de aplicación: normalmente intereses antes que capital y lo más antiguo primero; confirmar
-  con contador y dejarlo configurable si hay dudas.
-- Un pago aplicado no se edita: se reversa y se registra de nuevo.
-- Guardar soportes en almacenamiento externo (`file_key`), no en la base de datos.
 - Con pasarela: validar firma del webhook, idempotencia por referencia y montos en centavos.
 
 ---
@@ -384,18 +382,23 @@ visitas, paquetes, PQRS, comunicados) más notificaciones push. Después, una ve
 
 ---
 
-### 4.14 Presupuesto, gastos y proveedores
+### 4.14 Presupuesto, gastos, proveedores y contabilidad
 
-**Hay hoy:** nada.
+**Hecho**
+- [x] Presupuesto anual por cuentas, fondo de imprevistos (mínimo 1 %), aprobación con acta y
+      ejecución frente a lo real; base de la cuota mensual.
+- [x] Proveedores, facturas con IVA y retenciones, egresos numerados, pago inmediato de caja menor,
+      reversión y cuentas por pagar por edades.
+- [x] Bancos y cajas con auxiliar contable y traslados.
+- [x] Contabilidad por partida doble: PUC simplificado, comprobantes automáticos, notas de
+      contabilidad, reversión y cierre contable por fecha.
+- [x] Estado de resultados, balance general, balance de prueba y libro auxiliar con CSV; acceso de
+      solo lectura para el consejo y la revisoría fiscal.
 
-**Falta (P2)**
-- [ ] Presupuesto anual por rubros, aprobado en asamblea; base para calcular las cuotas (4.3).
-- [ ] Proveedores y contratos.
-- [ ] Registro de gastos con soporte y ejecución frente al presupuesto.
-- [ ] Vista para el consejo y el revisor fiscal.
-
-**Tener en cuenta**
-- AptoPH no reemplaza el software contable: exportar en un formato que el contador pueda importar.
+**Falta**
+- [ ] Contratos de proveedores y soportes adjuntos.
+- [ ] Nómina, activos fijos con depreciación automática e información exógena.
+- [ ] Exportación en el formato de importación de los programas contables más usados.
 
 ---
 

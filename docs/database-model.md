@@ -283,65 +283,43 @@ enrollment por rol.
 | vaccination_file_key | varchar NULL | |
 | created_at / updated_at / deleted_at | | |
 
-## 6. Finanzas (cartera)
+## 6. Finanzas y contabilidad
 
-### `charge_concepts` — conceptos de cobro
+El módulo completo (reglas de cálculo, asientos y permisos) está en [`docs/finance.md`](finance.md).
+Aquí solo el mapa de tablas; todas llevan `tenant_id` y FK compuestas como el resto del modelo.
+Los valores son `numeric` y se exponen como `string`; en el código se calcula en centavos enteros.
 
-| Columna | Tipo | Notas |
-| --- | --- | --- |
-| id, tenant_id | | |
-| name | varchar(100) | "Cuota de administración", "Cuota extraordinaria", "Multa", "Parqueadero visitante" |
-| type | varchar(20) | `ordinary_fee`, `extraordinary_fee`, `fine`, `interest`, `service`, `other` |
-| calculation | varchar(20) | `fixed`, `by_coefficient`, `by_area` |
-| default_amount | numeric(14,2) NULL | |
-| is_active | boolean | |
-| created_at / updated_at | | |
+### Cartera
 
-### `charges` — cargos (cuenta de cobro) por unidad
+| Tabla | Para qué |
+| --- | --- |
+| `charge_concepts` | Conceptos de cobro (`ordinary_fee`, `extraordinary_fee`, `interest`, `fine`, `parking`, `visitor_parking`, `amenity_booking`, `service`, `opening_balance`, `other`), con su cuenta por cobrar, su cuenta de ingreso, si genera mora y si tiene pronto pago. `code` identifica los conceptos del sistema. |
+| `contribution_modules` / `contribution_module_units` | Módulos de contribución (torre, locales, parqueaderos) con la participación (`share`) de cada unidad. |
+| `fee_schedules` | Historial de cálculos de cuotas: método (`coefficient`, `module`, `area`, `equal`, `fixed_by_type`), total mensual, presupuesto base y parámetros. |
+| `recurring_charges` | Tarifa vigente de cada unidad por concepto, con `starts_on` / `ends_on` (meses). Lo que se factura cada mes. |
+| `billing_periods` | Un registro por mes facturado: vencimiento, pronto pago, tasa de mora aplicada, estado `open` / `closed`, totales. |
+| `charges` | Cargos por unidad. Además de lo básico: `billing_period_id`, `recurring_charge_id`, `source_type` / `source_id` (de dónde viene: facturación, mora, manual, parqueadero, reserva…), `idempotency_key` único (`rec:…`, `int:…`, `booking:…`), descuento por pronto pago y anulación (`cancelled_at`, `cancellation_reason`). |
+| `charge_adjustments` | Notas crédito, descuentos por pronto pago y anulaciones de un cargo. |
+| `payments` | Recibos de caja: `number` consecutivo, `cash_account_id`, `unapplied_amount` (saldo a favor), estado `pending_review` / `confirmed` / `rejected` / `reversed` con sus motivos. |
+| `payment_allocations` | Aplicación de un pago a cargos (un pago cubre varios cargos y un cargo admite varios abonos). |
 
-| Columna | Tipo | Notas |
-| --- | --- | --- |
-| id, tenant_id | | |
-| unit_id | uuid FK compuesta → units | |
-| charge_concept_id | uuid FK compuesta → charge_concepts | |
-| period | date | Primer día del mes facturado |
-| description | varchar(255) NULL | |
-| amount | numeric(14,2) | |
-| balance | numeric(14,2) | Saldo pendiente (amount − abonos) |
-| due_on | date | |
-| status | varchar(20) | `pending`, `partially_paid`, `paid`, `cancelled` |
-| created_by_id | uuid NULL FK → users | |
-| created_at / updated_at | | |
+### Gastos, bancos y presupuesto
 
-`INDEX (tenant_id, unit_id, status)`, `INDEX (tenant_id, period)`
+| Tabla | Para qué |
+| --- | --- |
+| `vendors` | Proveedores: documento, contacto, cuenta bancaria y cuenta de gasto habitual. |
+| `bills` / `bill_lines` | Facturas de proveedores: líneas por cuenta de gasto, IVA, retenciones (fuente, IVA, ICA), neto y saldo. |
+| `vendor_payments` / `vendor_payment_allocations` | Comprobantes de egreso numerados y las facturas que pagan. |
+| `cash_accounts` | Cuentas bancarias y cajas, cada una con su auxiliar contable (`ledger_account_id`). |
+| `budgets` / `budget_items` | Presupuesto anual por cuenta, porcentaje del fondo de imprevistos y aprobación en asamblea. |
 
-### `payments` — pagos recibidos
+### Contabilidad
 
-| Columna | Tipo | Notas |
-| --- | --- | --- |
-| id, tenant_id | | |
-| unit_id | uuid FK compuesta → units | |
-| amount | numeric(14,2) | |
-| paid_at | timestamptz | |
-| method | varchar(20) | `cash`, `bank_transfer`, `card`, `pse`, `other` |
-| reference | varchar(100) NULL | Nº de transacción / consignación |
-| receipt_file_key | varchar NULL | Soporte subido por el residente |
-| status | varchar(20) | `pending_review`, `confirmed`, `rejected` |
-| registered_by_id | uuid NULL FK → users | |
-| confirmed_by_id | uuid NULL FK → users | |
-| created_at / updated_at | | |
-
-### `payment_allocations` — aplicación de un pago a cargos
-
-Un pago puede cubrir varios cargos y un cargo puede pagarse en varios abonos.
-
-| Columna | Tipo | Notas |
-| --- | --- | --- |
-| id, tenant_id | | |
-| payment_id | uuid FK compuesta → payments | |
-| charge_id | uuid FK compuesta → charges | |
-| amount | numeric(14,2) | |
-| created_at | | |
+| Tabla | Para qué |
+| --- | --- |
+| `ledger_accounts` | Plan de cuentas (PUC simplificado) por conjunto: código, clase, naturaleza, `is_postable`, `system_key` para las cuentas que usa el sistema. |
+| `journal_entries` / `journal_lines` | Comprobantes por partida doble, numerados. Cada línea lleva débito o crédito y el tercero (`unit_id` o `vendor_id`). Nunca se editan: se reversan (`reverses_entry_id`). |
+| `document_sequences` | Consecutivos por tipo de documento (recibos, egresos, comprobantes). |
 
 ## 7. Zonas comunes
 
@@ -517,6 +495,8 @@ Lucid (`apps/api/app/models`). Notas:
 6. ✅ `amenities` → `amenity_bookings`
 7. ✅ `announcements` → `announcement_reads` → `tickets` → `ticket_comments`
 8. ✅ `visits` → `parcels` → `documents` → `audit_logs`
+9. ✅ Finanzas: plan de cuentas y comprobantes → cartera extendida (periodos, tarifas, módulos,
+   presupuesto, ajustes) → proveedores, facturas, egresos y bancos
 
 Ejemplo de FK compuesta en una migración de Lucid:
 
