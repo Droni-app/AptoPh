@@ -64,5 +64,22 @@ export const useAuthStore = defineStore('auth', () => {
     window.location.assign('/login')
   }
 
-  return { session, user, token, isAuthenticated, login, loadProfile, logout, clear }
+  /** The profile changed (edited, email confirmed): keep the menu up to date */
+  function setUser(profile: UserProfile) {
+    user.value = profile
+  }
+
+  return {
+    session,
+    user,
+    token,
+    isAuthenticated,
+    device: DEVICE,
+    start,
+    setUser,
+    login,
+    loadProfile,
+    logout,
+    clear,
+  }
 })

@@ -25,6 +25,31 @@ const router = createRouter({
       meta: { public: true, guest: true, title: 'Iniciar sesión' },
     },
     {
+      path: '/recuperar-contrasena',
+      name: 'forgot-password',
+      component: () => import('@/views/ForgotPasswordView.vue'),
+      meta: { public: true, guest: true, title: 'Recuperar contraseña' },
+    },
+    {
+      // Links sent by email: they work with or without a session
+      path: '/restablecer-contrasena',
+      name: 'reset-password',
+      component: () => import('@/views/ResetPasswordView.vue'),
+      meta: { public: true, title: 'Nueva contraseña' },
+    },
+    {
+      path: '/invitacion',
+      name: 'invitation',
+      component: () => import('@/views/AcceptInvitationView.vue'),
+      meta: { public: true, title: 'Invitación' },
+    },
+    {
+      path: '/verificar-correo',
+      name: 'verify-email',
+      component: () => import('@/views/VerifyEmailView.vue'),
+      meta: { public: true, title: 'Confirmación de correo' },
+    },
+    {
       path: '/conjuntos',
       name: 'select-tenant',
       component: () => import('@/views/SelectTenantView.vue'),

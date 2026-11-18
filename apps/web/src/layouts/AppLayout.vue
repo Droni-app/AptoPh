@@ -10,6 +10,7 @@ import {
   type NavbarItem,
 } from '@dronico/droni-kit'
 import BrandLogo from '@/components/BrandLogo.vue'
+import EmailVerificationNotice from '@/components/account/EmailVerificationNotice.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
 import { useUnitsStore } from '@/stores/units'
@@ -115,6 +116,8 @@ async function switchTenant() {
         </DuiDropdown>
       </template>
     </DuiNavbar>
+
+    <EmailVerificationNotice v-if="route.name !== 'profile'" compact />
 
     <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
       <RouterView :key="tenant.currentId ?? ''" />
