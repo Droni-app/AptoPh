@@ -67,6 +67,10 @@ Configurado con `@adonisjs/mail` en `apps/api/config/mail.ts`. Completa en `apps
 | `SMTP_PASSWORD` | Secret key de Mailjet |
 | `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Remitente, que debe estar validado en Mailjet |
 
+Los enlaces de los correos (invitaciones, recuperar contraseña, confirmar correo) usan
+`BACKOFFICE_URL` y `RESIDENTS_URL`. Los límites de intentos se guardan según `LIMITER_STORE`
+(`database` en dev/prod, `memory` en tests).
+
 Verificar: `pnpm --filter @aptoph/api exec node ace mail:test tu@correo.com`
 
 Plantillas: `apps/api/resources/views/emails/` (usan `components/email_layout.edge`) y clases en `apps/api/app/mails/`.

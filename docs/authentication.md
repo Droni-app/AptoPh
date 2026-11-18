@@ -22,6 +22,16 @@ vuelve a la pantalla de inicio de sesión.
 | `GET /api/v1/account/profile` | Bearer | Usuario autenticado |
 | `GET /api/v1/account/tenants` | Bearer | Conjuntos con enrollment activo y roles en cada uno |
 | `GET /api/v1/tenant` | Bearer + `X-Tenant-Id` | Contexto del tenant activo y roles |
+| `POST /api/v1/auth/password/forgot` | — | `{ email, app }`: envía el enlace (siempre `204`) |
+| `POST /api/v1/auth/password/reset` | — | `{ token, password, device? }`: cambia la contraseña, cierra todas las sesiones y abre una nueva |
+| `POST /api/v1/auth/email/verify` | — | `{ token }`: confirma el correo (`204`, o `400` si el enlace no sirve) |
+| `GET /api/v1/invitations/:token` | — | Vista previa de una invitación (conjunto, rol, quién invitó, si debe crear contraseña) |
+| `POST /api/v1/invitations/accept` | — | `{ token, device?, fullName?, password? }` → sesión + `tenantId` + `role` |
+| `PATCH /api/v1/account/profile` | Bearer | Nombre, celular y documento (el correo no se cambia) |
+| `PUT /api/v1/account/password` | Bearer | `{ currentPassword, password }`; cierra las demás sesiones |
+| `GET /api/v1/account/sessions` | Bearer | Sesiones abiertas, la actual primero |
+| `DELETE /api/v1/account/sessions/:id` · `DELETE /api/v1/account/sessions` | Bearer | Cierra una sesión o todas las demás |
+| `POST /api/v1/account/email/verification` | Bearer | `{ app }`: reenvía el enlace de confirmación |
 
 Respuesta de `login` y `signup` (`AuthSession` en `@aptoph/shared`):
 
@@ -44,7 +54,43 @@ Errores:
 - `422`: validación, con el formato habitual `{ errors: [{ field, message, rule }] }`.
 
 `device` es una etiqueta libre que queda en `auth_access_tokens.name` (`Backoffice`,
-`Portal de residentes`…), útil para listar o cerrar sesiones por dispositivo en el futuro.
+`Portal de residentes`…) y es lo que ve la persona en «Mi perfil › Sesiones abiertas».
+
+## Límites de intentos (`@adonisjs/limiter`, `start/limiter.ts`)
+
+| Qué | Límite | Clave |
+| --- | --- | --- |
+| Login | 5 fallos en 15 min → bloqueo de 15 min (aunque luego acierte) | correo + IP; un login correcto limpia los fallos |
+| Correo de recuperación | 3 en 15 min | correo |
+| Correo de confirmación | 3 por hora | usuario |
+| Registro de conjuntos | 5 por hora | IP |
+| Endpoints públicos con token (reset, verify, invitaciones) | 20 en 15 min | IP |
+
+Responde `429` con `{ errors: [{ message: "Demasiados intentos. Vuelve a intentarlo en N minutos.", retryAfter }] }`.
+`LIMITER_STORE=database` (tabla `rate_limits`) en dev/prod y `memory` en tests. `trustProxy` está
+activo para leer la IP real detrás del balanceador de DigitalOcean.
+
+## Tokens de un solo uso
+
+`user_tokens` guarda recuperación de contraseña (1 hora) y confirmación de correo (3 días). Las
+invitaciones usan `enrollments.invitation_token_hash` (7 días). En la base solo queda el SHA-256
+del token; el valor en claro solo viaja en el enlace del correo. Al emitir uno nuevo se borran los
+anteriores sin usar, y al consumirlo se bloquea la fila (`FOR UPDATE`) para que no se use dos veces.
+
+Los enlaces apuntan a la app correcta según `app` (`backoffice` → `BACKOFFICE_URL`, `web` →
+`RESIDENTS_URL`): `/restablecer-contrasena`, `/verificar-correo` e `/invitacion`, con `?token=`.
+
+## Invitaciones
+
+- Una invitación es un `enrollment` con `status = invited`. Si el correo no tiene cuenta se crea el
+  usuario **sin contraseña** (`users.password` es nullable); `verifyPassword` devuelve `false` para
+  esas cuentas, así que no pueden entrar hasta aceptar.
+- Al invitar un ocupante desde la unidad (`occupantId`) se vincula `unit_occupants.user_id`, y el
+  residente ve su unidad en cuanto acepta.
+- Aceptar crea la contraseña (si hace falta), marca el correo como confirmado y activa el rol.
+- Estados que maneja la administración: `active` ⇄ `suspended`, y `revoked` (retirar acceso o
+  cancelar invitación). Nadie puede cambiar su propio acceso ni dejar el conjunto sin administración.
+  Si la persona se queda sin ningún rol activo se cierran todas sus sesiones.
 
 ## Registro (`POST /api/v1/auth/signup`)
 
@@ -97,6 +143,5 @@ Seguridad:
 
 ## Pendiente
 
-- Limitar intentos de login (`@adonisjs/limiter`).
-- Recuperación de contraseña y aceptación de invitaciones (`enrollments.invitation_token_hash`).
-- Listar y cerrar las sesiones abiertas de cada usuario.
+- Cambio de correo con confirmación del correo nuevo (hoy se pide a soporte).
+- Avisar por correo de un inicio de sesión desde un dispositivo nuevo.
