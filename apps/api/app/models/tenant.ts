@@ -23,6 +23,19 @@ import Parcel from '#models/parcel'
 import Document from '#models/document'
 import AuditLog from '#models/audit_log'
 import Subscription from '#models/subscription'
+import LedgerAccount from '#models/ledger_account'
+import JournalEntry from '#models/journal_entry'
+import JournalLine from '#models/journal_line'
+import CashAccount from '#models/cash_account'
+import Vendor from '#models/vendor'
+import Bill from '#models/bill'
+import VendorPayment from '#models/vendor_payment'
+import ContributionModule from '#models/contribution_module'
+import Budget from '#models/budget'
+import FeeSchedule from '#models/fee_schedule'
+import RecurringCharge from '#models/recurring_charge'
+import BillingPeriod from '#models/billing_period'
+import ChargeAdjustment from '#models/charge_adjustment'
 
 /**
  * A tenant is a horizontal-property community (conjunto).
@@ -96,6 +109,45 @@ export default class Tenant extends TenantSchema {
 
   @hasMany(() => AuditLog)
   declare auditLogs: HasMany<typeof AuditLog>
+
+  @hasMany(() => LedgerAccount)
+  declare ledgerAccounts: HasMany<typeof LedgerAccount>
+
+  @hasMany(() => JournalEntry)
+  declare journalEntries: HasMany<typeof JournalEntry>
+
+  @hasMany(() => JournalLine)
+  declare journalLines: HasMany<typeof JournalLine>
+
+  @hasMany(() => CashAccount)
+  declare cashAccounts: HasMany<typeof CashAccount>
+
+  @hasMany(() => Vendor)
+  declare vendors: HasMany<typeof Vendor>
+
+  @hasMany(() => Bill)
+  declare bills: HasMany<typeof Bill>
+
+  @hasMany(() => VendorPayment)
+  declare vendorPayments: HasMany<typeof VendorPayment>
+
+  @hasMany(() => ContributionModule)
+  declare contributionModules: HasMany<typeof ContributionModule>
+
+  @hasMany(() => Budget)
+  declare budgets: HasMany<typeof Budget>
+
+  @hasMany(() => FeeSchedule)
+  declare feeSchedules: HasMany<typeof FeeSchedule>
+
+  @hasMany(() => RecurringCharge)
+  declare recurringCharges: HasMany<typeof RecurringCharge>
+
+  @hasMany(() => BillingPeriod)
+  declare billingPeriods: HasMany<typeof BillingPeriod>
+
+  @hasMany(() => ChargeAdjustment)
+  declare chargeAdjustments: HasMany<typeof ChargeAdjustment>
 
   /**
    * Tenants that can be operated (login allowed)

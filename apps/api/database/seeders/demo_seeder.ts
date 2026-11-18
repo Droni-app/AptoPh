@@ -11,9 +11,19 @@ import UnitOccupant from '#models/unit_occupant'
 import Vehicle from '#models/vehicle'
 import Pet from '#models/pet'
 import ChargeConcept from '#models/charge_concept'
-import Charge from '#models/charge'
 import Payment from '#models/payment'
-import PaymentAllocation from '#models/payment_allocation'
+import Budget from '#models/budget'
+import BudgetItem from '#models/budget_item'
+import RecurringCharge from '#models/recurring_charge'
+import Vendor from '#models/vendor'
+import { toCents } from '@aptoph/shared'
+import { BillingService } from '#services/finance/billing'
+import { CashService } from '#services/finance/cash'
+import { ChargeService } from '#services/finance/charges'
+import { FeeCalculator } from '#services/finance/fees'
+import { type BillInput, PayablesService } from '#services/finance/payables'
+import { PaymentService } from '#services/finance/payments'
+import { FinanceScope } from '#services/finance/scope'
 import Amenity from '#models/amenity'
 import AmenityBooking from '#models/amenity_booking'
 import Announcement from '#models/announcement'
@@ -46,8 +56,6 @@ const TOWERS = 3
 const FLOORS = 6
 /** Private area (m²) of apartments 01..04 on every floor */
 const AREAS = [78.5, 62.3, 62.3, 78.5]
-/** Monthly budget split by ownership coefficient (COP) */
-const MONTHLY_BUDGET = 28_800_000
 
 /** Tables with demo data, children first (all have tenant_id) */
 const TENANT_TABLES = [
@@ -56,12 +64,30 @@ const TENANT_TABLES = [
   'announcements',
   'ticket_comments',
   'tickets',
+  'vendor_payment_allocations',
+  'charge_adjustments',
   'payment_allocations',
+  'journal_lines',
+  'journal_entries',
+  'vendor_payments',
+  'bill_lines',
+  'bills',
   'payments',
   'amenity_bookings',
   'amenities',
   'charges',
+  'billing_periods',
+  'recurring_charges',
+  'fee_schedules',
+  'budget_items',
+  'budgets',
+  'contribution_module_units',
+  'contribution_modules',
   'charge_concepts',
+  'cash_accounts',
+  'vendors',
+  'ledger_accounts',
+  'document_sequences',
   'visits',
   'parcels',
   'documents',
@@ -204,6 +230,7 @@ export default class extends BaseSeeder {
 
 class DemoBuilder {
   private client: { client: TransactionClientContract }
+  private trx: TransactionClientContract
   private now: DateTime
   private today: DateTime
 
@@ -214,6 +241,7 @@ class DemoBuilder {
     private resident: User
   ) {
     this.client = { client: trx }
+    this.trx = trx
     this.now = DateTime.now().setZone(tenant.timezone)
     this.today = this.now.startOf('day')
   }
@@ -442,151 +470,353 @@ class DemoBuilder {
   }
 
   /**
-   * Three months of administration fees for every apartment, payments with their
-   * allocations, and a few extra charges. Most units are up to date; some owe the
-   * current month, a few are overdue.
+   * Finance through the real services, so the books add up: bank and petty
+   * cash, an approved budget, fees from the calculator, three billed months with
+   * late interest, payments, vendor bills and payment vouchers. Most units are up
+   * to date; some owe the current month, a few are overdue, one paid ahead.
    */
   private async finance(apartments: Unit[], occupied: Unit[], myUnit: Unit) {
-    const [fee, extraordinary, fine, service] = await ChargeConcept.createMany(
-      [
-        {
-          ...this.scope,
-          name: 'Cuota de administración',
-          type: 'ordinary_fee' as const,
-          calculation: 'by_coefficient' as const,
-          isActive: true,
-        },
-        {
-          ...this.scope,
-          name: 'Cuota extraordinaria fachada',
-          type: 'extraordinary_fee' as const,
-          calculation: 'by_coefficient' as const,
-          isActive: true,
-        },
-        {
-          ...this.scope,
-          name: 'Multa por ruido',
-          type: 'fine' as const,
-          calculation: 'fixed' as const,
-          defaultAmount: '150000.00',
-          isActive: true,
-        },
-        {
-          ...this.scope,
-          name: 'Alquiler salón social',
-          type: 'service' as const,
-          calculation: 'fixed' as const,
-          defaultAmount: '80000.00',
-          isActive: true,
-        },
-      ],
-      this.client
-    )
+    // The chart of accounts was wiped: prepare finance again
+    const settings = { ...(this.tenant.settings ?? {}) }
+    delete settings.financeSetupVersion
+    this.tenant.settings = settings
+    const scope = await FinanceScope.open(this.trx, this.tenant, this.admin.id)
+    this.financeScope = scope
+    const account = (code: string) => scope.accounts.all().find((row) => row.code === code)!
+    const concept = (code: string) =>
+      ChargeConcept.query(this.client)
+        .where('tenant_id', this.tenant.id)
+        .where('code', code)
+        .firstOrFail()
+    const fee = await concept('ordinary_fee')
+    const extraordinary = await concept('extraordinary_fee')
+    const fine = await concept('fine')
+    const parking = await concept('parking')
+    const cents = (pesos: number) => Math.round(pesos * 100)
+    const iso = (date: DateTime) => date.toISODate()!
+    const notAfterNow = (date: DateTime) => (date > this.now ? this.now.minus({ hours: 2 }) : date)
 
     const thisMonth = this.today.startOf('month')
     const months = [thisMonth.minus({ months: 2 }), thisMonth.minus({ months: 1 }), thisMonth]
-    const dueOn = (period: DateTime, current: boolean) =>
-      current ? this.today.plus({ days: 10 }) : period.set({ day: 10 })
+    const start = months[0]!.minus({ days: 1 })
 
-    type Plan = 'paid' | 'partial' | 'pending'
-    /** What happened with each month: [two months ago, last month, this month] */
+    // Banks and petty cash, with their opening balance
+    const cash = new CashService(scope)
+    const bank = await cash.create({
+      name: 'Bancolombia ahorros',
+      type: 'bank',
+      bankName: 'Bancolombia',
+      accountKind: 'savings',
+      accountNumber: '****4821',
+      openingBalance: cents(48_500_000),
+      openingDate: iso(start),
+    })
+    const pettyCash = await cash.create({
+      name: 'Caja menor',
+      type: 'cash',
+      openingBalance: cents(500_000),
+      openingDate: iso(start),
+    })
+
+    // Budget approved by the assembly
+    const budgetLines: Array<[string, string, number]> = [
+      ['417005', 'Cuotas de administración', 345_600_000],
+      ['417015', 'Parqueaderos adicionales', 2_160_000],
+      ['513505', 'Vigilancia y aseo', 223_200_000],
+      ['513530', 'Energía zonas comunes', 21_600_000],
+      ['513525', 'Acueducto zonas comunes', 10_800_000],
+      ['514515', 'Mantenimiento de ascensores', 18_000_000],
+      ['511010', 'Revisoría fiscal', 14_400_000],
+      ['511095', 'Administración', 38_400_000],
+      ['513005', 'Póliza de áreas comunes', 9_600_000],
+      ['514540', 'Jardinería', 7_200_000],
+      ['530505', 'Gastos bancarios', 1_800_000],
+      ['519525', 'Elementos de aseo y cafetería', 3_600_000],
+    ]
+    const budget = await Budget.create(
+      {
+        ...this.scope,
+        year: this.today.year,
+        name: `Presupuesto ${this.today.year}`,
+        status: 'approved',
+        reserveFundRate: '1.00',
+        approvedOn: DateTime.fromObject({ year: this.today.year, month: 3, day: 15 }),
+        approvalReference: 'Acta 12 · Asamblea general ordinaria',
+        notes: 'Incremento del 9 % frente al año anterior.',
+      },
+      this.client
+    )
+    await BudgetItem.createMany(
+      budgetLines.map(([code, description, amount]) => ({
+        ...this.scope,
+        budgetId: budget.id,
+        accountId: account(code).id,
+        description,
+        annualAmount: money(amount),
+      })),
+      this.client
+    )
+
+    // Fees: coefficient of each apartment over the budget, from two months ago
+    await FeeCalculator.apply(scope, {
+      conceptId: fee.id,
+      method: 'coefficient',
+      effectiveFrom: iso(months[0]!),
+      budgetId: budget.id,
+      unitTypes: ['apartment'],
+      rounding: 100,
+      roundingMode: 'nearest',
+    })
+    // Three apartments rent an extra parking spot
+    await RecurringCharge.createMany(
+      [apartments[1]!, apartments[6]!, apartments[13]!].map((unit) => ({
+        ...this.scope,
+        unitId: unit.id,
+        chargeConceptId: parking.id,
+        amount: '60000.00',
+        description: 'Parqueadero adicional',
+        startsOn: months[0]!,
+        createdById: this.admin.id,
+      })),
+      this.client
+    )
+
+    type Plan = 'paid' | 'partial' | 'pending' | 'ahead'
+    /** What each unit did each month: [two months ago, last month, this month] */
     const planFor = (unit: Unit, i: number): Plan[] => {
       if (unit.id === myUnit.id) return ['paid', 'partial', 'pending']
       if (unit.status === 'vacant') return ['pending', 'pending', 'pending']
+      if (unit.id === occupied[3]!.id) return ['paid', 'paid', 'ahead']
       if (i % 7 === 3) return ['paid', 'pending', 'pending']
       if (i % 5 === 1) return ['paid', 'paid', 'pending']
       return ['paid', 'paid', 'paid']
     }
+    const methods = ['pse', 'bank_transfer', 'pse', 'consignment', 'card'] as const
+    const billing = new BillingService(scope)
+    const payments = new PaymentService(scope)
+    const charges = new ChargeService(scope)
+    const payables = new PayablesService(scope)
+    const openBalance = async (unitId: string) => {
+      const [row] = await this.trx
+        .from('charges')
+        .where('unit_id', unitId)
+        .whereIn('status', ['pending', 'partially_paid'])
+        .sum('balance as total')
+      return toCents(row.total)
+    }
 
-    const chargeRows: Array<Partial<Charge>> = []
-    const plans: Plan[] = []
-    apartments.forEach((unit, i) => {
-      const amount = Math.round((Number(unit.ownershipCoefficient) * MONTHLY_BUDGET) / 100) * 100
-      planFor(unit, i).forEach((plan, m) => {
-        const period = months[m]!
-        const balance = plan === 'paid' ? 0 : plan === 'partial' ? Math.round(amount * 0.4) : amount
-        plans.push(plan)
-        chargeRows.push({
-          ...this.scope,
-          unitId: unit.id,
-          chargeConceptId: fee!.id,
-          period,
-          description: null,
-          amount: money(amount),
-          balance: money(balance),
-          dueOn: dueOn(period, m === 2),
-          status: plan === 'paid' ? 'paid' : plan === 'partial' ? 'partially_paid' : 'pending',
-          createdById: this.admin.id,
-        })
-      })
-      // Second installment of the façade works, last month
-      if (i % 2 === 0) {
-        const installment = Math.round((Number(unit.ownershipCoefficient) * 9_000_000) / 100) * 100
-        const paid = unit.id !== myUnit.id && i % 3 !== 0
-        plans.push(paid ? 'paid' : 'pending')
-        chargeRows.push({
-          ...this.scope,
-          unitId: unit.id,
-          chargeConceptId: extraordinary!.id,
-          period: months[1]!,
-          description: 'Cuota 2 de 4 · pintura e impermeabilización de fachada',
-          amount: money(installment),
-          balance: money(paid ? 0 : installment),
-          dueOn: months[1]!.set({ day: 25 }),
-          status: paid ? 'paid' : 'pending',
-          createdById: this.admin.id,
-        })
-      }
-    })
-    const noisy = occupied[9]!
-    plans.push('pending')
-    chargeRows.push({
-      ...this.scope,
-      unitId: noisy.id,
-      chargeConceptId: fine!.id,
-      period: months[1]!,
-      description: 'Ruido después de las 10 p. m. (reincidencia)',
-      amount: '150000.00',
-      balance: '150000.00',
-      dueOn: months[1]!.set({ day: 20 }),
-      status: 'pending',
-      createdById: this.admin.id,
-    })
-
-    const charges = await Charge.createMany(chargeRows, this.client)
-
-    // One payment per (partly) paid charge, with its allocation
-    const methods = ['pse', 'bank_transfer', 'pse', 'card', 'cash'] as const
-    const paidCharges = charges
-      .map((charge, i) => ({ charge, plan: plans[i]! }))
-      .filter(({ plan }) => plan !== 'pending')
-    const payments = await Payment.createMany(
-      paidCharges.map(({ charge }, i) => {
-        const amount = Number(charge.amount) - Number(charge.balance)
-        const paidAt = charge.dueOn.minus({ days: 1 + (i % 8) }).set({ hour: 9 + (i % 10) })
-        return {
-          ...this.scope,
-          unitId: charge.unitId,
-          amount: money(amount),
-          paidAt: paidAt > this.now ? this.now.minus({ hours: 2 }) : paidAt,
-          method: methods[i % methods.length]!,
-          reference: `PAY-${paidAt.toFormat('yyMM')}-${String(1000 + i)}`,
-          status: 'confirmed',
-          registeredById: this.admin.id,
-          confirmedById: this.admin.id,
-        }
-      }),
-      this.client
-    )
-    await PaymentAllocation.createMany(
-      payments.map((payment, i) => ({
+    const vendors = await Vendor.createMany(
+      [
+        {
+          name: 'Vigilancia Andina S.A.S.',
+          documentType: 'NIT' as const,
+          documentNumber: '900123456-1',
+          code: '513505',
+          email: 'facturacion@vigilancia-andina.test',
+        },
+        {
+          name: 'Aseo Integral del Norte S.A.S.',
+          documentType: 'NIT' as const,
+          documentNumber: '900654321-7',
+          code: '513505',
+          email: null,
+        },
+        {
+          name: 'Ascensores Técnicos S.A.S.',
+          documentType: 'NIT' as const,
+          documentNumber: '901112223-4',
+          code: '514515',
+          email: null,
+        },
+        {
+          name: 'Energía del Valle E.S.P.',
+          documentType: 'NIT' as const,
+          documentNumber: '890900321-5',
+          code: '513530',
+          email: null,
+        },
+        {
+          name: 'Marta Lucía Gómez',
+          documentType: 'CC' as const,
+          documentNumber: '43512876',
+          code: '511010',
+          email: null,
+        },
+        {
+          name: 'Ferretería El Tornillo',
+          documentType: 'NIT' as const,
+          documentNumber: '800765432-1',
+          code: '514595',
+          email: null,
+        },
+      ].map(({ code, ...vendor }) => ({
         ...this.scope,
-        paymentId: payment.id,
-        chargeId: paidCharges[i]!.charge.id,
-        amount: payment.amount,
+        ...vendor,
+        defaultAccountId: account(code).id,
+        bankName: vendor.documentType === 'NIT' ? 'Banco de Bogotá' : 'Davivienda',
+        bankAccountKind: 'checking' as const,
+        isActive: true,
       })),
       this.client
     )
+    const [guards, cleaning, elevators, power, auditor, hardware] = vendors
+
+    for (const [m, period] of months.entries()) {
+      const current = m === 2
+      await billing.generate(iso(period))
+
+      if (m === 1) {
+        // Second installment of the façade works and a fine
+        const extra = await charges.insert([
+          ...apartments
+            .filter((_, i) => i % 2 === 0)
+            .map((unit) => ({
+              unitId: unit.id,
+              concept: extraordinary,
+              amount: Math.round(Number(unit.ownershipCoefficient) * 9_000_000) * 100,
+              period: iso(period),
+              dueOn: iso(period.set({ day: 25 })),
+              description: 'Cuota 2 de 4 · pintura e impermeabilización de fachada',
+              sourceType: 'manual' as const,
+            })),
+          {
+            unitId: occupied[9]!.id,
+            concept: fine,
+            amount: cents(150_000),
+            period: iso(period),
+            dueOn: iso(period.set({ day: 20 })),
+            description: 'Ruido después de las 10 p. m. (reincidencia)',
+            sourceType: 'manual' as const,
+          },
+        ])
+        await charges.post(extra, {
+          date: iso(period.set({ day: 3 })),
+          type: 'charge',
+          description: 'Cuota extraordinaria fachada (2 de 4) y multa',
+        })
+      }
+
+      for (const [i, unit] of apartments.entries()) {
+        const plan = planFor(unit, i)[m]!
+        if (plan === 'pending') continue
+        const owed = await openBalance(unit.id)
+        if (owed === 0) continue
+        const installmentPaid = unit.id !== myUnit.id && i % 3 !== 0
+        let amount = owed
+        if (plan === 'partial') amount = Math.round((owed * 0.4) / 10000) * 10000
+        else if (plan === 'ahead') amount = owed * 2
+        else if (m === 1 && i % 2 === 0 && !installmentPaid) {
+          const [row] = await this.trx
+            .from('charges')
+            .where('unit_id', unit.id)
+            .where('charge_concept_id', extraordinary.id)
+            .whereIn('status', ['pending', 'partially_paid'])
+            .sum('balance as total')
+          amount = owed - toCents(row.total)
+        }
+        if (amount <= 0) continue
+        const method = methods[i % methods.length]!
+        const paidAt = notAfterNow(
+          period
+            .set({ day: 10 })
+            .minus({ days: 1 + (i % 8) })
+            .set({ hour: 9 + (i % 10) })
+        )
+        await payments.register({
+          unitId: unit.id,
+          amount,
+          paidAt,
+          method,
+          reference: `PAY-${paidAt.toFormat('yyMM')}-${1000 + i}`,
+          cashAccountId: bank.id,
+        })
+      }
+
+      // Vendor bills of the month; past months get paid
+      const issued = period.set({ day: 2 })
+      const due = period.set({ day: 17 })
+      const bill = (
+        vendor: Vendor,
+        input: Partial<BillInput> & { amount: number; description: string; code: string }
+      ) =>
+        payables.createBill({
+          vendorId: vendor.id,
+          number: `${vendor.name.slice(0, 2).toUpperCase()}-${period.toFormat('yyMM')}`,
+          issuedOn: iso(issued),
+          dueOn: iso(due),
+          description: input.description,
+          lines: [{ accountId: account(input.code).id, amount: input.amount }],
+          taxAmount: input.taxAmount,
+          withholdingIncomeTax: input.withholdingIncomeTax,
+          withholdingVat: input.withholdingVat,
+          withholdingIca: input.withholdingIca,
+        })
+      const label = period.setLocale('es').toFormat('LLLL')
+      const bills = [
+        await bill(guards!, {
+          code: '513505',
+          amount: cents(12_600_000),
+          description: `Servicio de vigilancia 24 h · ${label}`,
+          withholdingIncomeTax: cents(252_000),
+          withholdingIca: cents(88_200),
+        }),
+        await bill(power!, {
+          code: '513530',
+          amount: cents(1_700_000 + m * 45_000),
+          description: `Energía zonas comunes · ${label}`,
+        }),
+      ]
+      if (!current) {
+        bills.push(
+          await bill(cleaning!, {
+            code: '513505',
+            amount: cents(6_000_000),
+            description: `Servicio de aseo · ${label}`,
+            withholdingIncomeTax: cents(120_000),
+          }),
+          await bill(elevators!, {
+            code: '514515',
+            amount: cents(1_260_504),
+            taxAmount: cents(239_496),
+            description: `Mantenimiento preventivo de ascensores · ${label}`,
+            withholdingIncomeTax: cents(50_420),
+            withholdingVat: cents(35_924),
+          }),
+          await bill(auditor!, {
+            code: '511010',
+            amount: cents(1_200_000),
+            description: `Honorarios revisoría fiscal · ${label}`,
+            withholdingIncomeTax: cents(120_000),
+          })
+        )
+        for (const paid of bills) {
+          await payables.pay({
+            vendorId: paid.vendorId,
+            cashAccountId: bank.id,
+            paidOn: iso(due.minus({ days: 1 })),
+            method: 'bank_transfer',
+            reference: `Transferencia ${paid.number}`,
+            allocations: [{ billId: paid.id, amount: toCents(paid.netAmount) }],
+          })
+        }
+      }
+      if (m === 1) {
+        // Bought and paid on the spot from petty cash
+        await payables.createBill({
+          vendorId: hardware!.id,
+          number: 'FE-30871',
+          issuedOn: iso(period.set({ day: 12 })),
+          dueOn: iso(period.set({ day: 12 })),
+          description: 'Bombillos LED y cinta antideslizante para escaleras',
+          lines: [{ accountId: account('514595').id, amount: cents(185_000) }],
+          payNow: {
+            cashAccountId: pettyCash.id,
+            paidOn: iso(period.set({ day: 12 })),
+            method: 'cash',
+          },
+        })
+      }
+    }
 
     // A transfer reported by the resident, waiting for the administration to confirm it
     await Payment.create(
@@ -599,14 +829,13 @@ class DemoBuilder {
         reference: 'Transferencia Bancolombia 88214',
         status: 'pending_review',
         registeredById: this.resident.id,
+        unappliedAmount: '0.00',
       },
       this.client
     )
-
-    this.serviceConceptId = service!.id
   }
 
-  private serviceConceptId = ''
+  private financeScope!: FinanceScope
 
   private async amenities(occupied: Unit[], myUnit: Unit) {
     const [salon, bbq, gym, pool] = await Amenity.createMany(
@@ -658,21 +887,15 @@ class DemoBuilder {
     const at = (days: number, hour: number) =>
       this.today.plus({ days }).set({ hour, minute: 0, second: 0, millisecond: 0 })
 
-    const salonCharge = await Charge.create(
-      {
-        ...this.scope,
-        unitId: myUnit.id,
-        chargeConceptId: this.serviceConceptId,
-        period: this.today.startOf('month'),
-        description: 'Reserva del salón social',
-        amount: '80000.00',
-        balance: '80000.00',
-        dueOn: at(5, 0),
-        status: 'pending',
-        createdById: this.admin.id,
-      },
-      this.client
-    )
+    const salonCharge = await new ChargeService(this.financeScope).create({
+      unitId: myUnit.id,
+      conceptCode: 'amenity_booking',
+      amount: 8_000_000,
+      dueOn: at(5, 0).toISODate()!,
+      description: 'Reserva del salón social',
+      sourceType: 'amenity_booking',
+      idempotencyKey: 'booking:demo-salon',
+    })
 
     const unit = (i: number) => occupied[i % occupied.length]!.id
     await AmenityBooking.createMany(

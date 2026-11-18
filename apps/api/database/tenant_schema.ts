@@ -65,7 +65,15 @@ export function timestamps(table: Knex.CreateTableBuilder, options: { softDelete
   }
 }
 
-/** CHECK (column IN (...)) */
-export function checkIn(table: Knex.CreateTableBuilder, column: string, values: readonly string[]) {
-  table.check(`${column} IN (${values.map((value) => `'${value}'`).join(', ')})`)
+/**
+ * CHECK (column IN (...)). Inside `alterTable` pass the constraint name
+ * (`{table}_{column}_check`): knex cannot generate one there.
+ */
+export function checkIn(
+  table: Knex.CreateTableBuilder | Knex.AlterTableBuilder,
+  column: string,
+  values: readonly string[],
+  name?: string
+) {
+  table.check(`${column} IN (${values.map((value) => `'${value}'`).join(', ')})`, [], name)
 }

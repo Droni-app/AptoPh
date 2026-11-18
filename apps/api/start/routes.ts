@@ -6,7 +6,12 @@
 
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
-import { BACKOFFICE_ROLES, EnrollmentRole } from '@aptoph/shared'
+import {
+  BACKOFFICE_ROLES,
+  EnrollmentRole,
+  FINANCE_READ_ROLES,
+  FINANCE_WRITE_ROLES,
+} from '@aptoph/shared'
 import { throttlePublic, throttleSignup } from '#start/limiter'
 
 const AuthController = () => import('#controllers/auth_controller')
@@ -30,6 +35,16 @@ const ResidentVisitsController = () => import('#controllers/resident/visits_cont
 const ResidentParcelsController = () => import('#controllers/resident/parcels_controller')
 const ResidentBookingsController = () => import('#controllers/resident/bookings_controller')
 const ResidentTicketsController = () => import('#controllers/resident/tickets_controller')
+const ResidentFinanceController = () => import('#controllers/resident/finance_controller')
+const FinanceOverviewController = () => import('#controllers/finance/overview_controller')
+const FinanceAccountsController = () => import('#controllers/finance/accounts_controller')
+const CashAccountsController = () => import('#controllers/finance/cash_accounts_controller')
+const BillingController = () => import('#controllers/finance/billing_controller')
+const FeesController = () => import('#controllers/finance/fees_controller')
+const PaymentsController = () => import('#controllers/finance/payments_controller')
+const PayablesController = () => import('#controllers/finance/payables_controller')
+const BudgetsController = () => import('#controllers/finance/budgets_controller')
+const AccountingController = () => import('#controllers/finance/accounting_controller')
 
 /**
  * Back-office permissions: every back-office role can read,
@@ -37,6 +52,8 @@ const ResidentTicketsController = () => import('#controllers/resident/tickets_co
  */
 const backofficeRead = { roles: [...BACKOFFICE_ROLES] }
 const backofficeWrite = { roles: [EnrollmentRole.Administrator] }
+const financeRead = { roles: [...FINANCE_READ_ROLES] }
+const financeWrite = { roles: [...FINANCE_WRITE_ROLES] }
 
 router.get('/', () => {
   return { name: 'AptoPH API' }
@@ -165,6 +182,15 @@ router
         router
           .post('tickets/:id/comments', [ResidentTicketsController, 'comment'])
           .as('tickets.comments.store')
+
+        // Statement and payments
+        router
+          .get('units/:unitId/statement', [ResidentFinanceController, 'statement'])
+          .as('statement')
+        router
+          .post('units/:unitId/payments', [ResidentFinanceController, 'report'])
+          .as('payments.report')
+        router.get('payments', [ResidentFinanceController, 'payments']).as('payments.index')
       })
       .prefix('resident')
       .as('resident')
@@ -228,6 +254,123 @@ router
           .as('settings.tenant.update')
       })
       .use([middleware.auth(), middleware.tenant(backofficeWrite), middleware.subscription()])
+
+    /**
+     * Finance: read (administration, accounting, council, fiscal reviewer)
+     */
+    router
+      .group(() => {
+        router.get('summary', [FinanceOverviewController, 'summary']).as('summary')
+        router.get('settings', [FinanceOverviewController, 'settings']).as('settings')
+        router.get('accounts', [FinanceAccountsController, 'index']).as('accounts.index')
+        router.get('concepts', [FinanceAccountsController, 'concepts']).as('concepts.index')
+        router.get('cash-accounts', [CashAccountsController, 'index']).as('cash.index')
+        router.get('periods', [BillingController, 'periods']).as('periods.index')
+        router.get('periods/preview', [BillingController, 'preview']).as('periods.preview')
+        router.get('periods/:id', [BillingController, 'showPeriod']).as('periods.show')
+        router.get('charges', [BillingController, 'charges']).as('charges.index')
+        router.get('charges/:id', [BillingController, 'showCharge']).as('charges.show')
+        router.get('recurring-charges', [FeesController, 'recurring']).as('recurring.index')
+        router.get('fee-schedules', [FeesController, 'schedules']).as('schedules.index')
+        router.get('modules', [FeesController, 'modules']).as('modules.index')
+        router.get('payments', [PaymentsController, 'index']).as('payments.index')
+        router.get('payments/:id', [PaymentsController, 'show']).as('payments.show')
+        router.get('vendors', [PayablesController, 'vendors']).as('vendors.index')
+        router.get('vendors/:id', [PayablesController, 'showVendor']).as('vendors.show')
+        router.get('bills', [PayablesController, 'bills']).as('bills.index')
+        router.get('bills/:id', [PayablesController, 'showBill']).as('bills.show')
+        router.get('vendor-payments', [PayablesController, 'payments']).as('egresos.index')
+        router.get('vendor-payments/:id', [PayablesController, 'showPayment']).as('egresos.show')
+        router.get('budgets', [BudgetsController, 'index']).as('budgets.index')
+        router.get('budgets/:id', [BudgetsController, 'show']).as('budgets.show')
+        router.get('journal', [AccountingController, 'journal']).as('journal.index')
+        router.get('journal/:id', [AccountingController, 'showEntry']).as('journal.show')
+        router
+          .get('units/:unitId/statement', [AccountingController, 'statement'])
+          .as('units.statement')
+        router
+          .get('aging/receivables', [AccountingController, 'receivables'])
+          .as('aging.receivables')
+        router.get('aging/payables', [AccountingController, 'payables']).as('aging.payables')
+        router
+          .get('reports/trial-balance', [AccountingController, 'trialBalance'])
+          .as('reports.trialBalance')
+        router
+          .get('reports/income-statement', [AccountingController, 'incomeStatement'])
+          .as('reports.incomeStatement')
+        router
+          .get('reports/balance-sheet', [AccountingController, 'balanceSheet'])
+          .as('reports.balanceSheet')
+        router.get('reports/ledger', [AccountingController, 'ledger']).as('reports.ledger')
+      })
+      .prefix('finance')
+      .as('finance')
+      .use([middleware.auth(), middleware.tenant(financeRead), middleware.finance()])
+
+    /**
+     * Finance: write (administration and accounting)
+     */
+    router
+      .group(() => {
+        router.put('settings', [FinanceOverviewController, 'updateSettings']).as('settings.update')
+        router.post('accounts', [FinanceAccountsController, 'store']).as('accounts.store')
+        router.patch('accounts/:id', [FinanceAccountsController, 'update']).as('accounts.update')
+        router.post('concepts', [FinanceAccountsController, 'storeConcept']).as('concepts.store')
+        router
+          .put('concepts/:id', [FinanceAccountsController, 'updateConcept'])
+          .as('concepts.update')
+        router.post('cash-accounts', [CashAccountsController, 'store']).as('cash.store')
+        router.patch('cash-accounts/:id', [CashAccountsController, 'update']).as('cash.update')
+        router.post('transfers', [CashAccountsController, 'transfer']).as('transfers.store')
+        router.post('periods/generate', [BillingController, 'generate']).as('periods.generate')
+        router.post('periods/:id/close', [BillingController, 'close']).as('periods.close')
+        router.post('periods/:id/reopen', [BillingController, 'reopen']).as('periods.reopen')
+        router.post('charges', [BillingController, 'storeCharges']).as('charges.store')
+        router.post('charges/:id/cancel', [BillingController, 'cancelCharge']).as('charges.cancel')
+        router
+          .post('charges/:id/credit-note', [BillingController, 'creditNote'])
+          .as('charges.creditNote')
+        router.post('recurring-charges', [FeesController, 'storeRecurring']).as('recurring.store')
+        router
+          .post('recurring-charges/:id/end', [FeesController, 'endRecurring'])
+          .as('recurring.end')
+        router
+          .post('fee-schedules/preview', [FeesController, 'previewSchedule'])
+          .as('schedules.preview')
+        router.post('fee-schedules', [FeesController, 'applySchedule']).as('schedules.store')
+        router.post('modules', [FeesController, 'storeModule']).as('modules.store')
+        router.put('modules/:id', [FeesController, 'updateModule']).as('modules.update')
+        router.delete('modules/:id', [FeesController, 'destroyModule']).as('modules.destroy')
+        router.post('payments', [PaymentsController, 'store']).as('payments.store')
+        router.post('payments/:id/confirm', [PaymentsController, 'confirm']).as('payments.confirm')
+        router.post('payments/:id/reject', [PaymentsController, 'reject']).as('payments.reject')
+        router.post('payments/:id/reverse', [PaymentsController, 'reverse']).as('payments.reverse')
+        router.post('vendors', [PayablesController, 'storeVendor']).as('vendors.store')
+        router.put('vendors/:id', [PayablesController, 'updateVendor']).as('vendors.update')
+        router.post('bills', [PayablesController, 'storeBill']).as('bills.store')
+        router.post('bills/:id/cancel', [PayablesController, 'cancelBill']).as('bills.cancel')
+        router.post('vendor-payments', [PayablesController, 'storePayment']).as('egresos.store')
+        router
+          .post('vendor-payments/:id/reverse', [PayablesController, 'reversePayment'])
+          .as('egresos.reverse')
+        router.post('budgets', [BudgetsController, 'store']).as('budgets.store')
+        router.put('budgets/:id', [BudgetsController, 'update']).as('budgets.update')
+        router.post('budgets/:id/approve', [BudgetsController, 'approve']).as('budgets.approve')
+        router.post('budgets/:id/reopen', [BudgetsController, 'reopen']).as('budgets.reopen')
+        router.delete('budgets/:id', [BudgetsController, 'destroy']).as('budgets.destroy')
+        router.post('journal', [AccountingController, 'storeEntry']).as('journal.store')
+        router
+          .post('journal/:id/reverse', [AccountingController, 'reverseEntry'])
+          .as('journal.reverse')
+      })
+      .prefix('finance')
+      .as('finance.write')
+      .use([
+        middleware.auth(),
+        middleware.tenant(financeWrite),
+        middleware.subscription(),
+        middleware.finance(),
+      ])
   })
   .where('id', router.matchers.uuid())
   .where('unitId', router.matchers.uuid())

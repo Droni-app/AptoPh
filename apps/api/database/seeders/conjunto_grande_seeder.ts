@@ -11,6 +11,14 @@ import Pet from '#models/pet'
 import ChargeConcept from '#models/charge_concept'
 import Charge from '#models/charge'
 import { DateTime } from 'luxon'
+import BillingPeriod from '#models/billing_period'
+import CashAccount from '#models/cash_account'
+import RecurringCharge from '#models/recurring_charge'
+import { BillingService } from '#services/finance/billing'
+import { CashService } from '#services/finance/cash'
+import { FeeCalculator } from '#services/finance/fees'
+import { PaymentService } from '#services/finance/payments'
+import { FinanceScope } from '#services/finance/scope'
 
 /**
  * LOCAL TEST DATA ONLY: "Conjunto Grande", 5 towers x 20 floors x 8 apartments = 800 units,
@@ -163,34 +171,78 @@ export default class extends BaseSeeder {
       { species: 'dog', breed: 'Golden retriever' }
     )
 
-    const concept = await ChargeConcept.updateOrCreate(
-      { tenantId: tenant.id, name: 'Cuota de administración' },
-      { type: 'ordinary_fee', calculation: 'by_coefficient', isActive: true }
-    )
+    await this.seedFinance(tenant, unitId)
+  }
 
+  /**
+   * Fees by coefficient for the 800 units, last month and this month billed,
+   * and last month paid by most units. Skipped once this month is billed.
+   */
+  private async seedFinance(tenant: Tenant, residentUnitId: string) {
     const today = DateTime.now().setZone(tenant.timezone).startOf('day')
     const thisMonth = today.startOf('month')
     const lastMonth = thisMonth.minus({ months: 1 })
-    const charges = [
-      {
-        period: lastMonth,
-        balance: '120000.00',
-        status: 'partially_paid' as const,
-        dueOn: lastMonth.set({ day: 10 }),
-      },
-      // Always due in the future, whatever day the seeder runs
-      {
-        period: thisMonth,
-        balance: '385000.00',
-        status: 'pending' as const,
-        dueOn: today.plus({ days: 10 }),
-      },
-    ]
-    for (const { period, ...values } of charges) {
-      await Charge.updateOrCreate(
-        { ...scope, chargeConceptId: concept.id, period },
-        { amount: '385000.00', ...values }
-      )
-    }
+    const billed = await BillingPeriod.query()
+      .where('tenant_id', tenant.id)
+      .where('period', thisMonth.toISODate()!)
+      .first()
+    if (billed) return
+
+    const admin = await User.findByOrFail('email', 'admin@conjuntogrande.test')
+    await db.transaction(async (trx) => {
+      const scope = await FinanceScope.open(trx, tenant, admin.id)
+      let bank = await CashAccount.query({ client: trx }).where('tenant_id', tenant.id).first()
+      bank ??= await new CashService(scope).create({
+        name: 'Banco de Bogotá corriente',
+        type: 'bank',
+        bankName: 'Banco de Bogotá',
+        accountKind: 'checking',
+        openingBalance: 30_000_000_00,
+        openingDate: lastMonth.minus({ days: 1 }).toISODate()!,
+      })
+      const fee = await ChargeConcept.query({ client: trx })
+        .where('tenant_id', tenant.id)
+        .where('code', 'ordinary_fee')
+        .firstOrFail()
+      const hasFees = await RecurringCharge.query({ client: trx })
+        .where('tenant_id', tenant.id)
+        .where('charge_concept_id', fee.id)
+        .first()
+      if (!hasFees) {
+        await FeeCalculator.apply(scope, {
+          conceptId: fee.id,
+          method: 'coefficient',
+          effectiveFrom: lastMonth.toISODate()!,
+          monthlyTotal: 300_000_000_00,
+          unitTypes: ['apartment'],
+          rounding: 100,
+          roundingMode: 'nearest',
+        })
+      }
+      const billing = new BillingService(scope)
+      await billing.generate(lastMonth.toISODate()!)
+
+      // Nine in ten units paid last month; the resident paid part of it
+      const charges = await Charge.query({ client: trx })
+        .where('tenant_id', tenant.id)
+        .where('period', lastMonth.toISODate()!)
+        .whereIn('status', ['pending', 'partially_paid'])
+        .orderBy('unit_id')
+      const payments = new PaymentService(scope)
+      for (const [i, charge] of charges.entries()) {
+        const mine = charge.unitId === residentUnitId
+        if (!mine && i % 10 === 7) continue
+        const balance = Math.round(Number(charge.balance) * 100)
+        await payments.register({
+          unitId: charge.unitId,
+          amount: mine ? Math.round(balance * 0.6) : balance,
+          paidAt: lastMonth.set({ day: 1 + (i % 9), hour: 10 }),
+          method: i % 3 === 0 ? 'pse' : 'bank_transfer',
+          reference: `PSE-${1000 + i}`,
+          cashAccountId: bank.id,
+        })
+      }
+      await billing.generate(thisMonth.toISODate()!)
+    })
   }
 }

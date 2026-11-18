@@ -26,9 +26,26 @@ export const BACKOFFICE_ROLES: readonly EnrollmentRole[] = [
   EnrollmentRole.SecurityGuard,
 ]
 
+/** Pueden ver finanzas y contabilidad */
+export const FINANCE_READ_ROLES: readonly EnrollmentRole[] = [
+  EnrollmentRole.Administrator,
+  EnrollmentRole.Accountant,
+  EnrollmentRole.CouncilMember,
+  EnrollmentRole.FiscalReviewer,
+]
+
+/** Pueden facturar, registrar pagos, gastos y comprobantes */
+export const FINANCE_WRITE_ROLES: readonly EnrollmentRole[] = [
+  EnrollmentRole.Administrator,
+  EnrollmentRole.Accountant,
+]
+
 export const ENROLLMENT_ROLES = Object.values(EnrollmentRole)
 
 export * from './domain.js'
 export * from './labels.js'
 export * from './billing.js'
+export * from './money.js'
+export * from './finance.js'
 export type * from './api.js'
+export type * from './finance-api.js'

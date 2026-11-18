@@ -528,6 +528,45 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/tickets_controller').default['comment']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'resident.statement': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/units/:unitId/statement'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').statementValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['statement']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['statement']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['statement']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.payments.report': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/units/:unitId/payments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').reportPaymentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').reportPaymentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['report']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['report']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['report']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.payments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/payments'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['payments']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['payments']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['payments']>>>
+    }
+  }
   'dashboard': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'
@@ -838,6 +877,916 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['update']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['update']>>>
+    }
+  }
+  'finance.summary': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/summary'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['summary']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['summary']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['summary']>>>
+    }
+  }
+  'finance.settings': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['settings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['settings']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['settings']>>>
+    }
+  }
+  'finance.accounts.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/accounts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listAccountsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.concepts.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/concepts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['concepts']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['concepts']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['concepts']>>>
+    }
+  }
+  'finance.cash.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/cash-accounts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['index']>>>
+    }
+  }
+  'finance.periods.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/periods'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['periods']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['periods']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['periods']>>>
+    }
+  }
+  'finance.periods.preview': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/periods/preview'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').periodValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['preview']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['preview']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['preview']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.periods.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/periods/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['showPeriod']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['showPeriod']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['showPeriod']>>>
+    }
+  }
+  'finance.charges.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/charges'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listChargesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['charges']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['charges']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['charges']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.charges.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/charges/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['showCharge']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['showCharge']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['showCharge']>>>
+    }
+  }
+  'finance.recurring.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/recurring-charges'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listRecurringValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['recurring']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['recurring']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['recurring']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.schedules.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/fee-schedules'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['schedules']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['schedules']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['schedules']>>>
+    }
+  }
+  'finance.modules.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/modules'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['modules']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['modules']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['modules']>>>
+    }
+  }
+  'finance.payments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/payments'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listPaymentsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.payments.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/payments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['show']>>>
+    }
+  }
+  'finance.vendors.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/vendors'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listVendorsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['vendors']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['vendors']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['vendors']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.vendors.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/vendors/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showVendor']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showVendor']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showVendor']>>>
+    }
+  }
+  'finance.bills.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/bills'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listBillsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['bills']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['bills']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['bills']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.bills.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/bills/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showBill']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showBill']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showBill']>>>
+    }
+  }
+  'finance.egresos.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/vendor-payments'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listVendorPaymentsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['payments']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['payments']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['payments']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.egresos.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/vendor-payments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showPayment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showPayment']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['showPayment']>>>
+    }
+  }
+  'finance.budgets.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/budgets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['index']>>>
+    }
+  }
+  'finance.budgets.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/budgets/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['show']>>>
+    }
+  }
+  'finance.journal.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/journal'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').listJournalValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['journal']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['journal']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['journal']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.journal.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/journal/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['showEntry']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['showEntry']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['showEntry']>>>
+    }
+  }
+  'finance.units.statement': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/units/:unitId/statement'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').statementValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['statement']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['statement']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['statement']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.aging.receivables': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/aging/receivables'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['receivables']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['receivables']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['receivables']>>>
+    }
+  }
+  'finance.aging.payables': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/aging/payables'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['payables']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['payables']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['payables']>>>
+    }
+  }
+  'finance.reports.trialBalance': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/reports/trial-balance'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').rangeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['trialBalance']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['trialBalance']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['trialBalance']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.reports.incomeStatement': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/reports/income-statement'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').rangeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['incomeStatement']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['incomeStatement']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['incomeStatement']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.reports.balanceSheet': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/reports/balance-sheet'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').rangeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['balanceSheet']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['balanceSheet']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['balanceSheet']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.reports.ledger': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/reports/ledger'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance').ledgerReportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['ledger']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['ledger']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['ledger']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.settings.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/finance/settings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').financeSettingsValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').financeSettingsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['updateSettings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/overview_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.accounts.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/accounts'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').ledgerAccountValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').ledgerAccountValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.accounts.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/finance/accounts/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').updateLedgerAccountValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').updateLedgerAccountValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.concepts.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/concepts'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').conceptValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').conceptValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['storeConcept']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['storeConcept']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['storeConcept']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.concepts.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/finance/concepts/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').conceptValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').conceptValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['updateConcept']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['updateConcept']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounts_controller').default['updateConcept']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.cash.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/cash-accounts'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').cashAccountValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').cashAccountValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.cash.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/finance/cash-accounts/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').updateCashAccountValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').updateCashAccountValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.transfers.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/transfers'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').transferValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').transferValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['transfer']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['transfer']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/cash_accounts_controller').default['transfer']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.periods.generate': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/periods/generate'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').periodValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').periodValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['generate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['generate']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['generate']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.periods.close': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/periods/:id/close'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['close']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['close']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['close']>>>
+    }
+  }
+  'finance.write.periods.reopen': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/periods/:id/reopen'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['reopen']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['reopen']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['reopen']>>>
+    }
+  }
+  'finance.write.charges.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/charges'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').createChargeValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').createChargeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['storeCharges']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['storeCharges']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['storeCharges']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.charges.cancel': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/charges/:id/cancel'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['cancelCharge']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['cancelCharge']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['cancelCharge']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.charges.creditNote': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/charges/:id/credit-note'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').creditNoteValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').creditNoteValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['creditNote']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['creditNote']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/billing_controller').default['creditNote']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.recurring.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/recurring-charges'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').recurringChargeValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').recurringChargeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['storeRecurring']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['storeRecurring']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['storeRecurring']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.recurring.end': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/recurring-charges/:id/end'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').endRecurringValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').endRecurringValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['endRecurring']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['endRecurring']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['endRecurring']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.schedules.preview': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/fee-schedules/preview'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').feeScheduleValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').feeScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['previewSchedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['previewSchedule']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['previewSchedule']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.schedules.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/fee-schedules'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').feeScheduleValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').feeScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['applySchedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['applySchedule']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['applySchedule']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.modules.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/modules'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').contributionModuleValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').contributionModuleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['storeModule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['storeModule']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['storeModule']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.modules.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/finance/modules/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').contributionModuleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').contributionModuleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['updateModule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['updateModule']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['updateModule']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.modules.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/finance/modules/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['destroyModule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['destroyModule']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/fees_controller').default['destroyModule']>>>
+    }
+  }
+  'finance.write.payments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/payments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').registerPaymentValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').registerPaymentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.payments.confirm': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/payments/:id/confirm'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').confirmPaymentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').confirmPaymentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['confirm']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['confirm']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['confirm']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.payments.reject': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/payments/:id/reject'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reject']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reject']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reject']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.payments.reverse': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/payments/:id/reverse'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reverse']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reverse']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reverse']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.vendors.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/vendors'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').vendorValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').vendorValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storeVendor']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storeVendor']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storeVendor']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.vendors.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/finance/vendors/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').vendorValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').vendorValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['updateVendor']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['updateVendor']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['updateVendor']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.bills.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/bills'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').billValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').billValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storeBill']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storeBill']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storeBill']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.bills.cancel': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/bills/:id/cancel'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['cancelBill']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['cancelBill']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['cancelBill']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.egresos.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/vendor-payments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').vendorPaymentValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').vendorPaymentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storePayment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storePayment']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['storePayment']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.egresos.reverse': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/vendor-payments/:id/reverse'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['reversePayment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['reversePayment']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payables_controller').default['reversePayment']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.budgets.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/budgets'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').budgetValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').budgetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.budgets.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/finance/budgets/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').budgetValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').budgetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.budgets.approve': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/budgets/:id/approve'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').approveBudgetValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').approveBudgetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['approve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.budgets.reopen': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/budgets/:id/reopen'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['reopen']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['reopen']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['reopen']>>>
+    }
+  }
+  'finance.write.budgets.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/finance/budgets/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/budgets_controller').default['destroy']>>>
+    }
+  }
+  'finance.write.journal.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/journal'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').manualEntryValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').manualEntryValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['storeEntry']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['storeEntry']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['storeEntry']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.journal.reverse': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/journal/:id/reverse'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['reverseEntry']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['reverseEntry']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['reverseEntry']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
 }

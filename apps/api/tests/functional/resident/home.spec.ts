@@ -87,7 +87,7 @@ test.group('Resident · home and own units', (group) => {
       tenantId: tenant.id,
       name: 'Cuota de administración',
       type: 'ordinary_fee',
-      calculation: 'by_coefficient',
+      accruesInterest: true,
       isActive: true,
     })
     const today = DateTime.now().setZone(tenant.timezone).startOf('day')

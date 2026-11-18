@@ -79,6 +79,11 @@ export interface ApiDefinition {
         store: typeof routes['resident.tickets.comments.store']
       }
     }
+    statement: typeof routes['resident.statement']
+    payments: {
+      report: typeof routes['resident.payments.report']
+      index: typeof routes['resident.payments.index']
+    }
   }
   dashboard: typeof routes['dashboard']
   buildings: {
@@ -115,6 +120,146 @@ export interface ApiDefinition {
   settings: {
     tenant: typeof routes['settings.tenant'] & {
       update: typeof routes['settings.tenant.update']
+    }
+  }
+  finance: {
+    summary: typeof routes['finance.summary']
+    settings: typeof routes['finance.settings']
+    accounts: {
+      index: typeof routes['finance.accounts.index']
+    }
+    concepts: {
+      index: typeof routes['finance.concepts.index']
+    }
+    cash: {
+      index: typeof routes['finance.cash.index']
+    }
+    periods: {
+      index: typeof routes['finance.periods.index']
+      preview: typeof routes['finance.periods.preview']
+      show: typeof routes['finance.periods.show']
+    }
+    charges: {
+      index: typeof routes['finance.charges.index']
+      show: typeof routes['finance.charges.show']
+    }
+    recurring: {
+      index: typeof routes['finance.recurring.index']
+    }
+    schedules: {
+      index: typeof routes['finance.schedules.index']
+    }
+    modules: {
+      index: typeof routes['finance.modules.index']
+    }
+    payments: {
+      index: typeof routes['finance.payments.index']
+      show: typeof routes['finance.payments.show']
+    }
+    vendors: {
+      index: typeof routes['finance.vendors.index']
+      show: typeof routes['finance.vendors.show']
+    }
+    bills: {
+      index: typeof routes['finance.bills.index']
+      show: typeof routes['finance.bills.show']
+    }
+    egresos: {
+      index: typeof routes['finance.egresos.index']
+      show: typeof routes['finance.egresos.show']
+    }
+    budgets: {
+      index: typeof routes['finance.budgets.index']
+      show: typeof routes['finance.budgets.show']
+    }
+    journal: {
+      index: typeof routes['finance.journal.index']
+      show: typeof routes['finance.journal.show']
+    }
+    units: {
+      statement: typeof routes['finance.units.statement']
+    }
+    aging: {
+      receivables: typeof routes['finance.aging.receivables']
+      payables: typeof routes['finance.aging.payables']
+    }
+    reports: {
+      trialBalance: typeof routes['finance.reports.trialBalance']
+      incomeStatement: typeof routes['finance.reports.incomeStatement']
+      balanceSheet: typeof routes['finance.reports.balanceSheet']
+      ledger: typeof routes['finance.reports.ledger']
+    }
+    write: {
+      settings: {
+        update: typeof routes['finance.write.settings.update']
+      }
+      accounts: {
+        store: typeof routes['finance.write.accounts.store']
+        update: typeof routes['finance.write.accounts.update']
+      }
+      concepts: {
+        store: typeof routes['finance.write.concepts.store']
+        update: typeof routes['finance.write.concepts.update']
+      }
+      cash: {
+        store: typeof routes['finance.write.cash.store']
+        update: typeof routes['finance.write.cash.update']
+      }
+      transfers: {
+        store: typeof routes['finance.write.transfers.store']
+      }
+      periods: {
+        generate: typeof routes['finance.write.periods.generate']
+        close: typeof routes['finance.write.periods.close']
+        reopen: typeof routes['finance.write.periods.reopen']
+      }
+      charges: {
+        store: typeof routes['finance.write.charges.store']
+        cancel: typeof routes['finance.write.charges.cancel']
+        creditNote: typeof routes['finance.write.charges.creditNote']
+      }
+      recurring: {
+        store: typeof routes['finance.write.recurring.store']
+        end: typeof routes['finance.write.recurring.end']
+      }
+      schedules: {
+        preview: typeof routes['finance.write.schedules.preview']
+        store: typeof routes['finance.write.schedules.store']
+      }
+      modules: {
+        store: typeof routes['finance.write.modules.store']
+        update: typeof routes['finance.write.modules.update']
+        destroy: typeof routes['finance.write.modules.destroy']
+      }
+      payments: {
+        store: typeof routes['finance.write.payments.store']
+        confirm: typeof routes['finance.write.payments.confirm']
+        reject: typeof routes['finance.write.payments.reject']
+        reverse: typeof routes['finance.write.payments.reverse']
+      }
+      vendors: {
+        store: typeof routes['finance.write.vendors.store']
+        update: typeof routes['finance.write.vendors.update']
+      }
+      bills: {
+        store: typeof routes['finance.write.bills.store']
+        cancel: typeof routes['finance.write.bills.cancel']
+      }
+      egresos: {
+        store: typeof routes['finance.write.egresos.store']
+        reverse: typeof routes['finance.write.egresos.reverse']
+      }
+      budgets: {
+        store: typeof routes['finance.write.budgets.store']
+        update: typeof routes['finance.write.budgets.update']
+        approve: typeof routes['finance.write.budgets.approve']
+        reopen: typeof routes['finance.write.budgets.reopen']
+        destroy: typeof routes['finance.write.budgets.destroy']
+      }
+      journal: {
+        store: typeof routes['finance.write.journal.store']
+        reverse: typeof routes['finance.write.journal.reverse']
+      }
     }
   }
 }
