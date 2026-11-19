@@ -45,7 +45,7 @@ const davi = ref({ documentType: 'CC', documentNumber: '', phoneNumber: '', code
 const daviHandle = ref<string | null>(null)
 
 const tabs = [
-  { label: 'Tarjeta', value: 'CARD' },
+  { label: 'Tarjeta crédito/débito', value: 'CARD' },
   { label: 'Nequi', value: 'NEQUI' },
   { label: 'Bancolombia', value: 'BANCOLOMBIA_TRANSFER' },
   { label: 'DaviPlata', value: 'DAVIPLATA' },
@@ -255,8 +255,8 @@ const submitLabel = computed(() => {
 
       <template v-if="tab === 'CARD'">
         <p class="text-sm text-neutral-500">
-          Crédito o débito. Los datos de la tarjeta van directo a Wompi; AptoPH no los recibe ni los
-          guarda.
+          <strong>Crédito o débito</strong>, también tarjetas débito empresariales. Los datos van
+          directo a Wompi; AptoPH no los recibe ni los guarda.
         </p>
         <DuiLabel title="Número de la tarjeta" required :error="errors.number">
           <DuiInput

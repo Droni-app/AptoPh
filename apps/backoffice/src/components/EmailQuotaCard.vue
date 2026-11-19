@@ -174,7 +174,8 @@ async function buy() {
                 >.
               </template>
               <template v-else>
-                Pagarás <strong>{{ formatCop(total) }}</strong> en Wompi con el medio que prefieras.
+                Pagarás <strong>{{ formatCop(total) }}</strong> en Wompi con PSE (cualquier banco),
+                tarjeta de crédito o débito o Nequi.
               </template>
             </p>
             <div class="flex gap-2">

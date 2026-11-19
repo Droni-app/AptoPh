@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   DuiAlert,
@@ -15,7 +15,9 @@ import {
 import {
   ANNUAL_BILLED_MONTHS,
   BILLING_CHARGE_STATUS_LABELS,
+  MANUAL_REMINDER_DAYS,
   MINIMUM_MONTHLY,
+  PAY_AHEAD_DAYS,
   PAYMENT_METHOD_TYPE_LABELS,
   PLAN_LABELS,
   PRICE_TIERS,
@@ -41,8 +43,6 @@ import { useTenantStore } from '@/stores/tenant'
 
 /** Plan, payment method and payments to AptoPH with Wompi (docs/billing.md) */
 const SALES_EMAIL = 'contacto@aptoph.com'
-/** The plan can be paid again from this many hours before its end */
-const PAY_AHEAD_HOURS = 24
 
 const route = useRoute()
 const router = useRouter()
@@ -91,6 +91,8 @@ onMounted(async () => {
     await subscription.load(tenant.currentId!, true)
     if (subscription.current) cycle.value = subscription.current.billingCycle
     await loadOverview()
+    // Manual payment (PSE): one payment a year is the easiest; it is suggested first
+    if (!method.value && subscription.current?.status !== 'active') cycle.value = 'annual'
   } catch (e) {
     error.value = errorMessage(e)
   } finally {
@@ -183,14 +185,16 @@ const status = computed(() => {
       label: SUBSCRIPTION_STATUS_LABELS.active,
       detail: value.autoRenew
         ? `Se renueva automáticamente el ${formatDate(value.currentPeriodEndsAt)}.`
-        : `Pagado hasta el ${formatDate(value.currentPeriodEndsAt)}. La renovación automática está apagada.`,
+        : `Pagado hasta el ${formatDate(value.currentPeriodEndsAt)}. Pago manual: te recordaremos por correo ${MANUAL_REMINDER_DAYS.join(' y ')} días antes.`,
     }
   }
   if (value.status === 'past_due' && !value.locked) {
     return {
       color: 'warning' as const,
       label: SUBSCRIPTION_STATUS_LABELS.past_due,
-      detail: `No pudimos cobrar la renovación. Puedes seguir usando AptoPH hasta el ${formatDate(value.graceEndsAt)}.`,
+      detail: value.autoRenew
+        ? `No pudimos cobrar la renovación. Puedes seguir usando AptoPH hasta el ${formatDate(value.graceEndsAt)}.`
+        : `El plan venció sin pago. Puedes seguir usando AptoPH hasta el ${formatDate(value.graceEndsAt)}.`,
     }
   }
   return {
@@ -209,11 +213,14 @@ const enterprise = findPlan('empresarial')
 const paidAhead = computed(() => {
   const value = current.value
   if (value?.status !== 'active' || !value.currentPeriodEndsAt) return false
-  return new Date(value.currentPeriodEndsAt).getTime() - Date.now() > PAY_AHEAD_HOURS * 3_600_000
+  return new Date(value.currentPeriodEndsAt).getTime() - Date.now() > PAY_AHEAD_DAYS * 86_400_000
 })
-const hasPending = computed(() =>
-  overview.value?.charges.some((c) => c.kind === 'subscription' && c.status === 'pending'),
+const pendingPlan = computed(() =>
+  overview.value?.charges.find((c) => c.kind === 'subscription' && c.status === 'pending'),
 )
+/** Charged to a saved method: Wompi answers in seconds. A checkout left open does not block */
+const hasPending = computed(() => !!pendingPlan.value && !pendingPlan.value.checkout)
+const annualQuote = computed(() => quote(units.value, 'annual'))
 const payLabel = computed(() => {
   const value = current.value
   if (value?.status === 'past_due' || value?.status === 'cancelled') return 'Pagar mi plan'
@@ -222,19 +229,27 @@ const payLabel = computed(() => {
 })
 
 function startPay() {
-  if (!method.value) {
-    methodModal.value = true
-    return
-  }
   confirmingPay.value = true
+}
+
+/** From the "manual payment with PSE" option: the confirmation in the plan card */
+async function payManually() {
+  confirmingPay.value = true
+  await nextTick()
+  document.getElementById('plan-payment')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 }
 
 async function pay() {
   paying.value = true
   try {
     const { data } = await billingApi.paySubscription(cycle.value)
+    if (data.checkoutUrl) {
+      // Manual payment: PSE (any bank), card or wallet in Wompi; back to /plan?pago=<id>
+      window.location.assign(data.checkoutUrl)
+      return
+    }
     confirmingPay.value = false
-    await follow(data.id, 'Procesando el pago con Wompi…')
+    await follow(data.charge.id, 'Procesando el pago con Wompi…')
   } catch (e) {
     toast.error(errorMessage(e))
   } finally {
@@ -343,7 +358,7 @@ function contactSales() {
     <DuiCard v-if="tenant.canManage" class="mb-6">
       <div class="flex flex-col gap-4">
         <div class="flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div class="min-w-0 flex-1">
             <h2 class="text-lg font-semibold">Medio de pago</h2>
             <template v-if="method">
               <p class="mt-1 flex items-center gap-2 font-medium">
@@ -364,12 +379,49 @@ function contactSales() {
                 >.
               </p>
             </template>
-            <p v-else class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-              Guarda una tarjeta, Nequi, Bancolombia o DaviPlata para pagar el plan y renovarlo
-              automáticamente.
-            </p>
+            <div v-else class="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+              <div
+                class="flex flex-col gap-3 rounded-lg border border-neutral-200 p-3 dark:border-white/10"
+              >
+                <p class="font-medium">
+                  <i class="mdi mdi-autorenew text-mint-600" aria-hidden="true" /> Pago automático
+                </p>
+                <p class="mt-1 text-neutral-500 dark:text-neutral-400">
+                  Guarda una tarjeta de <strong>crédito o débito</strong> (también débito
+                  empresarial), Nequi, Bancolombia o DaviPlata y el plan se renueva solo.
+                </p>
+                <DuiButton class="mt-auto self-start" color="primary" @click="methodModal = true">
+                  Activar pago automático
+                </DuiButton>
+              </div>
+              <div
+                class="flex flex-col gap-3 rounded-lg border border-neutral-200 p-3 dark:border-white/10"
+              >
+                <p class="font-medium">
+                  <i class="mdi mdi-bank-outline text-mint-600" aria-hidden="true" /> Pago manual
+                  con PSE
+                </p>
+                <p class="mt-1 text-neutral-500 dark:text-neutral-400">
+                  Desde cualquier banco, también cuentas empresariales, sin guardar nada. Te
+                  recordamos antes de cada vencimiento. Ideal con el pago anual.
+                </p>
+                <DuiButton
+                  v-if="!paidAhead"
+                  class="mt-auto self-start"
+                  color="primary"
+                  variant="outline"
+                  @click="payManually"
+                >
+                  Pagar con PSE
+                </DuiButton>
+                <p v-else class="mt-auto text-xs text-neutral-500">
+                  Podrás pagar el siguiente periodo desde {{ PAY_AHEAD_DAYS }} días antes del
+                  vencimiento.
+                </p>
+              </div>
+            </div>
           </div>
-          <div class="flex gap-2">
+          <div v-if="method" class="flex gap-2">
             <DuiButton
               v-if="method"
               variant="ghost"
@@ -383,7 +435,7 @@ function contactSales() {
               color="primary"
               @click="methodModal = true"
             >
-              {{ method ? 'Cambiar' : 'Agregar medio de pago' }}
+              {{ method ? 'Cambiar' : 'Activar pago automático' }}
             </DuiButton>
           </div>
         </div>
@@ -405,7 +457,7 @@ function contactSales() {
           />
         </div>
         <DuiAlert
-          v-if="overview?.failedAttempts && current.status === 'past_due'"
+          v-if="overview?.failedAttempts && current.status === 'past_due' && method"
           color="warning"
           variant="soft"
         >
@@ -520,10 +572,11 @@ function contactSales() {
           </p>
           <template v-else-if="tenant.canManage">
             <div
-              v-if="confirmingPay && method"
+              v-if="confirmingPay"
+              id="plan-payment"
               class="mt-6 flex flex-col gap-3 rounded-lg bg-neutral-50 p-4 text-sm dark:bg-white/5"
             >
-              <p>
+              <p v-if="method">
                 Se cobrarán <strong>{{ formatCop(price.total) }}</strong> a
                 <strong>{{ method.label }}</strong> por
                 {{ cycle === 'annual' ? '12 meses' : '1 mes' }} del plan {{ mainPlan.name }} ({{
@@ -531,11 +584,56 @@ function contactSales() {
                 }}
                 unidades). Después se renueva automáticamente; puedes apagarlo cuando quieras.
               </p>
-              <div class="flex justify-end gap-2">
+              <template v-else>
+                <p>
+                  Pagarás <strong>{{ formatCop(price.total) }}</strong> por
+                  {{ cycle === 'annual' ? '12 meses' : '1 mes' }} del plan {{ mainPlan.name }} ({{
+                    units.toLocaleString('es-CO')
+                  }}
+                  unidades) en Wompi con <strong>PSE desde cualquier banco</strong>, tarjeta de
+                  crédito o débito, Nequi o Bancolombia. No guardamos el medio de pago: te
+                  recordaremos por correo {{ MANUAL_REMINDER_DAYS.join(' y ') }} días antes del
+                  siguiente vencimiento.
+                </p>
+                <div
+                  v-if="cycle === 'monthly'"
+                  class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-mint-50 p-3 text-mint-900 dark:bg-mint-400/10 dark:text-mint-100"
+                >
+                  <p>
+                    <i class="mdi mdi-gift-outline" aria-hidden="true" />
+                    <strong>Paga el año y olvídate de pagar cada mes:</strong>
+                    {{ formatCop(annualQuote.total) }} por 12 meses, ahorras
+                    {{ formatCop(annualQuote.annualSavings) }}.
+                  </p>
+                  <DuiButton size="sm" color="primary" variant="soft" @click="cycle = 'annual'"
+                    >Cambiar a anual</DuiButton
+                  >
+                </div>
+                <p v-else class="text-mint-700 dark:text-mint-300">
+                  <i class="mdi mdi-check-circle-outline" aria-hidden="true" />
+                  Un solo pago al año, con {{ 12 - ANNUAL_BILLED_MONTHS }} meses de ahorro ({{
+                    formatCop(annualQuote.annualSavings)
+                  }}).
+                </p>
+                <p v-if="pendingPlan?.checkout" class="text-xs text-neutral-500">
+                  Tienes un pago abierto en Wompi. Si ya pagaste con PSE y el banco aún no lo
+                  aprueba, espera la confirmación por correo antes de pagar de nuevo.
+                </p>
+              </template>
+              <div class="flex flex-wrap justify-end gap-2">
+                <DuiButton
+                  v-if="!method"
+                  variant="ghost"
+                  :disabled="paying"
+                  @click="((confirmingPay = false), (methodModal = true))"
+                  >Prefiero pago automático</DuiButton
+                >
                 <DuiButton variant="ghost" :disabled="paying" @click="confirmingPay = false"
                   >Cancelar</DuiButton
                 >
-                <DuiButton color="primary" :loading="paying" @click="pay">Confirmar pago</DuiButton>
+                <DuiButton color="primary" :loading="paying" @click="pay">
+                  {{ method ? 'Confirmar pago' : 'Ir a pagar en Wompi' }}
+                </DuiButton>
               </div>
             </div>
             <DuiButton
@@ -548,6 +646,12 @@ function contactSales() {
             >
               {{ hasPending ? 'Pago en proceso…' : payLabel }}
             </DuiButton>
+            <p
+              v-if="!method && !confirmingPay"
+              class="mt-2 text-center text-xs text-neutral-500 dark:text-neutral-400"
+            >
+              PSE desde cualquier banco, tarjeta de crédito o débito, Nequi o Bancolombia.
+            </p>
           </template>
         </div>
       </DuiCard>
