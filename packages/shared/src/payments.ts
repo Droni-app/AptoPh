@@ -37,6 +37,13 @@ export const RENEWAL_NOTICE_DAYS = 3
 export const RENEWAL_RETRY_DAYS = [1, 3, 5] as const
 /** Días después del fin del periodo en que se puede seguir editando sin pagar */
 export const PAST_DUE_GRACE_DAYS = 7
+/**
+ * Pago manual (sin medio guardado: PSE de cualquier banco, tarjeta o billetera
+ * en el checkout de Wompi): recordatorios por correo, días antes del vencimiento
+ */
+export const MANUAL_REMINDER_DAYS = [7, 3] as const
+/** El siguiente periodo se puede pagar desde estos días antes del vencimiento */
+export const PAY_AHEAD_DAYS = 7
 
 export interface PaymentMethodSummary {
   id: string
@@ -64,6 +71,8 @@ export interface BillingCharge {
   paymentMethod: string | null
   /** El cobro lo hizo la renovación automática (no una persona) */
   automatic: boolean
+  /** Se paga en el checkout de Wompi (pago manual: PSE, tarjeta, billeteras) */
+  checkout: boolean
   createdAt: string
   finalizedAt: string | null
 }

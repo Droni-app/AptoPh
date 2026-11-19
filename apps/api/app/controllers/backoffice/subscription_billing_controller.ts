@@ -1,6 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import encryption from '@adonisjs/core/services/encryption'
-import type { BillingConfig, BillingOverview, PaymentTokenStatus } from '@aptoph/shared'
+import type {
+  BillingConfig,
+  BillingOverview,
+  ChargeRequestResult,
+  PaymentTokenStatus,
+} from '@aptoph/shared'
 import wompiConfig from '#config/wompi'
 import FieldException from '#exceptions/field_exception'
 import { appUrl } from '#services/app_urls'
@@ -152,15 +157,23 @@ export default class SubscriptionBillingController {
     return { data: tokenStatus(token) }
   }
 
-  /** POST /billing/subscription/pay — pays the plan now with the saved method */
-  async paySubscription({ tenant, auth, request, response }: HttpContext) {
+  /**
+   * POST /billing/subscription/pay — pays the plan: charged to the saved
+   * method, or `checkoutUrl` to pay in Wompi (PSE, card, wallets) without one
+   */
+  async paySubscription({
+    tenant,
+    auth,
+    request,
+    response,
+  }: HttpContext): Promise<{ data: ChargeRequestResult }> {
     const { billingCycle } = await request.validateUsing(paySubscriptionValidator)
-    const charge = await new BillingService(tenant).paySubscription(
+    const result = await new BillingService(tenant).paySubscription(
       billingCycle,
       auth.getUserOrFail()
     )
     response.status(201)
-    return { data: serializeCharge(charge) }
+    return { data: { charge: serializeCharge(result.charge), checkoutUrl: result.checkoutUrl } }
   }
 
   /** PUT /billing/subscription/auto-renew */

@@ -9,6 +9,7 @@ import {
   EMAIL_PACK_PRICE,
   EMAIL_PACK_SIZE,
   PAST_DUE_GRACE_DAYS,
+  PAY_AHEAD_DAYS,
   PLAN_LABELS,
   RENEWAL_CHARGE_HOURS_BEFORE,
   RENEWAL_RETRY_DAYS,
@@ -255,12 +256,15 @@ export class BillingService {
   }
 
   /**
-   * Pays the plan now with the saved method: activates it (trial, expired) or
-   * pays an overdue renewal. The new period starts when the paid one ends while
-   * it is still recent (no free days); otherwise today.
+   * Pays the plan now: activates it (trial, expired), pays an overdue period or
+   * the next one (from PAY_AHEAD_DAYS before the end). With a saved method it
+   * is charged right away; without one (manual payment: PSE from any bank,
+   * card or wallet) it is paid in Wompi's checkout. The new period starts when
+   * the paid one ends while it is still recent (no free days); otherwise today.
    */
   async paySubscription(cycle: BillingCycle, user: User) {
     assertPaymentsEnabled(this.tenant)
+    await this.releaseAbandonedCheckout()
     const { charge, method } = await db.transaction(async (trx) => {
       const subscription = await Subscription.query({ client: trx })
         .where('tenant_id', this.tenant.id)
@@ -271,18 +275,15 @@ export class BillingService {
       const plan = findPlan(subscription.plan)
       if (!plan.selfServe) fail('Este plan se paga con un acuerdo con ventas.', 422)
       const paymentMethod = await this.activeMethod(trx)
-      if (!paymentMethod) fail('Agrega un medio de pago primero.', 422)
       await this.assertNoPendingPlanCharge(trx)
 
       const now = DateTime.now()
       const end = subscription.currentPeriodEndsAt
       const paid = ['active', 'past_due'].includes(subscription.status) && end
-      if (
-        subscription.status === 'active' &&
-        end &&
-        end > now.plus({ hours: RENEWAL_CHARGE_HOURS_BEFORE })
-      ) {
-        fail(`Tu plan ya está pagado hasta el ${dateLabel(end)}.`)
+      if (subscription.status === 'active' && end && end > now.plus({ days: PAY_AHEAD_DAYS })) {
+        fail(
+          `Tu plan ya está pagado hasta el ${dateLabel(end)}. Puedes pagar el siguiente periodo desde ${PAY_AHEAD_DAYS} días antes.`
+        )
       }
       const from = paid && end.plus({ days: PAST_DUE_GRACE_DAYS }) > now ? end : now
       const created = await this.createPlanCharge(trx, subscription, {
@@ -294,8 +295,40 @@ export class BillingService {
       })
       return { charge: created, method: paymentMethod }
     })
-    await submitCharge(charge, method)
-    return charge
+    if (method) {
+      await submitCharge(charge, method)
+      return { charge, checkoutUrl: null }
+    }
+    return { charge, checkoutUrl: this.checkoutOf(charge, user) }
+  }
+
+  /** Link to pay a charge in Wompi's checkout; it comes back to /plan?pago=<id> */
+  private checkoutOf(charge: BillingCharge, user: User) {
+    return checkoutUrl({
+      reference: charge.reference,
+      amountInCents: charge.amountCents,
+      customerEmail: user.email,
+      redirectUrl: `${appUrl('backoffice')}/plan?pago=${charge.id}`,
+    })
+  }
+
+  /**
+   * A checkout of the plan opened and left without paying (no transaction in
+   * Wompi) does not block a new attempt: it ends as "not completed". If it is
+   * paid later anyway, its event reopens and applies it (reopenCheckout).
+   */
+  private async releaseAbandonedCheckout() {
+    const pending = await BillingCharge.query()
+      .where('tenant_id', this.tenant.id)
+      .where('kind', 'subscription')
+      .where('status', 'pending')
+      .where('checkout', true)
+      .first()
+    if (!pending) return
+    await refreshCharge(pending)
+    if (pending.status === 'pending' && !pending.wompiTransactionId) {
+      await finalize(pending, 'expired', 'Se inició otro pago.')
+    }
   }
 
   /** Charge of the next period, by the automatic renewal */
@@ -353,15 +386,7 @@ export class BillingService {
       await submitCharge(charge, method)
       return { charge, checkoutUrl: null }
     }
-    return {
-      charge,
-      checkoutUrl: checkoutUrl({
-        reference: charge.reference,
-        amountInCents: charge.amountCents,
-        customerEmail: user.email,
-        redirectUrl: `${appUrl('backoffice')}/plan?pago=${charge.id}`,
-      }),
-    }
+    return { charge, checkoutUrl: this.checkoutOf(charge, user) }
   }
 
   /** Amount the next automatic renewal would charge, with today's units */
@@ -380,8 +405,13 @@ export class BillingService {
   }
 
   private async assertNoPendingPlanCharge(trx: TransactionClientContract) {
-    if (await this.pendingPlanCharge(trx)) {
-      fail('Ya hay un pago del plan en proceso. Espera a que Wompi lo confirme.')
+    const pending = await this.pendingPlanCharge(trx)
+    if (pending) {
+      fail(
+        pending.checkout
+          ? 'Hay un pago del plan en proceso en Wompi. Con PSE empresarial el banco puede tardar en aprobarlo; te avisaremos por correo.'
+          : 'Ya hay un pago del plan en proceso. Espera a que Wompi lo confirme.'
+      )
     }
   }
 
@@ -412,7 +442,8 @@ export class BillingService {
         status: 'pending',
         paymentMethodId: options.method?.id ?? null,
         paymentMethodLabel: options.method?.label ?? null,
-        checkout: false,
+        // Without a saved method (and not automatic) it is paid in the checkout
+        checkout: !options.method && !options.automatic,
         automatic: options.automatic,
         plan: plan.id,
         billingCycle: options.cycle,
@@ -515,6 +546,17 @@ export async function reopenCheckout(charge: BillingCharge, transactionId: strin
   return true
 }
 
+const CHECKOUT_METHOD_LABELS: Record<string, string> = {
+  PSE: 'PSE',
+  CARD: 'Tarjeta',
+  NEQUI: 'Nequi',
+  BANCOLOMBIA_TRANSFER: 'Bancolombia',
+  BANCOLOMBIA_QR: 'QR Bancolombia',
+  DAVIPLATA: 'DaviPlata',
+  BANCOLOMBIA_COLLECT: 'Corresponsal Bancolombia',
+}
+const checkoutMethodLabel = (type: string) => `${CHECKOUT_METHOD_LABELS[type] ?? type} · Wompi`
+
 /** Records Wompi's result after checking it is this charge */
 async function settle(charge: BillingCharge, transaction: WompiTransaction) {
   if (
@@ -558,6 +600,11 @@ async function finalize(
       status,
       status_message: message?.slice(0, 300) ?? null,
       wompi_transaction_id: transaction?.id ?? charge.wompiTransactionId,
+      // Checkout: the method the person chose in Wompi (PSE, card…)
+      payment_method_label:
+        charge.checkout && transaction?.paymentMethodType
+          ? checkoutMethodLabel(transaction.paymentMethodType)
+          : charge.paymentMethodLabel,
       finalized_at: new Date(),
       updated_at: new Date(),
     })

@@ -84,11 +84,16 @@ export class FakeWompi implements WompiApi {
   }
 
   /** A payment made in Wompi's checkout (no saved payment source) */
-  checkoutPayment(reference: string, amountInCents: number) {
-    return this.record(reference, amountInCents, null)
+  checkoutPayment(reference: string, amountInCents: number, method = 'PSE') {
+    return this.record(reference, amountInCents, null, method)
   }
 
-  private record(reference: string, amountInCents: number, sourceId: number | null) {
+  private record(
+    reference: string,
+    amountInCents: number,
+    sourceId: number | null,
+    paymentMethodType = 'CARD'
+  ) {
     const transaction = {
       id: `tx-${++this.sequence}`,
       reference,
@@ -96,7 +101,7 @@ export class FakeWompi implements WompiApi {
       statusMessage: null,
       amountInCents,
       currency: 'COP',
-      paymentMethodType: 'CARD',
+      paymentMethodType,
       sourceId,
     }
     this.transactions.set(transaction.id, transaction)

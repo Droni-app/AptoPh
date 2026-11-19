@@ -29,8 +29,9 @@ export function serializeCharge(charge: BillingCharge): BillingChargeData {
     status: charge.status,
     statusMessage: charge.statusMessage,
     reference: charge.reference,
-    paymentMethod: charge.paymentMethodLabel ?? (charge.checkout ? 'Wompi' : null),
+    paymentMethod: charge.paymentMethodLabel,
     automatic: charge.automatic,
+    checkout: charge.checkout,
     createdAt: charge.createdAt.toISO()!,
     finalizedAt: charge.finalizedAt?.toISO() ?? null,
   }

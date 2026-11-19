@@ -1012,7 +1012,7 @@ export class RecurringChargeSchema extends BaseModel {
 }
 
 export class SubscriptionSchema extends BaseModel {
-  static $columns = ['autoRenew', 'billingCycle', 'cancelledAt', 'createdAt', 'currentPeriodEndsAt', 'declaredUnits', 'id', 'nextRenewalAt', 'plan', 'renewalAttempts', 'renewalNoticeFor', 'status', 'tenantId', 'trialEndsAt', 'updatedAt'] as const
+  static $columns = ['autoRenew', 'billingCycle', 'cancelledAt', 'createdAt', 'currentPeriodEndsAt', 'declaredUnits', 'id', 'nextRenewalAt', 'paymentReminderFor', 'plan', 'renewalAttempts', 'renewalNoticeFor', 'status', 'tenantId', 'trialEndsAt', 'updatedAt'] as const
   $columns = SubscriptionSchema.$columns
   @column()
   declare autoRenew: boolean
@@ -1030,6 +1030,8 @@ export class SubscriptionSchema extends BaseModel {
   declare id: string
   @column.dateTime()
   declare nextRenewalAt: DateTime | null
+  @column.dateTime()
+  declare paymentReminderFor: DateTime | null
   @column()
   declare plan: string
   @column()

@@ -109,7 +109,11 @@ export function checkoutUrl(input: {
     'signature:integrity',
     integritySignature(input.reference, input.amountInCents)
   )
-  url.searchParams.set('redirect-url', input.redirectUrl)
+  // Wompi's firewall rejects a non-https return (local development): without
+  // it, the checkout shows its own result page and the event confirms the payment
+  if (input.redirectUrl.startsWith('https://')) {
+    url.searchParams.set('redirect-url', input.redirectUrl)
+  }
   if (input.customerEmail) url.searchParams.set('customer-data:email', input.customerEmail)
   return url.toString()
 }

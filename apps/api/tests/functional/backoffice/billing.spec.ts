@@ -4,14 +4,14 @@ import testUtils from '@adonisjs/core/services/test_utils'
 import db from '@adonisjs/lucid/services/db'
 import mail from '@adonisjs/mail/services/main'
 import { DateTime } from 'luxon'
-import { quote } from '@aptoph/shared'
+import { formatCop, quote } from '@aptoph/shared'
 import BillingMail from '#mails/billing_mail'
 import BillingCharge from '#models/billing_charge'
 import Subscription from '#models/subscription'
 import type Tenant from '#models/tenant'
 import { runBillingTick } from '#services/billing_scheduler'
 import { EmailQuotaService } from '#services/email_quota'
-import { wompi } from '#services/wompi'
+import { checkoutUrl, wompi } from '#services/wompi'
 import { FakeWompi, signedEvent } from '#tests/fake_wompi'
 import { createMember, resetRateLimits } from '#tests/helpers'
 import { apiFor, dataOf, expectStatus } from '../finance/helpers.js'
@@ -43,6 +43,12 @@ async function saveCard(api: Api, token = 'tok_test_4242') {
     expMonth: 12,
     expYear: 29,
   })
+}
+
+/** Pays the plan with the saved method: the charge (no checkout) */
+async function payPlan(api: Api, billingCycle: 'monthly' | 'annual') {
+  const result = await dataOf(api.post('/billing/subscription/pay', { billingCycle }))
+  return result.charge
 }
 
 const subscriptionOf = (tenant: Tenant) => Subscription.findByOrFail('tenant_id', tenant.id)
@@ -148,10 +154,9 @@ test.group('Back-office · billing (Wompi)', (group) => {
   }) => {
     const { mails } = mail.fake()
     const { tenant, api } = await setup(client)
-    await expectStatus(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }), 422)
     await expectStatus(saveCard(api), 200)
 
-    const pending = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'annual' }))
+    const pending = await payPlan(api, 'annual')
     assert.equal(pending.status, 'pending')
     // The amount is computed by the API: 120 units, annual
     assert.equal(pending.amount, quote(120, 'annual').total)
@@ -192,7 +197,7 @@ test.group('Back-office · billing (Wompi)', (group) => {
     mail.fake()
     const { tenant, api } = await setup(client)
     await saveCard(api)
-    const charge = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }))
+    const charge = await payPlan(api, 'monthly')
     fake.settle()
     const transaction = (await fake.findTransactionByReference(charge.reference))!
 
@@ -221,7 +226,7 @@ test.group('Back-office · billing (Wompi)', (group) => {
     mail.fake()
     const { tenant, api } = await setup(client)
     await saveCard(api)
-    const charge = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }))
+    const charge = await payPlan(api, 'monthly')
     // Wompi reports another amount for this reference
     const transaction = [...fake.transactions.values()][0]!
     transaction.amountInCents = 100
@@ -333,7 +338,7 @@ test.group('Back-office · billing (Wompi)', (group) => {
     // A new payment method and paying now reactivate it from today
     fake.nextOutcome = 'APPROVED'
     await saveCard(api)
-    const charge = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }))
+    const charge = await payPlan(api, 'monthly')
     fake.settle()
     await dataOf(api.get(`/billing/charges/${charge.id}`))
     current = await subscriptionOf(tenant)
@@ -436,7 +441,7 @@ test.group('Back-office · billing (Wompi)', (group) => {
     const { tenant, api } = await setup(client)
     await saveCard(api)
     fake.rejectNextTransaction = 'La fuente de pago no está disponible'
-    const charge = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }))
+    const charge = await payPlan(api, 'monthly')
     assert.equal(charge.status, 'error')
     assert.equal(charge.statusMessage, 'La fuente de pago no está disponible')
     assert.equal(await statusOf(tenant), 'trialing')
@@ -477,5 +482,161 @@ test.group('Back-office · billing (Wompi)', (group) => {
 
     const bancolombia = await dataOf(api.post('/billing/tokens/bancolombia'))
     assert.include(bancolombia.authorizationUrl, encodeURIComponent('/plan?medio=bancolombia'))
+  })
+
+  test('manual payment: the plan is paid with PSE in the checkout, without a saved method', async ({
+    client,
+    assert,
+  }) => {
+    const { mails } = mail.fake()
+    const { tenant, api } = await setup(client)
+    const result = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'annual' }))
+    assert.equal(result.charge.amount, quote(120, 'annual').total)
+    assert.isNull(result.charge.paymentMethod)
+    const url = new URL(result.checkoutUrl)
+    assert.equal(url.origin, 'https://checkout.wompi.co')
+    assert.equal(url.searchParams.get('reference'), result.charge.reference)
+    // Local (http): Wompi rejects a non-https return, so it is left out
+    assert.isNull(url.searchParams.get('redirect-url'))
+    const production = new URL(
+      checkoutUrl({
+        reference: result.charge.reference,
+        amountInCents: result.charge.amount * 100,
+        redirectUrl: `https://admin.aptoph.com/plan?pago=${result.charge.id}`,
+      })
+    )
+    assert.equal(
+      production.searchParams.get('redirect-url'),
+      `https://admin.aptoph.com/plan?pago=${result.charge.id}`
+    )
+    assert.equal(await statusOf(tenant), 'trialing')
+
+    // PSE empresarial: the bank takes a while; a second attempt is refused meanwhile
+    const transaction = fake.checkoutPayment(result.charge.reference, result.charge.amount * 100)
+    await client.post('/api/v1/webhooks/wompi').json(signedEvent(transaction))
+    const busy = await api.post('/billing/subscription/pay', { billingCycle: 'annual' })
+    busy.assertStatus(409)
+    assert.include(busy.body().message, 'PSE')
+
+    fake.settle('APPROVED')
+    await client
+      .post('/api/v1/webhooks/wompi')
+      .json(signedEvent((await fake.getTransaction(transaction.id))!))
+    const subscription = await subscriptionOf(tenant)
+    assert.equal(subscription.status, 'active')
+    assert.equal(subscription.billingCycle, 'annual')
+    // Without a saved method it is not renewed automatically
+    assert.isFalse(subscription.autoRenew)
+    assert.isNull(subscription.nextRenewalAt)
+    const receipt = receipts(mails)
+    assert.lengthOf(receipt, 1)
+    assert.deepInclude(receipt[0]!.content.rows, { label: 'Medio de pago', value: 'PSE · Wompi' })
+    const overview = await dataOf(api.get('/billing'))
+    assert.equal(overview.charges[0].paymentMethod, 'PSE · Wompi')
+  })
+
+  test('manual payment: an abandoned checkout does not block a new attempt', async ({
+    client,
+    assert,
+  }) => {
+    mail.fake()
+    const { tenant, api } = await setup(client)
+    const first = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }))
+    // Changes their mind and pays the year
+    const second = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'annual' }))
+    assert.notEqual(second.charge.reference, first.charge.reference)
+    assert.equal(await chargeStatus(api, first.charge.id), 'expired')
+
+    // The first tab gets paid anyway: the payment is not lost
+    const late = fake.checkoutPayment(first.charge.reference, first.charge.amount * 100)
+    fake.settle('APPROVED')
+    await client
+      .post('/api/v1/webhooks/wompi')
+      .json(signedEvent((await fake.getTransaction(late.id))!))
+    assert.equal(await chargeStatus(api, first.charge.id), 'approved')
+    assert.equal(await statusOf(tenant), 'active')
+  })
+
+  test('manual payment: reminders 7 and 3 days before, with the annual option', async ({
+    client,
+    assert,
+  }) => {
+    const { mails } = mail.fake()
+    const { tenant } = await setup(client)
+    const due = () => receipts(mails).filter((m) => m.content.title === 'Es hora de pagar tu plan')
+    await Subscription.query()
+      .where('tenant_id', tenant.id)
+      .update({
+        status: 'active',
+        autoRenew: false,
+        currentPeriodEndsAt: DateTime.now().plus({ days: 6 }).toJSDate(),
+      })
+    await runBillingTick()
+    await runBillingTick()
+    assert.lengthOf(due(), 1)
+    const text = due()[0]!.content.paragraphs.join(' ')
+    assert.include(text, 'PSE')
+    assert.include(text, 'débito')
+    assert.include(text, `ahorras ${formatCop(quote(120, 'annual').annualSavings)}`)
+
+    // The last reminder, 3 days before (only once as well)
+    await Subscription.query()
+      .where('tenant_id', tenant.id)
+      .update({ currentPeriodEndsAt: DateTime.now().plus({ days: 2 }).toJSDate() })
+    await runBillingTick()
+    await runBillingTick()
+    assert.lengthOf(due(), 2)
+    // No charges: the payment is manual
+    assert.lengthOf(await BillingCharge.query().where('tenant_id', tenant.id), 0)
+  })
+
+  test('manual payment: unpaid at the end, grace days and then read-only', async ({
+    client,
+    assert,
+  }) => {
+    const { mails } = mail.fake()
+    const { tenant, api } = await setup(client)
+    await Subscription.query()
+      .where('tenant_id', tenant.id)
+      .update({
+        status: 'active',
+        autoRenew: false,
+        currentPeriodEndsAt: DateTime.now().minus({ hours: 1 }).toJSDate(),
+      })
+    await runBillingTick()
+    await runBillingTick()
+    const subscription = await subscriptionOf(tenant)
+    assert.equal(subscription.status, 'past_due')
+    assert.isTrue(subscription.canWrite())
+    const overdue = receipts(mails).filter((m) => m.content.title === 'Tu plan venció')
+    assert.lengthOf(overdue, 1)
+    await expectStatus(api.post('/buildings', { name: 'Torre 1' }), 201)
+
+    await Subscription.query()
+      .where('tenant_id', tenant.id)
+      .update({ currentPeriodEndsAt: DateTime.now().minus({ days: 8 }).toJSDate() })
+    await expectStatus(api.post('/buildings', { name: 'Torre 2' }), 402)
+  })
+
+  test('the next period can be paid from 7 days before the end', async ({ client, assert }) => {
+    mail.fake()
+    const { tenant, api } = await setup(client)
+    const setEnd = (days: number) =>
+      Subscription.query()
+        .where('tenant_id', tenant.id)
+        .update({
+          status: 'active',
+          autoRenew: false,
+          currentPeriodEndsAt: DateTime.now().plus({ days }).startOf('second').toJSDate(),
+        })
+    await setEnd(10)
+    await expectStatus(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }), 409)
+    await setEnd(5)
+    const paid = await subscriptionOf(tenant)
+    const end = paid.currentPeriodEndsAt!
+    const result = await dataOf(api.post('/billing/subscription/pay', { billingCycle: 'monthly' }))
+    const charge = await BillingCharge.findOrFail(result.charge.id)
+    // No days lost: the new period starts when the paid one ends
+    assert.equal(charge.periodStartsAt!.toMillis(), end.toMillis())
   })
 })

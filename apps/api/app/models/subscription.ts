@@ -33,16 +33,23 @@ export default class Subscription extends SubscriptionSchema {
     return Math.max(0, Math.ceil(this.trialEndsAt.diff(now, 'days').days))
   }
 
-  /** With the renewal unpaid: editing is still allowed until this date */
+  /**
+   * Period over and not paid (renewal declined, or manual payment pending):
+   * editing is still allowed until this date
+   */
   get graceEndsAt() {
-    if (this.status !== 'past_due' || !this.currentPeriodEndsAt) return null
-    return this.currentPeriodEndsAt.plus({ days: PAST_DUE_GRACE_DAYS })
+    const end = this.currentPeriodEndsAt
+    if (!end) return null
+    const overdue =
+      this.status === 'past_due' || (this.status === 'active' && end <= DateTime.now())
+    return overdue ? end.plus({ days: PAST_DUE_GRACE_DAYS }) : null
   }
 
   canWrite(now = DateTime.now()) {
     if (this.status === 'trialing') return !!this.trialEndsAt && this.trialEndsAt > now
     if (this.status === 'active') {
-      return !this.currentPeriodEndsAt || this.currentPeriodEndsAt > now
+      const end = this.currentPeriodEndsAt
+      return !end || end.plus({ days: PAST_DUE_GRACE_DAYS }) > now
     }
     if (this.status === 'past_due') return !!this.graceEndsAt && this.graceEndsAt > now
     return false
