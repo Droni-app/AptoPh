@@ -310,6 +310,7 @@ Los valores son `numeric` y se exponen como `string`; en el código se calcula e
 | `vendors` | Proveedores: documento, contacto, cuenta bancaria y cuenta de gasto habitual. |
 | `bills` / `bill_lines` | Facturas de proveedores: líneas por cuenta de gasto, IVA, retenciones (fuente, IVA, ICA), neto y saldo. |
 | `vendor_payments` / `vendor_payment_allocations` | Comprobantes de egreso numerados y las facturas que pagan. |
+| `attachments` | Soportes adjuntos de facturas, egresos, recibos de caja y comprobantes contables (`owner_type` + `owner_id`). Quitar uno solo marca `deleted_at`. Ver [files.md](files.md). |
 | `cash_accounts` | Cuentas bancarias y cajas, cada una con su auxiliar contable (`ledger_account_id`). |
 | `budgets` / `budget_items` | Presupuesto anual por cuenta, porcentaje del fondo de imprevistos y aprobación en asamblea. |
 

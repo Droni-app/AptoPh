@@ -211,7 +211,8 @@ pago), reportar un pago, historial de pagos con su estado y movimientos del últ
 
 - Cobros automáticos desde parqueaderos asignados, parqueadero de visitantes y reservas (el
   `ChargeService` y los conceptos ya existen).
-- Soportes adjuntos (pagos y facturas) cuando haya almacenamiento de archivos.
+- Soporte del pago que reporta el residente desde el portal (los adjuntos del backoffice ya existen,
+  ver [files.md](files.md)).
 - PDF del estado de cuenta, recibo y paz y salvo; envío por correo de la cuenta de cobro.
 - Pagos en línea (PSE/tarjeta) y conciliación con extracto bancario.
 - Nómina, activos fijos y depreciación, información exógena.

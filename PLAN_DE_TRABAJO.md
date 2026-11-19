@@ -216,9 +216,10 @@ el residente gestiona su hogar, vehículos y mascotas.
 - [x] El residente reporta su pago; la administración lo confirma (eligiendo la cuenta) o lo
       rechaza con motivo.
 - [x] Reversión de pagos (cheque devuelto) que devuelve el saldo a los cargos.
+- [x] Soportes adjuntos del recibo de caja en el backoffice (docs/files.md).
 
 **Falta**
-- [ ] Soporte adjunto del pago (cuando haya almacenamiento de archivos).
+- [ ] Soporte adjunto del pago que reporta el residente desde el portal.
 - [ ] Recibo y paz y salvo en PDF.
 - [ ] Importar extracto bancario y conciliar por referencia (P1).
 - [ ] **Pagos en línea** (P2): PSE y tarjeta; webhook que registra y aplica el pago.
@@ -312,10 +313,8 @@ cancela.
 - [ ] Consulta y descarga en el portal.
 
 **Tener en cuenta**
-- Elegir almacenamiento (p. ej. DigitalOcean Spaces) y enlaces firmados con vencimiento; nunca
-  archivos públicos.
-- Este almacenamiento también lo usan soportes de pago, fotos de PQRS y paquetes: resolverlo una
-  vez para todos los módulos.
+- Almacenamiento resuelto: bucket privado de DigitalOcean Spaces, carpeta por conjunto (slug) y
+  enlaces firmados de 10 minutos (docs/files.md). Documentos, PQRS y paquetes usan el mismo disco.
 
 ---
 
@@ -396,7 +395,9 @@ visitas, paquetes, PQRS, comunicados) más notificaciones push. Después, una ve
       solo lectura para el consejo y la revisoría fiscal.
 
 **Falta**
-- [ ] Contratos de proveedores y soportes adjuntos.
+- [x] Soportes adjuntos en gastos, egresos, recibos de caja, notas de contabilidad y traslados
+      (varios archivos por operación, bucket privado por conjunto).
+- [ ] Contratos de proveedores.
 - [ ] Nómina, activos fijos con depreciación automática e información exógena.
 - [ ] Exportación en el formato de importación de los programas contables más usados.
 
