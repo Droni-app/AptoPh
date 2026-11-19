@@ -47,6 +47,12 @@ const sections: Array<{ label: string; icon: string; to: string; match: string[]
       'finance-settings',
     ],
   },
+  {
+    label: 'Comunicados',
+    icon: 'mdi mdi-bullhorn-outline',
+    to: '/comunicados',
+    match: ['announcements'],
+  },
   { label: 'Torres', icon: 'mdi mdi-office-building-outline', to: '/torres', match: ['buildings'] },
   { label: 'Personas', icon: 'mdi mdi-account-group-outline', to: '/personas', match: ['members'] },
   {

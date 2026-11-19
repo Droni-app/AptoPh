@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { DuiButton, DuiModal, DuiSkeleton, useToast } from '@dronico/droni-kit'
 import {
   ATTACHMENT_ACCEPT,
@@ -7,8 +7,8 @@ import {
   type Attachment,
   type AttachmentOwnerType,
 } from '@aptoph/shared'
-import { financeApi } from '@/api/finance'
 import {
+  attachmentsApiFor,
   downloadAttachment,
   fileIcon,
   fileProblem,
@@ -27,11 +27,14 @@ const props = withDefaults(
     ownerId: string
     /** Can add and remove files (finance write roles) */
     editable?: boolean
+    /** Attachments already loaded with the record (skips the request) */
+    initial?: Attachment[]
     title?: string
   }>(),
-  { editable: false, title: 'Soportes' },
+  { editable: false, title: 'Soportes', initial: undefined },
 )
 const toast = useToast()
+const endpoints = computed(() => attachmentsApiFor(props.ownerType))
 
 const items = ref<Attachment[] | null>(null)
 const error = ref<string | null>(null)
@@ -43,7 +46,7 @@ const input = ref<HTMLInputElement | null>(null)
 async function load() {
   error.value = null
   try {
-    items.value = (await financeApi.attachments(props.ownerType, props.ownerId)).data
+    items.value = (await endpoints.value.list(props.ownerId)).data
   } catch (e) {
     items.value = []
     error.value = errorMessage(e)
@@ -52,6 +55,10 @@ async function load() {
 watch(
   () => [props.ownerType, props.ownerId],
   () => {
+    if (props.initial) {
+      items.value = [...props.initial]
+      return
+    }
     items.value = null
     load()
   },
@@ -69,7 +76,7 @@ async function add(list: FileList | null) {
     }
     uploading.value++
     try {
-      const { data } = await financeApi.uploadAttachment(props.ownerType, props.ownerId, file)
+      const { data } = await endpoints.value.upload(props.ownerId, file)
       items.value = [...(items.value ?? []), data]
     } catch (e) {
       toast.error(`${file.name}: ${errorMessage(e)}`)
@@ -79,10 +86,13 @@ async function add(list: FileList | null) {
   }
 }
 
-async function run(id: string, action: (id: string) => Promise<void>) {
+async function run(
+  id: string,
+  action: (ownerType: AttachmentOwnerType, id: string) => Promise<void>,
+) {
   busyId.value = id
   try {
-    await action(id)
+    await action(props.ownerType, id)
   } catch (e) {
     toast.error(errorMessage(e))
   } finally {
@@ -95,7 +105,7 @@ async function confirmRemove() {
   if (!attachment) return
   busyId.value = attachment.id
   try {
-    await financeApi.removeAttachment(attachment.id)
+    await endpoints.value.remove(attachment.id)
     items.value = (items.value ?? []).filter((item) => item.id !== attachment.id)
     toast.success('Soporte quitado')
     removing.value = null
@@ -130,7 +140,9 @@ async function confirmRemove() {
     </div>
     <DuiSkeleton v-if="items === null" class="h-12 rounded-lg" />
     <p v-else-if="error" class="text-coral-700">{{ error }}</p>
-    <p v-else-if="!items.length" class="text-neutral-500">Sin soportes adjuntos.</p>
+    <p v-else-if="!items.length" class="text-neutral-500">
+      {{ title === 'Soportes' ? 'Sin soportes adjuntos.' : 'Sin archivos adjuntos.' }}
+    </p>
     <ul v-else class="divide-y divide-neutral-100 dark:divide-white/10">
       <li v-for="item in items" :key="item.id" class="flex items-center gap-3 py-2">
         <i

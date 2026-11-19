@@ -4,8 +4,29 @@ import {
   formatFileSize,
   type AttachmentOwnerType,
 } from '@aptoph/shared'
+import type { ApiItem, Attachment } from '@aptoph/shared'
+import { announcementsApi } from '@/api/announcements'
 import { financeApi } from '@/api/finance'
 import { errorMessage } from '@/lib/errors'
+
+/** The endpoints that manage the attachments of each kind of record */
+export function attachmentsApiFor(ownerType: AttachmentOwnerType) {
+  if (ownerType === 'announcement') {
+    return {
+      list: (ownerId: string) => announcementsApi.attachments(ownerId),
+      upload: (ownerId: string, file: File): Promise<ApiItem<Attachment>> =>
+        announcementsApi.uploadAttachment(ownerId, file),
+      url: announcementsApi.attachmentUrl,
+      remove: announcementsApi.removeAttachment,
+    }
+  }
+  return {
+    list: (ownerId: string) => financeApi.attachments(ownerType, ownerId),
+    upload: (ownerId: string, file: File) => financeApi.uploadAttachment(ownerType, ownerId, file),
+    url: financeApi.attachmentUrl,
+    remove: financeApi.removeAttachment,
+  }
+}
 
 /** Why a file cannot be attached, or null when it can */
 export const fileProblem = (file: File) => attachmentProblem(file)
@@ -21,9 +42,10 @@ export async function uploadAttachments(
   files: File[],
 ) {
   const failed: string[] = []
+  const endpoints = attachmentsApiFor(ownerType)
   for (const file of files) {
     try {
-      await financeApi.uploadAttachment(ownerType, ownerId, file)
+      await endpoints.upload(ownerId, file)
     } catch (e) {
       failed.push(`${file.name}: ${errorMessage(e)}`)
     }
@@ -35,10 +57,10 @@ export async function uploadAttachments(
  * Opens an attachment in a new tab. The tab is opened before asking for the
  * signed link so the browser does not block it as a pop-up.
  */
-export async function openAttachment(id: string) {
+export async function openAttachment(ownerType: AttachmentOwnerType, id: string) {
   const tab = window.open('', '_blank')
   try {
-    const { url } = (await financeApi.attachmentUrl(id)).data
+    const { url } = (await attachmentsApiFor(ownerType).url(id)).data
     if (tab) tab.location.href = url
     else window.location.href = url
   } catch (e) {
@@ -47,8 +69,8 @@ export async function openAttachment(id: string) {
   }
 }
 
-export async function downloadAttachment(id: string) {
-  const { url } = (await financeApi.attachmentUrl(id, true)).data
+export async function downloadAttachment(ownerType: AttachmentOwnerType, id: string) {
+  const { url } = (await attachmentsApiFor(ownerType).url(id, true)).data
   const link = document.createElement('a')
   link.href = url
   link.rel = 'noopener'

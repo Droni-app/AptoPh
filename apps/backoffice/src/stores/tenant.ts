@@ -4,6 +4,7 @@ import {
   BACKOFFICE_ROLES,
   FINANCE_READ_ROLES,
   FINANCE_WRITE_ROLES,
+  ANNOUNCEMENT_WRITE_ROLES,
   type EnrollmentRole,
   type TenantSummary,
 } from '@aptoph/shared'
@@ -41,6 +42,7 @@ export const useTenantStore = defineStore('tenant', () => {
   const canManage = computed(() => hasRole('administrator'))
   const canReadFinance = computed(() => hasRole(...FINANCE_READ_ROLES))
   const canManageFinance = computed(() => hasRole(...FINANCE_WRITE_ROLES))
+  const canManageAnnouncements = computed(() => hasRole(...ANNOUNCEMENT_WRITE_ROLES))
 
   async function load() {
     const { data } = await api<{ data: TenantSummary[] }>('/api/v1/account/tenants', {
@@ -81,6 +83,7 @@ export const useTenantStore = defineStore('tenant', () => {
     canManage,
     canReadFinance,
     canManageFinance,
+    canManageAnnouncements,
     load,
     select,
     reset,

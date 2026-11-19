@@ -99,6 +99,12 @@ const router = createRouter({
           meta: { tenant: true, title: 'Personas' },
         },
         {
+          path: 'comunicados',
+          name: 'announcements',
+          component: () => import('@/views/AnnouncementsView.vue'),
+          meta: { tenant: true, title: 'Comunicados' },
+        },
+        {
           path: 'finanzas',
           component: () => import('@/layouts/FinanceLayout.vue'),
           meta: { tenant: true, finance: true },

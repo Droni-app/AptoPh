@@ -16,6 +16,7 @@ import {
   type Plan,
   type PlanId,
 } from '@aptoph/shared'
+import EmailQuotaCard from '@/components/EmailQuotaCard.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { subscriptionApi } from '@/api/backoffice'
 import { errorMessage } from '@/lib/errors'
@@ -294,4 +295,6 @@ async function choose(plan: Plan) {
       unidades. <span v-if="!tenant.canManage">Solo la administración puede activar el plan.</span>
     </p>
   </template>
+
+  <EmailQuotaCard v-if="!loading" class="mt-6" />
 </template>
