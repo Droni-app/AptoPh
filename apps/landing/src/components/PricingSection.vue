@@ -144,7 +144,7 @@ const tierPrice = (pricePerUnit: number) =>
               <ArrowRight class="size-4.5" aria-hidden="true" />
             </a>
             <p class="mt-3 text-sm text-brand-100">
-              Antes de IVA. Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes.
+              Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes.
             </p>
           </div>
         </div>

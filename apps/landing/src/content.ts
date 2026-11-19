@@ -34,7 +34,7 @@ function pricingAnswer() {
   ).join('; ')
   return (
     `Se paga por unidad privada al mes, con todas las funciones incluidas. El precio de cada unidad depende del tamaño del conjunto: ${tiers}. ` +
-    `Los valores son antes de IVA, con un mínimo de ${formatCop(MINIMUM_MONTHLY)} al mes, y en el pago anual pagas ${ANNUAL_BILLED_MONTHS} meses y recibes 12. ` +
+    `El valor es final, sin IVA, con un mínimo de ${formatCop(MINIMUM_MONTHLY)} al mes, y en el pago anual pagas ${ANNUAL_BILLED_MONTHS} meses y recibes 12. ` +
     'Para administradoras con varias copropiedades hay un plan Empresarial a la medida.'
   )
 }
