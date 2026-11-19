@@ -134,11 +134,9 @@ export interface ApiDefinition {
   }
   subscription: {
     show: typeof routes['subscription.show']
-    activation: typeof routes['subscription.activation']
   }
   emailQuota: {
     show: typeof routes['emailQuota.show']
-    packs: typeof routes['emailQuota.packs']
   }
   settings: {
     tenant: typeof routes['settings.tenant'] & {
@@ -160,6 +158,30 @@ export interface ApiDefinition {
     publish: typeof routes['announcements.publish']
     unpublish: typeof routes['announcements.unpublish']
     destroy: typeof routes['announcements.destroy']
+  }
+  billing: {
+    show: typeof routes['billing.show']
+    config: typeof routes['billing.config']
+    charges: {
+      show: typeof routes['billing.charges.show']
+    }
+    tokens: {
+      show: typeof routes['billing.tokens.show']
+      nequi: typeof routes['billing.tokens.nequi']
+      daviplata: typeof routes['billing.tokens.daviplata']
+      daviplataOtp: typeof routes['billing.tokens.daviplataOtp']
+      bancolombia: typeof routes['billing.tokens.bancolombia']
+    }
+    autoRenew: typeof routes['billing.autoRenew']
+    paymentMethod: {
+      destroy: typeof routes['billing.paymentMethod.destroy']
+      save: typeof routes['billing.paymentMethod.save']
+    }
+    pay: typeof routes['billing.pay']
+    emailPacks: typeof routes['billing.emailPacks']
+  }
+  webhooks: {
+    wompi: typeof routes['webhooks.wompi']
   }
   finance: {
     summary: typeof routes['finance.summary']

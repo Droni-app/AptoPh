@@ -12,6 +12,7 @@ export const controllers = {
     Dashboard: () => import('#controllers/backoffice/dashboard_controller'),
     EmailQuota: () => import('#controllers/backoffice/email_quota_controller'),
     Members: () => import('#controllers/backoffice/members_controller'),
+    SubscriptionBilling: () => import('#controllers/backoffice/subscription_billing_controller'),
     Subscription: () => import('#controllers/backoffice/subscription_controller'),
     TenantSettings: () => import('#controllers/backoffice/tenant_settings_controller'),
     UnitOccupants: () => import('#controllers/backoffice/unit_occupants_controller'),
@@ -45,5 +46,8 @@ export const controllers = {
     Units: () => import('#controllers/resident/units_controller'),
     Vehicles: () => import('#controllers/resident/vehicles_controller'),
     Visits: () => import('#controllers/resident/visits_controller'),
+  },
+  webhooks: {
+    Wompi: () => import('#controllers/webhooks/wompi_controller'),
   },
 }

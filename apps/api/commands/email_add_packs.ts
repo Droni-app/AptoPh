@@ -2,8 +2,9 @@ import { args, BaseCommand, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
 /**
- * Activates paid bulk email packs (3,000 emails each) for a conjunto's month,
- * once the payment was received. docs/email-quota.md
+ * Adds bulk email packs (3,000 emails each) to a conjunto's month by hand: a
+ * payment outside Wompi, or a courtesy. Packs bought in the back-office are
+ * added by their Wompi charge. docs/email-quota.md
  */
 export default class EmailAddPacks extends BaseCommand {
   static commandName = 'email:add-packs'
@@ -49,7 +50,9 @@ export default class EmailAddPacks extends BaseCommand {
       period = month.toISODate()!
     }
 
-    const quota = await new EmailQuotaService(tenant).addPacks(packs, period)
+    const service = new EmailQuotaService(tenant)
+    await service.addPacks(packs, period)
+    const quota = await service.of(DateTime.fromISO(period, { zone: tenant.timezone }))
     this.logger.success(
       `${tenant.name}: +${(packs * EMAIL_PACK_SIZE).toLocaleString('es-CO')} correos en ${quota.period}. ` +
         `Cupo ${quota.limit.toLocaleString('es-CO')}, usados ${quota.used.toLocaleString('es-CO')}.`

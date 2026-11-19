@@ -14,7 +14,7 @@ import {
   FINANCE_READ_ROLES,
   FINANCE_WRITE_ROLES,
 } from '@aptoph/shared'
-import { throttlePublic, throttleSignup } from '#start/limiter'
+import { throttleBilling, throttlePublic, throttleSignup } from '#start/limiter'
 
 const AuthController = () => import('#controllers/auth_controller')
 const InvitationsController = () => import('#controllers/invitations_controller')
@@ -28,6 +28,9 @@ const UnitOccupantsController = () => import('#controllers/backoffice/unit_occup
 const MembersController = () => import('#controllers/backoffice/members_controller')
 const SubscriptionController = () => import('#controllers/backoffice/subscription_controller')
 const EmailQuotaController = () => import('#controllers/backoffice/email_quota_controller')
+const SubscriptionBillingController = () =>
+  import('#controllers/backoffice/subscription_billing_controller')
+const WompiController = () => import('#controllers/webhooks/wompi_controller')
 const TenantSettingsController = () => import('#controllers/backoffice/tenant_settings_controller')
 const ResidentHomeController = () => import('#controllers/resident/home_controller')
 const ResidentUnitsController = () => import('#controllers/resident/units_controller')
@@ -285,20 +288,60 @@ router
       .use([middleware.auth(), middleware.tenant(announcementsWrite), middleware.subscription()])
 
     /**
-     * Back-office: plan and billing (administration, also while the plan is locked)
+     * Back-office: payments to AptoPH with Wompi (administration, also while the
+     * plan is locked, so it can be paid). docs/billing.md
      */
     router
-      .post('subscription/activation', [SubscriptionController, 'requestActivation'])
-      .as('subscription.activation')
+      .group(() => {
+        router.get('billing', [SubscriptionBillingController, 'show']).as('show')
+        router.get('billing/config', [SubscriptionBillingController, 'config']).as('config')
+        router
+          .get('billing/charges/:id', [SubscriptionBillingController, 'charge'])
+          .as('charges.show')
+        router
+          .get('billing/tokens/:type/:tokenId', [SubscriptionBillingController, 'tokenStatus'])
+          .where('type', { match: /^(nequi|daviplata|bancolombia_transfer)$/ })
+          .as('tokens.show')
+        router
+          .put('billing/subscription/auto-renew', [SubscriptionBillingController, 'autoRenew'])
+          .as('autoRenew')
+        router
+          .delete('billing/payment-method', [SubscriptionBillingController, 'removePaymentMethod'])
+          .as('paymentMethod.destroy')
+        router
+          .group(() => {
+            router
+              .put('billing/payment-method', [SubscriptionBillingController, 'savePaymentMethod'])
+              .as('paymentMethod.save')
+            router
+              .post('billing/tokens/nequi', [SubscriptionBillingController, 'nequiToken'])
+              .as('tokens.nequi')
+            router
+              .post('billing/tokens/daviplata', [SubscriptionBillingController, 'daviplataToken'])
+              .as('tokens.daviplata')
+            router
+              .post('billing/tokens/daviplata/otp', [SubscriptionBillingController, 'daviplataOtp'])
+              .as('tokens.daviplataOtp')
+            router
+              .post('billing/tokens/bancolombia', [
+                SubscriptionBillingController,
+                'bancolombiaToken',
+              ])
+              .as('tokens.bancolombia')
+            router
+              .post('billing/subscription/pay', [SubscriptionBillingController, 'paySubscription'])
+              .as('pay')
+            router.post('email-quota/packs', [EmailQuotaController, 'buy']).as('emailPacks')
+          })
+          .use(throttleBilling)
+      })
+      .as('billing')
       .use([middleware.auth(), middleware.tenant(backofficeWrite)])
 
     /**
-     * Back-office: additional bulk email packs (administration)
+     * Wompi's events (public; verified by their checksum)
      */
-    router
-      .post('email-quota/packs', [EmailQuotaController, 'request'])
-      .as('emailQuota.packs')
-      .use([middleware.auth(), middleware.tenant(backofficeWrite), middleware.subscription()])
+    router.post('webhooks/wompi', [WompiController, 'handle']).as('webhooks.wompi')
 
     /**
      * Back-office: write (administration)

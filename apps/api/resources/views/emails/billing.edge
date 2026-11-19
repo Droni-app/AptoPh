@@ -1,0 +1,18 @@
+@component('components/email_layout', { title: title })
+  <p style="margin:0 0 4px;color:#5b6475;font-size:13px;">{{ tenantName }}</p>
+  <h1 style="margin:0 0 16px;font-size:20px;">{{ title }}</h1>
+  @each(paragraph in paragraphs)
+    <p style="margin:0 0 12px;">{{ paragraph }}</p>
+  @end
+  @if(rows.length)
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px;">
+      @each(row in rows)
+        <tr>
+          <td style="padding:8px 12px;color:#5b6475;border-bottom:1px solid #e6e9ef;">{{ row.label }}</td>
+          <td style="padding:8px 12px;text-align:right;font-weight:600;border-bottom:1px solid #e6e9ef;">{{ row.value }}</td>
+        </tr>
+      @end
+    </table>
+  @end
+  @!component('components/email_button', { url: url, label: action })
+@end

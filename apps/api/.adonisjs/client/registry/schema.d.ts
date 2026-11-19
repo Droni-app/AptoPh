@@ -944,30 +944,186 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['detach']>>>
     }
   }
-  'subscription.activation': {
-    methods: ["POST"]
-    pattern: '/api/v1/subscription/activation'
+  'billing.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/billing'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/subscription').activationRequestValidator)>>
+      body: {}
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/subscription').activationRequestValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>> | { status: 422; response: { errors: SimpleError[] } }
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['show']>>>
     }
   }
-  'emailQuota.packs': {
+  'billing.config': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/billing/config'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['config']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['config']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['config']>>>
+    }
+  }
+  'billing.charges.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/billing/charges/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['charge']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['charge']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['charge']>>>
+    }
+  }
+  'billing.tokens.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/billing/tokens/:type/:tokenId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { type: ParamValue; tokenId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['tokenStatus']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['tokenStatus']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['tokenStatus']>>>
+    }
+  }
+  'billing.autoRenew': {
+    methods: ["PUT"]
+    pattern: '/api/v1/billing/subscription/auto-renew'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/billing').autoRenewValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/billing').autoRenewValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['autoRenew']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['autoRenew']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['autoRenew']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'billing.paymentMethod.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/billing/payment-method'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['removePaymentMethod']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['removePaymentMethod']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['removePaymentMethod']>>>
+    }
+  }
+  'billing.paymentMethod.save': {
+    methods: ["PUT"]
+    pattern: '/api/v1/billing/payment-method'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/billing').paymentMethodValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/billing').paymentMethodValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['savePaymentMethod']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['savePaymentMethod']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['savePaymentMethod']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'billing.tokens.nequi': {
+    methods: ["POST"]
+    pattern: '/api/v1/billing/tokens/nequi'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/billing').nequiTokenValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/billing').nequiTokenValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['nequiToken']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['nequiToken']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['nequiToken']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'billing.tokens.daviplata': {
+    methods: ["POST"]
+    pattern: '/api/v1/billing/tokens/daviplata'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/billing').daviplataTokenValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/billing').daviplataTokenValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['daviplataToken']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['daviplataToken']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['daviplataToken']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'billing.tokens.daviplataOtp': {
+    methods: ["POST"]
+    pattern: '/api/v1/billing/tokens/daviplata/otp'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/billing').daviplataOtpValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/billing').daviplataOtpValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['daviplataOtp']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['daviplataOtp']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['daviplataOtp']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'billing.tokens.bancolombia': {
+    methods: ["POST"]
+    pattern: '/api/v1/billing/tokens/bancolombia'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['bancolombiaToken']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['bancolombiaToken']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['bancolombiaToken']>>>
+    }
+  }
+  'billing.pay': {
+    methods: ["POST"]
+    pattern: '/api/v1/billing/subscription/pay'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/billing').paySubscriptionValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/billing').paySubscriptionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['paySubscription']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['paySubscription']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_billing_controller').default['paySubscription']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'billing.emailPacks': {
     methods: ["POST"]
     pattern: '/api/v1/email-quota/packs'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/email_quota').emailPacksRequestValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/billing').emailPacksValidator)>>
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/email_quota').emailPacksRequestValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['request']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['request']>>> | { status: 422; response: { errors: SimpleError[] } }
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['request']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: ExtractQuery<InferInput<(typeof import('#validators/billing').emailPacksValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['buy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['buy']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['buy']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'webhooks.wompi': {
+    methods: ["POST"]
+    pattern: '/api/v1/webhooks/wompi'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhooks/wompi_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhooks/wompi_controller').default['handle']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/webhooks/wompi_controller').default['handle']>>>
     }
   }
   'buildings.store': {

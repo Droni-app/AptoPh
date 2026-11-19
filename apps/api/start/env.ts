@@ -71,4 +71,17 @@ export default await Env.create(new URL('../', import.meta.url), {
   SPACES_REGION: Env.schema.string.optional(),
   SPACES_BUCKET: Env.schema.string.optional(),
   SPACES_ENDPOINT: Env.schema.string.optional({ format: 'url', tld: false }),
+
+  /*
+  |----------------------------------------------------------
+  | Wompi (payments of the conjuntos to AptoPH). Each environment uses its
+  | own keys: `pub_test_…` in sandbox, `pub_prod_…` in production.
+  | docs/billing.md
+  |----------------------------------------------------------
+  */
+  WOMPI_ENV: Env.schema.enum.optional(['sandbox', 'production'] as const),
+  WOMPI_PUBLIC_KEY: Env.schema.string.optional(),
+  WOMPI_PRIVATE_KEY: Env.schema.secret.optional(),
+  WOMPI_EVENTS_SECRET: Env.schema.secret.optional(),
+  WOMPI_INTEGRITY_SECRET: Env.schema.secret.optional(),
 })

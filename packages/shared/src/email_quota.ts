@@ -6,7 +6,7 @@
 
 /** Emails included every calendar month */
 export const EMAIL_MONTHLY_INCLUDED = 3000
-/** Size and price (COP, before VAT) of an additional pack, valid for the month it is added */
+/** Size and price (COP) of an additional pack, valid for the month it is bought */
 export const EMAIL_PACK_SIZE = 3000
 export const EMAIL_PACK_PRICE = 10000
 /** Packs that can be asked for in a single request */
@@ -21,9 +21,6 @@ export interface EmailQuota {
   limit: number
   used: number
   available: number
-  /** Packs asked for and not yet activated */
-  requestedPacks: number
-  requestedAt: string | null
 }
 
 /** Recipients and quota of the month an announcement would email */

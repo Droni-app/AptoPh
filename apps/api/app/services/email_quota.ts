@@ -8,8 +8,6 @@ type QuotaRow = {
   period: string | Date
   used: number
   extra_packs: number
-  requested_packs: number
-  requested_at: Date | null
 }
 
 const LIMIT_SQL = `${EMAIL_MONTHLY_INCLUDED} + extra_packs * ${EMAIL_PACK_SIZE}`
@@ -44,8 +42,6 @@ export class EmailQuotaService {
       limit,
       used,
       available: Math.max(0, limit - used),
-      requestedPacks: row?.requested_packs ?? 0,
-      requestedAt: row?.requested_at ? new Date(row.requested_at).toISOString() : null,
     }
   }
 
@@ -67,36 +63,18 @@ export class EmailQuotaService {
     return result.rows.length > 0
   }
 
-  /** Records a request for additional packs for the current month (activated by AptoPH) */
-  async request(packs: number, userId: string) {
-    const period = quotaPeriod(this.tenant)
-    await this.ensureRow(period)
-    await db
+  /** Adds paid packs to a month (yyyy-mm-01): a Wompi charge, or `email:add-packs` */
+  async addPacks(
+    packs: number,
+    period = quotaPeriod(this.tenant),
+    client: TransactionClientContract | typeof db = db
+  ) {
+    await this.ensureRow(period, client)
+    await client
       .from('email_quotas')
       .where('tenant_id', this.tenant.id)
       .where('period', period)
-      .update({
-        requested_packs: db.raw('requested_packs + ?', [packs]),
-        requested_at: new Date(),
-        requested_by_id: userId,
-        updated_at: new Date(),
-      })
-    return this.of()
-  }
-
-  /** Activates paid packs for a month (yyyy-mm-01) and settles the pending request */
-  async addPacks(packs: number, period = quotaPeriod(this.tenant)) {
-    await this.ensureRow(period)
-    await db
-      .from('email_quotas')
-      .where('tenant_id', this.tenant.id)
-      .where('period', period)
-      .update({
-        extra_packs: db.raw('extra_packs + ?', [packs]),
-        requested_packs: db.raw('greatest(requested_packs - ?, 0)', [packs]),
-        updated_at: new Date(),
-      })
-    return this.of(DateTime.fromISO(period, { zone: this.tenant.timezone }))
+      .update({ extra_packs: db.raw('extra_packs + ?', [packs]), updated_at: new Date() })
   }
 
   private async ensureRow(period: string, client: TransactionClientContract | typeof db = db) {

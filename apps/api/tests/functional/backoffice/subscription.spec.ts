@@ -77,27 +77,7 @@ test.group('Back-office · subscription', (group) => {
     response4.assertStatus(201)
   })
 
-  test('the administrator requests activation even while locked', async ({ client, assert }) => {
-    mail.fake()
-    const { tenant, user } = await createMember('administrator')
-    await trial(tenant, { days: -3 })
-
-    const response = await client
-      .post('/api/v1/subscription/activation')
-      .json({ plan: 'completo', billingCycle: 'annual' })
-      .loginAs(user)
-      .header('X-Tenant-Id', tenant.id)
-
-    response.assertStatus(200)
-    const data = response.body().data
-    assert.equal(data.plan, 'completo')
-    assert.equal(data.billingCycle, 'annual')
-    assert.isNotNull(data.activationRequestedAt)
-  })
-
-  test('other back-office roles can see the plan but not request activation', async ({
-    client,
-  }) => {
+  test('other back-office roles can see the plan but not its payments', async ({ client }) => {
     const { tenant } = await createMember('administrator')
     const { user: guard } = await createMember('security_guard', tenant)
     await trial(tenant, { days: 5 })
@@ -108,9 +88,7 @@ test.group('Back-office · subscription', (group) => {
     const response5 = await as(client.get('/api/v1/subscription'))
     response5.assertStatus(200)
     const denied = await as(
-      client
-        .post('/api/v1/subscription/activation')
-        .json({ plan: 'completo', billingCycle: 'monthly' })
+      client.post('/api/v1/billing/subscription/pay').json({ billingCycle: 'monthly' })
     )
     denied.assertStatus(403)
   })

@@ -70,3 +70,15 @@ export const throttlePublic = limiter.define('public', (ctx) => {
     .usingKey(`public_${ctx.request.ip()}`)
     .limitExceeded(tooManyAttempts)
 })
+
+/**
+ * Payments (saving a payment method, Wompi tokens, charges) per conjunto:
+ * 15 requests per hour, so a session cannot be used to test cards
+ */
+export const throttleBilling = limiter.define('billing', (ctx) => {
+  return limiter
+    .allowRequests(15)
+    .every('1 hour')
+    .usingKey(`billing_${ctx.tenant?.id ?? ctx.request.ip()}`)
+    .limitExceeded(tooManyAttempts)
+})

@@ -3,7 +3,7 @@
  * cobros, el backoffice muestra el plan y la landing publica la tabla de precios
  * con estos mismos valores.
  *
- * Precios en COP por unidad privada al mes, antes de IVA.
+ * Precios en COP por unidad privada al mes (AptoPH no cobra IVA).
  */
 
 const values = <const T extends readonly string[]>(...items: T) => items

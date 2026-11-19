@@ -18,7 +18,8 @@ export default class SubscriptionTransformer extends BaseTransformer<Subscriptio
       trialEndsAt: subscription.trialEndsAt?.toISO() ?? null,
       trialDaysLeft: subscription.trialDaysLeft(),
       currentPeriodEndsAt: subscription.currentPeriodEndsAt?.toISO() ?? null,
-      activationRequestedAt: subscription.activationRequestedAt?.toISO() ?? null,
+      autoRenew: subscription.autoRenew,
+      graceEndsAt: subscription.graceEndsAt?.toISO() ?? null,
       billableUnits: Number(subscription.$extras.billableUnits ?? subscription.declaredUnits),
     }
   }

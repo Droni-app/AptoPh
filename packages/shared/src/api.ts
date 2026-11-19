@@ -463,7 +463,10 @@ export type SubscriptionSummary = {
   /** Días que quedan de prueba (0 si venció); `null` fuera de la prueba */
   trialDaysLeft: number | null
   currentPeriodEndsAt: string | null
-  activationRequestedAt: string | null
+  /** Se renueva sola con el medio de pago guardado */
+  autoRenew: boolean
+  /** Con el pago pendiente: hasta cuándo se puede seguir editando */
+  graceEndsAt: string | null
   /** Unidades con las que se cotiza: las registradas o, si aún no hay, las declaradas */
   billableUnits: number
 }

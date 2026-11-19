@@ -7,6 +7,7 @@
 import type { InferData, InferVariants } from '@adonisjs/core/types/transformers'
 import type AnnouncementTransformer from '#transformers/announcement_transformer'
 import type AttachmentTransformer from '#transformers/attachment_transformer'
+import type BillingTransformer from '#transformers/billing_transformer'
 import type BuildingTransformer from '#transformers/building_transformer'
 import type FinanceTransformer from '#transformers/finance'
 import type MemberTransformer from '#transformers/member_transformer'
@@ -25,6 +26,10 @@ export namespace Data {
   export type Attachment = InferData<AttachmentTransformer>
   export namespace Attachment {
     export type Variants = InferVariants<AttachmentTransformer>
+  }
+  export type Billing = InferData<BillingTransformer>
+  export namespace Billing {
+    export type Variants = InferVariants<BillingTransformer>
   }
   export type Building = InferData<BuildingTransformer>
   export namespace Building {

@@ -257,7 +257,7 @@ test.group('Announcements', (group) => {
     assert,
   }) => {
     const { mails } = mail.fake()
-    const { tenant, admin, council } = await setup(client)
+    const { tenant, admin } = await setup(client)
     const owners = draft({ title: 'Asamblea', audience: 'owners', sendEmail: true, publish: 'now' })
     // One email left this month; the owners are two people
     await db
@@ -276,13 +276,10 @@ test.group('Announcements', (group) => {
     // Without email it is published
     await expectStatus(admin.api.post('/announcements', { ...owners, sendEmail: false }), 201)
 
-    // Additional packs: the administration asks, AptoPH activates them after the payment
-    await expectStatus(council.api.post('/email-quota/packs', { packs: 1 }), 403)
-    await expectStatus(admin.api.post('/email-quota/packs', { packs: 0 }), 422)
-    const requested = await dataOf(admin.api.post('/email-quota/packs', { packs: 1 }))
-    assert.include(requested, { requestedPacks: 1, limit: 3000 })
-    const activated = await new EmailQuotaService(tenant).addPacks(1)
-    assert.include(activated, { extraPacks: 1, limit: 6000, available: 3001, requestedPacks: 0 })
+    // Additional packs (paid in Wompi: docs/billing.md)
+    await new EmailQuotaService(tenant).addPacks(1)
+    const activated = await dataOf(admin.api.get('/email-quota'))
+    assert.include(activated, { extraPacks: 1, limit: 6000, available: 3001 })
 
     await expectStatus(admin.api.post('/announcements', owners), 201)
     await dispatchDueAnnouncementEmails()

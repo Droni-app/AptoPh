@@ -222,6 +222,110 @@ export class BillLineSchema extends BaseModel {
   declare tenantId: string
 }
 
+export class BillingChargeSchema extends BaseModel {
+  static $columns = ['amountCents', 'appliedAt', 'automatic', 'billingCycle', 'checkout', 'createdAt', 'createdById', 'currency', 'description', 'environment', 'finalizedAt', 'id', 'kind', 'notifiedAt', 'packs', 'paymentMethodId', 'paymentMethodLabel', 'periodEndsAt', 'periodStartsAt', 'plan', 'quotaPeriod', 'reference', 'status', 'statusMessage', 'tenantId', 'units', 'updatedAt', 'wompiTransactionId'] as const
+  $columns = BillingChargeSchema.$columns
+  @column()
+  declare amountCents: bigint | number
+  @column.dateTime()
+  declare appliedAt: DateTime | null
+  @column()
+  declare automatic: boolean
+  @column()
+  declare billingCycle: string | null
+  @column()
+  declare checkout: boolean
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdById: string | null
+  @column()
+  declare currency: string
+  @column()
+  declare description: string
+  @column()
+  declare environment: string
+  @column.dateTime()
+  declare finalizedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare kind: string
+  @column.dateTime()
+  declare notifiedAt: DateTime | null
+  @column()
+  declare packs: number | null
+  @column()
+  declare paymentMethodId: string | null
+  @column()
+  declare paymentMethodLabel: string | null
+  @column.dateTime()
+  declare periodEndsAt: DateTime | null
+  @column.dateTime()
+  declare periodStartsAt: DateTime | null
+  @column()
+  declare plan: string | null
+  @column.date()
+  declare quotaPeriod: DateTime | null
+  @column()
+  declare reference: string
+  @column()
+  declare status: string
+  @column()
+  declare statusMessage: string | null
+  @column()
+  declare tenantId: string
+  @column()
+  declare units: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare wompiTransactionId: string | null
+}
+
+export class BillingPaymentMethodSchema extends BaseModel {
+  static $columns = ['brand', 'createdAt', 'createdById', 'customerEmail', 'environment', 'expMonth', 'expYear', 'id', 'label', 'lastFour', 'personalDataUrl', 'policyUrl', 'removedAt', 'removedById', 'status', 'tenantId', 'type', 'updatedAt', 'wompiPaymentSourceId'] as const
+  $columns = BillingPaymentMethodSchema.$columns
+  @column()
+  declare brand: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdById: string | null
+  @column()
+  declare customerEmail: string
+  @column()
+  declare environment: string
+  @column()
+  declare expMonth: number | null
+  @column()
+  declare expYear: number | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare label: string
+  @column()
+  declare lastFour: string | null
+  @column()
+  declare personalDataUrl: string
+  @column()
+  declare policyUrl: string
+  @column.dateTime()
+  declare removedAt: DateTime | null
+  @column()
+  declare removedById: string | null
+  @column()
+  declare status: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare wompiPaymentSourceId: bigint | number
+}
+
 export class BillingPeriodSchema extends BaseModel {
   static $columns = ['chargesCount', 'closedAt', 'closedById', 'createdAt', 'discountRate', 'discountUntil', 'dueOn', 'generatedAt', 'generatedById', 'id', 'interestRate', 'period', 'status', 'tenantId', 'totalAmount', 'updatedAt'] as const
   $columns = BillingPeriodSchema.$columns
@@ -582,7 +686,7 @@ export class DocumentSchema extends BaseModel {
 }
 
 export class EmailQuotaSchema extends BaseModel {
-  static $columns = ['createdAt', 'extraPacks', 'id', 'period', 'requestedAt', 'requestedById', 'requestedPacks', 'tenantId', 'updatedAt', 'used'] as const
+  static $columns = ['createdAt', 'extraPacks', 'id', 'period', 'tenantId', 'updatedAt', 'used'] as const
   $columns = EmailQuotaSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -592,12 +696,6 @@ export class EmailQuotaSchema extends BaseModel {
   declare id: string
   @column.date()
   declare period: DateTime
-  @column.dateTime()
-  declare requestedAt: DateTime | null
-  @column()
-  declare requestedById: string | null
-  @column()
-  declare requestedPacks: number
   @column()
   declare tenantId: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
@@ -914,10 +1012,10 @@ export class RecurringChargeSchema extends BaseModel {
 }
 
 export class SubscriptionSchema extends BaseModel {
-  static $columns = ['activationRequestedAt', 'billingCycle', 'cancelledAt', 'createdAt', 'currentPeriodEndsAt', 'declaredUnits', 'id', 'plan', 'status', 'tenantId', 'trialEndsAt', 'updatedAt'] as const
+  static $columns = ['autoRenew', 'billingCycle', 'cancelledAt', 'createdAt', 'currentPeriodEndsAt', 'declaredUnits', 'id', 'nextRenewalAt', 'plan', 'renewalAttempts', 'renewalNoticeFor', 'status', 'tenantId', 'trialEndsAt', 'updatedAt'] as const
   $columns = SubscriptionSchema.$columns
-  @column.dateTime()
-  declare activationRequestedAt: DateTime | null
+  @column()
+  declare autoRenew: boolean
   @column()
   declare billingCycle: string
   @column.dateTime()
@@ -930,8 +1028,14 @@ export class SubscriptionSchema extends BaseModel {
   declare declaredUnits: number
   @column({ isPrimary: true })
   declare id: string
+  @column.dateTime()
+  declare nextRenewalAt: DateTime | null
   @column()
   declare plan: string
+  @column()
+  declare renewalAttempts: number
+  @column.dateTime()
+  declare renewalNoticeFor: DateTime | null
   @column()
   declare status: string
   @column()
@@ -1316,4 +1420,27 @@ export class VisitSchema extends BaseModel {
   declare visitorDocument: string | null
   @column()
   declare visitorName: string
+}
+
+export class WompiEventSchema extends BaseModel {
+  static $columns = ['checksum', 'environment', 'event', 'id', 'payload', 'processedAt', 'receivedAt', 'reference', 'transactionId'] as const
+  $columns = WompiEventSchema.$columns
+  @column()
+  declare checksum: string
+  @column()
+  declare environment: string
+  @column()
+  declare event: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare payload: any
+  @column.dateTime()
+  declare processedAt: DateTime | null
+  @column.dateTime()
+  declare receivedAt: DateTime
+  @column()
+  declare reference: string | null
+  @column()
+  declare transactionId: string | null
 }
