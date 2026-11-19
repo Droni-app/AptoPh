@@ -6,7 +6,7 @@
 #   api.aptoph.com    → api         (service, basic 512 MB)
 #
 # Built with the App Platform Node.js buildpack (pnpm workspace at the repo root).
-# Secrets (APP_KEY, SMTP_*, SPACES_KEY/SECRET) are not in this file: they are set as encrypted
+# Secrets (APP_KEY, SMTP_*, SPACES_KEY/SECRET, WOMPI_*) are not in this file: they are set as encrypted
 # values on the app. Update with: doctl apps update <id> --spec .do/app.yaml
 # (re-set the secrets or keep them by passing the spec from `doctl apps spec get`).
 name: aptoph
@@ -98,6 +98,14 @@ services:
       - { key: SPACES_ENDPOINT, value: https://nyc3.digitaloceanspaces.com }
       - { key: SPACES_KEY, value: __SPACES_KEY__, type: SECRET }
       - { key: SPACES_SECRET, value: __SPACES_SECRET__, type: SECRET }
+      # Wompi (docs/billing.md). Uncomment ONLY when the production keys are set as encrypted
+      # values: with placeholders the API refuses to boot (each key must start with pub_prod_,
+      # prv_prod_, prod_events_ and prod_integrity_). Without them, online payments stay off (503).
+      # - { key: WOMPI_ENV, value: production }
+      # - { key: WOMPI_PUBLIC_KEY, value: __WOMPI_PUBLIC_KEY__ }
+      # - { key: WOMPI_PRIVATE_KEY, value: __WOMPI_PRIVATE_KEY__, type: SECRET }
+      # - { key: WOMPI_EVENTS_SECRET, value: __WOMPI_EVENTS_SECRET__, type: SECRET }
+      # - { key: WOMPI_INTEGRITY_SECRET, value: __WOMPI_INTEGRITY_SECRET__, type: SECRET }
 
 jobs:
   - name: migrate

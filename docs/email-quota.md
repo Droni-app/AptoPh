@@ -1,8 +1,8 @@
 # Cupo de correos masivos
 
 Cada conjunto puede enviar **3.000 correos masivos por mes calendario** (en la zona horaria del
-conjunto). Si necesita más, compra paquetes adicionales de **3.000 correos por $10.000 + IVA**, que
-valen solo para el mes en que se activan: el 1.º del mes siguiente el cupo vuelve a 3.000.
+conjunto). Si necesita más, compra paquetes adicionales de **3.000 correos por $10.000** (sin IVA), que
+valen solo para el mes en que se compran: el 1.º del mes siguiente el cupo vuelve a 3.000.
 
 Constantes en `@aptoph/shared` (`email_quota.ts`): `EMAIL_MONTHLY_INCLUDED`, `EMAIL_PACK_SIZE`,
 `EMAIL_PACK_PRICE`, `EMAIL_PACKS_MAX_PER_REQUEST`.
@@ -29,15 +29,18 @@ Constantes en `@aptoph/shared` (`email_quota.ts`): `EMAIL_MONTHLY_INCLUDED`, `EM
 
 ## 3. Paquetes adicionales
 
-1. La administración los pide en **Plan y facturación → Correos masivos** (`POST /email-quota/packs`,
-   1 a 20 paquetes). Queda como solicitud pendiente y llega un correo a `SALES_EMAIL`.
-2. AptoPH confirma el pago y los activa:
+La administración los compra en **Plan y facturación → Correos masivos** (`POST /email-quota/packs`,
+1 a 20 paquetes) y se pagan con Wompi ([billing.md](billing.md)):
 
-   ```sh
-   node ace email:add-packs <slug> <paquetes> [--month=yyyy-mm]
-   ```
+- Con medio de pago guardado: se cobra de inmediato y, al aprobarse, se suman al mes.
+- Sin medio: la API responde `checkoutUrl` y la persona paga en el checkout de Wompi con cualquier
+  medio; vuelve a `/plan?pago=<id>`.
 
-   Suma los paquetes al mes (el actual por defecto) y descuenta la solicitud pendiente.
+Para cortesías o ajustes, AptoPH los suma a mano:
+
+```sh
+node ace email:add-packs <slug> <paquetes> [--month=yyyy-mm]
+```
 
 ## 4. Tabla `email_quotas`
 
@@ -47,8 +50,7 @@ Una fila por conjunto y mes (`UNIQUE (tenant_id, period)`), creada cuando se usa
 | --- | --- |
 | `period` | Primer día del mes |
 | `used` | Correos enviados en el mes |
-| `extra_packs` | Paquetes activados para el mes |
-| `requested_packs`, `requested_at`, `requested_by_id` | Solicitud pendiente de activar |
+| `extra_packs` | Paquetes comprados para el mes |
 
 Límite del mes = `3000 + extra_packs × 3000`.
 
@@ -57,5 +59,5 @@ Límite del mes = `3000 + extra_packs × 3000`.
 | Método | Ruta | Permiso |
 | --- | --- | --- |
 | GET | `/email-quota` | Backoffice |
-| POST | `/email-quota/packs` `{ packs }` | Administración |
+| POST | `/email-quota/packs` `{ packs }` → `{ charge, checkoutUrl }` | Administración |
 | POST | `/announcements/email-preview` `{ audience, buildingIds, publishAt? }` | Administración, consejo |

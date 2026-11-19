@@ -126,13 +126,19 @@ administradas (demo, pilotos) y no tienen restricciones. Planes y precios en
 | declared_units | int | Unidades declaradas en el registro (cotización antes de cargar el censo) |
 | trial_ends_at | timestamptz NULL | Fin de la prueba (30 días) |
 | current_period_ends_at | timestamptz NULL | Fin del periodo pagado |
-| activation_requested_at | timestamptz NULL | Última solicitud de activación desde el backoffice |
+| auto_renew | boolean | Renovación automática con el medio guardado |
+| next_renewal_at | timestamptz NULL | Próximo intento de cobro automático |
+| renewal_attempts | int | Cobros automáticos rechazados en el periodo |
+| renewal_notice_for | timestamptz NULL | Fin de periodo ya avisado por correo |
 | cancelled_at | timestamptz NULL | |
 | created_at / updated_at | timestamptz | |
 
 Con la prueba vencida o el periodo pagado expirado, el backoffice queda en **solo lectura**: las
-rutas de escritura responden `402` con `rule: subscription_inactive`. La app de residentes sigue
-funcionando.
+rutas de escritura responden `402` con `rule: subscription_inactive`. Con la renovación rechazada
+(`past_due`) hay 7 días de gracia. La app de residentes sigue funcionando.
+
+Los pagos del plan (`billing_payment_methods`, `billing_charges`, `wompi_events`) están en
+[billing.md](billing.md).
 
 ### `users` — personas con cuenta en la plataforma
 
@@ -384,8 +390,7 @@ El cuerpo es texto plano. Ver [announcements.md](announcements.md).
 
 ### `email_quotas` — cupo mensual de correos masivos
 
-`id, tenant_id, period (date, primer día del mes), used, extra_packs, requested_packs, requested_at,
-requested_by_id → users, created_at, updated_at` · `UNIQUE (tenant_id, period)`. Límite =
+`id, tenant_id, period (date, primer día del mes), used, extra_packs, created_at, updated_at` · `UNIQUE (tenant_id, period)`. Límite =
 3.000 + `extra_packs` × 3.000. Ver [email-quota.md](email-quota.md).
 
 ### `announcement_reads` — confirmación de lectura

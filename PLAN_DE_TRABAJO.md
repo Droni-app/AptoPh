@@ -128,7 +128,7 @@ Aplican a cualquier funcionalidad nueva; un módulo no se da por terminado si no
 ### 4.1 Cuenta, acceso y suscripción
 
 **Hay hoy:** login, registro de conjuntos con prueba de 30 días, logout, perfil, selección de
-conjunto, pantalla de plan con solicitud de activación, comando `subscription:activate`.
+conjunto, pantalla de plan con pago en línea (Wompi), comando `subscription:activate`.
 
 **Hecho** (noviembre 2026)
 - [x] **Invitaciones** (P0): por correo a personal y residentes, también desde la ficha de la
@@ -143,6 +143,9 @@ conjunto, pantalla de plan con solicitud de activación, comando `subscription:a
 - [x] Verificación de correo, con aviso y reenvío en las dos apps.
 - [x] Ver y cerrar sesiones abiertas.
 - [x] Configuración del conjunto: nombre, razón social, NIT, tipo, dirección y ciudad.
+- [x] **Pago del plan con Wompi**: tarjeta, Nequi, Bancolombia y DaviPlata tokenizados; renovación
+      automática con aviso, reintentos y 7 días de gracia; compra de correos masivos; comprobante
+      por correo ([billing.md](docs/billing.md)).
 
 **Falta**
 - [x] Día de corte, tasa de mora y demás reglas financieras: Finanzas → Configuración (4.3).
