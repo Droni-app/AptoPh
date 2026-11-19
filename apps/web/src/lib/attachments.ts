@@ -18,17 +18,30 @@ export async function uploadReceipts(paymentId: string, files: File[]) {
 }
 
 /**
- * Opens a receipt in a new tab. The tab is opened before asking for the
- * signed link so the browser does not block it as a pop-up.
+ * Opens a file in a new tab. The tab is opened before asking for the signed
+ * link so the browser does not block it as a pop-up.
  */
-export async function openReceipt(id: string) {
+export async function openSigned(signedUrl: () => Promise<{ data: { url: string } }>) {
   const tab = window.open('', '_blank')
   try {
-    const { url } = (await residentApi.finance.attachmentUrl(id)).data
+    const { url } = (await signedUrl()).data
     if (tab) tab.location.href = url
     else window.location.href = url
   } catch (e) {
     tab?.close()
     throw e
   }
+}
+
+export const openReceipt = (id: string) => openSigned(() => residentApi.finance.attachmentUrl(id))
+
+/** Downloads a file through its signed link (the link sets the file name) */
+export async function downloadSigned(signedUrl: () => Promise<{ data: { url: string } }>) {
+  const { url } = (await signedUrl()).data
+  const link = document.createElement('a')
+  link.href = url
+  link.rel = 'noopener'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
 }

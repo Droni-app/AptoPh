@@ -85,6 +85,18 @@ const router = createRouter({
           meta: { tenant: true, title: 'Reservas' },
         },
         {
+          path: 'comunicados',
+          name: 'announcements',
+          component: () => import('@/views/AnnouncementsView.vue'),
+          meta: { tenant: true, title: 'Comunicados' },
+        },
+        {
+          path: 'comunicados/:id',
+          name: 'announcement',
+          component: () => import('@/views/AnnouncementView.vue'),
+          meta: { tenant: true, title: 'Comunicados' },
+        },
+        {
           path: 'pqrs',
           name: 'tickets',
           component: () => import('@/views/TicketsView.vue'),

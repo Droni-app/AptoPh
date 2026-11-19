@@ -31,6 +31,12 @@ const items = computed<NavbarItem[]>(() => [
     active: route.name === 'home' || route.name === 'unit',
   },
   {
+    label: 'Comunicados',
+    icon: 'mdi mdi-bullhorn-outline',
+    to: '/comunicados',
+    active: route.name === 'announcements' || route.name === 'announcement',
+  },
+  {
     label: 'Portería',
     icon: 'mdi mdi-account-clock-outline',
     to: '/porteria',

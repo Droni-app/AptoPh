@@ -1,5 +1,7 @@
 import type {
   ApiItem,
+  ResidentAnnouncement,
+  ResidentAnnouncementDetail,
   Attachment,
   DocumentType,
   HouseholdMember,
@@ -101,6 +103,17 @@ export const residentApi = {
     attachmentUrl: (id: string, download = false) =>
       api<ApiItem<{ url: string }>>(`${base}/attachments/${id}/url`, { query: { download } }),
     detach: (id: string) => api<void>(`${base}/attachments/${id}`, { method: 'DELETE' }),
+  },
+
+  announcements: {
+    list: () => api<List<ResidentAnnouncement>>(`${base}/announcements`),
+    /** Opening it marks it as read */
+    show: (id: string) =>
+      api<ApiItem<ResidentAnnouncementDetail>>(`${base}/announcements/${encodeURIComponent(id)}`),
+    attachmentUrl: (id: string, download = false) =>
+      api<ApiItem<{ url: string }>>(`${base}/announcements/attachments/${id}/url`, {
+        query: { download },
+      }),
   },
 
   vehicles: {
