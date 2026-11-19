@@ -28,6 +28,7 @@ Cada conjunto tiene su carpeta, con el `slug` del conjunto:
     pagos-proveedor/{yyyy}/{mm}/…                      ← vendor_payment
     recaudos/{yyyy}/{mm}/…                             ← payment
     comprobantes/{yyyy}/{mm}/…                         ← journal_entry (notas, traslados)
+  comunicados/{yyyy}/{mm}/…                            ← announcement
   documentos/…  pqrs/…  paquetes/…                     (siguientes módulos)
 ```
 
@@ -50,7 +51,7 @@ Tabla genérica: un registro puede tener varios archivos (máximo 20 activos).
 
 | Columna | Notas |
 | --- | --- |
-| `owner_type`, `owner_id` | Registro dueño: `bill`, `vendor_payment`, `payment`, `journal_entry`. Sin FK: la API valida que el registro exista en el conjunto. |
+| `owner_type`, `owner_id` | Registro dueño: `bill`, `vendor_payment`, `payment`, `journal_entry`, `announcement`. Sin FK: la API valida que el registro exista en el conjunto. |
 | `file_key` | Ruta completa en el disco |
 | `file_name`, `mime_type`, `size_bytes` | Nombre original, tipo y tamaño |
 | `uploaded_by_id`, `created_at` | Quién lo subió y cuándo |
@@ -64,6 +65,9 @@ HEIC/HEIF, Excel (xls, xlsx, csv) y Word (doc, docx), hasta 10 MB cada uno. La A
 y tamaño; el backoffice valida lo mismo antes de subir.
 
 ### API (finanzas)
+
+Solo los tipos de finanzas (`FINANCE_ATTACHMENT_OWNER_TYPES`); los adjuntos de comunicados van por
+sus propias rutas y permisos ([announcements.md](announcements.md)).
 
 | Método | Ruta | Permiso |
 | --- | --- | --- |
@@ -99,7 +103,15 @@ y tamaño; el backoffice valida lo mismo antes de subir.
 
 `GET /resident/payments` incluye `attachments` y `canAttach` en cada pago.
 
-## 5. Pendiente
+## 5. Demo
+
+El seeder del conjunto demo, que corre en cada despliegue, borra sus filas de `attachments` y la
+carpeta `demo/` del disco.
+
+Producción y desarrollo con `DRIVE_DISK=spaces` comparten el bucket: si en local hay un conjunto con
+el mismo slug que uno de producción (por ejemplo `demo`), sus archivos quedan en la misma carpeta.
+
+## 6. Pendiente
 
 - Documentos del conjunto (tabla `documents`), fotos de PQRS y paquetes, avatar y logo: usan el
   mismo disco y la misma convención de carpetas.

@@ -251,14 +251,18 @@ cancela.
 
 ### 4.6 Comunicados y circulares
 
-**Hay hoy:** tablas `announcements` y `announcement_reads`.
+**Hecho** (docs/announcements.md)
+- [x] Crear, programar, publicar y despublicar comunicados en el backoffice, con adjuntos; la
+      administración y el consejo los escriben.
+- [x] Audiencia: todo el conjunto, residentes, propietarios, consejo o personal, y por torre.
+- [x] Bandeja de comunicados en el portal con adjuntos; abrirlo lo marca como leído.
+- [x] Reporte de quién leyó y quién no.
+- [x] Envío por correo al publicar (también los programados), una sola vez.
+- [x] Cupo de 3.000 correos masivos al mes por conjunto, con paquetes adicionales de 3.000 por
+      $10.000 que pide la administración y activa AptoPH (docs/email-quota.md).
 
 **Falta**
-- [ ] Crear, programar y publicar comunicados en el backoffice, con adjuntos.
-- [ ] Segmentar por torre, por rol (propietarios, residentes, consejo) o todo el conjunto.
-- [ ] Bandeja de comunicados en el portal y confirmación de lectura.
-- [ ] Reporte de quién leyó y quién no.
-- [ ] Envío por correo al publicar (P1, ver 4.11).
+- [ ] Avisos push en la app móvil.
 
 **Tener en cuenta**
 - Las convocatorias a asamblea tienen requisitos de anticipación y medio (Ley 675); cuando llegue

@@ -310,7 +310,7 @@ Los valores son `numeric` y se exponen como `string`; en el código se calcula e
 | `vendors` | Proveedores: documento, contacto, cuenta bancaria y cuenta de gasto habitual. |
 | `bills` / `bill_lines` | Facturas de proveedores: líneas por cuenta de gasto, IVA, retenciones (fuente, IVA, ICA), neto y saldo. |
 | `vendor_payments` / `vendor_payment_allocations` | Comprobantes de egreso numerados y las facturas que pagan. |
-| `attachments` | Soportes adjuntos de facturas, egresos, recibos de caja y comprobantes contables (`owner_type` + `owner_id`). Quitar uno solo marca `deleted_at`. Ver [files.md](files.md). |
+| `attachments` | Adjuntos de facturas, egresos, recibos de caja, comprobantes contables y comunicados (`owner_type` + `owner_id`). Quitar uno solo marca `deleted_at`. Ver [files.md](files.md). |
 | `cash_accounts` | Cuentas bancarias y cajas, cada una con su auxiliar contable (`ledger_account_id`). |
 | `budgets` / `budget_items` | Presupuesto anual por cuenta, porcentaje del fondo de imprevistos y aprobación en asamblea. |
 
@@ -366,10 +366,27 @@ para impedir reservas solapadas (requiere la extensión `btree_gist`).
 | title | varchar(200) | |
 | body | text | Markdown |
 | audience | varchar(20) | `all`, `residents`, `owners`, `council`, `staff` |
-| published_at | timestamptz NULL | NULL = borrador |
+| published_at | timestamptz NULL | NULL = borrador; en el futuro = programado |
 | is_pinned | boolean | |
+| send_email | boolean | Enviar por correo al publicarse |
+| emailed_at | timestamptz NULL | Cuándo se envió (una sola vez) |
+| email_count | int NULL | A cuántas personas |
+| email_skipped | boolean | Le tocaba enviarse pero el cupo del mes no alcanzaba |
 | created_by_id | uuid FK → users | |
 | created_at / updated_at / deleted_at | | |
+
+El cuerpo es texto plano. Ver [announcements.md](announcements.md).
+
+### `announcement_buildings` — torres de un comunicado
+
+`id, tenant_id, announcement_id (FK compuesta, CASCADE), building_id (FK compuesta, CASCADE)` ·
+`UNIQUE (announcement_id, building_id)`. Sin filas = todas las torres.
+
+### `email_quotas` — cupo mensual de correos masivos
+
+`id, tenant_id, period (date, primer día del mes), used, extra_packs, requested_packs, requested_at,
+requested_by_id → users, created_at, updated_at` · `UNIQUE (tenant_id, period)`. Límite =
+3.000 + `extra_packs` × 3.000. Ver [email-quota.md](email-quota.md).
 
 ### `announcement_reads` — confirmación de lectura
 
