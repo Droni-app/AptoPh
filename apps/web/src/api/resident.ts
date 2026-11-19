@@ -1,5 +1,6 @@
 import type {
   ApiItem,
+  Attachment,
   DocumentType,
   HouseholdMember,
   HouseholdRelationship,
@@ -87,6 +88,19 @@ export const residentApi = {
         method: 'POST',
         body,
       }),
+    /** Receipt of a payment the resident reported (still in review) */
+    attach: (paymentId: string, file: File) => {
+      const body = new FormData()
+      body.append('file', file)
+      return api<ApiItem<Attachment>>(`${base}/payments/${paymentId}/attachments`, {
+        method: 'POST',
+        body,
+      })
+    },
+    /** Signed link that expires in a few minutes */
+    attachmentUrl: (id: string, download = false) =>
+      api<ApiItem<{ url: string }>>(`${base}/attachments/${id}/url`, { query: { download } }),
+    detach: (id: string) => api<void>(`${base}/attachments/${id}`, { method: 'DELETE' }),
   },
 
   vehicles: {

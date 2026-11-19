@@ -8,9 +8,12 @@ import {
   DuiLabel,
   DuiModal,
   DuiSelect,
+  useToast,
 } from '@dronico/droni-kit'
 import { PAYMENT_METHODS, PAYMENT_METHOD_LABELS, type PaymentMethod } from '@aptoph/shared'
 import { residentApi } from '@/api/resident'
+import ReceiptPicker from '@/components/payments/ReceiptPicker.vue'
+import { uploadReceipts } from '@/lib/attachments'
 import { useSubmit } from '@/composables/useSubmit'
 import { formatMoney, todayInput } from '@/lib/format'
 
@@ -19,6 +22,9 @@ const open = defineModel<boolean>({ required: true })
 const emit = defineEmits<{ saved: [] }>()
 
 const { saving, errors, error, run, reset } = useSubmit()
+const toast = useToast()
+/** Receipts, uploaded once the report is saved */
+const files = ref<File[]>([])
 const form = ref({
   amount: '',
   paidOn: todayInput(),
@@ -41,6 +47,7 @@ watch(open, (isOpen) => {
     reference: '',
     notes: '',
   }
+  files.value = []
   reset()
 })
 
@@ -55,18 +62,22 @@ const amount = computed(() => {
 })
 
 async function submit() {
-  const ok = await run(
-    () =>
-      residentApi.finance.report(props.unitId, {
-        amount: amount.value,
-        paidOn: form.value.paidOn,
-        method: form.value.method,
-        reference: form.value.reference || null,
-        notes: form.value.notes || null,
-      }),
-    'Recibimos tu reporte. La administración lo confirmará pronto.',
-  )
+  let failed: string[] = []
+  const ok = await run(async () => {
+    const { data } = await residentApi.finance.report(props.unitId, {
+      amount: amount.value,
+      paidOn: form.value.paidOn,
+      method: form.value.method,
+      reference: form.value.reference || null,
+      notes: form.value.notes || null,
+    })
+    failed = await uploadReceipts(data.id, files.value)
+  }, 'Recibimos tu reporte. La administración lo confirmará pronto.')
   if (ok) {
+    if (failed.length)
+      toast.warning(`No se pudo subir: ${failed.join(' · ')}. Adjúntalo desde «Tus pagos».`, {
+        duration: 10_000,
+      })
     emit('saved')
     open.value = false
   }
@@ -99,6 +110,7 @@ async function submit() {
       <DuiLabel title="Comentario" :error="errors.notes">
         <DuiInput v-model="form.notes" maxlength="500" placeholder="Opcional" />
       </DuiLabel>
+      <ReceiptPicker v-model="files" :disabled="saving" />
       <p class="text-sm text-neutral-500 dark:text-neutral-300">
         Tu saldo se actualiza cuando la administración confirme que el dinero llegó.
       </p>

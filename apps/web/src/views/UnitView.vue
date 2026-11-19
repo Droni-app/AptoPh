@@ -33,6 +33,7 @@ import HouseholdMemberModal from '@/components/HouseholdMemberModal.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import PetFormModal from '@/components/PetFormModal.vue'
 import ReportPaymentModal from '@/components/ReportPaymentModal.vue'
+import PaymentReceipts from '@/components/payments/PaymentReceipts.vue'
 import VehicleFormModal from '@/components/VehicleFormModal.vue'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
@@ -410,6 +411,7 @@ const removeMember = (member: HouseholdMember) =>
               <p v-if="payment.rejectionReason" class="mt-1 text-xs text-red-700 dark:text-red-300">
                 {{ payment.rejectionReason }}
               </p>
+              <PaymentReceipts :payment="payment" />
             </div>
             <div class="text-right">
               <p class="font-semibold tabular-nums">{{ money(payment.amount) }}</p>

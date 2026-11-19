@@ -1,43 +1,15 @@
 import {
-  ATTACHMENT_EXTENSIONS,
-  ATTACHMENT_MAX_BYTES,
-  ATTACHMENT_MAX_MB,
+  attachmentIcon,
+  attachmentProblem,
+  formatFileSize,
   type AttachmentOwnerType,
 } from '@aptoph/shared'
 import { financeApi } from '@/api/finance'
 import { errorMessage } from '@/lib/errors'
 
-const allowed = new Set<string>(ATTACHMENT_EXTENSIONS)
-
-function extensionOf(name: string) {
-  const dot = name.lastIndexOf('.')
-  return dot === -1 ? '' : name.slice(dot + 1).toLowerCase()
-}
-
 /** Why a file cannot be attached, or null when it can */
-export function fileProblem(file: File): string | null {
-  if (!allowed.has(extensionOf(file.name)))
-    return `${file.name}: tipo de archivo no permitido (PDF, imágenes, Excel o Word)`
-  if (file.size > ATTACHMENT_MAX_BYTES) return `${file.name}: pesa más de ${ATTACHMENT_MAX_MB} MB`
-  if (file.size === 0) return `${file.name}: el archivo está vacío`
-  return null
-}
-
-export function formatFileSize(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
-  return `${(bytes / 1024 / 1024).toLocaleString('es-CO', { maximumFractionDigits: 1 })} MB`
-}
-
-/** Material Design Icon for a file */
-export function fileIcon(name: string) {
-  const ext = extensionOf(name)
-  if (ext === 'pdf') return 'mdi-file-pdf-box'
-  if (['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'].includes(ext)) return 'mdi-file-image'
-  if (['xls', 'xlsx', 'csv'].includes(ext)) return 'mdi-file-excel'
-  if (['doc', 'docx'].includes(ext)) return 'mdi-file-word'
-  return 'mdi-file-outline'
-}
+export const fileProblem = (file: File) => attachmentProblem(file)
+export { attachmentIcon as fileIcon, formatFileSize }
 
 /**
  * Uploads the files picked in a form once its record exists. Returns the
