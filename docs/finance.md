@@ -205,14 +205,13 @@ compara lo causado en el libro mayor contra lo presupuestado a la fecha.
 | Configuración | Vencimiento, redondeo, orden de aplicación, mora, pronto pago y cierre contable. |
 
 **Portal de residentes → Mi unidad**: saldo, cobros abiertos, valor para quedar al día (con pronto
-pago), reportar un pago, historial de pagos con su estado y movimientos del último año.
+pago), reportar un pago con su comprobante adjunto, historial de pagos con su estado y sus
+comprobantes, y movimientos del último año.
 
 ## 13. Pendiente (siguientes fases)
 
 - Cobros automáticos desde parqueaderos asignados, parqueadero de visitantes y reservas (el
   `ChargeService` y los conceptos ya existen).
-- Soporte del pago que reporta el residente desde el portal (los adjuntos del backoffice ya existen,
-  ver [files.md](files.md)).
 - PDF del estado de cuenta, recibo y paz y salvo; envío por correo de la cuenta de cobro.
 - Pagos en línea (PSE/tarjeta) y conciliación con extracto bancario.
 - Nómina, activos fijos y depreciación, información exógena.

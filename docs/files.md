@@ -82,8 +82,24 @@ y tamaño; el backoffice valida lo mismo antes de subir.
   contable (notas, traslados y saldos iniciales). Abre, descarga, adjunta y quita archivos; el
   consejo y la revisoría fiscal solo abren y descargan.
 
+### Portal de residentes
+
+- Al **reportar un pago** el residente adjunta el comprobante (foto o PDF, hasta 5 archivos). Se
+  sube después de guardar el reporte, a la misma carpeta `finanzas/recaudos` (`owner_type = payment`).
+- En **Tus pagos** ve los comprobantes de los pagos de sus unidades y los abre con enlace firmado.
+  Mientras el pago que reportó siga por revisar puede agregar o quitar sus propios comprobantes;
+  confirmado o rechazado, ya no.
+- La administración los ve en el detalle del recibo al confirmarlo o rechazarlo.
+
+| Método | Ruta | Regla |
+| --- | --- | --- |
+| POST | `/resident/payments/:id/attachments` | Pago de su unidad, reportado por él y por revisar |
+| GET | `/resident/attachments/:id/url` | Comprobante de un pago de sus unidades |
+| DELETE | `/resident/attachments/:id` | Subido por él, pago por revisar |
+
+`GET /resident/payments` incluye `attachments` y `canAttach` en cada pago.
+
 ## 5. Pendiente
 
-- Soporte del pago que reporta el residente desde el portal (mismo `owner_type = payment`).
 - Documentos del conjunto (tabla `documents`), fotos de PQRS y paquetes, avatar y logo: usan el
   mismo disco y la misma convención de carpetas.

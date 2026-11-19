@@ -216,10 +216,10 @@ el residente gestiona su hogar, vehículos y mascotas.
 - [x] El residente reporta su pago; la administración lo confirma (eligiendo la cuenta) o lo
       rechaza con motivo.
 - [x] Reversión de pagos (cheque devuelto) que devuelve el saldo a los cargos.
-- [x] Soportes adjuntos del recibo de caja en el backoffice (docs/files.md).
+- [x] Soportes adjuntos del recibo de caja: la administración en el backoffice y el residente al
+      reportar su pago en el portal (docs/files.md).
 
 **Falta**
-- [ ] Soporte adjunto del pago que reporta el residente desde el portal.
 - [ ] Recibo y paz y salvo en PDF.
 - [ ] Importar extracto bancario y conciliar por referencia (P1).
 - [ ] **Pagos en línea** (P2): PSE y tarjeta; webhook que registra y aplica el pago.
