@@ -1,8 +1,14 @@
 # Pagos del plan con Wompi
 
 Los conjuntos pagan a AptoPH (DRONICO SAS) su plan y los paquetes de correos masivos con
-[Wompi](https://docs.wompi.co). El medio de pago queda **tokenizado** en Wompi y el plan se renueva
-solo. AptoPH nunca recibe ni guarda números de tarjeta, solo el id de la fuente de pago de Wompi y
+[Wompi](https://docs.wompi.co), de dos formas:
+
+- **Pago automático:** el medio de pago queda **tokenizado** en Wompi (tarjeta de crédito o débito,
+  Nequi, Bancolombia o DaviPlata) y el plan se renueva solo.
+- **Pago manual:** sin guardar nada, cada periodo se paga en el checkout de Wompi con **PSE desde
+  cualquier banco** (también cuentas empresariales), tarjeta o billeteras. Es para los conjuntos que
+  no tienen tarjeta ni cuenta Bancolombia. PSE no se puede tokenizar en Wompi.
+ AptoPH nunca recibe ni guarda números de tarjeta, solo el id de la fuente de pago de Wompi y
 datos para mostrarla ("VISA ·· 4242").
 
 No se cobra IVA. El comprobante se envía por correo y **no es una factura electrónica**.
@@ -14,11 +20,15 @@ Esto no aplica a las cuotas de administración que pagan los residentes (ver [fi
 | Tema | Regla |
 | --- | --- |
 | Quién paga | Solo la administración (`administrator`), también con el plan bloqueado |
-| Medios | Tarjeta (crédito/débito), Nequi, Bancolombia (botón) y DaviPlata |
+| Medios automáticos | Tarjeta (crédito o débito, también débito empresarial), Nequi, Bancolombia (botón) y DaviPlata |
+| Pago manual | Checkout de Wompi: PSE (cualquier banco), tarjeta, Nequi, Bancolombia. Sin medio guardado |
 | Prueba | Sin medio de pago. Al activar se cobra el primer periodo desde hoy |
 | Valor | Unidades del día del cobro × precio por unidad (`quote()` en `@aptoph/shared`) |
 | Renovación | Automática con el medio guardado, 24 h antes del fin del periodo. Aviso por correo 3 días antes |
-| Pago adelantado | Solo desde 24 h antes del fin. El nuevo periodo empieza al final del anterior |
+| Pago adelantado | Desde 7 días antes del fin (`PAY_AHEAD_DAYS`). El nuevo periodo empieza al final del anterior |
+| Recordatorios (manual) | Correo 7 y 3 días antes del fin con el enlace de pago y la opción anual (`MANUAL_REMINDER_DAYS`) |
+| Vencido (manual) | Al terminar sin pago: `past_due`, correo "Tu plan venció" y 7 días de gracia |
+| Pago anual | Se sugiere primero a quien paga manual: un pago al año y 2 meses de ahorro |
 | Cobro rechazado | Reintentos 1, 3 y 5 días después del fin, con correo. Plan `past_due` |
 | Gracia | 7 días después del fin se puede seguir editando; luego solo lectura (`402`) |
 | Cancelar | Apagar la renovación: el plan sigue hasta el fin del periodo pagado, sin reembolsos |
@@ -103,7 +113,22 @@ Antes de guardar, la persona acepta los términos de Wompi y la autorización de
 Guardar un medio reemplaza al anterior; el anterior se anula en Wompi cuando se puede (Wompi no
 permite anular fuentes de tarjeta). Quitar el medio apaga la renovación automática.
 
-## 5. Estados de un cobro (`billing_charges.status`)
+## 5. Pago manual con PSE
+
+1. Sin medio guardado, `POST /billing/subscription/pay` responde `{ charge, checkoutUrl }`. El valor
+   y la referencia los fija la API, con la firma de integridad.
+2. La persona paga en Wompi y vuelve a `/plan?pago=<id>`. El evento de Wompi (o la consulta
+   periódica) confirma el pago. PSE empresarial puede tardar horas si el banco pide un segundo
+   aprobador: el cobro sigue pendiente y no se puede abrir otro pago (`409`).
+3. Un checkout abierto y abandonado (sin transacción en Wompi) no bloquea: al pedir otro pago queda
+   `expired`. Si después se paga de todas formas, el evento lo reabre y se aplica.
+4. El plan queda con `auto_renew = false`. El programador envía los recordatorios (claims
+   `payment_reminder_for` y `renewal_notice_for`) y, al vencer, lo pasa a `past_due`.
+5. El historial muestra el medio usado en Wompi ("PSE · Wompi").
+
+Guardar un medio de pago después pasa el plan a pago automático.
+
+## 6. Estados de un cobro (`billing_charges.status`)
 
 `pending` → `approved` | `declined` | `error` | `voided` | `expired`
 
@@ -112,7 +137,7 @@ Referencias: `APH-PLAN-yyMMdd-XXXXXXXXXX` (plan) y `APH-MAIL-…` (correos).
 En el checkout la persona puede intentar varias veces con la misma referencia: un intento rechazado
 no cierra el cobro para siempre; si después llega uno aprobado, se reabre y se aplica.
 
-## 6. Tablas
+## 7. Tablas
 
 - `billing_payment_methods`: `environment, wompi_payment_source_id, type, label, brand, last_four,
   exp_month, exp_year, customer_email, status (active|removed), policy_url, personal_data_url,
@@ -124,9 +149,10 @@ no cierra el cobro para siempre; si después llega uno aprobado, se reabre y se 
   finalized_at, applied_at, notified_at`.
 - `wompi_events`: `event, environment, checksum (único), reference, transaction_id, payload,
   received_at, processed_at`.
-- `subscriptions`: `auto_renew, next_renewal_at, renewal_attempts, renewal_notice_for`.
+- `subscriptions`: `auto_renew, next_renewal_at, renewal_attempts, renewal_notice_for,
+  payment_reminder_for`.
 
-## 7. API
+## 8. API
 
 | Método | Ruta | |
 | --- | --- | --- |
@@ -136,7 +162,7 @@ no cierra el cobro para siempre; si después llega uno aprobado, se reabre y se 
 | DELETE | `/billing/payment-method` | Quitar medio |
 | POST | `/billing/tokens/nequi` · `/daviplata` · `/daviplata/otp` · `/bancolombia` | Tokens que no se crean en el navegador |
 | GET | `/billing/tokens/:type/:tokenId` | Estado del token |
-| POST | `/billing/subscription/pay` `{ billingCycle }` | Pagar o activar el plan |
+| POST | `/billing/subscription/pay` `{ billingCycle }` | Pagar el plan: `{ charge, checkoutUrl }` (checkout si no hay medio) |
 | PUT | `/billing/subscription/auto-renew` `{ enabled }` | Renovación automática |
 | GET | `/billing/charges/:id` | Estado de un cobro (consulta a Wompi si está pendiente) |
 | POST | `/email-quota/packs` `{ packs }` | Comprar correos: `{ charge, checkoutUrl }` |
@@ -144,7 +170,7 @@ no cierra el cobro para siempre; si después llega uno aprobado, se reabre y se 
 
 Todas salvo el webhook: solo administración, sin el bloqueo por plan vencido.
 
-## 8. Pruebas en sandbox
+## 9. Pruebas en sandbox
 
 | Medio | Aprobada | Rechazada |
 | --- | --- | --- |
@@ -152,11 +178,13 @@ Todas salvo el webhook: solo administración, sin el bloqueo por plan vencido.
 | Nequi | `3991111111` | `3992222222` |
 | DaviPlata | `3991111111`, código `574829` | `3992222222` |
 
+PSE en el checkout de sandbox: el banco de pruebas permite elegir el resultado.
+
 Cualquier CVC de 3 dígitos y fecha futura. En sandbox no se mueve dinero real y la pantalla lo indica.
 
 Pruebas automáticas: `tests/functional/backoffice/billing.spec.ts` (Wompi falso en memoria).
 
-## 9. Paso a producción
+## 10. Paso a producción
 
 1. En Wompi, URL de eventos de producción (sección 2).
 2. Cargar las cuatro llaves `prod` como secretos en DigitalOcean y descomentar las líneas de

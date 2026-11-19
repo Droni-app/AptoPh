@@ -130,6 +130,7 @@ administradas (demo, pilotos) y no tienen restricciones. Planes y precios en
 | next_renewal_at | timestamptz NULL | Próximo intento de cobro automático |
 | renewal_attempts | int | Cobros automáticos rechazados en el periodo |
 | renewal_notice_for | timestamptz NULL | Fin de periodo ya avisado por correo |
+| payment_reminder_for | timestamptz NULL | Pago manual: fin de periodo con el recordatorio de 7 días enviado |
 | cancelled_at | timestamptz NULL | |
 | created_at / updated_at | timestamptz | |
 
