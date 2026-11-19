@@ -51,6 +51,9 @@ export type ScannedRoutes = {
     'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.announcements.index': { paramsTuple?: []; params?: {} }
+    'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -59,8 +62,22 @@ export type ScannedRoutes = {
     'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'members.index': { paramsTuple?: []; params?: {} }
     'subscription.show': { paramsTuple?: []; params?: {} }
+    'emailQuota.show': { paramsTuple?: []; params?: {} }
     'settings.tenant': { paramsTuple?: []; params?: {} }
+    'announcements.index': { paramsTuple?: []; params?: {} }
+    'announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.readers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.store': { paramsTuple?: []; params?: {} }
+    'announcements.emailPreview': { paramsTuple?: []; params?: {} }
+    'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.unpublish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'subscription.activation': { paramsTuple?: []; params?: {} }
+    'emailQuota.packs': { paramsTuple?: []; params?: {} }
     'buildings.store': { paramsTuple?: []; params?: {} }
     'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -168,6 +185,9 @@ export type ScannedRoutes = {
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
     'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.announcements.index': { paramsTuple?: []; params?: {} }
+    'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -176,7 +196,12 @@ export type ScannedRoutes = {
     'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'members.index': { paramsTuple?: []; params?: {} }
     'subscription.show': { paramsTuple?: []; params?: {} }
+    'emailQuota.show': { paramsTuple?: []; params?: {} }
     'settings.tenant': { paramsTuple?: []; params?: {} }
+    'announcements.index': { paramsTuple?: []; params?: {} }
+    'announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.readers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.summary': { paramsTuple?: []; params?: {} }
     'finance.settings': { paramsTuple?: []; params?: {} }
     'finance.accounts.index': { paramsTuple?: []; params?: {} }
@@ -230,6 +255,9 @@ export type ScannedRoutes = {
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
     'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.announcements.index': { paramsTuple?: []; params?: {} }
+    'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -238,7 +266,12 @@ export type ScannedRoutes = {
     'occupants.index': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'members.index': { paramsTuple?: []; params?: {} }
     'subscription.show': { paramsTuple?: []; params?: {} }
+    'emailQuota.show': { paramsTuple?: []; params?: {} }
     'settings.tenant': { paramsTuple?: []; params?: {} }
+    'announcements.index': { paramsTuple?: []; params?: {} }
+    'announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.readers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.summary': { paramsTuple?: []; params?: {} }
     'finance.settings': { paramsTuple?: []; params?: {} }
     'finance.accounts.index': { paramsTuple?: []; params?: {} }
@@ -292,7 +325,13 @@ export type ScannedRoutes = {
     'resident.tickets.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.store': { paramsTuple?: []; params?: {} }
+    'announcements.emailPreview': { paramsTuple?: []; params?: {} }
+    'announcements.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.unpublish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'subscription.activation': { paramsTuple?: []; params?: {} }
+    'emailQuota.packs': { paramsTuple?: []; params?: {} }
     'buildings.store': { paramsTuple?: []; params?: {} }
     'units.store': { paramsTuple?: []; params?: {} }
     'occupants.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
@@ -345,6 +384,7 @@ export type ScannedRoutes = {
   }
   PUT: {
     'profile.password': { paramsTuple?: []; params?: {} }
+    'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.settings.update': { paramsTuple?: []; params?: {} }
     'finance.write.concepts.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.modules.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -360,6 +400,8 @@ export type ScannedRoutes = {
     'resident.visits.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.bookings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'units.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }

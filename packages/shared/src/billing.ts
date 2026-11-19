@@ -65,6 +65,7 @@ export const PLANS: readonly Plan[] = [
       'Zonas comunes y reservas',
       'Portería, visitantes y paquetes',
       'Comunicados, PQRS y documentos',
+      '3.000 correos masivos al mes incluidos',
       'Accesos para consejo, contador y revisor fiscal',
       'App web y móvil para residentes',
       'Migración de datos sin costo',

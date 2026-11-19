@@ -619,6 +619,45 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['detach']>>>
     }
   }
+  'resident.announcements.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/announcements'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['index']>>>
+    }
+  }
+  'resident.announcements.attachments.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/announcements/attachments/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/attachment').attachmentUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['attachmentUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.announcements.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/announcements/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/announcements_controller').default['show']>>>
+    }
+  }
   'dashboard': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'
@@ -723,6 +762,19 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['show']>>>
     }
   }
+  'emailQuota.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/email-quota'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['show']>>>
+    }
+  }
   'settings.tenant': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/settings/tenant'
@@ -736,6 +788,162 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/tenant_settings_controller').default['show']>>>
     }
   }
+  'announcements.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/announcements'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/announcement').listAnnouncementsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'announcements.attachments.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/announcements/attachments/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/attachment').attachmentUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['attachmentUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'announcements.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/announcements/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['show']>>>
+    }
+  }
+  'announcements.readers': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/announcements/:id/readers'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['readers']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['readers']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['readers']>>>
+    }
+  }
+  'announcements.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/announcements'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/announcement').announcementValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/announcement').announcementValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'announcements.emailPreview': {
+    methods: ["POST"]
+    pattern: '/api/v1/announcements/email-preview'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/announcement').emailPreviewValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/announcement').emailPreviewValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['emailPreview']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['emailPreview']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['emailPreview']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'announcements.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/announcements/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/announcement').announcementValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/announcement').announcementValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'announcements.publish': {
+    methods: ["POST"]
+    pattern: '/api/v1/announcements/:id/publish'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['publish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['publish']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['publish']>>>
+    }
+  }
+  'announcements.unpublish': {
+    methods: ["POST"]
+    pattern: '/api/v1/announcements/:id/unpublish'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['unpublish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['unpublish']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['unpublish']>>>
+    }
+  }
+  'announcements.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/announcements/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['destroy']>>>
+    }
+  }
+  'announcements.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/announcements/:id/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/attachment').uploadAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').uploadAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['attach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'announcements.attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/announcements/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['detach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['detach']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/announcements_controller').default['detach']>>>
+    }
+  }
   'subscription.activation': {
     methods: ["POST"]
     pattern: '/api/v1/subscription/activation'
@@ -747,6 +955,19 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>> | { status: 422; response: { errors: SimpleError[] } }
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/subscription_controller').default['requestActivation']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'emailQuota.packs': {
+    methods: ["POST"]
+    pattern: '/api/v1/email-quota/packs'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/email_quota').emailPacksRequestValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/email_quota').emailPacksRequestValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['request']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['request']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/backoffice/email_quota_controller').default['request']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'buildings.store': {

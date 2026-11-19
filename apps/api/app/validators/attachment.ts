@@ -1,8 +1,13 @@
 import vine from '@vinejs/vine'
-import { ATTACHMENT_EXTENSIONS, ATTACHMENT_MAX_MB, ATTACHMENT_OWNER_TYPES } from '@aptoph/shared'
+import {
+  ATTACHMENT_EXTENSIONS,
+  ATTACHMENT_MAX_MB,
+  FINANCE_ATTACHMENT_OWNER_TYPES,
+} from '@aptoph/shared'
 
+/** Owner of a finance attachment (route params) */
 export const attachmentOwnerValidator = vine.create({
-  ownerType: vine.enum(ATTACHMENT_OWNER_TYPES),
+  ownerType: vine.enum(FINANCE_ATTACHMENT_OWNER_TYPES),
   ownerId: vine.string().uuid(),
 })
 

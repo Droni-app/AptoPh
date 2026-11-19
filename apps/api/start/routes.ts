@@ -7,9 +7,10 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import {
-  ATTACHMENT_OWNER_TYPES,
+  ANNOUNCEMENT_WRITE_ROLES,
   BACKOFFICE_ROLES,
   EnrollmentRole,
+  FINANCE_ATTACHMENT_OWNER_TYPES,
   FINANCE_READ_ROLES,
   FINANCE_WRITE_ROLES,
 } from '@aptoph/shared'
@@ -26,6 +27,7 @@ const UnitsController = () => import('#controllers/backoffice/units_controller')
 const UnitOccupantsController = () => import('#controllers/backoffice/unit_occupants_controller')
 const MembersController = () => import('#controllers/backoffice/members_controller')
 const SubscriptionController = () => import('#controllers/backoffice/subscription_controller')
+const EmailQuotaController = () => import('#controllers/backoffice/email_quota_controller')
 const TenantSettingsController = () => import('#controllers/backoffice/tenant_settings_controller')
 const ResidentHomeController = () => import('#controllers/resident/home_controller')
 const ResidentUnitsController = () => import('#controllers/resident/units_controller')
@@ -37,6 +39,9 @@ const ResidentParcelsController = () => import('#controllers/resident/parcels_co
 const ResidentBookingsController = () => import('#controllers/resident/bookings_controller')
 const ResidentTicketsController = () => import('#controllers/resident/tickets_controller')
 const ResidentFinanceController = () => import('#controllers/resident/finance_controller')
+const ResidentAnnouncementsController = () =>
+  import('#controllers/resident/announcements_controller')
+const AnnouncementsController = () => import('#controllers/backoffice/announcements_controller')
 const FinanceOverviewController = () => import('#controllers/finance/overview_controller')
 const FinanceAccountsController = () => import('#controllers/finance/accounts_controller')
 const CashAccountsController = () => import('#controllers/finance/cash_accounts_controller')
@@ -54,10 +59,13 @@ const AttachmentsController = () => import('#controllers/finance/attachments_con
  */
 const backofficeRead = { roles: [...BACKOFFICE_ROLES] }
 const backofficeWrite = { roles: [EnrollmentRole.Administrator] }
+const announcementsWrite = { roles: [...ANNOUNCEMENT_WRITE_ROLES] }
 const financeRead = { roles: [...FINANCE_READ_ROLES] }
 const financeWrite = { roles: [...FINANCE_WRITE_ROLES] }
-/** `:ownerType` of the attachment routes */
-const ATTACHMENT_OWNER_MATCHER = { match: new RegExp(`^(${ATTACHMENT_OWNER_TYPES.join('|')})$`) }
+/** `:ownerType` of the finance attachment routes */
+const ATTACHMENT_OWNER_MATCHER = {
+  match: new RegExp(`^(${FINANCE_ATTACHMENT_OWNER_TYPES.join('|')})$`),
+}
 
 router.get('/', () => {
   return { name: 'AptoPH API' }
@@ -204,6 +212,20 @@ router
         router
           .delete('attachments/:id', [ResidentFinanceController, 'detach'])
           .as('attachments.destroy')
+
+        // Comunicados
+        router
+          .get('announcements', [ResidentAnnouncementsController, 'index'])
+          .as('announcements.index')
+        router
+          .get('announcements/attachments/:id/url', [
+            ResidentAnnouncementsController,
+            'attachmentUrl',
+          ])
+          .as('announcements.attachments.url')
+        router
+          .get('announcements/:id', [ResidentAnnouncementsController, 'show'])
+          .as('announcements.show')
       })
       .prefix('resident')
       .as('resident')
@@ -224,9 +246,43 @@ router
           .as('occupants.index')
         router.get('members', [MembersController, 'index']).as('members.index')
         router.get('subscription', [SubscriptionController, 'show']).as('subscription.show')
+        router.get('email-quota', [EmailQuotaController, 'show']).as('emailQuota.show')
         router.get('settings/tenant', [TenantSettingsController, 'show']).as('settings.tenant')
+        router.get('announcements', [AnnouncementsController, 'index']).as('announcements.index')
+        router
+          .get('announcements/attachments/:id/url', [AnnouncementsController, 'attachmentUrl'])
+          .as('announcements.attachments.url')
+        router.get('announcements/:id', [AnnouncementsController, 'show']).as('announcements.show')
+        router
+          .get('announcements/:id/readers', [AnnouncementsController, 'readers'])
+          .as('announcements.readers')
       })
       .use([middleware.auth(), middleware.tenant(backofficeRead)])
+
+    /**
+     * Back-office: comunicados (administration and council)
+     */
+    router
+      .group(() => {
+        router.post('announcements', [AnnouncementsController, 'store']).as('store')
+        router
+          .post('announcements/email-preview', [AnnouncementsController, 'emailPreview'])
+          .as('emailPreview')
+        router.put('announcements/:id', [AnnouncementsController, 'update']).as('update')
+        router.post('announcements/:id/publish', [AnnouncementsController, 'publish']).as('publish')
+        router
+          .post('announcements/:id/unpublish', [AnnouncementsController, 'unpublish'])
+          .as('unpublish')
+        router.delete('announcements/:id', [AnnouncementsController, 'destroy']).as('destroy')
+        router
+          .post('announcements/:id/attachments', [AnnouncementsController, 'attach'])
+          .as('attachments.store')
+        router
+          .delete('announcements/attachments/:id', [AnnouncementsController, 'detach'])
+          .as('attachments.destroy')
+      })
+      .as('announcements')
+      .use([middleware.auth(), middleware.tenant(announcementsWrite), middleware.subscription()])
 
     /**
      * Back-office: plan and billing (administration, also while the plan is locked)
@@ -235,6 +291,14 @@ router
       .post('subscription/activation', [SubscriptionController, 'requestActivation'])
       .as('subscription.activation')
       .use([middleware.auth(), middleware.tenant(backofficeWrite)])
+
+    /**
+     * Back-office: additional bulk email packs (administration)
+     */
+    router
+      .post('email-quota/packs', [EmailQuotaController, 'request'])
+      .as('emailQuota.packs')
+      .use([middleware.auth(), middleware.tenant(backofficeWrite), middleware.subscription()])
 
     /**
      * Back-office: write (administration)

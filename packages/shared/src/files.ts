@@ -12,9 +12,20 @@ export const ATTACHMENT_OWNER_TYPES = [
   'payment',
   // Comprobante contable: notas de contabilidad y traslados entre cuentas
   'journal_entry',
+  // Comunicado
+  'announcement',
 ] as const
 
 export type AttachmentOwnerType = (typeof ATTACHMENT_OWNER_TYPES)[number]
+
+/** Adjuntos que se gestionan desde Finanzas (con los permisos de finanzas) */
+export const FINANCE_ATTACHMENT_OWNER_TYPES = [
+  'bill',
+  'vendor_payment',
+  'payment',
+  'journal_entry',
+] as const satisfies readonly AttachmentOwnerType[]
+export type FinanceAttachmentOwnerType = (typeof FINANCE_ATTACHMENT_OWNER_TYPES)[number]
 
 /** Tamaño máximo de un archivo */
 export const ATTACHMENT_MAX_MB = 10

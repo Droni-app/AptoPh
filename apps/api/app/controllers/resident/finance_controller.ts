@@ -144,8 +144,7 @@ export default class FinanceController {
       data: request.qs(),
     })
     const service = new AttachmentsService(tenant)
-    const attachment = await service.find(params.id)
-    if (attachment.ownerType !== 'payment') throw ResourceException.notFound('El archivo no existe')
+    const attachment = await service.find(params.id, ['payment'])
     await findOwnPayment(tenant, auth.getUserOrFail().id, attachment.ownerId)
     return { data: { url: await service.url(attachment, download ?? false) } }
   }
@@ -154,8 +153,8 @@ export default class FinanceController {
   async detach({ tenant, auth, params, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const service = new AttachmentsService(tenant)
-    const attachment = await service.find(params.id)
-    if (attachment.ownerType !== 'payment' || attachment.uploadedById !== user.id)
+    const attachment = await service.find(params.id, ['payment'])
+    if (attachment.uploadedById !== user.id)
       throw ResourceException.notFound('El archivo no existe')
     const payment = await findOwnPayment(tenant, user.id, attachment.ownerId)
     assertCanAttach(payment, user.id)

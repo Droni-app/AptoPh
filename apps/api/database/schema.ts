@@ -65,6 +65,19 @@ export class AmenityBookingSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class AnnouncementBuildingSchema extends BaseModel {
+  static $columns = ['announcementId', 'buildingId', 'id', 'tenantId'] as const
+  $columns = AnnouncementBuildingSchema.$columns
+  @column()
+  declare announcementId: string
+  @column()
+  declare buildingId: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare tenantId: string
+}
+
 export class AnnouncementReadSchema extends BaseModel {
   static $columns = ['announcementId', 'id', 'readAt', 'tenantId', 'userId'] as const
   $columns = AnnouncementReadSchema.$columns
@@ -81,7 +94,7 @@ export class AnnouncementReadSchema extends BaseModel {
 }
 
 export class AnnouncementSchema extends BaseModel {
-  static $columns = ['audience', 'body', 'createdAt', 'createdById', 'deletedAt', 'id', 'isPinned', 'publishedAt', 'tenantId', 'title', 'updatedAt'] as const
+  static $columns = ['audience', 'body', 'createdAt', 'createdById', 'deletedAt', 'emailCount', 'emailSkipped', 'emailedAt', 'id', 'isPinned', 'publishedAt', 'sendEmail', 'tenantId', 'title', 'updatedAt'] as const
   $columns = AnnouncementSchema.$columns
   @column()
   declare audience: string
@@ -93,12 +106,20 @@ export class AnnouncementSchema extends BaseModel {
   declare createdById: string
   @column.dateTime()
   declare deletedAt: DateTime | null
+  @column()
+  declare emailCount: number | null
+  @column()
+  declare emailSkipped: boolean
+  @column.dateTime()
+  declare emailedAt: DateTime | null
   @column({ isPrimary: true })
   declare id: string
   @column()
   declare isPinned: boolean
   @column.dateTime()
   declare publishedAt: DateTime | null
+  @column()
+  declare sendEmail: boolean
   @column()
   declare tenantId: string
   @column()
@@ -558,6 +579,31 @@ export class DocumentSchema extends BaseModel {
   declare uploadedById: string
   @column()
   declare visibility: string
+}
+
+export class EmailQuotaSchema extends BaseModel {
+  static $columns = ['createdAt', 'extraPacks', 'id', 'period', 'requestedAt', 'requestedById', 'requestedPacks', 'tenantId', 'updatedAt', 'used'] as const
+  $columns = EmailQuotaSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare extraPacks: number
+  @column({ isPrimary: true })
+  declare id: string
+  @column.date()
+  declare period: DateTime
+  @column.dateTime()
+  declare requestedAt: DateTime | null
+  @column()
+  declare requestedById: string | null
+  @column()
+  declare requestedPacks: number
+  @column()
+  declare tenantId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare used: number
 }
 
 export class EnrollmentSchema extends BaseModel {

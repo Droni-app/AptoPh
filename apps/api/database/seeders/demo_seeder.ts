@@ -1,3 +1,5 @@
+import logger from '@adonisjs/core/services/logger'
+import drive from '@adonisjs/drive/services/main'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import db from '@adonisjs/lucid/services/db'
 import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
@@ -60,7 +62,10 @@ const AREAS = [78.5, 62.3, 62.3, 78.5]
 /** Tables with demo data, children first (all have tenant_id) */
 const TENANT_TABLES = [
   'audit_logs',
+  'attachments',
   'announcement_reads',
+  'announcement_buildings',
+  'email_quotas',
   'announcements',
   'ticket_comments',
   'tickets',
@@ -216,6 +221,13 @@ export default class extends BaseSeeder {
       await this.wipe(trx, tenant.id)
       await new DemoBuilder(trx, tenant, admin, resident).build()
     })
+
+    // Files visitors uploaded to the demo (its rows were wiped above)
+    try {
+      await drive.use().deleteAll(`${DEMO_SLUG}/`)
+    } catch (err) {
+      logger.warn({ err }, 'could not delete the demo files')
+    }
   }
 
   private async wipe(trx: TransactionClientContract, tenantId: string) {

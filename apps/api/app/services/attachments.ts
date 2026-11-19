@@ -17,6 +17,7 @@ const OWNER_TABLES: Record<AttachmentOwnerType, string> = {
   vendor_payment: 'vendor_payments',
   payment: 'payments',
   journal_entry: 'journal_entries',
+  announcement: 'announcements',
 }
 
 /**
@@ -28,6 +29,7 @@ const OWNER_FOLDERS: Record<AttachmentOwnerType, string> = {
   vendor_payment: 'finanzas/pagos-proveedor',
   payment: 'finanzas/recaudos',
   journal_entry: 'finanzas/comprobantes',
+  announcement: 'comunicados',
 }
 
 /** How long a signed link to a file works */
@@ -71,6 +73,7 @@ export class AttachmentsService {
       .from(OWNER_TABLES[ownerType])
       .where('tenant_id', this.tenant.id)
       .where('id', ownerId)
+      .if(ownerType === 'announcement', (q) => q.whereNull('deleted_at'))
       .select('id')
       .first()
     if (!row) throw new lucidErrors.E_ROW_NOT_FOUND()
@@ -86,10 +89,12 @@ export class AttachmentsService {
       .orderBy('created_at')
   }
 
-  find(id: string) {
+  /** An active attachment of the conjunto, of one of `ownerTypes` (404 otherwise) */
+  find(id: string, ownerTypes: readonly AttachmentOwnerType[]) {
     return Attachment.query()
       .where('tenant_id', this.tenant.id)
       .where('id', id)
+      .whereIn('owner_type', [...ownerTypes])
       .whereNull('deleted_at')
       .firstOrFail()
   }

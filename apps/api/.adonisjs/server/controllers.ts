@@ -7,8 +7,10 @@ export const controllers = {
   Account: () => import('#controllers/account_controller'),
   Auth: () => import('#controllers/auth_controller'),
   backoffice: {
+    Announcements: () => import('#controllers/backoffice/announcements_controller'),
     Buildings: () => import('#controllers/backoffice/buildings_controller'),
     Dashboard: () => import('#controllers/backoffice/dashboard_controller'),
+    EmailQuota: () => import('#controllers/backoffice/email_quota_controller'),
     Members: () => import('#controllers/backoffice/members_controller'),
     Subscription: () => import('#controllers/backoffice/subscription_controller'),
     TenantSettings: () => import('#controllers/backoffice/tenant_settings_controller'),
@@ -32,6 +34,7 @@ export const controllers = {
   MyTenants: () => import('#controllers/my_tenants_controller'),
   Profile: () => import('#controllers/profile_controller'),
   resident: {
+    Announcements: () => import('#controllers/resident/announcements_controller'),
     Bookings: () => import('#controllers/resident/bookings_controller'),
     Finance: () => import('#controllers/resident/finance_controller'),
     Home: () => import('#controllers/resident/home_controller'),

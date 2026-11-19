@@ -96,6 +96,13 @@ export interface ApiDefinition {
       url: typeof routes['resident.attachments.url']
       destroy: typeof routes['resident.attachments.destroy']
     }
+    announcements: {
+      index: typeof routes['resident.announcements.index']
+      attachments: {
+        url: typeof routes['resident.announcements.attachments.url']
+      }
+      show: typeof routes['resident.announcements.show']
+    }
   }
   dashboard: typeof routes['dashboard']
   buildings: {
@@ -129,10 +136,30 @@ export interface ApiDefinition {
     show: typeof routes['subscription.show']
     activation: typeof routes['subscription.activation']
   }
+  emailQuota: {
+    show: typeof routes['emailQuota.show']
+    packs: typeof routes['emailQuota.packs']
+  }
   settings: {
     tenant: typeof routes['settings.tenant'] & {
       update: typeof routes['settings.tenant.update']
     }
+  }
+  announcements: {
+    index: typeof routes['announcements.index']
+    attachments: {
+      url: typeof routes['announcements.attachments.url']
+      store: typeof routes['announcements.attachments.store']
+      destroy: typeof routes['announcements.attachments.destroy']
+    }
+    show: typeof routes['announcements.show']
+    readers: typeof routes['announcements.readers']
+    store: typeof routes['announcements.store']
+    emailPreview: typeof routes['announcements.emailPreview']
+    update: typeof routes['announcements.update']
+    publish: typeof routes['announcements.publish']
+    unpublish: typeof routes['announcements.unpublish']
+    destroy: typeof routes['announcements.destroy']
   }
   finance: {
     summary: typeof routes['finance.summary']

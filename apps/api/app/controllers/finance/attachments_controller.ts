@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { FINANCE_ATTACHMENT_OWNER_TYPES } from '@aptoph/shared'
 import { AttachmentsService } from '#services/attachments'
 import { serializeAttachment } from '#transformers/attachment_transformer'
 import {
@@ -39,13 +40,13 @@ export default class AttachmentsController {
       data: request.qs(),
     })
     const service = new AttachmentsService(tenant)
-    const attachment = await service.find(params.id)
+    const attachment = await service.find(params.id, FINANCE_ATTACHMENT_OWNER_TYPES)
     return { data: { url: await service.url(attachment, download ?? false) } }
   }
 
   async destroy({ tenant, params, response, auth }: HttpContext) {
     const service = new AttachmentsService(tenant)
-    const attachment = await service.find(params.id)
+    const attachment = await service.find(params.id, FINANCE_ATTACHMENT_OWNER_TYPES)
     await service.remove(attachment, auth.getUserOrFail().id)
     response.status(204)
   }
