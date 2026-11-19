@@ -11,6 +11,8 @@ import {
   useToast,
 } from '@dronico/droni-kit'
 import { financeApi } from '@/api/finance'
+import AttachmentPicker from '@/components/attachments/AttachmentPicker.vue'
+import { uploadAttachments, warnFailedUploads } from '@/lib/attachments'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 import { formatMoney, parseAmount, todayInput } from '@/lib/format'
@@ -24,6 +26,11 @@ const form = ref({ fromId: '', toId: '', amount: '', date: todayInput(), descrip
 const errors = ref<Record<string, string>>({})
 const error = ref<string | null>(null)
 const saving = ref(false)
+/** Supports picked before saving, uploaded once the record exists */
+const files = ref<File[]>([])
+watch(open, (isOpen) => {
+  if (isOpen) files.value = []
+})
 
 watch(open, async (isOpen) => {
   if (!isOpen) return
@@ -52,12 +59,14 @@ async function submit() {
   errors.value = {}
   error.value = null
   try {
-    await financeApi.transfer({
+    const { data } = await financeApi.transfer({
       ...form.value,
       amount: parseAmount(form.value.amount),
       description: form.value.description || null,
     })
+    const failed = await uploadAttachments('journal_entry', data.entryId, files.value)
     toast.success('Traslado registrado')
+    warnFailedUploads(toast, failed)
     await catalog.refresh()
     emit('saved')
     open.value = false
@@ -101,6 +110,7 @@ async function submit() {
           placeholder="Reembolso de caja menor"
         />
       </DuiLabel>
+      <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>

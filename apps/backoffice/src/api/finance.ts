@@ -1,5 +1,7 @@
 import type {
   ApiItem,
+  Attachment,
+  AttachmentOwnerType,
   ApiPaginated,
   BackofficeUnitStatement,
   BalanceSheet,
@@ -61,6 +63,18 @@ const get = <T>(path: string, query?: Record<string, string | number | boolean |
   api<T>(`${base}${path}`, { query })
 
 export const financeApi = {
+  attachments: (ownerType: AttachmentOwnerType, ownerId: string) =>
+    get<{ data: Attachment[] }>(`/attachments/${ownerType}/${ownerId}`),
+  uploadAttachment: (ownerType: AttachmentOwnerType, ownerId: string, file: File) => {
+    const body = new FormData()
+    body.append('file', file)
+    return post<ApiItem<Attachment>>(`/attachments/${ownerType}/${ownerId}`, body)
+  },
+  /** Signed link that expires in a few minutes */
+  attachmentUrl: (id: string, download = false) =>
+    get<ApiItem<{ url: string }>>(`/attachments/${id}/url`, { download }),
+  removeAttachment: (id: string) => api<void>(`${base}/attachments/${id}`, { method: 'DELETE' }),
+
   summary: () => get<ApiItem<FinanceSummary>>('/summary'),
   settings: () => get<ApiItem<FinanceSettingsResponse>>('/settings'),
   updateSettings: (input: FinanceSettings) =>

@@ -26,6 +26,7 @@ type Query = Record<string, string | number | boolean | null | undefined>
 
 export type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
+  /** JSON body, or a FormData for file uploads */
   body?: unknown
   query?: Query
   /** Send the active tenant in `X-Tenant-Id` (default: true) */
@@ -54,12 +55,19 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
     const headers: Record<string, string> = { Accept: 'application/json' }
     if (options.auth !== false && auth.token) headers.Authorization = `Bearer ${auth.token}`
     if (options.tenant !== false && tenant.currentId) headers['X-Tenant-Id'] = tenant.currentId
-    if (options.body !== undefined) headers['Content-Type'] = 'application/json'
+    // FormData (file uploads) sets its own multipart Content-Type with the boundary
+    const isForm = options.body instanceof FormData
+    if (options.body !== undefined && !isForm) headers['Content-Type'] = 'application/json'
 
     return fetch(buildUrl(path, options.query), {
       method: options.method ?? 'GET',
       headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body:
+        options.body === undefined
+          ? undefined
+          : isForm
+            ? (options.body as FormData)
+            : JSON.stringify(options.body),
     })
   }
 

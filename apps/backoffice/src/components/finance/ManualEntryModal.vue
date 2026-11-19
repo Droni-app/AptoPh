@@ -12,6 +12,8 @@ import {
 import AccountSelect from '@/components/finance/AccountSelect.vue'
 import UnitPicker, { type PickedUnit } from '@/components/finance/UnitPicker.vue'
 import { financeApi } from '@/api/finance'
+import AttachmentPicker from '@/components/attachments/AttachmentPicker.vue'
+import { uploadAttachments, warnFailedUploads } from '@/lib/attachments'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 import { formatMoney, parseAmount, todayInput } from '@/lib/format'
@@ -35,6 +37,11 @@ const lines = ref<Line[]>([])
 const errors = ref<Record<string, string>>({})
 const error = ref<string | null>(null)
 const saving = ref(false)
+/** Supports picked before saving, uploaded once the record exists */
+const files = ref<File[]>([])
+watch(open, (isOpen) => {
+  if (isOpen) files.value = []
+})
 
 watch(open, async (isOpen) => {
   if (!isOpen) return
@@ -77,7 +84,9 @@ async function submit() {
           description: line.description || null,
         })),
     })
+    const failed = await uploadAttachments('journal_entry', data.id, files.value)
     toast.success(`Nota de contabilidad ${data.number} registrada`)
+    warnFailedUploads(toast, failed)
     emit('saved')
     open.value = false
   } catch (e) {
@@ -191,6 +200,7 @@ async function submit() {
           </dd>
         </div>
       </dl>
+      <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>

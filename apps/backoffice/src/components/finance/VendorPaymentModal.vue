@@ -18,6 +18,8 @@ import {
   type Vendor,
 } from '@aptoph/shared'
 import { financeApi } from '@/api/finance'
+import AttachmentPicker from '@/components/attachments/AttachmentPicker.vue'
+import { uploadAttachments, warnFailedUploads } from '@/lib/attachments'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 import { formatDate, formatMoney, parseAmount, todayInput } from '@/lib/format'
@@ -41,6 +43,11 @@ const amounts = ref<Record<string, string>>({})
 const errors = ref<Record<string, string>>({})
 const error = ref<string | null>(null)
 const saving = ref(false)
+/** Supports picked before saving, uploaded once the record exists */
+const files = ref<File[]>([])
+watch(open, (isOpen) => {
+  if (isOpen) files.value = []
+})
 
 watch(open, async (isOpen) => {
   if (!isOpen) return
@@ -109,7 +116,9 @@ async function submit() {
         .filter(([, value]) => parseAmount(value) > 0)
         .map(([billId, value]) => ({ billId, amount: parseAmount(value) })),
     })
+    const failed = await uploadAttachments('vendor_payment', data.id, files.value)
     toast.success(`Comprobante de egreso ${data.number} por ${formatMoney(data.amount)}`)
+    warnFailedUploads(toast, failed)
     emit('saved')
     open.value = false
   } catch (e) {
@@ -202,6 +211,7 @@ async function submit() {
           <DuiInput v-model="form.notes" maxlength="500" />
         </DuiLabel>
       </div>
+      <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>

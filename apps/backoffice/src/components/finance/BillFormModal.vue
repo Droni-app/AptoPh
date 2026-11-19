@@ -20,6 +20,8 @@ import {
 import AccountSelect from '@/components/finance/AccountSelect.vue'
 import VendorFormModal from '@/components/finance/VendorFormModal.vue'
 import { financeApi } from '@/api/finance'
+import AttachmentPicker from '@/components/attachments/AttachmentPicker.vue'
+import { uploadAttachments, warnFailedUploads } from '@/lib/attachments'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 import { formatMoney, parseAmount, todayInput } from '@/lib/format'
@@ -54,6 +56,11 @@ const payment = ref({
 const errors = ref<Record<string, string>>({})
 const error = ref<string | null>(null)
 const saving = ref(false)
+/** Supports picked before saving, uploaded once the record exists */
+const files = ref<File[]>([])
+watch(open, (isOpen) => {
+  if (isOpen) files.value = []
+})
 const vendorFormOpen = ref(false)
 
 watch(open, async (isOpen) => {
@@ -146,7 +153,7 @@ async function submit() {
   errors.value = {}
   error.value = null
   try {
-    await financeApi.createBill({
+    const { data } = await financeApi.createBill({
       vendorId: form.value.vendorId,
       number: form.value.number || null,
       issuedOn: form.value.issuedOn,
@@ -165,7 +172,9 @@ async function submit() {
         ? { ...payment.value, reference: payment.value.reference || null }
         : null,
     })
+    const failed = await uploadAttachments('bill', data.id, files.value)
     toast.success(payNow.value ? 'Gasto registrado y pagado' : 'Factura registrada')
+    warnFailedUploads(toast, failed)
     emit('saved')
     open.value = false
   } catch (e) {
@@ -315,6 +324,7 @@ async function submit() {
           <DuiInput v-model="payment.reference" maxlength="80" />
         </DuiLabel>
       </div>
+      <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>

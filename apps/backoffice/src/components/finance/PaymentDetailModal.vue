@@ -13,6 +13,7 @@ import { PAYMENT_METHOD_LABELS, type FinancePayment } from '@aptoph/shared'
 import StatusBadge from '@/components/finance/StatusBadge.vue'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
 import { financeApi } from '@/api/finance'
+import AttachmentList from '@/components/attachments/AttachmentList.vue'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
 import { errorMessage } from '@/lib/errors'
 import { formatDateTime, formatMoney, formatPeriod, unitLabel } from '@/lib/format'
@@ -158,6 +159,11 @@ const reverse = (reason: string) =>
           <DuiSelect v-model="cashAccountId" :options="cashOptions" block />
         </DuiLabel>
       </div>
+      <AttachmentList
+        owner-type="payment"
+        :owner-id="payment.id"
+        :editable="tenant.canManageFinance"
+      />
     </div>
     <template v-if="payment && tenant.canManageFinance" #footer>
       <div class="flex flex-wrap justify-end gap-2">

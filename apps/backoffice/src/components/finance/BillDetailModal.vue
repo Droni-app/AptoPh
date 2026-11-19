@@ -5,6 +5,7 @@ import type { Bill } from '@aptoph/shared'
 import StatusBadge from '@/components/finance/StatusBadge.vue'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
 import { financeApi } from '@/api/finance'
+import AttachmentList from '@/components/attachments/AttachmentList.vue'
 import { errorMessage } from '@/lib/errors'
 import { formatAmount, formatDate, formatMoney } from '@/lib/format'
 import { useTenantStore } from '@/stores/tenant'
@@ -137,6 +138,7 @@ async function cancel(reason: string) {
       <p v-if="bill.cancellationReason" class="text-neutral-600 dark:text-neutral-300">
         Anulada: {{ bill.cancellationReason }}
       </p>
+      <AttachmentList owner-type="bill" :owner-id="bill.id" :editable="tenant.canManageFinance" />
     </div>
     <template v-if="bill && tenant.canManageFinance" #footer>
       <div class="flex flex-wrap justify-end gap-2">

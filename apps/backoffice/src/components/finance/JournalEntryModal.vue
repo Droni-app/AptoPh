@@ -4,6 +4,7 @@ import { DuiAlert, DuiButton, DuiModal, DuiSkeleton, useToast } from '@dronico/d
 import { JOURNAL_ENTRY_TYPE_LABELS, type JournalEntry } from '@aptoph/shared'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
 import { financeApi } from '@/api/finance'
+import AttachmentList from '@/components/attachments/AttachmentList.vue'
 import { errorMessage } from '@/lib/errors'
 import { formatAmount, formatDate, formatDateTime, formatMoney } from '@/lib/format'
 import { useTenantStore } from '@/stores/tenant'
@@ -142,6 +143,12 @@ async function reverse(reason: string) {
         Los comprobantes generados por cobros, pagos y facturas se corrigen desde su origen (anular
         el cobro, reversar el pago…).
       </p>
+      <AttachmentList
+        v-if="['manual', 'transfer', 'opening'].includes(entry.type)"
+        owner-type="journal_entry"
+        :owner-id="entry.id"
+        :editable="tenant.canManageFinance"
+      />
     </div>
     <template v-if="reversible && tenant.canManageFinance" #footer>
       <div class="flex justify-end">

@@ -5,6 +5,7 @@ import { PAYMENT_METHOD_LABELS, type VendorPayment } from '@aptoph/shared'
 import StatusBadge from '@/components/finance/StatusBadge.vue'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
 import { financeApi } from '@/api/finance'
+import AttachmentList from '@/components/attachments/AttachmentList.vue'
 import { errorMessage } from '@/lib/errors'
 import { formatDate, formatMoney } from '@/lib/format'
 import { useTenantStore } from '@/stores/tenant'
@@ -95,6 +96,11 @@ async function reverse(reason: string) {
       <DuiAlert v-if="payment.reversalReason" color="warning" variant="soft"
         >Reversado: {{ payment.reversalReason }}</DuiAlert
       >
+      <AttachmentList
+        owner-type="vendor_payment"
+        :owner-id="payment.id"
+        :editable="tenant.canManageFinance"
+      />
     </div>
     <template v-if="payment?.status === 'confirmed' && tenant.canManageFinance" #footer>
       <div class="flex justify-end">

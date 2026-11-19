@@ -19,6 +19,8 @@ import {
 } from '@aptoph/shared'
 import UnitPicker, { type PickedUnit } from '@/components/finance/UnitPicker.vue'
 import { financeApi } from '@/api/finance'
+import AttachmentPicker from '@/components/attachments/AttachmentPicker.vue'
+import { uploadAttachments, warnFailedUploads } from '@/lib/attachments'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 import { formatDate, formatMoney, formatPeriod, parseAmount, todayInput } from '@/lib/format'
@@ -43,6 +45,11 @@ const form = ref({
 const errors = ref<Record<string, string>>({})
 const error = ref<string | null>(null)
 const saving = ref(false)
+/** Supports picked before saving, uploaded once the record exists */
+const files = ref<File[]>([])
+watch(open, (isOpen) => {
+  if (isOpen) files.value = []
+})
 
 const methodOptions = PAYMENT_METHODS.map((value) => ({
   value,
@@ -121,7 +128,9 @@ async function submit() {
       notes: form.value.notes || null,
       cashAccountId: form.value.cashAccountId,
     })
+    const failed = await uploadAttachments('payment', data.id, files.value)
     toast.success(`Recibo de caja ${data.number} registrado`)
+    warnFailedUploads(toast, failed)
     emit('saved', data.number)
     open.value = false
   } catch (e) {
@@ -235,6 +244,7 @@ async function submit() {
       <p v-if="credit > 0" class="text-sm text-neutral-600 dark:text-neutral-300">
         {{ formatMoney(credit) }} quedarán como saldo a favor y se aplicarán a los próximos cobros.
       </p>
+      <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
