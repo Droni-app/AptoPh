@@ -44,9 +44,7 @@ export const announcementsApi = {
   removeAttachment: (id: string) => api<void>(`${base}/attachments/${id}`, { method: 'DELETE' }),
 }
 
-/** Monthly bulk email quota (docs/email-quota.md) */
+/** Monthly bulk email quota (docs/email-quota.md); buying packs: billingApi */
 export const emailQuotaApi = {
   show: () => api<ApiItem<EmailQuota>>('/api/v1/email-quota'),
-  requestPacks: (packs: number) =>
-    api<ApiItem<EmailQuota>>('/api/v1/email-quota/packs', { method: 'POST', body: { packs } }),
 }

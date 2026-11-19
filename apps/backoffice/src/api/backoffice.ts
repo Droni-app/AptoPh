@@ -1,7 +1,12 @@
 import type {
   ApiItem,
+  BillingCharge,
+  BillingConfig,
   BillingCycle,
-  PlanId,
+  BillingOverview,
+  ChargeRequestResult,
+  PaymentMethodInput,
+  PaymentTokenStatus,
   SubscriptionSummary,
   ApiPaginated,
   Building,
@@ -111,6 +116,46 @@ export const settingsApi = {
 
 export const subscriptionApi = {
   show: () => api<ApiItem<SubscriptionSummary>>('/api/v1/subscription'),
-  requestActivation: (body: { plan: PlanId; billingCycle: BillingCycle }) =>
-    api<ApiItem<SubscriptionSummary>>('/api/v1/subscription/activation', { method: 'POST', body }),
+}
+
+/** Payments of the conjunto to AptoPH with Wompi (administration). docs/billing.md */
+export const billingApi = {
+  show: () => api<ApiItem<BillingOverview>>('/api/v1/billing'),
+  config: () => api<ApiItem<BillingConfig>>('/api/v1/billing/config'),
+  savePaymentMethod: (body: PaymentMethodInput) =>
+    api<ApiItem<BillingOverview>>('/api/v1/billing/payment-method', { method: 'PUT', body }),
+  removePaymentMethod: () =>
+    api<ApiItem<BillingOverview>>('/api/v1/billing/payment-method', { method: 'DELETE' }),
+  nequiToken: (phoneNumber: string) =>
+    api<ApiItem<PaymentTokenStatus>>('/api/v1/billing/tokens/nequi', {
+      method: 'POST',
+      body: { phoneNumber },
+    }),
+  daviplataToken: (body: { documentType: string; documentNumber: string; phoneNumber: string }) =>
+    api<ApiItem<PaymentTokenStatus>>('/api/v1/billing/tokens/daviplata', { method: 'POST', body }),
+  daviplataOtp: (body: { handle: string; code?: string }) =>
+    api<ApiItem<PaymentTokenStatus>>('/api/v1/billing/tokens/daviplata/otp', {
+      method: 'POST',
+      body,
+    }),
+  bancolombiaToken: () =>
+    api<ApiItem<PaymentTokenStatus>>('/api/v1/billing/tokens/bancolombia', { method: 'POST' }),
+  tokenStatus: (type: 'nequi' | 'daviplata' | 'bancolombia_transfer', id: string) =>
+    api<ApiItem<PaymentTokenStatus>>(`/api/v1/billing/tokens/${type}/${encodeURIComponent(id)}`),
+  paySubscription: (billingCycle: BillingCycle) =>
+    api<ApiItem<BillingCharge>>('/api/v1/billing/subscription/pay', {
+      method: 'POST',
+      body: { billingCycle },
+    }),
+  setAutoRenew: (enabled: boolean) =>
+    api<ApiItem<BillingOverview>>('/api/v1/billing/subscription/auto-renew', {
+      method: 'PUT',
+      body: { enabled },
+    }),
+  charge: (id: string) => api<ApiItem<BillingCharge>>(`/api/v1/billing/charges/${id}`),
+  buyEmailPacks: (packs: number) =>
+    api<ApiItem<ChargeRequestResult>>('/api/v1/email-quota/packs', {
+      method: 'POST',
+      body: { packs },
+    }),
 }

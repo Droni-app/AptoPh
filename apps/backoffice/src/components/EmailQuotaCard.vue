@@ -10,10 +10,21 @@ import {
   type EmailQuota,
 } from '@aptoph/shared'
 import { emailQuotaApi } from '@/api/announcements'
+import { billingApi } from '@/api/backoffice'
 import { errorMessage } from '@/lib/errors'
+import { waitForCharge } from '@/lib/wompi'
 import { useTenantStore } from '@/stores/tenant'
 
-/** Bulk emails of the month and request of additional packs (docs/email-quota.md) */
+/**
+ * Bulk emails of the month and purchase of additional packs with Wompi
+ * (docs/email-quota.md, docs/billing.md)
+ */
+const props = defineProps<{
+  /** Saved payment method ("VISA ·· 4242"): packs are charged to it right away */
+  paymentMethod?: string | null
+}>()
+const emit = defineEmits<{ charged: [] }>()
+
 const tenant = useTenantStore()
 const toast = useToast()
 const quota = ref<EmailQuota | null>(null)
@@ -21,6 +32,7 @@ const error = ref<string | null>(null)
 const packs = ref('1')
 const packCount = computed(() => Number(packs.value))
 const sending = ref(false)
+const confirming = ref(false)
 
 const number = (n: number) => n.toLocaleString('es-CO')
 const month = computed(() => {
@@ -39,25 +51,44 @@ const validPacks = computed(
     packCount.value >= 1 &&
     packCount.value <= EMAIL_PACKS_MAX_PER_REQUEST,
 )
+const total = computed(() => emailPacksPrice(validPacks.value ? packCount.value : 0))
 
-onMounted(async () => {
+async function load() {
   try {
     quota.value = (await emailQuotaApi.show()).data
   } catch (e) {
     error.value = errorMessage(e)
   }
-})
+}
+onMounted(load)
+defineExpose({ load })
 
-async function request() {
+async function buy() {
   if (!validPacks.value) return
   sending.value = true
   try {
-    quota.value = (await emailQuotaApi.requestPacks(packCount.value)).data
-    toast.success('Solicitud enviada. Te escribiremos con los datos de pago.')
+    const { data } = await billingApi.buyEmailPacks(packCount.value)
+    if (data.checkoutUrl) {
+      // No saved method: pay in Wompi's checkout and come back to /plan?pago=<id>
+      window.location.assign(data.checkoutUrl)
+      return
+    }
+    const charge = await waitForCharge(data.charge.id)
+    emit('charged')
+    if (charge.status === 'approved') {
+      toast.success('Pago aprobado. Los correos adicionales ya están disponibles.')
+      packs.value = '1'
+      await load()
+    } else if (charge.status === 'pending') {
+      toast.info('El pago sigue en proceso. Te avisaremos por correo cuando se confirme.')
+    } else {
+      toast.error(charge.statusMessage ?? 'El pago no fue aprobado.')
+    }
   } catch (e) {
     toast.error(errorMessage(e))
   } finally {
     sending.value = false
+    confirming.value = false
   }
 }
 </script>
@@ -103,43 +134,61 @@ async function request() {
           </p>
         </div>
 
-        <DuiAlert v-if="quota.requestedPacks" color="primary" variant="soft">
-          Pediste {{ quota.requestedPacks }}
-          {{ quota.requestedPacks === 1 ? 'paquete' : 'paquetes' }} ({{
-            number(quota.requestedPacks * EMAIL_PACK_SIZE)
-          }}
-          correos). Quedan activos apenas confirmemos el pago.
-        </DuiAlert>
-
         <form
           v-if="tenant.canManage"
-          class="flex flex-wrap items-end gap-3 rounded-xl bg-neutral-50 p-4 dark:bg-white/5"
-          @submit.prevent="request"
+          class="flex flex-col gap-3 rounded-xl bg-neutral-50 p-4 dark:bg-white/5"
+          @submit.prevent="confirming ? buy() : (confirming = true)"
         >
-          <div class="min-w-48 flex-1">
-            <p class="text-sm font-medium">¿Necesitas más este mes?</p>
-            <p class="text-xs text-neutral-500">
-              Paquetes de {{ number(EMAIL_PACK_SIZE) }} correos por
-              {{ formatCop(EMAIL_PACK_PRICE) }}
-              + IVA. Valen solo para el mes en que se activan.
-            </p>
+          <div class="flex flex-wrap items-end gap-3">
+            <div class="min-w-48 flex-1">
+              <p class="text-sm font-medium">¿Necesitas más este mes?</p>
+              <p class="text-xs text-neutral-500">
+                Paquetes de {{ number(EMAIL_PACK_SIZE) }} correos por
+                {{ formatCop(EMAIL_PACK_PRICE) }}. Valen solo para el mes en curso.
+              </p>
+            </div>
+            <label class="flex flex-col gap-1 text-sm">
+              <span>Paquetes</span>
+              <DuiInput
+                v-model="packs"
+                type="number"
+                min="1"
+                :max="EMAIL_PACKS_MAX_PER_REQUEST"
+                class="w-24"
+                :disabled="sending"
+                @update:model-value="confirming = false"
+              />
+            </label>
+            <DuiButton v-if="!confirming" type="submit" color="primary" :disabled="!validPacks">
+              Comprar · {{ formatCop(total) }}
+            </DuiButton>
           </div>
-          <label class="flex flex-col gap-1 text-sm">
-            <span>Paquetes</span>
-            <DuiInput
-              v-model="packs"
-              type="number"
-              min="1"
-              :max="EMAIL_PACKS_MAX_PER_REQUEST"
-              class="w-24"
-            />
-          </label>
-          <DuiButton type="submit" color="primary" :loading="sending" :disabled="!validPacks">
-            Solicitar · {{ formatCop(emailPacksPrice(validPacks ? packCount : 0)) }}
-          </DuiButton>
+          <div
+            v-if="confirming"
+            class="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-3 text-sm dark:border-white/10"
+          >
+            <p>
+              <template v-if="props.paymentMethod">
+                Se cobrarán <strong>{{ formatCop(total) }}</strong> a
+                <strong>{{ props.paymentMethod }}</strong
+                >.
+              </template>
+              <template v-else>
+                Pagarás <strong>{{ formatCop(total) }}</strong> en Wompi con el medio que prefieras.
+              </template>
+            </p>
+            <div class="flex gap-2">
+              <DuiButton variant="ghost" :disabled="sending" @click="confirming = false"
+                >Cancelar</DuiButton
+              >
+              <DuiButton type="submit" color="primary" :loading="sending">
+                {{ props.paymentMethod ? 'Confirmar pago' : 'Ir a pagar' }}
+              </DuiButton>
+            </div>
+          </div>
         </form>
         <p v-else class="text-xs text-neutral-500">
-          Solo la administración puede pedir correos adicionales.
+          Solo la administración puede comprar correos adicionales.
         </p>
       </template>
     </div>

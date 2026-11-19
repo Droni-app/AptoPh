@@ -141,7 +141,7 @@ async function submit() {
           <strong class="tabular-nums">{{ formatCop(estimate.monthly) }}</strong> al mes.
         </p>
         <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-          Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes, antes de IVA. Pagando el año: 2 meses
+          Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes. Pagando el año: 2 meses
           gratis. ¿Administras varias copropiedades?
           <a
             href="mailto:contacto@aptoph.com?subject=Plan%20Empresarial%20AptoPH"
