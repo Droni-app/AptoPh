@@ -8,6 +8,12 @@ export type { Route, Path } from './schema.d.ts'
 const placeholder: any = {}
 
 const routes = {
+  'drive.fs.serve': {
+    methods: ["GET","HEAD"],
+    pattern: '/uploads/*',
+    tokens: [[0,"uploads"],[2,"*"]],
+    types: placeholder as Registry['drive.fs.serve']['types'],
+  },
   'auth.login': {
     methods: ["POST"],
     pattern: '/api/v1/auth/login',
@@ -602,6 +608,18 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"finance"],[0,"reports"],[0,"ledger"]],
     types: placeholder as Registry['finance.reports.ledger']['types'],
   },
+  'finance.attachments.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/finance/attachments/:ownerType/:ownerId',
+    tokens: [[0,"api"],[0,"v1"],[0,"finance"],[0,"attachments"],[1,"ownerType"],[1,"ownerId"]],
+    types: placeholder as Registry['finance.attachments.index']['types'],
+  },
+  'finance.attachments.url': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/finance/attachments/:id/url',
+    tokens: [[0,"api"],[0,"v1"],[0,"finance"],[0,"attachments"],[1,"id"],[0,"url"]],
+    types: placeholder as Registry['finance.attachments.url']['types'],
+  },
   'finance.write.settings.update': {
     methods: ["PUT"],
     pattern: '/api/v1/finance/settings',
@@ -829,6 +847,18 @@ const routes = {
     pattern: '/api/v1/finance/journal/:id/reverse',
     tokens: [[0,"api"],[0,"v1"],[0,"finance"],[0,"journal"],[1,"id"],[0,"reverse"]],
     types: placeholder as Registry['finance.write.journal.reverse']['types'],
+  },
+  'finance.write.attachments.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/finance/attachments/:ownerType/:ownerId',
+    tokens: [[0,"api"],[0,"v1"],[0,"finance"],[0,"attachments"],[1,"ownerType"],[1,"ownerId"]],
+    types: placeholder as Registry['finance.write.attachments.store']['types'],
+  },
+  'finance.write.attachments.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/finance/attachments/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"finance"],[0,"attachments"],[1,"id"]],
+    types: placeholder as Registry['finance.write.attachments.destroy']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

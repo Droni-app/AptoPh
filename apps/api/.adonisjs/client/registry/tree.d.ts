@@ -2,6 +2,11 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  drive: {
+    fs: {
+      serve: typeof routes['drive.fs.serve']
+    }
+  }
   auth: {
     login: typeof routes['auth.login']
     signup: typeof routes['auth.signup']
@@ -189,6 +194,10 @@ export interface ApiDefinition {
       balanceSheet: typeof routes['finance.reports.balanceSheet']
       ledger: typeof routes['finance.reports.ledger']
     }
+    attachments: {
+      index: typeof routes['finance.attachments.index']
+      url: typeof routes['finance.attachments.url']
+    }
     write: {
       settings: {
         update: typeof routes['finance.write.settings.update']
@@ -259,6 +268,10 @@ export interface ApiDefinition {
       journal: {
         store: typeof routes['finance.write.journal.store']
         reverse: typeof routes['finance.write.journal.reverse']
+      }
+      attachments: {
+        store: typeof routes['finance.write.attachments.store']
+        destroy: typeof routes['finance.write.attachments.destroy']
       }
     }
   }

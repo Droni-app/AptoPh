@@ -18,6 +18,7 @@ export const controllers = {
   finance: {
     Accounting: () => import('#controllers/finance/accounting_controller'),
     Accounts: () => import('#controllers/finance/accounts_controller'),
+    Attachments: () => import('#controllers/finance/attachments_controller'),
     Billing: () => import('#controllers/finance/billing_controller'),
     Budgets: () => import('#controllers/finance/budgets_controller'),
     CashAccounts: () => import('#controllers/finance/cash_accounts_controller'),

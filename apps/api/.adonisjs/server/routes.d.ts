@@ -4,6 +4,7 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'auth.login': { paramsTuple?: []; params?: {} }
     'auth.signup': { paramsTuple?: []; params?: {} }
     'auth.logout': { paramsTuple?: []; params?: {} }
@@ -103,6 +104,8 @@ export type ScannedRoutes = {
     'finance.reports.incomeStatement': { paramsTuple?: []; params?: {} }
     'finance.reports.balanceSheet': { paramsTuple?: []; params?: {} }
     'finance.reports.ledger': { paramsTuple?: []; params?: {} }
+    'finance.attachments.index': { paramsTuple: [ParamValue,ParamValue]; params: {'ownerType': ParamValue,'ownerId': ParamValue} }
+    'finance.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.settings.update': { paramsTuple?: []; params?: {} }
     'finance.write.accounts.store': { paramsTuple?: []; params?: {} }
     'finance.write.accounts.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -141,8 +144,11 @@ export type ScannedRoutes = {
     'finance.write.budgets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.journal.store': { paramsTuple?: []; params?: {} }
     'finance.write.journal.reverse': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.attachments.store': { paramsTuple: [ParamValue,ParamValue]; params: {'ownerType': ParamValue,'ownerId': ParamValue} }
+    'finance.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'invitations.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
@@ -199,8 +205,11 @@ export type ScannedRoutes = {
     'finance.reports.incomeStatement': { paramsTuple?: []; params?: {} }
     'finance.reports.balanceSheet': { paramsTuple?: []; params?: {} }
     'finance.reports.ledger': { paramsTuple?: []; params?: {} }
+    'finance.attachments.index': { paramsTuple: [ParamValue,ParamValue]; params: {'ownerType': ParamValue,'ownerId': ParamValue} }
+    'finance.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'invitations.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
@@ -257,6 +266,8 @@ export type ScannedRoutes = {
     'finance.reports.incomeStatement': { paramsTuple?: []; params?: {} }
     'finance.reports.balanceSheet': { paramsTuple?: []; params?: {} }
     'finance.reports.ledger': { paramsTuple?: []; params?: {} }
+    'finance.attachments.index': { paramsTuple: [ParamValue,ParamValue]; params: {'ownerType': ParamValue,'ownerId': ParamValue} }
+    'finance.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.login': { paramsTuple?: []; params?: {} }
@@ -310,6 +321,7 @@ export type ScannedRoutes = {
     'finance.write.budgets.reopen': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.journal.store': { paramsTuple?: []; params?: {} }
     'finance.write.journal.reverse': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.attachments.store': { paramsTuple: [ParamValue,ParamValue]; params: {'ownerType': ParamValue,'ownerId': ParamValue} }
   }
   PATCH: {
     'profile.update': { paramsTuple?: []; params?: {} }
@@ -346,6 +358,7 @@ export type ScannedRoutes = {
     'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
     'finance.write.modules.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.budgets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

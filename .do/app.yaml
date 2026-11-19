@@ -6,7 +6,7 @@
 #   api.aptoph.com    → api         (service, basic 512 MB)
 #
 # Built with the App Platform Node.js buildpack (pnpm workspace at the repo root).
-# Secrets (APP_KEY, SMTP_*) are not in this file: they are set as encrypted
+# Secrets (APP_KEY, SMTP_*, SPACES_KEY/SECRET) are not in this file: they are set as encrypted
 # values on the app. Update with: doctl apps update <id> --spec .do/app.yaml
 # (re-set the secrets or keep them by passing the spec from `doctl apps spec get`).
 name: aptoph
@@ -91,6 +91,13 @@ services:
       - { key: SMTP_USERNAME, value: __SMTP_USERNAME__, type: SECRET }
       - { key: SMTP_PASSWORD, value: __SMTP_PASSWORD__, type: SECRET }
       - { key: APP_KEY, value: __APP_KEY__, type: SECRET }
+      # Files: private DigitalOcean Spaces bucket, one folder per conjunto (docs/files.md)
+      - { key: DRIVE_DISK, value: spaces }
+      - { key: SPACES_REGION, value: nyc3 }
+      - { key: SPACES_BUCKET, value: aptoph }
+      - { key: SPACES_ENDPOINT, value: https://nyc3.digitaloceanspaces.com }
+      - { key: SPACES_KEY, value: __SPACES_KEY__, type: SECRET }
+      - { key: SPACES_SECRET, value: __SPACES_SECRET__, type: SECRET }
 
 jobs:
   - name: migrate

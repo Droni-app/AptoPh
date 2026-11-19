@@ -8,6 +8,19 @@ import type { routes } from './index.ts'
 export type ParamValue = string | number | bigint | boolean
 
 export interface Registry {
+  'drive.fs.serve': {
+    methods: ["GET","HEAD"]
+    pattern: '/uploads/*'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { '*': ParamValue[] }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+      rawResponse: ExtractRawResponse<unknown>
+    }
+  }
   'auth.login': {
     methods: ["POST"]
     pattern: '/api/v1/auth/login'
@@ -1295,6 +1308,32 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['ledger']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'finance.attachments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/attachments/:ownerType/:ownerId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { ownerType: ParamValue; ownerId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/attachment').attachmentOwnerValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.attachments.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/attachments/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/attachment').attachmentUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['url']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['url']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['url']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'finance.write.settings.update': {
     methods: ["PUT"]
     pattern: '/api/v1/finance/settings'
@@ -1787,6 +1826,32 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['reverseEntry']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['reverseEntry']>>> | { status: 422; response: { errors: SimpleError[] } }
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/accounting_controller').default['reverseEntry']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/attachments/:ownerType/:ownerId'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/attachment').uploadAttachmentValidator)>|InferInput<(typeof import('#validators/attachment').attachmentOwnerValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { ownerType: ParamValue; ownerId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').uploadAttachmentValidator)>|InferInput<(typeof import('#validators/attachment').attachmentOwnerValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/finance/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/attachments_controller').default['destroy']>>>
     }
   }
 }

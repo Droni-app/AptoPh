@@ -58,4 +58,17 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   LIMITER_STORE: Env.schema.enum(['database', 'memory'] as const),
+
+  /*
+  |----------------------------------------------------------
+  | File storage (drive): `fs` keeps files in ./storage (development and
+  | tests), `spaces` uses the DigitalOcean Spaces bucket. docs/files.md
+  |----------------------------------------------------------
+  */
+  DRIVE_DISK: Env.schema.enum.optional(['fs', 'spaces'] as const),
+  SPACES_KEY: Env.schema.string.optional(),
+  SPACES_SECRET: Env.schema.string.optional(),
+  SPACES_REGION: Env.schema.string.optional(),
+  SPACES_BUCKET: Env.schema.string.optional(),
+  SPACES_ENDPOINT: Env.schema.string.optional({ format: 'url', tld: false }),
 })

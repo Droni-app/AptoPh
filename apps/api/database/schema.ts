@@ -107,6 +107,35 @@ export class AnnouncementSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class AttachmentSchema extends BaseModel {
+  static $columns = ['createdAt', 'deletedAt', 'deletedById', 'fileKey', 'fileName', 'id', 'mimeType', 'ownerId', 'ownerType', 'sizeBytes', 'tenantId', 'uploadedById'] as const
+  $columns = AttachmentSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare deletedAt: DateTime | null
+  @column()
+  declare deletedById: string | null
+  @column()
+  declare fileKey: string
+  @column()
+  declare fileName: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare mimeType: string
+  @column()
+  declare ownerId: string
+  @column()
+  declare ownerType: string
+  @column()
+  declare sizeBytes: bigint | number
+  @column()
+  declare tenantId: string
+  @column()
+  declare uploadedById: string | null
+}
+
 export class AuditLogSchema extends BaseModel {
   static $columns = ['action', 'auditableId', 'auditableType', 'changes', 'createdAt', 'id', 'ipAddress', 'tenantId', 'userId'] as const
   $columns = AuditLogSchema.$columns
@@ -725,7 +754,7 @@ export class PaymentAllocationSchema extends BaseModel {
 }
 
 export class PaymentSchema extends BaseModel {
-  static $columns = ['amount', 'cashAccountId', 'confirmedById', 'createdAt', 'id', 'method', 'notes', 'number', 'paidAt', 'receiptFileKey', 'reference', 'registeredById', 'rejectionReason', 'reversalReason', 'reversedAt', 'reversedById', 'reviewedAt', 'status', 'tenantId', 'unappliedAmount', 'unitId', 'updatedAt'] as const
+  static $columns = ['amount', 'cashAccountId', 'confirmedById', 'createdAt', 'id', 'method', 'notes', 'number', 'paidAt', 'reference', 'registeredById', 'rejectionReason', 'reversalReason', 'reversedAt', 'reversedById', 'reviewedAt', 'status', 'tenantId', 'unappliedAmount', 'unitId', 'updatedAt'] as const
   $columns = PaymentSchema.$columns
   @column()
   declare amount: string
@@ -745,8 +774,6 @@ export class PaymentSchema extends BaseModel {
   declare number: number | null
   @column.dateTime()
   declare paidAt: DateTime
-  @column()
-  declare receiptFileKey: string | null
   @column()
   declare reference: string | null
   @column()

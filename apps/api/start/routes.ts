@@ -7,6 +7,7 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 import {
+  ATTACHMENT_OWNER_TYPES,
   BACKOFFICE_ROLES,
   EnrollmentRole,
   FINANCE_READ_ROLES,
@@ -45,6 +46,7 @@ const PaymentsController = () => import('#controllers/finance/payments_controlle
 const PayablesController = () => import('#controllers/finance/payables_controller')
 const BudgetsController = () => import('#controllers/finance/budgets_controller')
 const AccountingController = () => import('#controllers/finance/accounting_controller')
+const AttachmentsController = () => import('#controllers/finance/attachments_controller')
 
 /**
  * Back-office permissions: every back-office role can read,
@@ -54,6 +56,8 @@ const backofficeRead = { roles: [...BACKOFFICE_ROLES] }
 const backofficeWrite = { roles: [EnrollmentRole.Administrator] }
 const financeRead = { roles: [...FINANCE_READ_ROLES] }
 const financeWrite = { roles: [...FINANCE_WRITE_ROLES] }
+/** `:ownerType` of the attachment routes */
+const ATTACHMENT_OWNER_MATCHER = { match: new RegExp(`^(${ATTACHMENT_OWNER_TYPES.join('|')})$`) }
 
 router.get('/', () => {
   return { name: 'AptoPH API' }
@@ -302,6 +306,12 @@ router
           .get('reports/balance-sheet', [AccountingController, 'balanceSheet'])
           .as('reports.balanceSheet')
         router.get('reports/ledger', [AccountingController, 'ledger']).as('reports.ledger')
+        router
+          .get('attachments/:ownerType/:ownerId', [AttachmentsController, 'index'])
+          .where('ownerType', ATTACHMENT_OWNER_MATCHER)
+          .where('ownerId', router.matchers.uuid())
+          .as('attachments.index')
+        router.get('attachments/:id/url', [AttachmentsController, 'url']).as('attachments.url')
       })
       .prefix('finance')
       .as('finance')
@@ -362,6 +372,14 @@ router
         router
           .post('journal/:id/reverse', [AccountingController, 'reverseEntry'])
           .as('journal.reverse')
+        router
+          .post('attachments/:ownerType/:ownerId', [AttachmentsController, 'store'])
+          .where('ownerType', ATTACHMENT_OWNER_MATCHER)
+          .where('ownerId', router.matchers.uuid())
+          .as('attachments.store')
+        router
+          .delete('attachments/:id', [AttachmentsController, 'destroy'])
+          .as('attachments.destroy')
       })
       .prefix('finance')
       .as('finance.write')
