@@ -76,11 +76,11 @@ export class AttachmentsService {
     if (!row) throw new lucidErrors.E_ROW_NOT_FOUND()
   }
 
-  list(ownerType: AttachmentOwnerType, ownerId: string) {
+  list(ownerType: AttachmentOwnerType, ownerId: string | string[]) {
     return Attachment.query()
       .where('tenant_id', this.tenant.id)
       .where('owner_type', ownerType)
-      .where('owner_id', ownerId)
+      .whereIn('owner_id', Array.isArray(ownerId) ? ownerId : [ownerId])
       .whereNull('deleted_at')
       .preload('uploadedBy')
       .orderBy('created_at')
@@ -98,7 +98,8 @@ export class AttachmentsService {
     ownerType: AttachmentOwnerType,
     ownerId: string,
     file: MultipartFile,
-    userId: string
+    userId: string,
+    { max = ATTACHMENT_MAX_PER_OWNER }: { max?: number } = {}
   ) {
     await this.assertOwner(ownerType, ownerId)
     const active = await db
@@ -109,10 +110,10 @@ export class AttachmentsService {
       .whereNull('deleted_at')
       .count('* as total')
       .first()
-    if (Number(active?.total ?? 0) >= ATTACHMENT_MAX_PER_OWNER) {
+    if (Number(active?.total ?? 0) >= max) {
       throw new FieldException(
         'file',
-        `Este registro ya tiene ${ATTACHMENT_MAX_PER_OWNER} adjuntos, quita alguno antes de subir otro`
+        `Este registro ya tiene ${max} adjuntos, quita alguno antes de subir otro`
       )
     }
 

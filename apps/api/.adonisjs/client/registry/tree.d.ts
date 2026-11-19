@@ -88,6 +88,13 @@ export interface ApiDefinition {
     payments: {
       report: typeof routes['resident.payments.report']
       index: typeof routes['resident.payments.index']
+      attachments: {
+        store: typeof routes['resident.payments.attachments.store']
+      }
+    }
+    attachments: {
+      url: typeof routes['resident.attachments.url']
+      destroy: typeof routes['resident.attachments.destroy']
     }
   }
   dashboard: typeof routes['dashboard']

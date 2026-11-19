@@ -2,6 +2,8 @@
  * Contracts of the finance endpoints (/api/v1/finance/*, /api/v1/resident/…).
  * Amounts are decimal strings ("350000.00"), dates ISO ("2026-11-10").
  */
+
+import type { Attachment } from './files.js'
 import type {
   AccountClass,
   BankAccountKind,
@@ -288,7 +290,12 @@ export type FinancePayment = {
   createdAt: string
 }
 
-export type ResidentPayment = Omit<FinancePayment, 'registeredBy' | 'cashAccount'>
+export type ResidentPayment = Omit<FinancePayment, 'registeredBy' | 'cashAccount'> & {
+  /** Comprobantes adjuntos al pago */
+  attachments: Attachment[]
+  /** Lo reportó este residente y sigue por revisar: puede adjuntar y quitar comprobantes */
+  canAttach: boolean
+}
 
 export type PaymentFilters = {
   page?: number

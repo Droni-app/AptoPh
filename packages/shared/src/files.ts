@@ -23,6 +23,9 @@ export const ATTACHMENT_MAX_BYTES = ATTACHMENT_MAX_MB * 1024 * 1024
 /** Archivos activos por registro */
 export const ATTACHMENT_MAX_PER_OWNER = 20
 
+/** Comprobantes que un residente puede adjuntar a un pago que reportó */
+export const RESIDENT_ATTACHMENT_MAX = 5
+
 /** Extensiones permitidas: documentos, hojas de cálculo e imágenes (incluye fotos de celular) */
 export const ATTACHMENT_EXTENSIONS = [
   'pdf',
@@ -52,4 +55,36 @@ export interface Attachment {
   /** Nombre de quien lo subió */
   uploadedBy: string | null
   createdAt: string
+}
+
+function extensionOf(name: string) {
+  const dot = name.lastIndexOf('.')
+  return dot === -1 ? '' : name.slice(dot + 1).toLowerCase()
+}
+
+const allowedExtensions = new Set<string>(ATTACHMENT_EXTENSIONS)
+
+/** Por qué un archivo no se puede adjuntar, o null si se puede (validación previa en las apps) */
+export function attachmentProblem(file: { name: string; size: number }): string | null {
+  if (!allowedExtensions.has(extensionOf(file.name)))
+    return `${file.name}: tipo de archivo no permitido (PDF, imágenes, Excel o Word)`
+  if (file.size > ATTACHMENT_MAX_BYTES) return `${file.name}: pesa más de ${ATTACHMENT_MAX_MB} MB`
+  if (file.size === 0) return `${file.name}: el archivo está vacío`
+  return null
+}
+
+export function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / 1024 / 1024).toLocaleString('es-CO', { maximumFractionDigits: 1 })} MB`
+}
+
+/** Ícono de Material Design Icons para un archivo */
+export function attachmentIcon(name: string) {
+  const ext = extensionOf(name)
+  if (ext === 'pdf') return 'mdi-file-pdf-box'
+  if (['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'].includes(ext)) return 'mdi-file-image'
+  if (['xls', 'xlsx', 'csv'].includes(ext)) return 'mdi-file-excel'
+  if (['doc', 'docx'].includes(ext)) return 'mdi-file-word'
+  return 'mdi-file-outline'
 }

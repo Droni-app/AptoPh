@@ -48,6 +48,9 @@ export type ScannedRoutes = {
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
+    'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -164,6 +167,7 @@ export type ScannedRoutes = {
     'resident.tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
+    'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -225,6 +229,7 @@ export type ScannedRoutes = {
     'resident.tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
+    'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -286,6 +291,7 @@ export type ScannedRoutes = {
     'resident.tickets.store': { paramsTuple?: []; params?: {} }
     'resident.tickets.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'subscription.activation': { paramsTuple?: []; params?: {} }
     'buildings.store': { paramsTuple?: []; params?: {} }
     'units.store': { paramsTuple?: []; params?: {} }
@@ -353,6 +359,7 @@ export type ScannedRoutes = {
     'resident.household.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.visits.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.bookings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'units.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }

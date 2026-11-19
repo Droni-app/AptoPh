@@ -580,6 +580,45 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['payments']>>>
     }
   }
+  'resident.payments.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/payments/:id/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/attachment').uploadAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/attachment').uploadAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['attach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.attachments.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/attachments/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/attachment').attachmentUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['attachmentUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/resident/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['detach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['detach']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/resident/finance_controller').default['detach']>>>
+    }
+  }
   'dashboard': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'

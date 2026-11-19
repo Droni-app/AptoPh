@@ -272,6 +272,24 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"resident"],[0,"payments"]],
     types: placeholder as Registry['resident.payments.index']['types'],
   },
+  'resident.payments.attachments.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/resident/payments/:id/attachments',
+    tokens: [[0,"api"],[0,"v1"],[0,"resident"],[0,"payments"],[1,"id"],[0,"attachments"]],
+    types: placeholder as Registry['resident.payments.attachments.store']['types'],
+  },
+  'resident.attachments.url': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/resident/attachments/:id/url',
+    tokens: [[0,"api"],[0,"v1"],[0,"resident"],[0,"attachments"],[1,"id"],[0,"url"]],
+    types: placeholder as Registry['resident.attachments.url']['types'],
+  },
+  'resident.attachments.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/resident/attachments/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"resident"],[0,"attachments"],[1,"id"]],
+    types: placeholder as Registry['resident.attachments.destroy']['types'],
+  },
   'dashboard': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/dashboard',

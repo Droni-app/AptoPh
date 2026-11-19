@@ -195,6 +195,15 @@ router
           .post('units/:unitId/payments', [ResidentFinanceController, 'report'])
           .as('payments.report')
         router.get('payments', [ResidentFinanceController, 'payments']).as('payments.index')
+        router
+          .post('payments/:id/attachments', [ResidentFinanceController, 'attach'])
+          .as('payments.attachments.store')
+        router
+          .get('attachments/:id/url', [ResidentFinanceController, 'attachmentUrl'])
+          .as('attachments.url')
+        router
+          .delete('attachments/:id', [ResidentFinanceController, 'detach'])
+          .as('attachments.destroy')
       })
       .prefix('resident')
       .as('resident')
