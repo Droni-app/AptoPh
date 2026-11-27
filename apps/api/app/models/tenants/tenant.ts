@@ -17,6 +17,7 @@ import AmenityBooking from '#models/amenities/amenity_booking'
 import Announcement from '#models/announcements/announcement'
 import AnnouncementRead from '#models/announcements/announcement_read'
 import Ticket from '#models/tickets/ticket'
+import ParkingStay from '#models/gatehouse/parking_stay'
 import TicketComment from '#models/tickets/ticket_comment'
 import Visit from '#models/gatehouse/visit'
 import Parcel from '#models/gatehouse/parcel'
@@ -91,6 +92,9 @@ export default class Tenant extends TenantSchema {
 
   @hasMany(() => AnnouncementRead)
   declare announcementReads: HasMany<typeof AnnouncementRead>
+
+  @hasMany(() => ParkingStay)
+  declare parkingStays: HasMany<typeof ParkingStay>
 
   @hasMany(() => Ticket)
   declare tickets: HasMany<typeof Ticket>

@@ -155,6 +155,7 @@ onMounted(() => {
                 {{ VISIT_TYPE_LABELS[visit.type] }}
                 <template v-if="visit.vehiclePlate"> · {{ visit.vehiclePlate }}</template>
                 <template v-if="showUnit"> · {{ unitName(visit.unit) }}</template>
+                <template v-if="visit.fromGate"> · Anunciada en portería</template>
               </p>
             </div>
             <UiBadge
@@ -213,7 +214,9 @@ onMounted(() => {
           <div class="min-w-0">
             <p class="truncate font-medium">{{ visit.visitorName }}</p>
             <p class="text-sm text-neutral-500 dark:text-neutral-300">
-              {{ VISIT_TYPE_LABELS[visit.type] }} ·
+              {{ VISIT_TYPE_LABELS[visit.type]
+              }}<template v-if="visit.vehiclePlate"> · {{ visit.vehiclePlate }}</template
+              ><template v-if="visit.fromGate"> · anunciada en portería</template> ·
               {{ formatDateTime((visit.checkedInAt ?? visit.expectedAt)!) }}
             </p>
           </div>

@@ -182,6 +182,25 @@ export interface ApiDefinition {
       }
     }
   }
+  visitorParking: {
+    summary: typeof routes['visitorParking.summary']
+    settings: typeof routes['visitorParking.settings'] & {
+      update: typeof routes['visitorParking.settings.update']
+    }
+    lookup: typeof routes['visitorParking.lookup']
+    stays: {
+      index: typeof routes['visitorParking.stays.index']
+      show: typeof routes['visitorParking.stays.show']
+    }
+    write: {
+      stays: {
+        store: typeof routes['visitorParking.write.stays.store']
+        update: typeof routes['visitorParking.write.stays.update']
+        exit: typeof routes['visitorParking.write.stays.exit']
+        receipt: typeof routes['visitorParking.write.stays.receipt']
+      }
+    }
+  }
   billing: {
     show: typeof routes['billing.show']
     config: typeof routes['billing.config']

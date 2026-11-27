@@ -71,6 +71,8 @@ export const JOURNAL_ENTRY_TYPES = values(
   'opening',
   'manual',
   'reversal',
+  // Parqueadero de visitantes pagado en portería
+  'visitor_parking',
 )
 export const CASH_ACCOUNT_TYPES = values('bank', 'cash')
 export const BANK_ACCOUNT_KINDS = values('savings', 'checking')

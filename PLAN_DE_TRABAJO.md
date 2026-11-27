@@ -34,7 +34,7 @@ reales (sección 6).
 | Zonas comunes y reservas | 🟡 solo residente | ⬜ | ✅ | ⬜ |
 | Comunicados | ✅ texto con formato, imagen, correo | ✅ | ✅ | ⬜ |
 | PQRS y mantenimiento | ✅ bandeja, asignación, notas internas, plazos, correo | ✅ | ✅ | ⬜ |
-| Portería, visitas y paquetes | 🟡 solo residente | ⬜ | ✅ | ⬜ |
+| Portería, visitas y paquetes | 🟡 parqueadero de visitantes; visitas y paquetes solo residente | ✅ | ✅ | ⬜ |
 | Documentos | ⬜ (solo tablas) | ⬜ | ⬜ | ⬜ |
 | Auditoría y reportes | ⬜ (solo tablas) | ⬜ | — | — |
 | Notificaciones | 🟡 cuenta, invitaciones, plan, comunicados | — | ⬜ | ⬜ |
@@ -313,7 +313,14 @@ cancela.
 
 **Hay hoy:** el residente autoriza visitas con código de acceso y consulta sus paquetes.
 
+**Hecho**
+- ✅ **Parqueadero de visitantes** (`docs/visitor-parking.md`): cupos y tarifas por tipo de vehículo,
+  gracia diaria por placa, fracción y tope diario, IVA incluido, cobro en portería o a la unidad,
+  exención manual, estadía máxima, quién dio entrada y salida, comprobante por correo.
+
 **Falta**
+- [ ] Parqueadero, fase 2: aprobación desde el portal, aviso de excedidos por correo, cierre de caja
+      por turno y anonimización de visitantes.
 - [ ] **Vista de portería** para `security_guard` (P1): buscar por código, nombre o unidad;
       registrar ingreso y salida.
 - [ ] Registrar visitas no autorizadas previamente, llamando o avisando al residente.

@@ -15,6 +15,8 @@ import {
   FINANCE_WRITE_ROLES,
   TICKET_READ_ROLES,
   TICKET_WORK_ROLES,
+  VISITOR_PARKING_ADMIN_ROLES,
+  VISITOR_PARKING_ROLES,
 } from '@aptoph/shared'
 import { throttleBilling, throttlePublic, throttleSignup } from '#start/limiter'
 
@@ -48,6 +50,7 @@ const ResidentBookingsController = () =>
   import('#controllers/amenities/resident_bookings_controller')
 const ResidentTicketsController = () => import('#controllers/tickets/resident_tickets_controller')
 const TicketsController = () => import('#controllers/tickets/tickets_controller')
+const VisitorParkingController = () => import('#controllers/gatehouse/visitor_parking_controller')
 const ResidentFinanceController = () => import('#controllers/finance/resident_finance_controller')
 const ResidentAnnouncementsController = () =>
   import('#controllers/announcements/resident_announcements_controller')
@@ -74,6 +77,8 @@ const backofficeWrite = { roles: [EnrollmentRole.Administrator] }
 const announcementsWrite = { roles: [...ANNOUNCEMENT_WRITE_ROLES] }
 const ticketsRead = { roles: [...TICKET_READ_ROLES] }
 const ticketsWork = { roles: [...TICKET_WORK_ROLES] }
+const parkingGate = { roles: [...VISITOR_PARKING_ROLES] }
+const parkingAdmin = { roles: [...VISITOR_PARKING_ADMIN_ROLES] }
 const financeRead = { roles: [...FINANCE_READ_ROLES] }
 const financeWrite = { roles: [...FINANCE_WRITE_ROLES] }
 /** `:ownerType` of the finance attachment routes */
@@ -332,6 +337,38 @@ router
       })
       .as('tickets.write')
       .use([middleware.auth(), middleware.tenant(ticketsWork), middleware.subscription()])
+
+    /**
+     * Back-office: visitor parking. Administration and guards register entries
+     * and exits; the administration configures it. docs/visitor-parking.md
+     */
+    router
+      .group(() => {
+        router.get('summary', [VisitorParkingController, 'summary']).as('summary')
+        router.get('settings', [VisitorParkingController, 'settings']).as('settings')
+        router.get('lookup', [VisitorParkingController, 'lookup']).as('lookup')
+        router.get('stays', [VisitorParkingController, 'index']).as('stays.index')
+        router.get('stays/:id', [VisitorParkingController, 'show']).as('stays.show')
+      })
+      .prefix('visitor-parking')
+      .as('visitorParking')
+      .use([middleware.auth(), middleware.tenant(parkingGate)])
+
+    router
+      .group(() => {
+        router.post('stays', [VisitorParkingController, 'store']).as('stays.store')
+        router.patch('stays/:id', [VisitorParkingController, 'update']).as('stays.update')
+        router.post('stays/:id/exit', [VisitorParkingController, 'exit']).as('stays.exit')
+        router.post('stays/:id/receipt', [VisitorParkingController, 'receipt']).as('stays.receipt')
+      })
+      .prefix('visitor-parking')
+      .as('visitorParking.write')
+      .use([middleware.auth(), middleware.tenant(parkingGate), middleware.subscription()])
+
+    router
+      .put('visitor-parking/settings', [VisitorParkingController, 'updateSettings'])
+      .as('visitorParking.settings.update')
+      .use([middleware.auth(), middleware.tenant(parkingAdmin), middleware.subscription()])
 
     /**
      * Back-office: payments to AptoPH with Wompi (administration, also while the

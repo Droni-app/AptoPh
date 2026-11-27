@@ -33,6 +33,8 @@ export function presentVisit(visit: Visit, now: DateTime) {
     checkedInAt: iso(visit.checkedInAt),
     checkedOutAt: iso(visit.checkedOutAt),
     status,
+    /** Announced at the gate, not authorized from the portal */
+    fromGate: !visit.authorizedById,
     canCancel: status === 'expected',
   }
 }

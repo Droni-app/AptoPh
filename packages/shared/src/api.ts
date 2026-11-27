@@ -379,6 +379,8 @@ export type ResidentVisit = {
   checkedInAt: string | null
   checkedOutAt: string | null
   status: VisitStatus
+  /** Announced at the gate, not authorized from the portal */
+  fromGate: boolean
   canCancel: boolean
 }
 

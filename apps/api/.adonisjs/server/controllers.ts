@@ -44,6 +44,7 @@ export const controllers = {
   gatehouse: {
     ResidentParcels: () => import('#controllers/gatehouse/resident_parcels_controller'),
     ResidentVisits: () => import('#controllers/gatehouse/resident_visits_controller'),
+    VisitorParking: () => import('#controllers/gatehouse/visitor_parking_controller'),
   },
   property: {
     Buildings: () => import('#controllers/property/buildings_controller'),

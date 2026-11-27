@@ -87,6 +87,16 @@ export type ScannedRoutes = {
     'tickets.write.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.summary': { paramsTuple?: []; params?: {} }
+    'visitorParking.settings': { paramsTuple?: []; params?: {} }
+    'visitorParking.lookup': { paramsTuple?: []; params?: {} }
+    'visitorParking.stays.index': { paramsTuple?: []; params?: {} }
+    'visitorParking.stays.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.write.stays.store': { paramsTuple?: []; params?: {} }
+    'visitorParking.write.stays.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.write.stays.exit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.write.stays.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.settings.update': { paramsTuple?: []; params?: {} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -234,6 +244,11 @@ export type ScannedRoutes = {
     'tickets.assignees': { paramsTuple?: []; params?: {} }
     'tickets.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.summary': { paramsTuple?: []; params?: {} }
+    'visitorParking.settings': { paramsTuple?: []; params?: {} }
+    'visitorParking.lookup': { paramsTuple?: []; params?: {} }
+    'visitorParking.stays.index': { paramsTuple?: []; params?: {} }
+    'visitorParking.stays.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -314,6 +329,11 @@ export type ScannedRoutes = {
     'tickets.assignees': { paramsTuple?: []; params?: {} }
     'tickets.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.summary': { paramsTuple?: []; params?: {} }
+    'visitorParking.settings': { paramsTuple?: []; params?: {} }
+    'visitorParking.lookup': { paramsTuple?: []; params?: {} }
+    'visitorParking.stays.index': { paramsTuple?: []; params?: {} }
+    'visitorParking.stays.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -379,6 +399,9 @@ export type ScannedRoutes = {
     'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.write.stays.store': { paramsTuple?: []; params?: {} }
+    'visitorParking.write.stays.exit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.write.stays.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.tokens.nequi': { paramsTuple?: []; params?: {} }
     'billing.tokens.daviplata': { paramsTuple?: []; params?: {} }
     'billing.tokens.daviplataOtp': { paramsTuple?: []; params?: {} }
@@ -431,6 +454,7 @@ export type ScannedRoutes = {
     'resident.pets.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.household.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.write.stays.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'units.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.update': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
@@ -444,6 +468,7 @@ export type ScannedRoutes = {
     'profile.password': { paramsTuple?: []; params?: {} }
     'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.image.set': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'visitorParking.settings.update': { paramsTuple?: []; params?: {} }
     'billing.autoRenew': { paramsTuple?: []; params?: {} }
     'billing.paymentMethod.save': { paramsTuple?: []; params?: {} }
     'finance.write.settings.update': { paramsTuple?: []; params?: {} }

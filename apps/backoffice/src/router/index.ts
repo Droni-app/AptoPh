@@ -17,6 +17,8 @@ declare module 'vue-router' {
     manage?: boolean
     /** PQRS: administration, council and staff */
     tickets?: boolean
+    /** Visitor parking: administration and guards */
+    parking?: boolean
     title?: string
   }
 }
@@ -113,6 +115,18 @@ const router = createRouter({
           name: 'tickets',
           component: () => import('@/views/TicketsView.vue'),
           meta: { tenant: true, tickets: true, title: 'PQRS' },
+        },
+        {
+          path: 'parqueadero',
+          name: 'visitor-parking',
+          component: () => import('@/views/parking/ParkingView.vue'),
+          meta: { tenant: true, parking: true, title: 'Parqueadero de visitantes' },
+        },
+        {
+          path: 'parqueadero/configuracion',
+          name: 'visitor-parking-settings',
+          component: () => import('@/views/parking/ParkingSettingsView.vue'),
+          meta: { tenant: true, manage: true, title: 'Configuración del parqueadero' },
         },
         {
           path: 'finanzas',
@@ -258,6 +272,7 @@ router.beforeEach(async (to) => {
   if (to.meta.finance && !tenant.canReadFinance) return { name: 'dashboard' }
   if (to.meta.manage && !tenant.canManage) return { name: 'dashboard' }
   if (to.meta.tickets && !tenant.canReadTickets) return { name: 'dashboard' }
+  if (to.meta.parking && !tenant.canUseVisitorParking) return { name: 'dashboard' }
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails

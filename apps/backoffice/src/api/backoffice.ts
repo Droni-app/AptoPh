@@ -77,6 +77,7 @@ export const unitsApi = {
 }
 
 export const occupantsApi = {
+  list: (unitId: string) => api<{ data: UnitOccupant[] }>(`/api/v1/units/${unitId}/occupants`),
   create: (unitId: string, input: OccupantInput) =>
     api<ApiItem<UnitOccupant>>(`/api/v1/units/${unitId}/occupants`, {
       method: 'POST',

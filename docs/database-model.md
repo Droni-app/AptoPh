@@ -83,6 +83,8 @@ erDiagram
     units ||--o{ tickets : ""
     tickets ||--o{ ticket_comments : ""
     units ||--o{ visits : ""
+    units ||--o{ parking_stays : ""
+    visits ||--o| parking_stays : ""
     units ||--o{ parcels : ""
     tenants ||--o{ announcements : ""
     tenants ||--o{ documents : ""
@@ -458,6 +460,33 @@ Permisos, estados, plazos y correos: `docs/tickets.md`. Adjuntos: `attachments.o
 | registered_by_id | uuid NULL FK → users | Vigilante |
 | created_at / updated_at | | |
 
+### `parking_stays` — parqueadero de visitantes
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id, tenant_id | | |
+| number | integer NULL | Consecutivo del comprobante, al dar la salida: `UNIQUE (tenant_id, number)` |
+| status | varchar(10) | `inside`, `exited` |
+| unit_id | uuid FK compuesta → units | Unidad visitada |
+| visit_id | uuid NULL FK compuesta → visits | Visita autorizada desde el portal |
+| vehicle_type | varchar(20) | `car`, `motorcycle`, `bicycle`, `other` |
+| plate | varchar(10) NULL | Normalizada. `UNIQUE (tenant_id, plate) WHERE status = 'inside'` |
+| vehicle_description, visitor_name, visitor_document | | |
+| authorization_method | varchar(20) | `pre_authorized`, `call`, `intercom`, `in_person`, `other` |
+| authorized_by_name, authorization_notes | | |
+| over_capacity | boolean | Ingresó sin cupo libre |
+| tariff | jsonb | Tarifa copiada al ingresar |
+| entered_at, entered_by_id / exited_at, exited_by_id | | Quién dio la entrada y la salida |
+| days | jsonb NULL | Detalle por día: minutos, gracia, cobrables, valor |
+| minutes, grace_minutes, billed_minutes | integer | |
+| amount, vat_amount | numeric(14,2) | IVA incluido en `amount` |
+| settlement | varchar(10) NULL | `free`, `gate`, `unit`, `exempt` |
+| payment_method, exempt_reason | | |
+| cash_account_id, charge_id, journal_entry_id | uuid NULL FK compuestas | Caja, cobro a la unidad y comprobante contable |
+| receipt_email, receipt_sent_at | | Comprobante por correo |
+
+Reglas y cálculo: `docs/visitor-parking.md`.
+
 ### `parcels` — correspondencia y paquetes
 
 | Columna | Tipo | Notas |
@@ -539,7 +568,7 @@ de los módulos está en `config/database.ts` (ver README, *API por módulos*). 
 5. ✅ `charge_concepts` → `charges` → `payments` → `payment_allocations`
 6. ✅ `amenities` → `amenity_bookings`
 7. ✅ `announcements` → `announcement_reads` → `tickets` → `ticket_comments`
-8. ✅ `visits` → `parcels` → `documents` → `audit_logs`
+8. ✅ `visits` → `parcels` → `documents` → `audit_logs` → `parking_stays`
 9. ✅ Finanzas: plan de cuentas y comprobantes → cartera extendida (periodos, tarifas, módulos,
    presupuesto, ajustes) → proveedores, facturas, egresos y bancos
 

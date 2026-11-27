@@ -212,6 +212,7 @@ export const JOURNAL_ENTRY_TYPE_LABELS: Record<JournalEntryType, string> = {
   opening: 'Saldo inicial',
   manual: 'Nota de contabilidad',
   reversal: 'Reversión',
+  visitor_parking: 'Parqueadero de visitantes',
 }
 
 export const CASH_ACCOUNT_TYPE_LABELS: Record<CashAccountType, string> = {

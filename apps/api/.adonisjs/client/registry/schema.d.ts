@@ -1087,6 +1087,136 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['detach']>>>
     }
   }
+  'visitorParking.summary': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/visitor-parking/summary'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['summary']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['summary']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['summary']>>>
+    }
+  }
+  'visitorParking.settings': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/visitor-parking/settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['settings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['settings']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['settings']>>>
+    }
+  }
+  'visitorParking.lookup': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/visitor-parking/lookup'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/gatehouse/visitor_parking').lookupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['lookup']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['lookup']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['lookup']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'visitorParking.stays.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/visitor-parking/stays'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/gatehouse/visitor_parking').listStaysValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'visitorParking.stays.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/visitor-parking/stays/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['show']>>>
+    }
+  }
+  'visitorParking.write.stays.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/visitor-parking/stays'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/gatehouse/visitor_parking').entryValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/gatehouse/visitor_parking').entryValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'visitorParking.write.stays.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/visitor-parking/stays/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/gatehouse/visitor_parking').correctStayValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/gatehouse/visitor_parking').correctStayValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'visitorParking.write.stays.exit': {
+    methods: ["POST"]
+    pattern: '/api/v1/visitor-parking/stays/:id/exit'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/gatehouse/visitor_parking').exitValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/gatehouse/visitor_parking').exitValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['exit']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['exit']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['exit']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'visitorParking.write.stays.receipt': {
+    methods: ["POST"]
+    pattern: '/api/v1/visitor-parking/stays/:id/receipt'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/gatehouse/visitor_parking').receiptValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/gatehouse/visitor_parking').receiptValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['receipt']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['receipt']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['receipt']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'visitorParking.settings.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/visitor-parking/settings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/gatehouse/visitor_parking').parkingSettingsValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/gatehouse/visitor_parking').parkingSettingsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['updateSettings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'billing.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/billing'

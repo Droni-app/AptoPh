@@ -18,7 +18,7 @@ import Budget from '#models/finance/budget'
 import BudgetItem from '#models/finance/budget_item'
 import RecurringCharge from '#models/finance/recurring_charge'
 import Vendor from '#models/finance/vendor'
-import { toCents } from '@aptoph/shared'
+import { normalizePlate, quoteParking, toCents, type VisitorParkingSettings } from '@aptoph/shared'
 import { BillingService } from '#services/finance/billing'
 import { CashService } from '#services/finance/cash'
 import { ChargeService } from '#services/finance/charges'
@@ -33,6 +33,8 @@ import AnnouncementRead from '#models/announcements/announcement_read'
 import Ticket from '#models/tickets/ticket'
 import TicketComment from '#models/tickets/ticket_comment'
 import Visit from '#models/gatehouse/visit'
+import ParkingStay from '#models/gatehouse/parking_stay'
+import { splitByDay } from '#services/gatehouse/visitor_parking'
 import Parcel from '#models/gatehouse/parcel'
 import DocumentFile from '#models/documents/document'
 import AuditLog from '#models/tenants/audit_log'
@@ -62,6 +64,7 @@ const AREAS = [78.5, 62.3, 62.3, 78.5]
 /** Tables with demo data, children first (all have tenant_id) */
 const TENANT_TABLES = [
   'audit_logs',
+  'parking_stays',
   'attachments',
   'announcement_reads',
   'announcement_buildings',
@@ -206,12 +209,17 @@ export default class extends BaseSeeder {
       { email: 'mantenimiento@demo.test' },
       { fullName: 'Jorge Mantenimiento', password: DEMO_PASSWORD, isPlatformAdmin: false }
     )
+    // Guard: the gate and the visitor parking
+    const guard = await User.updateOrCreate(
+      { email: 'vigilancia@demo.test' },
+      { fullName: 'Luis Vigilante', password: DEMO_PASSWORD, isPlatformAdmin: false }
+    )
 
     await db.transaction(async (trx) => {
       // The demo users only exist in the demo conjunto
       await trx
         .from('enrollments')
-        .whereIn('user_id', [admin.id, resident.id, staff.id])
+        .whereIn('user_id', [admin.id, resident.id, staff.id, guard.id])
         .whereNot('tenant_id', tenant.id)
         .delete()
       await trx.from('enrollments').where('tenant_id', tenant.id).delete()
@@ -220,12 +228,13 @@ export default class extends BaseSeeder {
           { tenantId: tenant.id, userId: admin.id, role: 'administrator', status: 'active' },
           { tenantId: tenant.id, userId: resident.id, role: 'resident', status: 'active' },
           { tenantId: tenant.id, userId: staff.id, role: 'staff', status: 'active' },
+          { tenantId: tenant.id, userId: guard.id, role: 'security_guard', status: 'active' },
         ],
         { client: trx }
       )
 
       await this.wipe(trx, tenant.id)
-      await new DemoBuilder(trx, tenant, admin, resident, staff).build()
+      await new DemoBuilder(trx, tenant, admin, resident, staff, guard).build()
     })
 
     // Files visitors uploaded to the demo (its rows were wiped above)
@@ -257,7 +266,8 @@ class DemoBuilder {
     private tenant: Tenant,
     private admin: User,
     private resident: User,
-    private staff: User
+    private staff: User,
+    private guard: User
   ) {
     this.client = { client: trx }
     this.trx = trx
@@ -276,6 +286,7 @@ class DemoBuilder {
     await this.amenities(occupied, myUnit)
     await this.communication(occupied, myUnit)
     await this.security(occupied, myUnit)
+    await this.visitorParking(occupied, myUnit)
     await this.documents()
     await this.audit(myUnit)
   }
@@ -536,6 +547,9 @@ class DemoBuilder {
       openingBalance: cents(500_000),
       openingDate: iso(start),
     })
+    // Where the visitor parking paid at the gate goes
+    const gateCash = await cash.create({ name: 'Caja portería', type: 'cash' })
+    this.gateCashId = gateCash.id
 
     // Budget approved by the assembly
     const budgetLines: Array<[string, string, number]> = [
@@ -855,6 +869,7 @@ class DemoBuilder {
   }
 
   private financeScope!: FinanceScope
+  private gateCashId: string | null = null
 
   private async amenities(occupied: Unit[], myUnit: Unit) {
     const [salon, bbq, gym, pool] = await Amenity.createMany(
@@ -1153,6 +1168,159 @@ class DemoBuilder {
         )
       }
     }
+  }
+
+  /**
+   * Visitor parking: settings, a visit authorized from the portal waiting with
+   * its car, vehicles inside (one past the maximum stay, one without a spot)
+   * and some that already left without cost or exempt.
+   */
+  private async visitorParking(occupied: Unit[], myUnit: Unit) {
+    const parking: VisitorParkingSettings = {
+      enabled: true,
+      vehicles: {
+        car: { capacity: 4, hourlyRate: 3000, dailyCap: 24_000 },
+        motorcycle: { capacity: 4, hourlyRate: 1500, dailyCap: 12_000 },
+        bicycle: { capacity: 10, hourlyRate: 0, dailyCap: null },
+        other: { capacity: 1, hourlyRate: 4000, dailyCap: null },
+      },
+      graceHours: 2,
+      fractionMinutes: 30,
+      vat: { enabled: false, rate: 19 },
+      paymentMode: 'ask',
+      cashAccountId: this.gateCashId,
+      maxStayHours: 12,
+    }
+    this.tenant.settings = { ...(this.tenant.settings ?? {}), visitorParking: parking }
+    await this.tenant.useTransaction(this.trx).save()
+
+    await Visit.create(
+      {
+        ...this.scope,
+        unitId: myUnit.id,
+        visitorName: 'Mariana Ríos',
+        visitorDocument: '1032456789',
+        vehiclePlate: 'JKT482',
+        type: 'guest',
+        authorizedById: this.resident.id,
+        accessCode: 'P4R8T2',
+        expectedAt: this.now.plus({ hours: 1 }),
+      },
+      this.client
+    )
+
+    const tariff = (type: keyof VisitorParkingSettings['vehicles']) => ({
+      hourlyRate: parking.vehicles[type].hourlyRate,
+      dailyCap: parking.vehicles[type].dailyCap,
+      graceMinutes: parking.graceHours * 60,
+      fractionMinutes: parking.fractionMinutes,
+      vatRate: 0,
+    })
+    const unit = (i: number) => occupied[(i * 7) % occupied.length]!.id
+    const inside: Array<[keyof VisitorParkingSettings['vehicles'], string | null, number]> = [
+      ['car', plate(80), 0.5],
+      ['car', plate(81), 3],
+      ['car', plate(82), 14],
+      ['motorcycle', 'ABC12F', 1.5],
+      ['bicycle', null, 4],
+    ]
+    for (const [i, [type, vehiclePlate, hours]] of inside.entries()) {
+      const enteredAt = this.now.minus({ minutes: Math.round(hours * 60) })
+      const visit = await Visit.create(
+        {
+          ...this.scope,
+          unitId: i === 0 ? myUnit.id : unit(i),
+          visitorName: personName(i + 60),
+          vehiclePlate: normalizePlate(vehiclePlate),
+          type: 'guest',
+          checkedInAt: enteredAt,
+          registeredById: this.guard.id,
+        },
+        this.client
+      )
+      await ParkingStay.create(
+        {
+          ...this.scope,
+          status: 'inside',
+          visitId: visit.id,
+          unitId: visit.unitId,
+          vehicleType: type,
+          plate: normalizePlate(vehiclePlate),
+          vehicleDescription: type === 'bicycle' ? 'Bicicleta roja, GW' : null,
+          visitorName: personName(i + 60),
+          authorizationMethod: i % 2 ? 'intercom' : 'call',
+          authorizedByName: personName(i + 3),
+          tariff: tariff(type),
+          enteredAt,
+          enteredById: this.guard.id,
+        },
+        this.client
+      )
+    }
+
+    // Already left: within the grace (free) and exempt
+    const left: Array<[number, number, 'free' | 'exempt']> = [
+      [8, 1.5, 'free'],
+      [6, 4, 'exempt'],
+      [30, 1, 'free'],
+    ]
+    for (const [i, [hoursAgo, hours, settlement]] of left.entries()) {
+      const enteredAt = this.now.minus({ hours: hoursAgo })
+      const exitedAt = enteredAt.plus({ minutes: Math.round(hours * 60) })
+      const priced = quoteParking(
+        tariff('car'),
+        splitByDay(enteredAt, exitedAt, this.tenant.timezone)
+      )
+      const days =
+        settlement === 'exempt'
+          ? priced.days.map((day) => ({ ...day, graceMinutes: 0, billedMinutes: 0, amount: 0 }))
+          : priced.days
+      const visit = await Visit.create(
+        {
+          ...this.scope,
+          unitId: unit(i + 10),
+          visitorName: personName(i + 70),
+          vehiclePlate: plate(90 + i),
+          type: 'guest',
+          checkedInAt: enteredAt,
+          checkedOutAt: exitedAt,
+          registeredById: this.guard.id,
+        },
+        this.client
+      )
+      await ParkingStay.create(
+        {
+          ...this.scope,
+          number: i + 1,
+          status: 'exited',
+          visitId: visit.id,
+          unitId: visit.unitId,
+          vehicleType: 'car',
+          plate: plate(90 + i),
+          visitorName: personName(i + 70),
+          authorizationMethod: 'call',
+          authorizedByName: personName(i + 12),
+          tariff: tariff('car'),
+          enteredAt,
+          enteredById: this.guard.id,
+          exitedAt,
+          exitedById: this.guard.id,
+          days,
+          minutes: priced.minutes,
+          graceMinutes: days.reduce((sum, day) => sum + day.graceMinutes, 0),
+          billedMinutes: 0,
+          amount: '0.00',
+          vatAmount: '0.00',
+          settlement,
+          exemptReason: settlement === 'exempt' ? 'Técnico de la empresa de ascensores' : null,
+        },
+        this.client
+      )
+    }
+    await this.trx.rawQuery(
+      `INSERT INTO document_sequences (tenant_id, key, next_value) VALUES (?, 'visitor_parking', ?)`,
+      [this.tenant.id, left.length + 1]
+    )
   }
 
   private async security(occupied: Unit[], myUnit: Unit) {

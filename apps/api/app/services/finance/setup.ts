@@ -12,7 +12,7 @@ import {
 import { type Trx, transaction } from '#services/finance/support'
 
 /** Bump when the template or the default concepts change */
-const SETUP_VERSION = 1
+const SETUP_VERSION = 2
 
 /**
  * Prepares the finance module of a conjunto: chart of accounts, default charge

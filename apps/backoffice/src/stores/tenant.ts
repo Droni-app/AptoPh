@@ -8,6 +8,8 @@ import {
   TICKET_MANAGE_ROLES,
   TICKET_READ_ROLES,
   TICKET_WORK_ROLES,
+  VISITOR_PARKING_ADMIN_ROLES,
+  VISITOR_PARKING_ROLES,
   type EnrollmentRole,
   type TenantSummary,
 } from '@aptoph/shared'
@@ -50,6 +52,9 @@ export const useTenantStore = defineStore('tenant', () => {
   const canReadTickets = computed(() => hasRole(...TICKET_READ_ROLES))
   const canWorkTickets = computed(() => hasRole(...TICKET_WORK_ROLES))
   const canManageTickets = computed(() => hasRole(...TICKET_MANAGE_ROLES))
+  /** Visitor parking: administration and guards; only the administration configures it */
+  const canUseVisitorParking = computed(() => hasRole(...VISITOR_PARKING_ROLES))
+  const canConfigureVisitorParking = computed(() => hasRole(...VISITOR_PARKING_ADMIN_ROLES))
   /** Sees every ticket (not only the assigned ones) */
   const seesAllTickets = computed(() => hasRole('administrator', 'council_member'))
 
@@ -97,6 +102,8 @@ export const useTenantStore = defineStore('tenant', () => {
     canWorkTickets,
     canManageTickets,
     seesAllTickets,
+    canUseVisitorParking,
+    canConfigureVisitorParking,
     load,
     select,
     reset,

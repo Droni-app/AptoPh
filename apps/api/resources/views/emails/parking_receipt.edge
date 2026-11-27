@@ -1,0 +1,23 @@
+@component('components/email_layout', { title: title })
+  <p style="margin:0 0 4px;color:#5b6475;font-size:13px;">{{ issuer }}</p>
+  <h1 style="margin:0 0 16px;font-size:20px;">{{ title }}</h1>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 16px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px;">
+    @each(row in rows)
+      <tr>
+        <td style="padding:8px 12px;color:#5b6475;border-bottom:1px solid #e6e9ef;">{{ row.label }}</td>
+        <td style="padding:8px 12px;text-align:right;border-bottom:1px solid #e6e9ef;">{{ row.value }}</td>
+      </tr>
+    @end
+  </table>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px;">
+    @each(row in totals)
+      <tr>
+        <td style="padding:8px 12px;color:#5b6475;border-bottom:1px solid #e6e9ef;">{{ row.label }}</td>
+        <td style="padding:8px 12px;text-align:right;font-weight:600;border-bottom:1px solid #e6e9ef;">{{ row.value }}</td>
+      </tr>
+    @end
+  </table>
+  @each(note in notes)
+    <p style="margin:0 0 8px;color:#5b6475;font-size:12px;">{{ note }}</p>
+  @end
+@end

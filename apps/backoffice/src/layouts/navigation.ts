@@ -53,6 +53,8 @@ export function navigation(options: {
   canManage: boolean
   /** PQRS: administration, council and staff */
   canReadTickets: boolean
+  /** Visitor parking: administration and guards */
+  canUseVisitorParking: boolean
   hasSubscription: boolean
 }): NavGroup[] {
   const finance = financeLinks(options.canManageFinance)
@@ -74,6 +76,16 @@ export function navigation(options: {
       ],
     },
   ]
+  if (options.canUseVisitorParking)
+    groups.push({
+      label: 'Portería',
+      items: [
+        link('Parqueadero', 'mdi-car-clock', 'visitor-parking', [
+          'visitor-parking',
+          'visitor-parking-settings',
+        ]),
+      ],
+    })
   if (options.canReadFinance)
     groups.push({
       label: 'Finanzas',

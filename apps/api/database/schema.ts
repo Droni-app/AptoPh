@@ -903,6 +903,83 @@ export class ParcelSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class ParkingStaySchema extends BaseModel {
+  static $columns = ['amount', 'authorizationMethod', 'authorizationNotes', 'authorizedByName', 'billedMinutes', 'cashAccountId', 'chargeId', 'createdAt', 'days', 'enteredAt', 'enteredById', 'exemptReason', 'exitedAt', 'exitedById', 'graceMinutes', 'id', 'journalEntryId', 'minutes', 'number', 'overCapacity', 'paymentMethod', 'plate', 'receiptEmail', 'receiptSentAt', 'settlement', 'status', 'tariff', 'tenantId', 'unitId', 'updatedAt', 'vatAmount', 'vehicleDescription', 'vehicleType', 'visitId', 'visitorDocument', 'visitorName'] as const
+  $columns = ParkingStaySchema.$columns
+  @column()
+  declare amount: string | null
+  @column()
+  declare authorizationMethod: string
+  @column()
+  declare authorizationNotes: string | null
+  @column()
+  declare authorizedByName: string | null
+  @column()
+  declare billedMinutes: number | null
+  @column()
+  declare cashAccountId: string | null
+  @column()
+  declare chargeId: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare days: any | null
+  @column.dateTime()
+  declare enteredAt: DateTime
+  @column()
+  declare enteredById: string
+  @column()
+  declare exemptReason: string | null
+  @column.dateTime()
+  declare exitedAt: DateTime | null
+  @column()
+  declare exitedById: string | null
+  @column()
+  declare graceMinutes: number | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare journalEntryId: string | null
+  @column()
+  declare minutes: number | null
+  @column()
+  declare number: number | null
+  @column()
+  declare overCapacity: boolean
+  @column()
+  declare paymentMethod: string | null
+  @column()
+  declare plate: string | null
+  @column()
+  declare receiptEmail: string | null
+  @column.dateTime()
+  declare receiptSentAt: DateTime | null
+  @column()
+  declare settlement: string | null
+  @column()
+  declare status: string
+  @column()
+  declare tariff: any
+  @column()
+  declare tenantId: string
+  @column()
+  declare unitId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vatAmount: string | null
+  @column()
+  declare vehicleDescription: string | null
+  @column()
+  declare vehicleType: string
+  @column()
+  declare visitId: string | null
+  @column()
+  declare visitorDocument: string | null
+  @column()
+  declare visitorName: string
+}
+
 export class PaymentAllocationSchema extends BaseModel {
   static $columns = ['amount', 'chargeId', 'createdAt', 'id', 'paymentId', 'tenantId'] as const
   $columns = PaymentAllocationSchema.$columns
