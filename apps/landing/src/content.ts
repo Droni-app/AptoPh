@@ -53,7 +53,6 @@ export const nav: NavLink[] = [
   { href: '#perfiles', label: 'Para quién' },
   { href: '#como-funciona', label: 'Cómo funciona' },
   { href: '#precios', label: 'Precios' },
-  { href: '#demo', label: 'Demo' },
   { href: '#seguridad', label: 'Seguridad' },
   { href: '#preguntas', label: 'Preguntas' },
 ]
@@ -389,35 +388,6 @@ export const pricingPerks = [
   { title: 'Migración sin costo', description: 'Pasamos tus datos desde Excel u otro software.' },
   { title: 'Sin permanencia', description: 'Pago mensual. Cancela cuando quieras.' },
 ]
-
-/**
- * Public demo conjunto. The API resets it on every deploy
- * (apps/api/database/seeders/demo_seeder.ts): keep these values in sync.
- */
-export const demo = {
-  password: 'demo1234',
-  conjunto: 'Altos del Parque (Demo)',
-  accounts: [
-    {
-      id: 'admin',
-      app: 'admin' as const,
-      title: 'Administración',
-      email: 'admin@demo.test',
-      description:
-        'Entra como la administradora del conjunto: indicadores, torres, unidades, ocupantes y personas.',
-      cta: 'Abrir el panel de administración',
-    },
-    {
-      id: 'residente',
-      app: 'web' as const,
-      title: 'Residente',
-      email: 'residente@demo.test',
-      description:
-        'Entra como el propietario del apartamento 302 de la Torre 1: saldo, estado de cuenta, hogar, vehículos y mascotas.',
-      cta: 'Abrir la app de residentes',
-    },
-  ],
-}
 
 /* ------------------------------------------------------------------ */
 /* 2026 redesign: groupings and copy for the illustrated sections      */

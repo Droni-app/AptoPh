@@ -57,7 +57,7 @@ const chips = {
             Empieza gratis {{ TRIAL_DAYS }} días
             <ArrowRight class="size-4.5" aria-hidden="true" />
           </a>
-          <a href="#demo" class="btn-ghost btn-lg">Ver la demo en vivo</a>
+          <a href="#como-funciona" class="btn-ghost btn-lg">Ver cómo funciona</a>
         </div>
 
         <ul

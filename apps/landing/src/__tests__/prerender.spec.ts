@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { createSSRApp } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import App from '../App.vue'
-import { demo, faqs, features } from '../content'
+import { faqs, features } from '../content'
 import { headTags, structuredData } from '../seo'
 import { MINIMUM_MONTHLY, PRICE_PER_UNIT, formatCop } from '@aptoph/shared'
 
@@ -31,12 +31,11 @@ describe('landing prerender', () => {
     expect(html).not.toContain('Empresarial')
   })
 
-  it('publishes the demo accounts', async () => {
+  it('does not publish demo accounts', async () => {
     const html = await renderToString(createSSRApp(App))
 
-    expect(html).toContain('id="demo"')
-    for (const account of demo.accounts) expect(html).toContain(account.email)
-    expect(html).toContain(demo.password)
+    expect(html).not.toContain('id="demo"')
+    expect(html).not.toContain('@demo.test')
   })
 
   it('builds FAQ structured data from the same content', () => {

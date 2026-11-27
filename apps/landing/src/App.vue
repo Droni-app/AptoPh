@@ -6,7 +6,6 @@ import FeaturesSection from './components/FeaturesSection.vue'
 import ProfilesSection from './components/ProfilesSection.vue'
 import PlatformSection from './components/PlatformSection.vue'
 import StepsSection from './components/StepsSection.vue'
-import DemoSection from './components/DemoSection.vue'
 import PricingSection from './components/PricingSection.vue'
 import SecuritySection from './components/SecuritySection.vue'
 import FaqSection from './components/FaqSection.vue'
@@ -30,7 +29,6 @@ import MobileCtaBar from './components/MobileCtaBar.vue'
     <PlatformSection />
     <StepsSection />
     <PricingSection />
-    <DemoSection />
     <SecuritySection />
     <FaqSection />
     <CtaSection />

@@ -44,7 +44,7 @@ import AuditLog from '#models/tenants/audit_log'
  *   admin@demo.test      → backoffice (administrator)
  *   residente@demo.test  → resident web app (owner of Torre 1 · 302)
  *
- * Runs on every deploy (pre-deploy job) and in development. Each run wipes the demo
+ * Development only: production starts empty (README, Despliegue). Each run wipes the demo
  * conjunto's data and recreates it, so whatever visitors change is reset and the
  * dates stay relative to today. The demo users only belong to this conjunto.
  *
@@ -173,7 +173,7 @@ const plate = (i: number) =>
 const money = (value: number) => value.toFixed(2)
 
 export default class extends BaseSeeder {
-  static environment = ['production', 'development']
+  static environment = ['development']
 
   async run() {
     const tenant = await Tenant.updateOrCreate(

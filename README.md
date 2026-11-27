@@ -120,20 +120,19 @@ pnpm --filter @aptoph/api exec node ace db:seed --files database/seeders/conjunt
 La unidad 101 trae además un familiar, dos vehículos, una mascota y dos cuotas de administración
 (la del mes anterior abonada y vencida, la del mes actual pendiente) para ver la app de residentes.
 
-### Conjunto demo público
+### Conjunto demo
 
 `demo_seeder` crea **Altos del Parque (Demo)**: 3 torres, 72 apartamentos, parqueaderos y depósitos,
 con registros en todos los módulos (ocupantes, vehículos, mascotas, cuotas, pagos, zonas comunes y
-reservas, comunicados, PQRS, visitas, paquetes, documentos y auditoría). Las credenciales se publican
-en la landing (sección «Demo»):
+reservas, comunicados, PQRS, visitas, paquetes, documentos y auditoría):
 
 | Correo (contraseña `demo1234`) | Acceso |
 | --- | --- |
 | `admin@demo.test` | Backoffice, administración |
 | `residente@demo.test` | App web, propietario de Torre 1 · 302 |
 
-Corre en `development` y `production`, y en cada ejecución borra y recrea los datos del conjunto
-demo (los usuarios demo solo pertenecen a ese conjunto).
+Solo corre en `development`: producción no tiene datos demo. En cada ejecución borra y recrea los
+datos del conjunto.
 
 ## Backoffice (`apps/backoffice`)
 
@@ -224,8 +223,8 @@ Cada push a `main` despliega solo.
 | `api.aptoph.com` | API AdonisJS | 512 MB, $5/mes |
 | — | PostgreSQL 18 administrado `aptoph-db` (nyc1), base `aptoph` | $15/mes |
 
-Antes de cada despliegue, el job `migrate` corre las migraciones y `demo_seeder`, que reinicia el
-conjunto demo público. Los secretos (`APP_KEY`, `SMTP_*`) solo viven cifrados en la app: para
+Antes de cada despliegue, el job `migrate` corre solo las migraciones: producción arranca vacía, sin
+datos demo ni seeders, y cada conjunto se crea desde el registro (`admin.aptoph.com/registro`). Los secretos (`APP_KEY`, `SMTP_*`) solo viven cifrados en la app: para
 cambiar la configuración parte de `doctl apps spec get <id>` en vez de reenviar `.do/app.yaml`, que
 tiene marcadores `__…__` en su lugar.
 
@@ -234,4 +233,6 @@ tiene marcadores `__…__` en su lugar.
 - [Modelo de datos](docs/database-model.md)
 - [Autenticación (access tokens)](docs/authentication.md)
 - [Finanzas y contabilidad](docs/finance.md)
+- [Comunicados](docs/announcements.md)
+- [Importar torres, unidades y personas](docs/import.md)
 - [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens

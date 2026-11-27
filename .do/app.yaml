@@ -116,7 +116,8 @@ jobs:
     build_command: pnpm turbo run build --filter=@aptoph/api...
     instance_count: 1
     instance_size_slug: apps-s-1vcpu-0.5gb
-    run_command: cd apps/api/build && node ace migration:run --force && node ace db:seed --files database/seeders/demo_seeder.ts
+    # Migrations only: production starts empty (no demo data, no seeders)
+    run_command: cd apps/api/build && node ace migration:run --force
     envs: *api_envs
 
 static_sites:
