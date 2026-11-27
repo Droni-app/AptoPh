@@ -63,5 +63,6 @@ export const controllers = {
   },
   tickets: {
     ResidentTickets: () => import('#controllers/tickets/resident_tickets_controller'),
+    Tickets: () => import('#controllers/tickets/tickets_controller'),
   },
 }

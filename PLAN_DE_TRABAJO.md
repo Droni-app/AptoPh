@@ -3,7 +3,7 @@
 Hoja de ruta del producto por módulos: qué hay hoy, qué falta, qué tener en cuenta y en qué orden
 trabajarlo. Actualízalo al cerrar cada entrega (marca ✅ y mueve lo que cambie de prioridad).
 
-Última revisión: 18 de noviembre de 2026.
+Última revisión: 27 de noviembre de 2026 (tras la primera prueba punta a punta en producción).
 
 ## Índice
 
@@ -12,36 +12,40 @@ trabajarlo. Actualízalo al cerrar cada entrega (marca ✅ y mueve lo que cambie
 3. [Reglas para todo módulo](#3-reglas-para-todo-módulo)
 4. [Módulos](#4-módulos)
 5. [Pendientes operativos inmediatos](#5-pendientes-operativos-inmediatos)
+6. [Pendientes para producción con calidad](#6-pendientes-para-producción-con-calidad)
 
 ---
 
 ## 1. Estado actual
 
-El modelo de datos está completo para el núcleo (todas las tablas de `docs/database-model.md`
-tienen migración y modelo). Lo que falta es, sobre todo, **API y pantallas de gestión en el
-backoffice**: hoy el administrador solo maneja la estructura del conjunto, mientras que el portal de
-residentes ya consume varios módulos que nadie puede administrar desde la web.
+Producción (`aptoph.com`) está desplegada y vacía, lista para el primer conjunto: cada conjunto
+se crea desde el registro y cada push a `main` despliega solo. El núcleo administrativo
+(estructura, censo, importación, cartera, recaudo, presupuesto, contabilidad y comunicados) está
+completo. Lo que falta es, sobre todo, la **gestión en el backoffice de los módulos que el portal
+de residentes ya usa** (PQRS, reservas, portería) y el endurecimiento para operar con clientes
+reales (sección 6).
 
 | Módulo | API | Backoffice | Portal residentes | Móvil |
 | --- | --- | --- | --- | --- |
-| Cuenta, acceso y suscripción | 🟡 login, registro, logout, plan | 🟡 login, registro, plan | 🟡 login, perfil | ⬜ |
-| Estructura y censo | ✅ torres, unidades, ocupantes | ✅ | ✅ hogar, vehículos, mascotas | ⬜ |
+| Cuenta, acceso y suscripción | ✅ (Wompi en sandbox) | ✅ | ✅ | ⬜ |
+| Estructura y censo | ✅ torres, unidades, ocupantes, importación CSV | ✅ | ✅ hogar, vehículos, mascotas | ⬜ |
 | Cartera (cuotas) | ✅ | ✅ | ✅ estado de cuenta | ⬜ |
 | Pagos y recaudo | 🟡 manual, sin pasarela | ✅ | ✅ reportar pago | ⬜ |
 | Zonas comunes y reservas | 🟡 solo residente | ⬜ | ✅ | ⬜ |
-| Comunicados | ⬜ (solo tablas) | ⬜ | ⬜ | ⬜ |
-| PQRS y mantenimiento | 🟡 solo residente | ⬜ | ✅ | ⬜ |
+| Comunicados | ✅ texto con formato, imagen, correo | ✅ | ✅ | ⬜ |
+| PQRS y mantenimiento | ✅ bandeja, asignación, notas internas, plazos, correo | ✅ | ✅ | ⬜ |
 | Portería, visitas y paquetes | 🟡 solo residente | ⬜ | ✅ | ⬜ |
 | Documentos | ⬜ (solo tablas) | ⬜ | ⬜ | ⬜ |
 | Auditoría y reportes | ⬜ (solo tablas) | ⬜ | — | — |
-| Notificaciones | 🟡 correo de bienvenida | — | ⬜ | ⬜ |
+| Notificaciones | 🟡 cuenta, invitaciones, plan, comunicados | — | ⬜ | ⬜ |
 | Asambleas | ⬜ | ⬜ | ⬜ | ⬜ |
 | Presupuesto, gastos y contabilidad | ✅ | ✅ | — | — |
 
 ✅ hecho · 🟡 parcial · ⬜ sin empezar · — no aplica
 
-Los datos del conjunto demo (`demo_seeder`) ya cubren todos los módulos, así que cada pantalla nueva
-se puede probar con datos reales desde el primer día.
+Los datos del conjunto demo (`demo_seeder`, solo en desarrollo) cubren todos los módulos, así que
+cada pantalla nueva se puede probar con datos reales desde el primer día. Producción no tiene
+datos demo.
 
 ---
 
@@ -59,20 +63,20 @@ Sin esto un administrador no puede operar ni invitar a su gente.
 2. ✅ **Cartera desde el backoffice**: conceptos de cobro, generación mensual de cuotas por
    coeficiente, cobros puntuales e intereses de mora. Es el corazón del producto. *(4.3)*
 3. ✅ **Registro manual de pagos** con aplicación a cargos y paz y salvo. *(4.4)*
-4. **Gestión de PQRS en el backoffice**: los residentes ya radican y nadie las responde. *(4.7)*
+4. ✅ **Gestión de PQRS en el backoffice**: bandeja, asignación, respuestas y notas internas. *(4.7)*
 5. **Gestión de reservas en el backoffice**: zonas comunes y aprobación de reservas. *(4.5)*
 
 ### Fase 2 — Operación diaria completa (P1)
 
-6. **Importación del censo desde Excel**: la landing promete migración sin costo; mientras llega,
-   la migración la hace el equipo de AptoPH. *(4.2)*
+6. ✅ **Importación del censo desde CSV** con vista previa e importación por fila. *(4.2)*
 7. **Portería para vigilantes**: registrar ingresos de visitas y recepción de paquetes. *(4.8)*
-8. **Comunicados** con confirmación de lectura. *(4.6)*
+8. ✅ **Comunicados** con confirmación de lectura, texto con formato e imagen. *(4.6)*
 9. **Notificaciones por correo** de los eventos clave (cobro emitido, pago aplicado, reserva,
    paquete, respuesta a PQRS). *(4.11)*
 10. **Documentos del conjunto**. *(4.9)*
 11. **Auditoría y reportes** (cartera por edades, recaudo del mes, exportar a Excel). *(4.10)*
-12. **Facturación del SaaS** y activación sin comandos manuales. *(4.1)*
+12. 🟡 **Facturación del SaaS**: pago con Wompi hecho; falta pasar a llaves de producción y la
+    factura electrónica (6.1). *(4.1)*
 
 ### Fase 3 — Crecimiento y diferenciación (P2)
 
@@ -127,8 +131,9 @@ Aplican a cualquier funcionalidad nueva; un módulo no se da por terminado si no
 
 ### 4.1 Cuenta, acceso y suscripción
 
-**Hay hoy:** login, registro de conjuntos con prueba de 30 días, logout, perfil, selección de
-conjunto, pantalla de plan con pago en línea (Wompi), comando `subscription:activate`.
+**Hay hoy:** login, registro de conjuntos con prueba de 30 días y aceptación de términos con
+evidencia (`legal_acceptances`), logout, perfil, selección de conjunto, pantalla de plan con pago en
+línea (Wompi, hoy en sandbox) y plan único de max(50.000, unidades × 500) COP al mes.
 
 **Hecho** (noviembre 2026)
 - [x] **Invitaciones** (P0): por correo a personal y residentes, también desde la ficha de la
@@ -151,8 +156,8 @@ conjunto, pantalla de plan con pago en línea (Wompi), comando `subscription:act
 - [x] Día de corte, tasa de mora y demás reglas financieras: Finanzas → Configuración (4.3).
 - [ ] Logo del conjunto.
 - [ ] Cambio de correo con confirmación.
-- [ ] Facturación del SaaS (P1): facturas del plan, pago y activación automática; recordatorios al
-      vencer la prueba; estados `past_due` y `suspended`.
+- [ ] Wompi con llaves de producción y factura electrónica del plan (ver 6.1).
+- [ ] Recordatorios por correo antes de vencer la prueba (7, 3 y 1 día).
 - [ ] Panel de superadmin (`is_platform_admin`): conjuntos, suscripciones, soporte.
 - [ ] Plan Empresarial (P2): una administradora con varios conjuntos y vista consolidada.
 
@@ -169,8 +174,13 @@ conjunto, pantalla de plan con pago en línea (Wompi), comando `subscription:act
 el residente gestiona su hogar, vehículos y mascotas.
 
 **Falta**
-- [ ] **Importación desde Excel/CSV** (P1): torres, unidades, coeficientes y ocupantes, con
-      plantilla descargable, vista previa, validación por fila y reporte de errores.
+- [x] **Importación desde CSV** (docs/import.md): torres, unidades, coeficientes y personas, con
+      archivo de ejemplo, vista previa de nuevos y actualizados, errores por columna e importación
+      o descarte por fila.
+- [ ] Importación: columna «invitar» para enviar la invitación al portal al importar.
+- [ ] Importación: marcar Ocupada una unidad existente al importarle una persona si la fila no trae
+      estado.
+- [ ] Importación de vehículos y mascotas, y de saldos iniciales de cartera.
 - [ ] Validar que los coeficientes sumen 1 (o 100 %) y mostrar la diferencia en el backoffice.
 - [ ] Vehículos y mascotas visibles y editables desde el backoffice (portería los necesita).
 - [ ] Historial de ocupantes (quién vivió y cuándo) en vez de borrar.
@@ -263,9 +273,13 @@ cancela.
 - [x] Envío por correo al publicar (también los programados), una sola vez.
 - [x] Cupo de 3.000 correos masivos al mes por conjunto, con paquetes adicionales de 3.000 por
       $10.000 que pide la administración y activa AptoPH (docs/email-quota.md).
+- [x] Editor de texto con formato (saneado en la API) e imagen o afiche por comunicado, también en
+      el correo con un enlace firmado que no vence.
 
 **Falta**
 - [ ] Avisos push en la app móvil.
+- [ ] Vista previa del correo antes de publicar y envío de prueba al administrador.
+- [ ] Comprimir y redimensionar la imagen al subirla (hoy se guarda tal cual, hasta 10 MB).
 
 **Tener en cuenta**
 - Las convocatorias a asamblea tienen requisitos de anticipación y medio (Ley 675); cuando llegue
@@ -275,19 +289,23 @@ cancela.
 
 ### 4.7 PQRS y mantenimiento
 
-**Hay hoy:** el residente radica, consulta y comenta sus solicitudes.
+**Hay hoy:** el residente radica, consulta y comenta sus solicitudes; el backoffice las gestiona
+(docs/tickets.md).
 
 **Falta**
-- [ ] **Bandeja en el backoffice** (P0): filtros por estado, tipo, torre y fecha.
-- [ ] Asignar a una persona del personal, cambiar estado y responder.
-- [ ] Comentarios internos que el residente no ve.
-- [ ] Adjuntar fotos.
-- [ ] Tiempos de respuesta y alertas de solicitudes vencidas.
+- [x] **Bandeja en el backoffice** (P0): filtros por estado, tipo, prioridad, torre, responsable,
+      fecha y vencidas; búsqueda por número, asunto o unidad.
+- [x] Asignar a una persona del personal, cambiar estado y prioridad, y responder.
+- [x] Comentarios internos que el residente no ve.
+- [x] Adjuntar fotos desde el backoffice.
+- [ ] Adjuntar fotos desde el portal de residentes.
+- [x] Tiempos de respuesta por prioridad y marca de vencidas.
+- [ ] Alertas por correo de solicitudes vencidas.
 - [ ] Encuesta de satisfacción al cerrar.
 
 **Tener en cuenta**
-- El residente debe recibir aviso de cada respuesta (correo, luego push).
-- `staff` ve solo lo que tiene asignado.
+- ✅ El residente recibe correo de cada respuesta y cambio de estado (falta push).
+- ✅ `staff` ve solo lo que tiene asignado; el consejo solo consulta.
 
 ---
 
@@ -340,12 +358,14 @@ cancela.
 
 ### 4.11 Notificaciones
 
-**Hay hoy:** correo de bienvenida y aviso a ventas al pedir activación (`@adonisjs/mail`, Mailjet).
+**Hay hoy:** bienvenida, verificación de correo, invitación, recuperación y cambio de contraseña,
+correos del plan y comunicados (`@adonisjs/mail`, Mailjet). Se envían con `sendLater`, en memoria.
 
 **Falta**
-- [ ] Correos transaccionales (P1): invitación, recuperación de contraseña, cobro emitido, pago
-      aplicado, reserva aprobada o rechazada, paquete recibido, respuesta a PQRS, comunicado.
-- [ ] Envío en cola (no bloquear la petición) y reintentos.
+- [ ] Correos transaccionales (P1): cobro emitido, pago aplicado o rechazado, reserva aprobada o
+      rechazada, paquete recibido (la respuesta a PQRS ya avisa por correo).
+- [ ] Cola durable con reintentos (ver 6.2): hoy un reinicio del servidor pierde los correos en
+      cola.
 - [ ] Preferencias del usuario: qué avisos recibe y por qué canal.
 - [ ] Centro de notificaciones en el portal (tabla `notifications`).
 - [ ] Push en la app móvil (`device_tokens`, P2).
@@ -412,11 +432,128 @@ visitas, paquetes, PQRS, comunicados) más notificaciones push. Después, una ve
 
 ## 5. Pendientes operativos inmediatos
 
-Antes del próximo despliegue a producción:
+- [ ] Quitar de la spec viva de DigitalOcean las variables que ya no se usan (`SESSION_DRIVER`,
+      `WEB_URL`), partiendo de `doctl apps spec get`.
+- [ ] Borrar del bucket de Spaces los archivos huérfanos de antes del reinicio de producción
+      (carpetas `demo/` y `reservas-del-bosque/`).
+- [ ] Desarrollo local con su propio bucket (o `DRIVE_DISK=fs`): el `.env` local hoy escribe en el
+      bucket de producción.
+- [ ] Borrar `docs/brand/` (marca anterior) moviendo antes `og-image.png` a `branding/`, y
+      actualizar `apps/landing/README.md`.
+- [x] Producción reiniciada sin datos demo; respaldo previo en `~/aptoph-backups/`.
+- [x] Job `migrate` solo con migraciones; despliegue automático al hacer push a `main`.
 
-- [ ] Actualizar la spec de DigitalOcean (`doctl apps spec get` → editar → `update`): quitar
-      `SESSION_DRIVER`, `WEB_URL` y `production_seeder` del job `migrate`.
-- [ ] Agregar `BACKOFFICE_URL=https://admin.aptoph.com` al componente del API.
-- [ ] Avisar que, tras el cambio a access tokens, todos los usuarios deben iniciar sesión otra vez.
-- [ ] Borrar `docs/brand/` (marca anterior) y la referencia en `apps/landing/README.md`, si se
-      confirma que ya no se usa.
+---
+
+## 6. Pendientes para producción con calidad
+
+Lo que recomiendo resolver para operar con conjuntos reales y cobrarles. Ordenado por prioridad:
+6.1 antes del primer conjunto que pague; 6.2 durante el primer mes; el resto según la demanda.
+
+### 6.1 Antes del primer conjunto que pague (bloqueantes)
+
+**Cobro y obligaciones legales**
+- [ ] **Wompi en producción**: hoy la API usa `WOMPI_ENV=sandbox` con llaves `pub_test_`, así que
+      los pagos del plan son simulados. Poner las llaves `prod_` como secretos y registrar la URL
+      del webhook (`https://api.aptoph.com/api/v1/webhooks/wompi`) en el panel de Wompi.
+- [ ] **Factura electrónica (DIAN)** de cada cobro del plan: integrar un proveedor tecnológico
+      (Siigo, Alegra, Facture…) o emitirla desde el software contable de Droni.co.
+- [ ] **Revisión por un abogado** de términos, tratamiento de datos, encargo y cookies, y por un
+      contador del IVA del plan y de la retención. Confirmar los proveedores listados (Cloudflare
+      se agregó por suposición).
+- [ ] Registrar las bases de datos de Droni.co en el RNBD de la SIC si le aplica.
+- [ ] **Borrado a los 30 días de terminado el servicio**: los términos lo prometen y no está
+      automatizado. Job que exporte y borre los datos y archivos del conjunto, con aviso previo.
+- [ ] Exportación completa de los datos del conjunto (censo, cartera, contabilidad, archivos) para
+      cumplir lo prometido en los 30 días de consulta.
+
+**Despliegue y datos**
+- [ ] **Migraciones aditivas desde ya**: con datos reales ya no se editan las migraciones
+      `createTable` ni se recrea la base. Cada cambio es una migración nueva (`alterTable`) en la
+      carpeta de su módulo; actualizar la regla del README y de la sección 3.
+- [ ] **CI en GitHub Actions**: lint, typecheck, tests y build en cada push y pull request, y
+      protección de `main` para que solo se despliegue lo que pasó las pruebas. Hoy un push con un
+      error llega a producción (así fallaron 4 despliegues seguidos el 27 de noviembre).
+- [ ] **Ambiente de staging** (`staging.aptoph.com`, base aparte): probar ahí antes de pasar a
+      `main`, o desplegar producción solo desde etiquetas.
+- [ ] Respaldos: los diarios de DigitalOcean (7 días) más un `pg_dump` semanal fuera de
+      DigitalOcean; versionado del bucket de Spaces; **probar una restauración**.
+
+**Seguridad y monitoreo**
+- [ ] Monitoreo de errores (Sentry o similar) en la API y en las dos apps, con alertas.
+- [ ] Alertas de disponibilidad (uptime de DigitalOcean o externo) para `api`, `admin` y `web`, y
+      de uso de CPU, memoria y conexiones de la base.
+- [ ] SPF, DKIM y DMARC de `aptoph.com` verificados en Mailjet, para que las invitaciones y
+      comunicados no lleguen a spam.
+- [ ] Encabezados de seguridad: HSTS, CSP, `X-Frame-Options` y `Referrer-Policy` en la API
+      (`@adonisjs/shield`) y en los sitios estáticos.
+
+### 6.2 Durante el primer mes
+
+**Confiabilidad**
+- [ ] **Cola de correos durable** (tabla en Postgres o Redis) con reintentos y registro de
+      entregas: `sendLater` en memoria pierde los correos si el servidor se reinicia, y un
+      comunicado a 800 unidades se manda de una vez. Enviar en lotes según el límite de Mailjet.
+- [ ] Sacar el scheduler (comunicados programados, cobros del plan) del servidor web a un worker
+      o job de App Platform, con bloqueo, para poder tener más de una instancia de la API.
+- [ ] Prueba de carga: facturar, importar y enviar un comunicado en un conjunto de 800 unidades
+      (`conjunto_grande_seeder`) y medir tiempos; revisar índices con `EXPLAIN`.
+- [ ] Límite de tamaño y compresión de imágenes y adjuntos antes de guardarlos.
+
+**Pruebas**
+- [ ] Pruebas punta a punta (Playwright) de los flujos críticos: registro, importar el censo,
+      configurar tarifas, facturar el mes, registrar un pago, publicar un comunicado e invitar y
+      entrar como residente. Correrlas en CI contra staging.
+- [ ] Pruebas de componentes en el backoffice y el portal: hoy solo hay pruebas de los stores de
+      sesión.
+
+**Operación de AptoPH**
+- [ ] **Panel de superadmin** (`is_platform_admin`): conjuntos, suscripciones, pagos, activar
+      paquetes de correos (hoy es manual), entrar como soporte con registro en auditoría.
+- [ ] Auditoría escrita de verdad: hoy existe la tabla `audit_logs` pero nada escribe en ella.
+      Registrar cambios de dinero, censo, permisos y configuración (regla de la sección 3).
+- [ ] Canal de soporte visible en las apps (correo o WhatsApp) y centro de ayuda con guías
+      cortas: primeros pasos, importar el censo, facturar el mes, registrar pagos.
+- [ ] **Primeros pasos del administrador**: lista guiada en el inicio (crear torres o importar,
+      revisar coeficientes, configurar tarifas, invitar residentes, primera facturación).
+- [ ] Recordatorios del fin de la prueba gratis y del pago del plan.
+
+### 6.3 Funcionalidad que los conjuntos van a pedir primero
+
+- [x] **PQRS en el backoffice** (4.7): bandeja, asignación, respuestas, notas internas y correo.
+- [ ] **Reservas en el backoffice** (4.5): crear zonas comunes y aprobar o rechazar reservas.
+- [ ] **Portería** para vigilantes (4.8): visitas y paquetes; hoy solo el residente los usa.
+- [ ] **PDF** del estado de cuenta, la cuenta de cobro, el recibo de caja y el paz y salvo, con
+      envío por correo (4.3, 4.4).
+- [ ] Correo al residente al emitir la cuota mensual, con su saldo y el enlace al portal.
+- [ ] **Documentos del conjunto** (4.9): reglamento, actas y estados financieros en el portal.
+- [ ] Validar que los coeficientes sumen 100 % y mostrar la diferencia (4.2).
+- [ ] Vehículos y mascotas en el backoffice (portería los necesita).
+- [ ] Conciliación bancaria importando el extracto (4.4).
+- [ ] Pagos en línea de los residentes hacia la cuenta del conjunto (4.4): cada conjunto con su
+      propio comercio en Wompi.
+- [ ] Indicadores reales en el inicio del backoffice: recaudo del mes, cartera, PQRS abiertas.
+
+### 6.4 Experiencia y calidad de la interfaz
+
+- [ ] Revisión del backoffice en celular y tablet: tablas anchas (finanzas, cartera) y modales
+      largos.
+- [ ] Auditoría de accesibilidad (contraste en modo oscuro, foco, lectores de pantalla) con axe.
+- [ ] Mensajes de error de la API siempre en español y accionables; páginas de error y de
+      mantenimiento con la marca.
+- [ ] Estados vacíos con siguiente paso en todos los módulos (algunos solo dicen «No hay
+      registros»).
+- [ ] Logo del conjunto en las apps, los correos y los PDF (4.1).
+- [ ] Cambio de correo con confirmación (4.1).
+- [ ] Analítica de uso respetuosa de la privacidad (Plausible o similar), actualizando la
+      política de cookies.
+
+### 6.5 Crecimiento (P2)
+
+- [ ] App móvil Flutter para residentes con notificaciones push (4.12); después, una para
+      portería.
+- [ ] Asambleas virtuales con quórum y votación por coeficiente (4.13).
+- [ ] Plan Empresarial: administradoras con varios conjuntos y vista consolidada (4.1).
+- [ ] Integración con programas contables (exportación en su formato de importación) e
+      información exógena (4.14).
+- [ ] Autenticación en dos pasos para administración y contabilidad.

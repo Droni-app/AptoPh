@@ -30,6 +30,7 @@ const groups = computed(() =>
     canReadFinance: tenant.canReadFinance,
     canManageFinance: tenant.canManageFinance,
     canManage: tenant.canManage,
+    canReadTickets: tenant.canReadTickets,
     hasSubscription: subscription.current !== null,
   }),
 )

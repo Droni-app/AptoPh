@@ -21,6 +21,7 @@ import type PropertyUnitTransformer from '#transformers/property/unit_transforme
 import type TenantsMemberTransformer from '#transformers/tenants/member_transformer'
 import type TenantsTenantTransformer from '#transformers/tenants/tenant_transformer'
 import type TicketsResidentTransformer from '#transformers/tickets/resident'
+import type TicketsTicketTransformer from '#transformers/tickets/ticket_transformer'
 
 export namespace Data {
   export namespace Amenities {
@@ -105,6 +106,10 @@ export namespace Data {
     export type Resident = InferData<TicketsResidentTransformer>
     export namespace Resident {
       export type Variants = InferVariants<TicketsResidentTransformer>
+    }
+    export type Ticket = InferData<TicketsTicketTransformer>
+    export namespace Ticket {
+      export type Variants = InferVariants<TicketsTicketTransformer>
     }
   }
 }

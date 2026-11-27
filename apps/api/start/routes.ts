@@ -13,6 +13,8 @@ import {
   FINANCE_ATTACHMENT_OWNER_TYPES,
   FINANCE_READ_ROLES,
   FINANCE_WRITE_ROLES,
+  TICKET_READ_ROLES,
+  TICKET_WORK_ROLES,
 } from '@aptoph/shared'
 import { throttleBilling, throttlePublic, throttleSignup } from '#start/limiter'
 
@@ -45,6 +47,7 @@ const ResidentParcelsController = () => import('#controllers/gatehouse/resident_
 const ResidentBookingsController = () =>
   import('#controllers/amenities/resident_bookings_controller')
 const ResidentTicketsController = () => import('#controllers/tickets/resident_tickets_controller')
+const TicketsController = () => import('#controllers/tickets/tickets_controller')
 const ResidentFinanceController = () => import('#controllers/finance/resident_finance_controller')
 const ResidentAnnouncementsController = () =>
   import('#controllers/announcements/resident_announcements_controller')
@@ -69,6 +72,8 @@ const AttachmentsController = () => import('#controllers/finance/attachments_con
 const backofficeRead = { roles: [...BACKOFFICE_ROLES] }
 const backofficeWrite = { roles: [EnrollmentRole.Administrator] }
 const announcementsWrite = { roles: [...ANNOUNCEMENT_WRITE_ROLES] }
+const ticketsRead = { roles: [...TICKET_READ_ROLES] }
+const ticketsWork = { roles: [...TICKET_WORK_ROLES] }
 const financeRead = { roles: [...FINANCE_READ_ROLES] }
 const financeWrite = { roles: [...FINANCE_WRITE_ROLES] }
 /** `:ownerType` of the finance attachment routes */
@@ -296,6 +301,37 @@ router
       })
       .as('announcements')
       .use([middleware.auth(), middleware.tenant(announcementsWrite), middleware.subscription()])
+
+    /**
+     * Back-office: PQRS. Administration and council read every ticket, staff only
+     * the ones assigned to them; administration and staff answer. docs/tickets.md
+     */
+    router
+      .group(() => {
+        router.get('tickets', [TicketsController, 'index']).as('index')
+        router.get('tickets/stats', [TicketsController, 'stats']).as('stats')
+        router.get('tickets/assignees', [TicketsController, 'assignees']).as('assignees')
+        router
+          .get('tickets/attachments/:id/url', [TicketsController, 'attachmentUrl'])
+          .as('attachments.url')
+        router.get('tickets/:id', [TicketsController, 'show']).as('show')
+      })
+      .as('tickets')
+      .use([middleware.auth(), middleware.tenant(ticketsRead)])
+
+    router
+      .group(() => {
+        router.patch('tickets/:id', [TicketsController, 'update']).as('update')
+        router.post('tickets/:id/comments', [TicketsController, 'comment']).as('comments.store')
+        router
+          .post('tickets/:id/attachments', [TicketsController, 'attach'])
+          .as('attachments.store')
+        router
+          .delete('tickets/attachments/:id', [TicketsController, 'detach'])
+          .as('attachments.destroy')
+      })
+      .as('tickets.write')
+      .use([middleware.auth(), middleware.tenant(ticketsWork), middleware.subscription()])
 
     /**
      * Back-office: payments to AptoPH with Wompi (administration, also while the

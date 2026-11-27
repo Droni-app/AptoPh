@@ -51,6 +51,8 @@ export function navigation(options: {
   canManageFinance: boolean
   /** Administration: imports */
   canManage: boolean
+  /** PQRS: administration, council and staff */
+  canReadTickets: boolean
   hasSubscription: boolean
 }): NavGroup[] {
   const finance = financeLinks(options.canManageFinance)
@@ -66,7 +68,10 @@ export function navigation(options: {
     },
     {
       label: 'Comunicación',
-      items: [link('Comunicados', 'mdi-bullhorn-outline', 'announcements')],
+      items: [
+        link('Comunicados', 'mdi-bullhorn-outline', 'announcements'),
+        ...(options.canReadTickets ? [link('PQRS', 'mdi-message-alert-outline', 'tickets')] : []),
+      ],
     },
   ]
   if (options.canReadFinance)

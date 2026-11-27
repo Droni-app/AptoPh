@@ -15,6 +15,8 @@ declare module 'vue-router' {
     finance?: boolean
     /** Administration only */
     manage?: boolean
+    /** PQRS: administration, council and staff */
+    tickets?: boolean
     title?: string
   }
 }
@@ -105,6 +107,12 @@ const router = createRouter({
           name: 'announcements',
           component: () => import('@/views/AnnouncementsView.vue'),
           meta: { tenant: true, title: 'Comunicados' },
+        },
+        {
+          path: 'pqrs',
+          name: 'tickets',
+          component: () => import('@/views/TicketsView.vue'),
+          meta: { tenant: true, tickets: true, title: 'PQRS' },
         },
         {
           path: 'finanzas',
@@ -249,6 +257,7 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.finance && !tenant.canReadFinance) return { name: 'dashboard' }
   if (to.meta.manage && !tenant.canManage) return { name: 'dashboard' }
+  if (to.meta.tickets && !tenant.canReadTickets) return { name: 'dashboard' }
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails

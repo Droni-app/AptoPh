@@ -29,7 +29,8 @@ Cada conjunto tiene su carpeta, con el `slug` del conjunto:
     recaudos/{yyyy}/{mm}/…                             ← payment
     comprobantes/{yyyy}/{mm}/…                         ← journal_entry (notas, traslados)
   comunicados/{yyyy}/{mm}/…                            ← announcement
-  documentos/…  pqrs/…  paquetes/…                     (siguientes módulos)
+  pqrs/{yyyy}/{mm}/…                                   ← ticket (docs/tickets.md)
+  documentos/…  paquetes/…                             (siguientes módulos)
 ```
 
 - Año y mes de la subida, en la zona horaria del conjunto.
@@ -113,5 +114,5 @@ el mismo slug que uno de producción (por ejemplo `demo`), sus archivos quedan e
 
 ## 6. Pendiente
 
-- Documentos del conjunto (tabla `documents`), fotos de PQRS y paquetes, avatar y logo: usan el
+- Documentos del conjunto (tabla `documents`), fotos de PQRS del residente y paquetes, avatar y logo: usan el
   mismo disco y la misma convención de carpetas.

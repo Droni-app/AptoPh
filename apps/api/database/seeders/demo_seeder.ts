@@ -201,12 +201,17 @@ export default class extends BaseSeeder {
       { email: 'residente@demo.test' },
       { fullName: 'Camilo Residente', password: DEMO_PASSWORD, isPlatformAdmin: false }
     )
+    // Staff: sees in the back-office only the PQRS assigned to them
+    const staff = await User.updateOrCreate(
+      { email: 'mantenimiento@demo.test' },
+      { fullName: 'Jorge Mantenimiento', password: DEMO_PASSWORD, isPlatformAdmin: false }
+    )
 
     await db.transaction(async (trx) => {
       // The demo users only exist in the demo conjunto
       await trx
         .from('enrollments')
-        .whereIn('user_id', [admin.id, resident.id])
+        .whereIn('user_id', [admin.id, resident.id, staff.id])
         .whereNot('tenant_id', tenant.id)
         .delete()
       await trx.from('enrollments').where('tenant_id', tenant.id).delete()
@@ -214,12 +219,13 @@ export default class extends BaseSeeder {
         [
           { tenantId: tenant.id, userId: admin.id, role: 'administrator', status: 'active' },
           { tenantId: tenant.id, userId: resident.id, role: 'resident', status: 'active' },
+          { tenantId: tenant.id, userId: staff.id, role: 'staff', status: 'active' },
         ],
         { client: trx }
       )
 
       await this.wipe(trx, tenant.id)
-      await new DemoBuilder(trx, tenant, admin, resident).build()
+      await new DemoBuilder(trx, tenant, admin, resident, staff).build()
     })
 
     // Files visitors uploaded to the demo (its rows were wiped above)
@@ -250,7 +256,8 @@ class DemoBuilder {
     trx: TransactionClientContract,
     private tenant: Tenant,
     private admin: User,
-    private resident: User
+    private resident: User,
+    private staff: User
   ) {
     this.client = { client: trx }
     this.trx = trx
@@ -1072,6 +1079,8 @@ class DemoBuilder {
         priority: 'high',
         status: 'in_progress',
         assignedToId: this.admin.id,
+        // High priority has 3 days: overdue in the bandeja
+        createdAt: this.now.minus({ days: 5 }),
         replies: [
           ['Gracias por reportarlo. El jueves pasa el técnico a revisar la cubierta.', false],
           ['El apartamento de arriba también reporta humedad: revisar bajante.', true],
@@ -1105,6 +1114,7 @@ class DemoBuilder {
         description: 'La luminaria junto al parqueadero P-12 no enciende.',
         priority: 'low',
         status: 'open',
+        assignedToId: this.staff.id,
       },
       {
         unitId: occupied[20]!.id,

@@ -7,6 +7,7 @@ import {
 import type { ApiItem, Attachment } from '@aptoph/shared'
 import { announcementsApi } from '@/api/announcements'
 import { financeApi } from '@/api/finance'
+import { ticketsApi } from '@/api/tickets'
 import { errorMessage } from '@/lib/errors'
 
 /** The endpoints that manage the attachments of each kind of record */
@@ -18,6 +19,15 @@ export function attachmentsApiFor(ownerType: AttachmentOwnerType) {
         announcementsApi.uploadAttachment(ownerId, file),
       url: announcementsApi.attachmentUrl,
       remove: announcementsApi.removeAttachment,
+    }
+  }
+  if (ownerType === 'ticket') {
+    return {
+      list: (ownerId: string) => ticketsApi.attachments(ownerId),
+      upload: (ownerId: string, file: File): Promise<ApiItem<Attachment>> =>
+        ticketsApi.uploadAttachment(ownerId, file),
+      url: ticketsApi.attachmentUrl,
+      remove: ticketsApi.removeAttachment,
     }
   }
   return {

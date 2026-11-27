@@ -970,6 +970,123 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['detach']>>>
     }
   }
+  'tickets.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/tickets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/tickets/backoffice').listTicketsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tickets.stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/tickets/stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['stats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['stats']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['stats']>>>
+    }
+  }
+  'tickets.assignees': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/tickets/assignees'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['assignees']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['assignees']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['assignees']>>>
+    }
+  }
+  'tickets.attachments.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/tickets/attachments/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/files/attachment').attachmentUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['attachmentUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tickets.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/tickets/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['show']>>>
+    }
+  }
+  'tickets.write.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/tickets/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/tickets/backoffice').updateTicketValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/tickets/backoffice').updateTicketValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tickets.write.comments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/tickets/:id/comments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/tickets/backoffice').ticketCommentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/tickets/backoffice').ticketCommentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['comment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['comment']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['comment']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tickets.write.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/tickets/:id/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/files/attachment').uploadAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/files/attachment').uploadAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['attach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'tickets.write.attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/tickets/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['detach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['detach']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tickets/tickets_controller').default['detach']>>>
+    }
+  }
   'billing.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/billing'

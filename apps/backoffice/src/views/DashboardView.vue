@@ -48,7 +48,7 @@ const stats = computed(() => [
     to: '/unidades',
   },
   { label: 'Personal activo', value: summary.value?.staff, icon: iconVisitantes, to: '/personas' },
-  { label: 'Solicitudes abiertas', value: summary.value?.openTickets, icon: iconPqrs, to: '/' },
+  { label: 'Solicitudes abiertas', value: summary.value?.openTickets, icon: iconPqrs, to: '/pqrs' },
 ])
 
 const welcome = computed(() => route.query.bienvenida === '1')

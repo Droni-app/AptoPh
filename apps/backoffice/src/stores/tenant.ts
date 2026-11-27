@@ -5,6 +5,9 @@ import {
   FINANCE_READ_ROLES,
   FINANCE_WRITE_ROLES,
   ANNOUNCEMENT_WRITE_ROLES,
+  TICKET_MANAGE_ROLES,
+  TICKET_READ_ROLES,
+  TICKET_WORK_ROLES,
   type EnrollmentRole,
   type TenantSummary,
 } from '@aptoph/shared'
@@ -43,6 +46,12 @@ export const useTenantStore = defineStore('tenant', () => {
   const canReadFinance = computed(() => hasRole(...FINANCE_READ_ROLES))
   const canManageFinance = computed(() => hasRole(...FINANCE_WRITE_ROLES))
   const canManageAnnouncements = computed(() => hasRole(...ANNOUNCEMENT_WRITE_ROLES))
+  /** PQRS: staff only see (and work on) the ones assigned to them */
+  const canReadTickets = computed(() => hasRole(...TICKET_READ_ROLES))
+  const canWorkTickets = computed(() => hasRole(...TICKET_WORK_ROLES))
+  const canManageTickets = computed(() => hasRole(...TICKET_MANAGE_ROLES))
+  /** Sees every ticket (not only the assigned ones) */
+  const seesAllTickets = computed(() => hasRole('administrator', 'council_member'))
 
   async function load() {
     const { data } = await api<{ data: TenantSummary[] }>('/api/v1/account/tenants', {
@@ -84,6 +93,10 @@ export const useTenantStore = defineStore('tenant', () => {
     canReadFinance,
     canManageFinance,
     canManageAnnouncements,
+    canReadTickets,
+    canWorkTickets,
+    canManageTickets,
+    seesAllTickets,
     load,
     select,
     reset,

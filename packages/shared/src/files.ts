@@ -16,6 +16,8 @@ export const ATTACHMENT_OWNER_TYPES = [
   'announcement',
   // Imagen (póster) de un comunicado: una por comunicado
   'announcement_image',
+  // PQRS: fotos y soportes que adjunta la administración
+  'ticket',
 ] as const
 
 export type AttachmentOwnerType = (typeof ATTACHMENT_OWNER_TYPES)[number]

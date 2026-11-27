@@ -19,6 +19,7 @@ const OWNER_TABLES: Record<AttachmentOwnerType, string> = {
   journal_entry: 'journal_entries',
   announcement: 'announcements',
   announcement_image: 'announcements',
+  ticket: 'tickets',
 }
 
 /**
@@ -32,6 +33,7 @@ const OWNER_FOLDERS: Record<AttachmentOwnerType, string> = {
   journal_entry: 'finanzas/comprobantes',
   announcement: 'comunicados',
   announcement_image: 'comunicados/imagenes',
+  ticket: 'pqrs',
 }
 
 /** How long a signed link to a file works */

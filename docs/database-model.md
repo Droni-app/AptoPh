@@ -437,6 +437,8 @@ El cuerpo es HTML saneado por la API (texto con formato); la imagen (afiche) es 
 
 `id, tenant_id, ticket_id (FK compuesta), author_id, body, is_internal (visible sólo para backoffice), created_at, updated_at`
 
+Permisos, estados, plazos y correos: `docs/tickets.md`. Adjuntos: `attachments.owner_type = 'ticket'`.
+
 ## 9. Portería y seguridad
 
 ### `visits` — visitantes

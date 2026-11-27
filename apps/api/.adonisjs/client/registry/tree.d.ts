@@ -163,6 +163,25 @@ export interface ApiDefinition {
       destroy: typeof routes['announcements.image.destroy']
     }
   }
+  tickets: {
+    index: typeof routes['tickets.index']
+    stats: typeof routes['tickets.stats']
+    assignees: typeof routes['tickets.assignees']
+    attachments: {
+      url: typeof routes['tickets.attachments.url']
+    }
+    show: typeof routes['tickets.show']
+    write: {
+      update: typeof routes['tickets.write.update']
+      comments: {
+        store: typeof routes['tickets.write.comments.store']
+      }
+      attachments: {
+        store: typeof routes['tickets.write.attachments.store']
+        destroy: typeof routes['tickets.write.attachments.destroy']
+      }
+    }
+  }
   billing: {
     show: typeof routes['billing.show']
     config: typeof routes['billing.config']

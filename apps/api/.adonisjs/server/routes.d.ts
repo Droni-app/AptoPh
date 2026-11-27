@@ -78,6 +78,15 @@ export type ScannedRoutes = {
     'announcements.image.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.index': { paramsTuple?: []; params?: {} }
+    'tickets.stats': { paramsTuple?: []; params?: {} }
+    'tickets.assignees': { paramsTuple?: []; params?: {} }
+    'tickets.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -220,6 +229,11 @@ export type ScannedRoutes = {
     'announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.readers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.index': { paramsTuple?: []; params?: {} }
+    'tickets.stats': { paramsTuple?: []; params?: {} }
+    'tickets.assignees': { paramsTuple?: []; params?: {} }
+    'tickets.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -295,6 +309,11 @@ export type ScannedRoutes = {
     'announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.readers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.index': { paramsTuple?: []; params?: {} }
+    'tickets.stats': { paramsTuple?: []; params?: {} }
+    'tickets.assignees': { paramsTuple?: []; params?: {} }
+    'tickets.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -358,6 +377,8 @@ export type ScannedRoutes = {
     'announcements.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.unpublish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.tokens.nequi': { paramsTuple?: []; params?: {} }
     'billing.tokens.daviplata': { paramsTuple?: []; params?: {} }
     'billing.tokens.daviplataOtp': { paramsTuple?: []; params?: {} }
@@ -409,6 +430,7 @@ export type ScannedRoutes = {
     'resident.vehicles.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.pets.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.household.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'units.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.update': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
@@ -442,6 +464,7 @@ export type ScannedRoutes = {
     'announcements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.image.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tickets.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.paymentMethod.destroy': { paramsTuple?: []; params?: {} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'units.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

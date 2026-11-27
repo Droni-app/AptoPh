@@ -130,6 +130,7 @@ reservas, comunicados, PQRS, visitas, paquetes, documentos y auditoría):
 | --- | --- |
 | `admin@demo.test` | Backoffice, administración |
 | `residente@demo.test` | App web, propietario de Torre 1 · 302 |
+| `mantenimiento@demo.test` | Backoffice, personal: solo las PQRS que tiene asignadas |
 
 Solo corre en `development`: producción no tiene datos demo. En cada ejecución borra y recrea los
 datos del conjunto.
