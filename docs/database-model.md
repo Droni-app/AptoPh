@@ -168,6 +168,24 @@ La gestiona `@adonisjs/auth`: un access token por sesión iniciada (ver
 [authentication.md](authentication.md)). `tokenable_id` es `uuid` y `name` guarda la app que lo pidió
 (`Backoffice`, `Portal de residentes`…).
 
+### `legal_acceptances` — evidencia de aceptación de los documentos legales
+
+Módulo `legal`. Solo inserciones: quién aceptó qué versión de cada documento, cuándo, desde qué IP y
+navegador, y en qué flujo (la Ley 1581 de 2012 exige poder probar la autorización). Las versiones
+vigentes están en `packages/shared/src/legal.ts`.
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id | uuid | |
+| user_id | uuid FK → users | `CASCADE` |
+| tenant_id | uuid FK NULL → tenants | conjunto para el que se aceptó; `SET NULL` |
+| document | varchar(30) | `terms`, `privacy`, `data_processing`, `cookies` |
+| version | varchar(10) | fecha de la versión (`2026-11-27`) |
+| context | varchar(20) | `signup` (términos, política y acuerdo de encargo), `invitation` (términos y política) |
+| ip_address | inet NULL | |
+| user_agent | varchar(500) NULL | |
+| accepted_at | timestamptz | |
+
 ## 4. Pertenencia y roles
 
 ### `enrollments` — usuario ↔ tenant ↔ rol (tabla pivote)

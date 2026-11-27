@@ -7,6 +7,7 @@ import {
   UiForm,
   UiInput,
   UiLabel,
+  UiLegalConsent,
   UiSkeleton,
   useToast,
 } from '@aptoph/ui'
@@ -27,7 +28,8 @@ const toast = useToast()
 const token = computed(() => (typeof route.query.token === 'string' ? route.query.token : ''))
 const invitation = ref<InvitationPreview | null>(null)
 const loadError = ref<string | null>(null)
-const form = ref({ fullName: '', password: '', confirmation: '' })
+const form = ref({ fullName: '', password: '', confirmation: '', acceptTerms: false })
+const siteUrl = import.meta.env.VITE_SITE_URL
 const errors = ref<Record<string, string>>({})
 const error = ref<string | null>(null)
 const loading = ref(false)
@@ -58,10 +60,15 @@ async function accept() {
     errors.value = { confirmation: 'Las contraseñas no coinciden' }
     return
   }
+  if (!form.value.acceptTerms) {
+    errors.value = { acceptTerms: 'Para continuar acepta los términos y la política de datos' }
+    return
+  }
   loading.value = true
   try {
     const { data } = await publicAuthApi.acceptInvitation({
       token: token.value,
+      acceptTerms: form.value.acceptTerms,
       device: auth.device,
       ...(invitation.value.needsPassword
         ? { fullName: form.value.fullName, password: form.value.password }
@@ -154,6 +161,12 @@ async function accept() {
         <p v-else class="text-sm text-neutral-600 dark:text-neutral-300">
           Ya tienes una cuenta en AptoPH: después de aceptar entrarás con tu contraseña de siempre.
         </p>
+        <UiLegalConsent
+          v-model="form.acceptTerms"
+          kind="invitation"
+          :site-url="siteUrl"
+          :error="errors.acceptTerms"
+        />
         <UiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
           Aceptar invitación
         </UiButton>

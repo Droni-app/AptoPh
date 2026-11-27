@@ -572,6 +572,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@aptoph/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@mdi/font':
         specifier: ^7.4.47
         version: 7.4.47

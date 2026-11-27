@@ -1,15 +1,23 @@
 import { faqs, features, site } from './content'
+import type { Page } from './pages'
 
 function escapeAttr(value: string) {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 }
 
 /** <head> tags for SEO and social sharing, injected by the prerender step */
-export function headTags(siteUrl: string) {
-  const url = `${siteUrl}/`
+export function headTags(
+  siteUrl: string,
+  page: Pick<Page, 'path' | 'title' | 'description'> = {
+    path: '/',
+    title: site.title,
+    description: site.description,
+  },
+) {
+  const url = `${siteUrl}${page.path}`
   const image = `${siteUrl}/og-image.png`
-  const title = escapeAttr(site.title)
-  const description = escapeAttr(site.description)
+  const title = escapeAttr(page.title)
+  const description = escapeAttr(page.description)
 
   return [
     `<title>${title}</title>`,
@@ -17,7 +25,7 @@ export function headTags(siteUrl: string) {
     `<link rel="canonical" href="${url}">`,
     `<link rel="alternate" hreflang="es-CO" href="${url}">`,
     `<link rel="alternate" hreflang="x-default" href="${url}">`,
-    `<meta property="og:type" content="website">`,
+    `<meta property="og:type" content="${page.path === '/' ? 'website' : 'article'}">`,
     `<meta property="og:locale" content="es_CO">`,
     `<meta property="og:site_name" content="${site.name}">`,
     `<meta property="og:title" content="${title}">`,

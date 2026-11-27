@@ -26,6 +26,7 @@ const dbConfig = defineConfig({
         paths: [
           'database/migrations/auth',
           'database/migrations/tenants',
+          'database/migrations/legal',
           'database/migrations/property',
           'database/migrations/finance',
           'database/migrations/files',

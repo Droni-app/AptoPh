@@ -9,6 +9,7 @@ import PasswordChangedMail from '#mails/auth/password_changed_mail'
 import FieldException from '#exceptions/field_exception'
 import ResourceException from '#exceptions/resource_exception'
 import SignupService, { EmailTakenError } from '#services/auth/signup_service'
+import { evidenceFrom } from '#services/legal/legal_acceptances'
 import UserTokenService from '#services/auth/user_token_service'
 import { appUrl, tokenLink } from '#services/app_urls'
 import { queueMail } from '#services/mailer'
@@ -74,7 +75,7 @@ export default class AuthController {
 
     let result
     try {
-      result = await new SignupService().register(data)
+      result = await new SignupService().register(data, evidenceFrom(ctx))
     } catch (error) {
       if (error instanceof EmailTakenError) {
         throw new FieldException(

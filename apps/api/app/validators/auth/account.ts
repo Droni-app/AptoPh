@@ -33,6 +33,8 @@ export const acceptInvitationValidator = vine.create({
   token: tokenField(),
   fullName: vine.string().trim().minLength(3).maxLength(150).optional(),
   password: newPassword().optional(),
+  /** Terms and data processing policy (Ley 1581 de 2012): recorded as evidence */
+  acceptTerms: vine.accepted(),
   device: deviceField,
 })
 

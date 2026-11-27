@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { legalUrl } from '@aptoph/shared'
 import BrandLogo from '@/components/BrandLogo.vue'
 import administracion800 from '@/assets/img/administracion-800.webp'
 import administracion1400 from '@/assets/img/administracion-1400.webp'
+
+const siteUrl = import.meta.env.VITE_SITE_URL
 
 /** Split screen for login and sign-up: the form on the left, the brand illustration on the right */
 withDefaults(defineProps<{ wide?: boolean }>(), { wide: false })
@@ -23,9 +26,14 @@ const illustrationSrcset = `${administracion800} 800w, ${administracion1400} 140
         <slot />
       </div>
 
-      <p class="text-xs text-neutral-500 dark:text-neutral-400">
-        AptoPH · Administración de copropiedades
-      </p>
+      <nav aria-label="Legal" class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+        <a :href="legalUrl(siteUrl, 'terms')" target="_blank" rel="noopener" class="hover:underline"
+          >Términos y condiciones</a
+        >
+        <a :href="legalUrl(siteUrl, 'privacy')" target="_blank" rel="noopener" class="hover:underline"
+          >Tratamiento de datos</a
+        >
+      </nav>
     </div>
 
     <div class="relative hidden overflow-hidden bg-[#f3ede4] lg:block dark:bg-neutral-900">

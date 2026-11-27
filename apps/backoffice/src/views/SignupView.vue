@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { UiAlert, UiButton, UiCheckbox, UiForm, UiInput, UiLabel } from '@aptoph/ui'
+import { UiAlert, UiButton, UiForm, UiInput, UiLabel, UiLegalConsent } from '@aptoph/ui'
 import {
   MINIMUM_COVERS_UNITS,
   MINIMUM_MONTHLY,
@@ -34,6 +34,7 @@ const form = ref({
   acceptTerms: false,
 })
 const errors = ref<Record<string, string>>({})
+const siteUrl = import.meta.env.VITE_SITE_URL
 const error = ref<string | null>(null)
 const loading = ref(false)
 
@@ -165,15 +166,12 @@ async function submit() {
         />
       </UiLabel>
 
-      <div>
-        <UiCheckbox
-          v-model="form.acceptTerms"
-          label="Acepto los términos del servicio y el tratamiento de datos personales (Ley 1581 de 2012)."
-        />
-        <p v-if="errors.acceptTerms" class="mt-1 text-sm text-red-600 dark:text-red-300">
-          {{ errors.acceptTerms }}
-        </p>
-      </div>
+      <UiLegalConsent
+        v-model="form.acceptTerms"
+        kind="signup"
+        :site-url="siteUrl"
+        :error="errors.acceptTerms"
+      />
 
       <UiButton type="submit" color="primary" size="lg" block :loading="loading">
         Empezar prueba gratis

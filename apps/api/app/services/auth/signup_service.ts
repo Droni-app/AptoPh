@@ -1,11 +1,12 @@
 import db from '@adonisjs/lucid/services/db'
 import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { DateTime } from 'luxon'
-import { PLAN, TRIAL_DAYS } from '@aptoph/shared'
+import { PLAN, SIGNUP_LEGAL_DOCUMENTS, TRIAL_DAYS } from '@aptoph/shared'
 import Enrollment from '#models/tenants/enrollment'
 import Subscription from '#models/billing/subscription'
 import Tenant from '#models/tenants/tenant'
 import User from '#models/auth/user'
+import { recordAcceptances, type AcceptanceEvidence } from '#services/legal/legal_acceptances'
 
 export type SignupInput = {
   fullName: string
@@ -35,10 +36,12 @@ export function slugify(value: string) {
 
 /**
  * Self-service sign-up: creates the administrator's account, the tenant (conjunto),
- * the administrator enrollment and a 30-day trial subscription, all or nothing.
+ * the administrator enrollment and a 30-day trial subscription, all or nothing,
+ * with the evidence of the accepted legal documents (the data processing agreement
+ * on behalf of the new conjunto).
  */
 export default class SignupService {
-  async register(input: SignupInput) {
+  async register(input: SignupInput, evidence: AcceptanceEvidence) {
     return db.transaction(async (trx) => {
       const existing = await User.query({ client: trx }).where('email', input.email).first()
       if (existing) throw new EmailTakenError()
@@ -84,6 +87,17 @@ export default class SignupService {
           trialEndsAt: DateTime.now().plus({ days: TRIAL_DAYS }),
         },
         { client: trx }
+      )
+
+      await recordAcceptances(
+        {
+          userId: user.id,
+          tenantId: tenant.id,
+          documents: SIGNUP_LEGAL_DOCUMENTS,
+          context: 'signup',
+          evidence,
+        },
+        trx
       )
 
       return { user, tenant, subscription }

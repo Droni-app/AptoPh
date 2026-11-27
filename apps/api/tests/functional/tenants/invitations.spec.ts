@@ -9,6 +9,8 @@ import UnitOccupant from '#models/property/unit_occupant'
 import User from '#models/auth/user'
 import InvitationMail from '#mails/tenants/invitation_mail'
 import InvitationService from '#services/tenants/invitation_service'
+import LegalAcceptance from '#models/legal/legal_acceptance'
+import { LEGAL_DOCUMENTS } from '@aptoph/shared'
 import { createMember, resetRateLimits, tokenFrom } from '#tests/helpers'
 
 const invitee = { email: 'nora@example.com', fullName: 'Nora Nueva' }
@@ -242,13 +244,22 @@ test.group('Invitations · accept', (group) => {
       role: 'staff',
     })
 
-    const missing = await client.post('/api/v1/invitations/accept').json({ token })
+    const missing = await client
+      .post('/api/v1/invitations/accept')
+      .json({ token, acceptTerms: true })
     missing.assertStatus(422)
     missing.assertBodyContains({ errors: [{ field: 'password' }] })
 
+    // The terms and the data policy must be accepted
+    const notAccepted = await client
+      .post('/api/v1/invitations/accept')
+      .json({ token, password: 'nora-password-1' } as never)
+    notAccepted.assertStatus(422)
+    notAccepted.assertBodyContains({ errors: [{ field: 'acceptTerms' }] })
+
     const response = await client
       .post('/api/v1/invitations/accept')
-      .json({ token, password: 'nora-password-1', fullName: 'Nora N. Nueva' })
+      .json({ token, acceptTerms: true, password: 'nora-password-1', fullName: 'Nora N. Nueva' })
 
     response.assertStatus(200)
     response.assertBodyContains({ data: { tenantId: tenant.id, role: 'staff' } })
@@ -261,6 +272,17 @@ test.group('Invitations · accept', (group) => {
     const user = await User.findByOrFail('email', invitee.email)
     assert.equal(user.fullName, 'Nora N. Nueva')
     assert.isNotNull(user.emailVerifiedAt)
+
+    // Evidence of the acceptance, for this conjunto and the current versions
+    const acceptances = await LegalAcceptance.query().where('userId', user.id).orderBy('document')
+    assert.deepEqual(
+      acceptances.map((a) => [a.document, a.version, a.context, a.tenantId]),
+      [
+        ['privacy', LEGAL_DOCUMENTS.privacy.version, 'invitation', tenant.id],
+        ['terms', LEGAL_DOCUMENTS.terms.version, 'invitation', tenant.id],
+      ]
+    )
+    assert.isNotNull(acceptances[0]!.ipAddress)
 
     const tenants = await client
       .get('/api/v1/account/tenants')
@@ -288,7 +310,9 @@ test.group('Invitations · accept', (group) => {
     const preview = await client.get(`/api/v1/invitations/${token}`)
     preview.assertBodyContains({ data: { needsPassword: false } })
 
-    const response = await client.post('/api/v1/invitations/accept').json({ token })
+    const response = await client
+      .post('/api/v1/invitations/accept')
+      .json({ token, acceptTerms: true })
     response.assertStatus(200)
     await resident.refresh()
     assert.isTrue(await resident.verifyPassword('secret-password'))
@@ -301,10 +325,12 @@ test.group('Invitations · accept', (group) => {
       role: 'staff',
     })
 
-    await client.post('/api/v1/invitations/accept').json({ token, password: 'nora-password-1' })
+    await client
+      .post('/api/v1/invitations/accept')
+      .json({ token, acceptTerms: true, password: 'nora-password-1' })
     const again = await client
       .post('/api/v1/invitations/accept')
-      .json({ token, password: 'nora-password-1' })
+      .json({ token, acceptTerms: true, password: 'nora-password-1' })
     again.assertStatus(404)
   })
 
@@ -321,7 +347,7 @@ test.group('Invitations · accept', (group) => {
     preview.assertStatus(404)
     const accept = await client
       .post('/api/v1/invitations/accept')
-      .json({ token, password: 'nora-password-1' })
+      .json({ token, acceptTerms: true, password: 'nora-password-1' })
     accept.assertStatus(404)
   })
 
@@ -340,7 +366,7 @@ test.group('Invitations · accept', (group) => {
 
     const accept = await client
       .post('/api/v1/invitations/accept')
-      .json({ token, password: 'nora-password-1' })
+      .json({ token, acceptTerms: true, password: 'nora-password-1' })
     accept.assertStatus(404)
     await enrollment.refresh()
     assert.equal(enrollment.status, 'revoked')

@@ -7,6 +7,8 @@ import Subscription from '#models/billing/subscription'
 import Tenant from '#models/tenants/tenant'
 import User from '#models/auth/user'
 import WelcomeMail from '#mails/auth/welcome_mail'
+import LegalAcceptance from '#models/legal/legal_acceptance'
+import { LEGAL_DOCUMENTS } from '@aptoph/shared'
 
 /**
  * Typed loosely on purpose (`as never`): some tests send invalid values on purpose
@@ -58,6 +60,19 @@ test.group('Sign-up', (group) => {
     assert.equal(subscription.status, 'trialing')
     assert.equal(subscription.plan, 'completo')
     assert.equal(subscription.declaredUnits, 120)
+
+    // Evidence: terms, data policy and, for the conjunto, the data processing agreement
+    const acceptances = await LegalAcceptance.query()
+      .where({ userId: user.id, tenantId: tenant.id, context: 'signup' })
+      .orderBy('document')
+    assert.deepEqual(
+      acceptances.map((a) => [a.document, a.version]),
+      [
+        ['data_processing', LEGAL_DOCUMENTS.data_processing.version],
+        ['privacy', LEGAL_DOCUMENTS.privacy.version],
+        ['terms', LEGAL_DOCUMENTS.terms.version],
+      ]
+    )
     const days = subscription.trialEndsAt!.diff(DateTime.now(), 'days').days
     assert.isAbove(days, 29.9)
     assert.isBelow(days, 30.1)

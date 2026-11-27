@@ -131,6 +131,8 @@ export type AcceptInvitationInput = {
   token: string
   fullName?: string
   password?: string
+  /** Terms and data processing policy, recorded as evidence */
+  acceptTerms: boolean
   device?: string
 }
 

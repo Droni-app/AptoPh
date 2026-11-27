@@ -1,13 +1,14 @@
 import db from '@adonisjs/lucid/services/db'
 import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { DateTime } from 'luxon'
-import { ROLE_LABELS, type EnrollmentRole } from '@aptoph/shared'
+import { INVITATION_LEGAL_DOCUMENTS, ROLE_LABELS, type EnrollmentRole } from '@aptoph/shared'
 import Enrollment from '#models/tenants/enrollment'
 import type Tenant from '#models/tenants/tenant'
 import User from '#models/auth/user'
 import FieldException from '#exceptions/field_exception'
 import ResourceException from '#exceptions/resource_exception'
 import { generateToken, hashToken } from '#services/secure_token'
+import { recordAcceptances, type AcceptanceEvidence } from '#services/legal/legal_acceptances'
 
 /** How long an invitation link works */
 export const INVITATION_TTL_DAYS = 7
@@ -23,7 +24,7 @@ export type InviteInput = {
   occupantId?: string | null
 }
 
-export type AcceptInput = { password?: string; fullName?: string }
+export type AcceptInput = { password?: string; fullName?: string; evidence: AcceptanceEvidence }
 
 const INVALID_INVITATION =
   'La invitación no es válida o ya venció. Pide a la administración que te la reenvíe.'
@@ -154,6 +155,17 @@ export default class InvitationService {
         invitationExpiresAt: null,
       })
       await enrollment.useTransaction(trx).save()
+
+      await recordAcceptances(
+        {
+          userId: user.id,
+          tenantId: enrollment.tenantId,
+          documents: INVITATION_LEGAL_DOCUMENTS,
+          context: 'invitation',
+          evidence: input.evidence,
+        },
+        trx
+      )
 
       return { enrollment, user }
     })

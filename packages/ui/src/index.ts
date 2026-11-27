@@ -13,6 +13,7 @@ export { default as UiDropdownSeparator } from './components/UiDropdownSeparator
 export { default as UiForm } from './components/UiForm.vue'
 export { default as UiInput } from './components/UiInput.vue'
 export { default as UiLabel } from './components/UiLabel.vue'
+export { default as UiLegalConsent } from './components/UiLegalConsent.vue'
 export { default as UiModal } from './components/UiModal.vue'
 export { default as UiPagination } from './components/UiPagination.vue'
 export { default as UiRadio } from './components/UiRadio.vue'

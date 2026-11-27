@@ -849,6 +849,29 @@ export class LedgerAccountSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class LegalAcceptanceSchema extends BaseModel {
+  static $columns = ['acceptedAt', 'context', 'document', 'id', 'ipAddress', 'tenantId', 'userAgent', 'userId', 'version'] as const
+  $columns = LegalAcceptanceSchema.$columns
+  @column.dateTime()
+  declare acceptedAt: DateTime
+  @column()
+  declare context: string
+  @column()
+  declare document: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare ipAddress: string | null
+  @column()
+  declare tenantId: string | null
+  @column()
+  declare userAgent: string | null
+  @column()
+  declare userId: string
+  @column()
+  declare version: string
+}
+
 export class ParcelSchema extends BaseModel {
   static $columns = ['carrier', 'createdAt', 'deliveredAt', 'deliveredToName', 'description', 'id', 'photoFileKey', 'receivedAt', 'receivedById', 'status', 'tenantId', 'unitId', 'updatedAt'] as const
   $columns = ParcelSchema.$columns

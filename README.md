@@ -59,7 +59,7 @@ Para ejecutar comandos dentro de una app: `pnpm --filter @aptoph/api exec node a
 
 ### API por módulos
 
-La API se organiza por módulo: `auth`, `tenants`, `property`, `finance`, `files`, `documents`,
+La API se organiza por módulo: `auth`, `tenants`, `legal`, `property`, `finance`, `files`, `documents`,
 `amenities`, `announcements`, `tickets`, `gatehouse`, `billing` y `dashboard`.
 
 - **Migraciones:** `apps/api/database/migrations/<módulo>/`, una tabla por archivo y solo
@@ -171,6 +171,21 @@ Cada app importa los estilos en su CSS, después de Tailwind y los tokens de mar
 El tema define los grises con el tono azul de la marca, el modo oscuro por clase (`.dark` en
 `<html>`) y escanea los componentes del paquete. El backoffice usa un menú lateral cuyas secciones
 están en `apps/backoffice/src/layouts/navigation.ts` (las de finanzas incluidas).
+
+## Documentos legales
+
+AptoPH es un servicio de **Droni.co S.A.S.** (NIT 900.354.951). La landing publica en `/legal/`
+los términos y condiciones, la política de tratamiento de datos personales (Ley 1581 de 2012), el
+acuerdo de encargo del tratamiento de datos (el conjunto es Responsable de los datos de sus
+residentes y Droni.co su Encargado) y la política de cookies. Los textos están en
+`apps/landing/src/legal/`; los datos de la empresa, las rutas y la versión vigente de cada
+documento, en `packages/shared/src/legal.ts`.
+
+Al registrar un conjunto y al aceptar una invitación la persona marca la casilla de aceptación
+(`UiLegalConsent`) y la API guarda la evidencia en `legal_acceptances`. **Al cambiar un documento**
+edita su texto y sube su `version`: las aceptaciones anteriores conservan la versión que se aceptó.
+
+Las apps enlazan a la landing con `VITE_SITE_URL` (`.env.development` / `.env.production`).
 
 ## Landing (`apps/landing`)
 

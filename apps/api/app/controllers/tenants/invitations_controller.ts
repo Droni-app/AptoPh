@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { ROLE_LABELS } from '@aptoph/shared'
 import InvitationService from '#services/tenants/invitation_service'
 import { createSession } from '#services/auth/auth_session'
+import { evidenceFrom } from '#services/legal/legal_acceptances'
 import { acceptInvitationValidator } from '#validators/auth/account'
 import ResourceException from '#exceptions/resource_exception'
 
@@ -32,13 +33,18 @@ export default class InvitationsController {
 
   /**
    * POST /api/v1/invitations/accept: activates the role, sets the password of new
-   * accounts and signs the person in
+   * accounts, records the acceptance of the terms and the data policy and signs the
+   * person in
    */
   async accept(ctx: HttpContext) {
     const { token, password, fullName, device } =
       await ctx.request.validateUsing(acceptInvitationValidator)
 
-    const { enrollment, user } = await new InvitationService().accept(token, { password, fullName })
+    const { enrollment, user } = await new InvitationService().accept(token, {
+      password,
+      fullName,
+      evidence: evidenceFrom(ctx),
+    })
     if (user.isBlocked) {
       throw ResourceException.forbidden('Tu cuenta está bloqueada. Contacta a la administración.')
     }
