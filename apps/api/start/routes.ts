@@ -26,6 +26,9 @@ const AuthController = () => import('#controllers/auth/auth_controller')
 const InvitationsController = () => import('#controllers/tenants/invitations_controller')
 const ProfileController = () => import('#controllers/auth/profile_controller')
 const AccountController = () => import('#controllers/auth/account_controller')
+const NotificationsController = () => import('#controllers/notifications/notifications_controller')
+const NotificationSettingsController = () =>
+  import('#controllers/notifications/notification_settings_controller')
 const MyTenantsController = () => import('#controllers/tenants/my_tenants_controller')
 const DashboardController = () => import('#controllers/dashboard/dashboard_controller')
 const BuildingsController = () => import('#controllers/property/buildings_controller')
@@ -161,10 +164,38 @@ router
           .post('email/verification', [AccountController, 'sendVerification'])
           .as('email.verification')
         router.get('tenants', [MyTenantsController, 'index']).as('tenants')
+        // Notifications: channels by category and phones of the mobile app
+        router
+          .get('notification-preferences', [NotificationSettingsController, 'show'])
+          .as('notifications.preferences')
+        router
+          .put('notification-preferences', [NotificationSettingsController, 'update'])
+          .as('notifications.preferences.update')
+        router
+          .post('push-devices', [NotificationSettingsController, 'registerDevice'])
+          .as('push.store')
+        router
+          .delete('push-devices/:token', [NotificationSettingsController, 'removeDevice'])
+          .as('push.destroy')
       })
       .prefix('account')
       .as('profile')
       .use(middleware.auth())
+
+    /**
+     * The bell: notifications of the person in the conjunto (any role).
+     * docs/notifications.md
+     */
+    router
+      .group(() => {
+        router.get('/', [NotificationsController, 'index']).as('index')
+        router.get('unread', [NotificationsController, 'unreadCount']).as('unread')
+        router.post('read-all', [NotificationsController, 'readAll']).as('readAll')
+        router.post(':id/read', [NotificationsController, 'read']).as('read')
+      })
+      .prefix('notifications')
+      .as('notifications')
+      .use([middleware.auth(), middleware.tenant()])
 
     /**
      * Tenant-scoped routes: require the `X-Tenant-Id` header

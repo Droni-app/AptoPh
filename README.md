@@ -240,4 +240,5 @@ tiene marcadores `__…__` en su lugar.
 - [PQRS](docs/tickets.md)
 - [Parqueaderos del conjunto](docs/parking.md)
 - [Parqueadero de visitantes](docs/visitor-parking.md)
+- [Notificaciones (campana, correo y push)](docs/notifications.md)
 - [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens

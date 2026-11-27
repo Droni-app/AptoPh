@@ -5,6 +5,7 @@ import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import {
   VEHICLE_TYPES,
   VEHICLE_TYPE_LABELS,
+  notificationPreferences,
   toCents,
   type ParkingApplyInput,
   type ParkingLotteryInput,
@@ -20,11 +21,9 @@ import Vehicle from '#models/property/vehicle'
 import type Tenant from '#models/tenants/tenant'
 import FieldException from '#exceptions/field_exception'
 import ResourceException from '#exceptions/resource_exception'
-import ParkingMail, { type ParkingMailContent } from '#mails/property/parking_mail'
 import { EmailQuotaService } from '#services/announcements/email_quota'
-import { appUrl } from '#services/app_urls'
 import { nextNumber } from '#services/finance/support'
-import { queueMail } from '#services/mailer'
+import { NotificationService } from '#services/notifications/notifications'
 import { ParkingService, documentsOk } from '#services/property/parking'
 import { activeOccupancy, balancesFor } from '#services/resident_scope'
 
@@ -823,43 +822,48 @@ export class ParkingLotteryService {
 
   // Emails
 
-  /** Residents with an account of each unit */
+  /** People with an account of each unit, by unit */
   private async residentsOf(unitIds: string[]) {
-    const map = new Map<string, Array<{ email: string; fullName: string }>>()
+    const map = new Map<string, string[]>()
     if (!unitIds.length) return map
     const occupants = await UnitOccupant.query()
       .where('tenant_id', this.tenant.id)
       .whereIn('unit_id', unitIds)
       .whereNotNull('user_id')
       .where(activeOccupancy(this.today))
-      .preload('user')
+      .select('unit_id', 'user_id')
     for (const occupant of occupants) {
-      if (!occupant.user?.email) continue
       const list = map.get(occupant.unitId) ?? []
-      if (!list.some((r) => r.email === occupant.user.email)) {
-        list.push({ email: occupant.user.email, fullName: occupant.user.fullName })
-      }
+      if (!list.includes(occupant.userId!)) list.push(occupant.userId!)
       map.set(occupant.unitId, list)
     }
     return map
   }
 
+  /** Bell, email and push by each person's preferences (category parking) */
   private send(
-    recipients: Array<{ email: string; fullName: string }>,
-    content: Omit<ParkingMailContent, 'subject' | 'url' | 'action'> & { action?: string },
-    description: string
+    userIds: string[],
+    content: {
+      title: string
+      paragraphs: string[]
+      rows: Array<{ label: string; value: string }>
+      action?: string
+    },
+    type: string
   ) {
-    for (const recipient of recipients) {
-      queueMail(
-        new ParkingMail(recipient, this.tenant.name, {
-          ...content,
-          subject: `${this.tenant.name}: ${content.title}`,
-          action: content.action ?? 'Ver en el portal',
-          url: new URL('/parqueaderos', appUrl('web')).toString(),
-        }),
-        description
-      )
-    }
+    return new NotificationService(this.tenant).notify(userIds, {
+      app: 'web',
+      category: 'parking',
+      type,
+      title: content.title,
+      body: content.paragraphs[0] ?? null,
+      path: '/parqueaderos',
+      email: {
+        paragraphs: content.paragraphs,
+        rows: content.rows,
+        action: content.action ?? 'Ver en el portal',
+      },
+    })
   }
 
   private periodRow(lottery: ParkingLottery) {
@@ -880,19 +884,25 @@ export class ParkingLotteryService {
       .whereIn('type', ['apartment', 'house', 'commercial'])
       .select('id')
     const residents = await this.residentsOf(units.map((unit) => unit.id))
-    const recipients = [
-      ...new Map([...residents.values()].flat().map((r) => [r.email, r])).values(),
-    ]
+    const recipients = [...new Set([...residents.values()].flat())]
     if (!recipients.length) return 'No hay residentes con cuenta a quienes avisar'
-    const room = await new EmailQuotaService(this.tenant).reserve(recipients.length)
+    // Bulk: the emails come out of the monthly quota (only who wants them by email)
+    const users = await db
+      .from('users')
+      .whereIn('id', recipients)
+      .select('notification_preferences')
+    const emails = users.filter(
+      (user) => notificationPreferences(user.notification_preferences).parking.email
+    ).length
+    const room = await new EmailQuotaService(this.tenant).reserve(emails)
     if (!room) {
-      return `No se enviaron los avisos: no quedan ${recipients.length} correos en el cupo del mes`
+      return `No se enviaron los avisos: no quedan ${emails} correos en el cupo del mes`
     }
     const closes = lottery.closesAt
       .setZone(this.tenant.timezone)
       .setLocale('es-CO')
       .toFormat("d 'de' LLLL 'a las' h:mm a")
-    this.send(
+    await this.send(
       recipients,
       {
         title: `Abrió el sorteo de parqueaderos: ${lottery.title}`,
@@ -903,7 +913,7 @@ export class ParkingLotteryService {
         rows: [this.periodRow(lottery)],
         action: 'Postularme',
       },
-      'parking lottery opening'
+      'parking.lottery_opened'
     )
     lottery.notifiedCount = recipients.length
     await lottery.save()
@@ -950,7 +960,7 @@ export class ParkingLotteryService {
                 paragraphs: [application.ineligibleReason ?? 'No cumplía los requisitos.'],
                 rows: [this.periodRow(lottery)],
               }
-      this.send(residents.get(application.unitId) ?? [], content, 'parking lottery result')
+      await this.send(residents.get(application.unitId) ?? [], content, 'parking.lottery_result')
     }
   }
 
@@ -964,7 +974,7 @@ export class ParkingLotteryService {
       .offerExpiresAt!.setZone(this.tenant.timezone)
       .setLocale('es-CO')
       .toFormat("d 'de' LLLL 'a las' h:mm a")
-    this.send(
+    await this.send(
       residents.get(application.unitId) ?? [],
       {
         title: `Se liberó un parqueadero para tu unidad: ${spot.code}`,
@@ -978,28 +988,28 @@ export class ParkingLotteryService {
         ],
         action: 'Responder la oferta',
       },
-      'parking offer'
+      'parking.offered'
     )
   }
 
   private async notifyExpired(application: ParkingApplication) {
     const residents = await this.residentsOf([application.unitId])
-    this.send(
+    await this.send(
       residents.get(application.unitId) ?? [],
       {
         title: 'Venció el parqueadero que te ofrecimos',
         paragraphs: [
-          'No respondimos a tiempo tu aceptación, así que el cupo pasó al siguiente de la lista de espera.',
+          'No recibimos tu respuesta a tiempo, así que el cupo pasó al siguiente de la lista de espera.',
         ],
         rows: [],
       },
-      'parking offer expired'
+      'parking.offer_expired'
     )
   }
 
   private async notifyAssigned(application: ParkingApplication, lottery: ParkingLottery) {
     const residents = await this.residentsOf([application.unitId])
-    this.send(
+    await this.send(
       residents.get(application.unitId) ?? [],
       {
         title: `La administración le asignó el parqueadero ${application.spot?.code} a tu unidad`,
@@ -1009,7 +1019,7 @@ export class ParkingLotteryService {
           this.periodRow(lottery),
         ],
       },
-      'parking assignment'
+      'parking.assigned'
     )
   }
 
@@ -1017,7 +1027,7 @@ export class ParkingLotteryService {
   async notifyEnded(assignment: ParkingAssignment, reason: string, note: string) {
     const residents = await this.residentsOf([assignment.unitId])
     const ended = isoDate(assignment.endedOn)
-    this.send(
+    await this.send(
       residents.get(assignment.unitId) ?? [],
       {
         title: `${assignment.status === 'rejected' ? 'Se rechazó' : 'Se canceló'} el parqueadero ${assignment.spot.code} de tu unidad`,
@@ -1029,7 +1039,7 @@ export class ParkingLotteryService {
             : []),
         ],
       },
-      'parking assignment ended'
+      'parking.ended'
     )
   }
 }

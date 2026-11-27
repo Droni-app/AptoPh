@@ -1,4 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { TICKET_MANAGE_ROLES, TICKET_TYPE_LABELS } from '@aptoph/shared'
+import { NotificationService } from '#services/notifications/notifications'
 import db from '@adonisjs/lucid/services/db'
 import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import Ticket from '#models/tickets/ticket'
@@ -69,6 +71,26 @@ export default class TicketsController {
     })
 
     if (ticket.unitId) await ticket.load('unit', (unit) => unit.preload('building'))
+    // The administration sees it in its bell
+    const notifications = new NotificationService(tenant)
+    await notifications.notify(await notifications.staffWith(TICKET_MANAGE_ROLES), {
+      app: 'backoffice',
+      category: 'tickets',
+      type: 'ticket.created',
+      title: `Nueva solicitud #${ticket.number}: ${ticket.subject}`,
+      body: [ticket.unit ? `Unidad ${ticket.unit.code}` : null, user.fullName]
+        .filter(Boolean)
+        .join(' · '),
+      path: `/pqrs?id=${ticket.id}`,
+      email: {
+        paragraphs: [ticket.description.slice(0, 600)],
+        rows: [
+          { label: 'Tipo', value: TICKET_TYPE_LABELS[ticket.type] },
+          { label: 'Radicada por', value: user.fullName },
+        ],
+        action: 'Abrir la solicitud',
+      },
+    })
     response.status(201)
     return { data: { ...presentTicket(ticket, user.id), comments: [] } }
   }
@@ -102,6 +124,21 @@ export default class TicketsController {
       )
     })
     await comment.load('author')
+    // To whoever works on it, or the administration if nobody does
+    const notifications = new NotificationService(ctx.tenant)
+    await notifications.notify(
+      ticket.assignedToId
+        ? [ticket.assignedToId]
+        : await notifications.staffWith(TICKET_MANAGE_ROLES),
+      {
+        app: 'backoffice',
+        category: 'tickets',
+        type: 'ticket.resident_reply',
+        title: `${user.fullName} respondió la solicitud #${ticket.number}`,
+        body: body.slice(0, 280),
+        path: `/pqrs?id=${ticket.id}`,
+      }
+    )
     ctx.response.status(201)
     return { data: presentTicketComment(comment, user.id) }
   }

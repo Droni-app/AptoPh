@@ -38,6 +38,7 @@ import { PaymentService } from '#services/finance/payments'
 import { withFinance, type FinanceScope } from '#services/finance/scope'
 import { nextNumber } from '#services/finance/support'
 import { queueMail } from '#services/mailer'
+import { NotificationService } from '#services/notifications/notifications'
 
 type Trx = TransactionClientContract
 
@@ -359,7 +360,7 @@ export class VisitorParkingService {
       throw new FieldException('vehicleDescription', 'Describe el vehículo (color, marca…)')
     }
 
-    return db.transaction(async (trx) => {
+    const entered = await db.transaction(async (trx) => {
       // Serializes entries: the capacity check and the "already inside" check
       await trx.rawQuery('SELECT pg_advisory_xact_lock(hashtext(?))', [`parking:${this.tenant.id}`])
 
@@ -448,6 +449,21 @@ export class VisitorParkingService {
       }
       return stay
     })
+    // "Llegó tu visita": the bell (and push) of the people of the unit
+    const notifications = new NotificationService(this.tenant)
+    await notifications.notify(await notifications.residentsOf([entered.unitId]), {
+      app: 'web',
+      category: 'gatehouse',
+      type: 'visit.arrived',
+      title: `Llegó tu visita: ${entered.visitorName}`,
+      body: entered.plate
+        ? `Entró con el vehículo ${entered.plate} al parqueadero de visitantes.`
+        : 'Entró al parqueadero de visitantes.',
+      path: '/porteria',
+      dedupeKey: `visit-arrived:${entered.id}`,
+      email: { action: 'Ver portería' },
+    })
+    return entered
   }
 
   /** Fixes the data of a vehicle still inside (a mistyped plate, the wrong unit…) */

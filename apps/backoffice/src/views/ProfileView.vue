@@ -5,6 +5,7 @@ import PageHeader from '@/components/PageHeader.vue'
 import ProfileForm from '@/components/account/ProfileForm.vue'
 import ChangePasswordForm from '@/components/account/ChangePasswordForm.vue'
 import SessionsList from '@/components/account/SessionsList.vue'
+import NotificationSettings from '@/components/account/NotificationSettings.vue'
 import EmailVerificationNotice from '@/components/account/EmailVerificationNotice.vue'
 
 const sessions = ref<InstanceType<typeof SessionsList> | null>(null)
@@ -38,4 +39,9 @@ const sessions = ref<InstanceType<typeof SessionsList> | null>(null)
       </UiCard>
     </div>
   </div>
+
+  <UiCard id="notificaciones" class="mt-6 scroll-mt-24">
+    <h2 class="mb-1 text-lg font-semibold">Notificaciones</h2>
+    <NotificationSettings />
+  </UiCard>
 </template>

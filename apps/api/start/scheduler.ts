@@ -14,6 +14,8 @@
 import app from '@adonisjs/core/services/app'
 import { dispatchDueAnnouncementEmails } from '#services/announcements/announcements'
 import { runBillingTick } from '#services/billing/billing_scheduler'
+import { pruneNotifications } from '#services/notifications/notifications'
+import { remindDueCharges } from '#services/notifications/finance_notifications'
 
 const EVERY_MINUTE = 60_000
 const EVERY_FIVE_MINUTES = 5 * EVERY_MINUTE
@@ -35,7 +37,16 @@ const billing = setInterval(() => {
 }, EVERY_FIVE_MINUTES)
 billing.unref()
 
+// Hourly: due reminders (once per unit and due date) and old notifications
+const notifications = setInterval(() => {
+  remindDueCharges()
+    .then(() => pruneNotifications())
+    .catch(() => {})
+}, 60 * EVERY_MINUTE)
+notifications.unref()
+
 app.terminating(() => {
+  clearInterval(notifications)
   clearInterval(announcements)
   clearInterval(billing)
 })

@@ -61,6 +61,18 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
+  | Push notifications to the mobile app (Firebase Cloud Messaging HTTP v1),
+  | with a service account. Without them push is off and the bell and the
+  | emails still work. docs/notifications.md
+  |----------------------------------------------------------
+  */
+  FCM_PROJECT_ID: Env.schema.string.optional(),
+  FCM_CLIENT_EMAIL: Env.schema.string.optional(),
+  /** PEM; `\n` escaped is accepted */
+  FCM_PRIVATE_KEY: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
   | File storage (drive): `fs` keeps files in ./storage (development and
   | tests), `spaces` uses the DigitalOcean Spaces bucket. docs/files.md
   |----------------------------------------------------------

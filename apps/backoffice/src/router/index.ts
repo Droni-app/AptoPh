@@ -26,6 +26,8 @@ declare module 'vue-router' {
 }
 
 const router = createRouter({
+  // Only anchors (#notificaciones): the rest keeps the scroll as it was
+  scrollBehavior: (to) => (to.hash ? { el: to.hash, top: 80 } : undefined),
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {

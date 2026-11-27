@@ -584,13 +584,44 @@ Reglas y cálculo: `docs/visitor-parking.md`.
 | --- | --- | --- |
 | id, tenant_id | | |
 | title | varchar(200) | |
-| category | varchar(30) | `bylaws`, `minutes`, `financial_statement`, `contract`, `policy`, `other` |
+| category | varchar(20) | `bylaws`, `minutes`, `financial_statement`, `contract`, `policy`, `other` |
 | file_key | varchar | |
 | mime_type | varchar(100) | |
 | size_bytes | bigint | |
 | visibility | varchar(20) | `public` (todos los residentes), `council`, `administration` |
 | uploaded_by_id | uuid FK → users | |
 | created_at / updated_at / deleted_at | | |
+
+## 10b. Notificaciones
+
+Ver [notifications.md](notifications.md).
+
+### `notifications` — la campana
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id | uuid PK | |
+| tenant_id | uuid FK | |
+| user_id | uuid FK → users | CASCADE |
+| app | varchar(12) | `web` (portal) o `backoffice` |
+| category | varchar(20) | `gatehouse`, `finance`, `announcements`, `tickets`, `bookings`, `parking` |
+| type | varchar(60) | Evento: `ticket.reply`, `payment.confirmed`, … |
+| title / body | varchar(200) / text NULL | |
+| path | varchar(300) NULL | Ruta dentro de la app |
+| dedupe_key | varchar(160) NULL | `UNIQUE (user_id, dedupe_key) WHERE dedupe_key IS NOT NULL` |
+| read_at | timestamptz NULL | |
+| created_at, updated_at | timestamptz | |
+
+Índice parcial `notifications_unread (user_id, tenant_id, app) WHERE read_at IS NULL`. Se borran las leídas de más de
+90 días y todas las de más de un año.
+
+### `push_devices` — teléfonos de la app móvil
+
+`id`, `user_id` (CASCADE), `token` (UNIQUE: un teléfono pertenece a una cuenta), `platform`
+(`android`, `ios`, `web`), `device_name`, `app_version`, `last_seen_at` y los timestamps.
+
+Además: `users.notification_preferences` (jsonb NULL, `{ categoría: { email, push } }`) y
+`announcements.notified_at` (cuándo salieron la campana y el push del comunicado).
 
 ## 11. Auditoría
 
@@ -615,7 +646,6 @@ Reglas y cálculo: `docs/visitor-parking.md`.
 - **Asambleas**: `assemblies`, `assembly_attendees` (con poderes/representación), `assembly_votes`, votación ponderada por `ownership_coefficient` y cálculo de quórum.
 - **Contabilidad**: presupuesto anual, gastos y proveedores (`budgets`, `expenses`, `vendors`).
 - **SaaS**: `plans`, `subscriptions`, `invoices` de la plataforma hacia cada tenant.
-- **Notificaciones**: `notifications` y `device_tokens` (push para la app Flutter).
 
 ## 13. Implementación
 

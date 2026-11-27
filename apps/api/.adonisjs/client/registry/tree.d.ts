@@ -36,6 +36,21 @@ export interface ApiDefinition {
       verification: typeof routes['profile.email.verification']
     }
     tenants: typeof routes['profile.tenants']
+    notifications: {
+      preferences: typeof routes['profile.notifications.preferences'] & {
+        update: typeof routes['profile.notifications.preferences.update']
+      }
+    }
+    push: {
+      store: typeof routes['profile.push.store']
+      destroy: typeof routes['profile.push.destroy']
+    }
+  }
+  notifications: {
+    index: typeof routes['notifications.index']
+    unread: typeof routes['notifications.unread']
+    readAll: typeof routes['notifications.readAll']
+    read: typeof routes['notifications.read']
   }
   tenant: {
     current: typeof routes['tenant.current']

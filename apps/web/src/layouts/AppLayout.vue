@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
-import { UiDropdown, UiDropdownItem, UiDropdownSeparator } from '@aptoph/ui'
+import { UiDropdown, UiDropdownItem, UiDropdownSeparator, UiNotificationBell } from '@aptoph/ui'
+import { notificationsApi } from '@/api/account'
 import BrandLogo from '@/components/BrandLogo.vue'
 import EmailVerificationNotice from '@/components/account/EmailVerificationNotice.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -113,6 +114,13 @@ async function switchTenant() {
               aria-hidden="true"
             />
           </button>
+          <UiNotificationBell
+            v-if="tenant.currentId"
+            :key="tenant.currentId"
+            :client="notificationsApi"
+            trigger-class="relative grid size-9 place-items-center rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-white/8 dark:hover:text-white"
+            @navigate="(path) => router.push(path)"
+          />
           <UiDropdown
             placement="bottom-end"
             min-width="16rem"

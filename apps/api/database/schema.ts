@@ -94,7 +94,7 @@ export class AnnouncementReadSchema extends BaseModel {
 }
 
 export class AnnouncementSchema extends BaseModel {
-  static $columns = ['audience', 'body', 'createdAt', 'createdById', 'deletedAt', 'emailCount', 'emailSkipped', 'emailedAt', 'id', 'isPinned', 'publishedAt', 'sendEmail', 'tenantId', 'title', 'updatedAt'] as const
+  static $columns = ['audience', 'body', 'createdAt', 'createdById', 'deletedAt', 'emailCount', 'emailSkipped', 'emailedAt', 'id', 'isPinned', 'notifiedAt', 'publishedAt', 'sendEmail', 'tenantId', 'title', 'updatedAt'] as const
   $columns = AnnouncementSchema.$columns
   @column()
   declare audience: string
@@ -116,6 +116,8 @@ export class AnnouncementSchema extends BaseModel {
   declare id: string
   @column()
   declare isPinned: boolean
+  @column.dateTime()
+  declare notifiedAt: DateTime | null
   @column.dateTime()
   declare publishedAt: DateTime | null
   @column()
@@ -872,6 +874,37 @@ export class LegalAcceptanceSchema extends BaseModel {
   declare version: string
 }
 
+export class NotificationSchema extends BaseModel {
+  static $columns = ['app', 'body', 'category', 'createdAt', 'dedupeKey', 'id', 'path', 'readAt', 'tenantId', 'title', 'type', 'updatedAt', 'userId'] as const
+  $columns = NotificationSchema.$columns
+  @column()
+  declare app: string
+  @column()
+  declare body: string | null
+  @column()
+  declare category: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare dedupeKey: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare path: string | null
+  @column.dateTime()
+  declare readAt: DateTime | null
+  @column()
+  declare tenantId: string
+  @column()
+  declare title: string
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: string
+}
+
 export class ParcelSchema extends BaseModel {
   static $columns = ['carrier', 'createdAt', 'deliveredAt', 'deliveredToName', 'description', 'id', 'photoFileKey', 'receivedAt', 'receivedById', 'status', 'tenantId', 'unitId', 'updatedAt'] as const
   $columns = ParcelSchema.$columns
@@ -1227,6 +1260,29 @@ export class PetSchema extends BaseModel {
   declare vaccinationFileKey: string | null
 }
 
+export class PushDeviceSchema extends BaseModel {
+  static $columns = ['appVersion', 'createdAt', 'deviceName', 'id', 'lastSeenAt', 'platform', 'token', 'updatedAt', 'userId'] as const
+  $columns = PushDeviceSchema.$columns
+  @column()
+  declare appVersion: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare deviceName: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare lastSeenAt: DateTime
+  @column()
+  declare platform: string
+  @column()
+  declare token: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: string
+}
+
 export class RateLimitSchema extends BaseModel {
   static $columns = ['expire', 'key', 'points'] as const
   $columns = RateLimitSchema.$columns
@@ -1487,7 +1543,7 @@ export class UserTokenSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['avatarFileKey', 'createdAt', 'deletedAt', 'documentNumber', 'documentType', 'email', 'emailVerifiedAt', 'fullName', 'id', 'isPlatformAdmin', 'lastLoginAt', 'password', 'phone', 'status', 'updatedAt'] as const
+  static $columns = ['avatarFileKey', 'createdAt', 'deletedAt', 'documentNumber', 'documentType', 'email', 'emailVerifiedAt', 'fullName', 'id', 'isPlatformAdmin', 'lastLoginAt', 'notificationPreferences', 'password', 'phone', 'status', 'updatedAt'] as const
   $columns = UserSchema.$columns
   @column()
   declare avatarFileKey: string | null
@@ -1511,6 +1567,8 @@ export class UserSchema extends BaseModel {
   declare isPlatformAdmin: boolean
   @column.dateTime()
   declare lastLoginAt: DateTime | null
+  @column()
+  declare notificationPreferences: any | null
   @column({ serializeAs: null })
   declare password: string | null
   @column()

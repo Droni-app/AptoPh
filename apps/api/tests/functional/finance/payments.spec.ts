@@ -187,6 +187,12 @@ test.group('Finance · payments', (group) => {
     assert.equal(confirmed.body().data.status, 'confirmed')
     const [confirmedCharge] = await unitCharges(api, units.c.id)
     assert.equal(confirmedCharge!.status, 'paid')
+    // The administration was told when it was reported; the resident, now
+    const office = await api.get('/notifications', { app: 'backoffice' })
+    assert.equal(office.body().data[0].type, 'payment.reported')
+    const portal = await resident.api.get('/notifications', { app: 'web' })
+    assert.equal(portal.body().data[0].type, 'payment.confirmed')
+    assert.equal(portal.body().data[0].path, `/unidades/${units.c.id}`)
     await expectStatus(
       api.post(`/finance/payments/${reported.body().data.id}/reject`, { reason: 'No llegó' }),
       409

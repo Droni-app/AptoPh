@@ -6,7 +6,7 @@ import db from '@adonisjs/lucid/services/db'
 import mail from '@adonisjs/mail/services/main'
 import { DateTime } from 'luxon'
 import type { EnrollmentRole } from '@aptoph/shared'
-import TicketMail from '#mails/tickets/ticket_mail'
+import NotificationMail from '#mails/notifications/notification_mail'
 import Building from '#models/property/building'
 import Unit from '#models/property/unit'
 import UnitOccupant from '#models/property/unit_occupant'
@@ -138,9 +138,14 @@ test.group('Back-office tickets', (group) => {
   })
 
   test('assigning, answering and internal notes', async ({ client, assert }) => {
-    const { mails } = mail.fake()
+    const filed = mail.fake()
     const s = await setup(client)
     const ticket = await file(s.resident1.api, s.resident1.unit.id)
+    // A new ticket goes to the administration (bell and email)
+    filed.mails.assertQueued(NotificationMail, ({ content }) =>
+      content.title.startsWith(`Nueva solicitud #${ticket.number}`)
+    )
+    const { mails } = mail.fake()
 
     const assigned = await dataOf(
       s.admin.api.patch(`/tickets/${ticket.id}`, {
@@ -152,9 +157,9 @@ test.group('Back-office tickets', (group) => {
     assert.equal(assigned.priority, 'high')
     assert.equal(assigned.status, 'open')
     assert.equal(assigned.createdBy.email, s.resident1.user.email)
-    const [assignment] = mails.queued((message) => message instanceof TicketMail)
-    assert.include((assignment as TicketMail).content.title, `#${ticket.number}`)
-    assert.include((assignment as TicketMail).content.url, `/pqrs?id=${ticket.id}`)
+    const [assignment] = mails.queued((message) => message instanceof NotificationMail)
+    assert.include((assignment as NotificationMail).content.title, `#${ticket.number}`)
+    assert.include((assignment as NotificationMail).content.url, `/pqrs?id=${ticket.id}`)
 
     // Staff cannot prioritize nor reassign, only work on the ticket
     await expectStatus(s.staff.api.patch(`/tickets/${ticket.id}`, { priority: 'low' }), 403)
@@ -188,7 +193,7 @@ test.group('Back-office tickets', (group) => {
     note.assertStatus(201)
     assert.isTrue(note.body().data.isInternal)
     assert.lengthOf(
-      mails.queued((message) => message instanceof TicketMail),
+      mails.queued((message) => message instanceof NotificationMail),
       1,
       'only the assignment email so far'
     )
@@ -202,7 +207,9 @@ test.group('Back-office tickets', (group) => {
     const detail = await dataOf(s.admin.api.get(`/tickets/${ticket.id}`))
     assert.equal(detail.status, 'in_progress')
     assert.lengthOf(detail.comments, 2)
-    const emails = mails.queued((message) => message instanceof TicketMail) as TicketMail[]
+    const emails = mails.queued(
+      (message) => message instanceof NotificationMail
+    ) as NotificationMail[]
     assert.lengthOf(emails, 2)
     assert.deepEqual(emails[1]!.content.paragraphs, [
       'El jueves pasa el técnico.',
@@ -227,9 +234,11 @@ test.group('Back-office tickets', (group) => {
   })
 
   test('resolving, closing and reopening', async ({ client, assert }) => {
-    const { mails } = mail.fake()
+    mail.fake()
     const s = await setup(client)
     const ticket = await file(s.resident1.api, s.resident1.unit.id)
+    // Counted from here: the new ticket already emailed the administration
+    const { mails } = mail.fake()
 
     const resolved = await s.admin.api.post(`/tickets/${ticket.id}/comments`, {
       body: 'Listo, ya quedó arreglado.',
@@ -242,14 +251,14 @@ test.group('Back-office tickets', (group) => {
     assert.isNotNull(detail.resolvedAt)
     // One email with the reply and the new status
     assert.lengthOf(
-      mails.queued((message) => message instanceof TicketMail),
+      mails.queued((message) => message instanceof NotificationMail),
       1
     )
 
     detail = await dataOf(s.admin.api.patch(`/tickets/${ticket.id}`, { status: 'closed' }))
     assert.equal(detail.status, 'closed')
     assert.lengthOf(
-      mails.queued((message) => message instanceof TicketMail),
+      mails.queued((message) => message instanceof NotificationMail),
       2
     )
 

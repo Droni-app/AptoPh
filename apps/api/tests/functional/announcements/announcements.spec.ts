@@ -225,6 +225,14 @@ test.group('Announcements', (group) => {
     await dispatchDueAnnouncementEmails()
     const sent = mails.queued((message) => message instanceof AnnouncementMail)
     assert.lengthOf(sent, 2)
+    // The bell of the audience, once, even though the dispatch ran twice
+    const owners = await owner1.api.get('/notifications', { app: 'web' })
+    assert.deepEqual(
+      owners.body().data.map((row: { title: string }) => row.title),
+      ['Asamblea']
+    )
+    const renters = await renter1.api.get('/notifications', { app: 'web' })
+    assert.lengthOf(renters.body().data, 0)
     const to = sent.map((message) => message.message.toJSON().message.to)
     assert.sameMembers(
       to.flat().map((address: any) => address.address),

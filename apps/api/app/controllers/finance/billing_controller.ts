@@ -3,6 +3,7 @@ import db from '@adonisjs/lucid/services/db'
 import { fromCents, toCents } from '@aptoph/shared'
 import Charge from '#models/finance/charge'
 import { BillingService } from '#services/finance/billing'
+import { notifyChargesGenerated } from '#services/notifications/finance_notifications'
 import { ChargeService } from '#services/finance/charges'
 import { todayFor } from '#services/finance/support'
 import { paginated, serializeCharge, serializePeriod } from '#transformers/finance/finance'
@@ -90,6 +91,7 @@ export default class BillingController {
     const result = await finance(ctx, (scope) =>
       new BillingService(scope).generate(normalizePeriod(period))
     )
+    await notifyChargesGenerated(ctx.tenant, normalizePeriod(period), result.charges ?? [])
     return {
       data: {
         period: serializePeriod(result.period),

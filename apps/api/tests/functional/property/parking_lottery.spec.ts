@@ -10,7 +10,7 @@ import ParkingAssignment from '#models/property/parking_assignment'
 import Unit from '#models/property/unit'
 import UnitOccupant from '#models/property/unit_occupant'
 import Vehicle from '#models/property/vehicle'
-import ParkingMail from '#mails/property/parking_mail'
+import NotificationMail from '#mails/notifications/notification_mail'
 import { createMember } from '#tests/helpers'
 import { apiFor, dataOf, expectStatus } from '../finance/helpers.js'
 
@@ -164,7 +164,7 @@ test.group('Parking lottery', (group) => {
     assert.deepEqual(lottery.spots, [{ type: 'car', count: 1 }])
     // Opening notice to the two residents with an account (bulk quota)
     assert.equal(lottery.notifiedCount, 2)
-    mails.assertQueuedCount(ParkingMail, 2)
+    mails.assertQueuedCount(NotificationMail, 2)
     // One open at a time
     await expectStatus(s.admin.api.post('/parking/lotteries', lotteryInput()), 409)
 
@@ -230,8 +230,8 @@ test.group('Parking lottery', (group) => {
         createHash('sha256').update(`${drawn.seed}:${application.id}`).digest('hex')
       )
     }
-    mails.assertQueued(ParkingMail, ({ content }) => content.title.includes('Ganaste'))
-    mails.assertQueued(ParkingMail, ({ content }) => content.title.includes('lista de espera'))
+    mails.assertQueued(NotificationMail, ({ content }) => content.title.includes('Ganaste'))
+    mails.assertQueued(NotificationMail, ({ content }) => content.title.includes('lista de espera'))
 
     // Won: scheduled for the period, starts on its own
     const scheduled = await ParkingAssignment.findByOrFail('application_id', byUnit('102').id)
@@ -252,8 +252,8 @@ test.group('Parking lottery', (group) => {
       200
     )
     assert.equal(ended.body().offeredTo.unitId, s.a101.id)
-    mails.assertQueued(ParkingMail, ({ content }) => content.title.includes('Se canceló'))
-    mails.assertQueued(ParkingMail, ({ content }) => content.title.includes('Se liberó'))
+    mails.assertQueued(NotificationMail, ({ content }) => content.title.includes('Se canceló'))
+    mails.assertQueued(NotificationMail, ({ content }) => content.title.includes('Se liberó'))
 
     const portal101 = await dataOf(s.r101.api.get('/resident/parking'))
     const offer = portal101.applications[0]

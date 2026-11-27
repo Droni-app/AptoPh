@@ -21,6 +21,14 @@ export type ScannedRoutes = {
     'profile.sessions.destroyOthers': { paramsTuple?: []; params?: {} }
     'profile.email.verification': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
+    'profile.notifications.preferences': { paramsTuple?: []; params?: {} }
+    'profile.notifications.preferences.update': { paramsTuple?: []; params?: {} }
+    'profile.push.store': { paramsTuple?: []; params?: {} }
+    'profile.push.destroy': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.unread': { paramsTuple?: []; params?: {} }
+    'notifications.readAll': { paramsTuple?: []; params?: {} }
+    'notifications.read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tenant.current': { paramsTuple?: []; params?: {} }
     'resident.home': { paramsTuple?: []; params?: {} }
     'resident.units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -241,6 +249,9 @@ export type ScannedRoutes = {
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
+    'profile.notifications.preferences': { paramsTuple?: []; params?: {} }
+    'notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.unread': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
     'resident.home': { paramsTuple?: []; params?: {} }
     'resident.units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -336,6 +347,9 @@ export type ScannedRoutes = {
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
     'profile.tenants': { paramsTuple?: []; params?: {} }
+    'profile.notifications.preferences': { paramsTuple?: []; params?: {} }
+    'notifications.index': { paramsTuple?: []; params?: {} }
+    'notifications.unread': { paramsTuple?: []; params?: {} }
     'tenant.current': { paramsTuple?: []; params?: {} }
     'resident.home': { paramsTuple?: []; params?: {} }
     'resident.units.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -434,6 +448,9 @@ export type ScannedRoutes = {
     'auth.email.verify': { paramsTuple?: []; params?: {} }
     'invitations.accept': { paramsTuple?: []; params?: {} }
     'profile.email.verification': { paramsTuple?: []; params?: {} }
+    'profile.push.store': { paramsTuple?: []; params?: {} }
+    'notifications.readAll': { paramsTuple?: []; params?: {} }
+    'notifications.read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.vehicles.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.pets.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.household.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
@@ -536,6 +553,7 @@ export type ScannedRoutes = {
   }
   PUT: {
     'profile.password': { paramsTuple?: []; params?: {} }
+    'profile.notifications.preferences.update': { paramsTuple?: []; params?: {} }
     'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.image.set': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.settings.update': { paramsTuple?: []; params?: {} }
@@ -551,6 +569,7 @@ export type ScannedRoutes = {
   DELETE: {
     'profile.sessions.destroy': { paramsTuple: [ParamValue]; params: {'sessionId': ParamValue} }
     'profile.sessions.destroyOthers': { paramsTuple?: []; params?: {} }
+    'profile.push.destroy': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'resident.vehicles.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.pets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.household.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

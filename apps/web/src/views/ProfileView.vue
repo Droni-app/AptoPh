@@ -6,6 +6,7 @@ import PageHeader from '@/components/PageHeader.vue'
 import ProfileForm from '@/components/account/ProfileForm.vue'
 import ChangePasswordForm from '@/components/account/ChangePasswordForm.vue'
 import SessionsList from '@/components/account/SessionsList.vue'
+import NotificationSettings from '@/components/account/NotificationSettings.vue'
 import EmailVerificationNotice from '@/components/account/EmailVerificationNotice.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
@@ -16,7 +17,10 @@ const sessions = ref<InstanceType<typeof SessionsList> | null>(null)
 </script>
 
 <template>
-  <PageHeader title="Mi perfil" subtitle="Tus datos, tu contraseña y dónde tienes la sesión abierta" />
+  <PageHeader
+    title="Mi perfil"
+    subtitle="Tus datos, tu contraseña y dónde tienes la sesión abierta"
+  />
 
   <EmailVerificationNotice class="mb-6" />
 
@@ -58,6 +62,11 @@ const sessions = ref<InstanceType<typeof SessionsList> | null>(null)
       </UiCard>
     </div>
   </div>
+
+  <UiCard id="notificaciones" class="mt-6 scroll-mt-24">
+    <h2 class="mb-1 text-lg font-semibold">Notificaciones</h2>
+    <NotificationSettings />
+  </UiCard>
 
   <UiButton class="mt-6" variant="outline" color="danger" @click="auth.logout()">
     <span class="mr-1" aria-hidden="true"><i class="mdi mdi-logout" /></span>Cerrar sesión

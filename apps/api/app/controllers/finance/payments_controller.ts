@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { toCents } from '@aptoph/shared'
 import Payment from '#models/finance/payment'
 import { PaymentService } from '#services/finance/payments'
+import { notifyPaymentReviewed } from '#services/notifications/finance_notifications'
 import { paginated, serializePayment } from '#transformers/finance/finance'
 import {
   confirmPaymentValidator,
@@ -92,6 +93,9 @@ export default class PaymentsController {
         })),
       })
     )
+    if (payment.status === 'confirmed') {
+      await notifyPaymentReviewed(ctx.tenant, payment, 'registered')
+    }
     ctx.response.status(201)
     return { data: await present(payment) }
   }
@@ -101,6 +105,7 @@ export default class PaymentsController {
     const payment = await finance(ctx, async (scope) =>
       new PaymentService(scope).confirm(await lockedPayment(scope, ctx.params.id), cashAccountId)
     )
+    await notifyPaymentReviewed(ctx.tenant, payment, 'confirmed')
     return { data: await present(payment) }
   }
 
@@ -109,6 +114,7 @@ export default class PaymentsController {
     const payment = await finance(ctx, async (scope) =>
       new PaymentService(scope).reject(await lockedPayment(scope, ctx.params.id), reason)
     )
+    await notifyPaymentReviewed(ctx.tenant, payment, 'rejected')
     return { data: await present(payment) }
   }
 

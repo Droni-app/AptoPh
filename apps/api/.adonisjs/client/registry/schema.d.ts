@@ -229,6 +229,110 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/tenants/my_tenants_controller').default['index']>>>
     }
   }
+  'profile.notifications.preferences': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/account/notification-preferences'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['show']>>>
+    }
+  }
+  'profile.notifications.preferences.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/account/notification-preferences'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/notifications/notifications').preferencesValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/notifications/notifications').preferencesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.push.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/account/push-devices'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/notifications/notifications').pushDeviceValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/notifications/notifications').pushDeviceValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['registerDevice']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['registerDevice']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['registerDevice']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.push.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/account/push-devices/:token'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['removeDevice']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['removeDevice']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notification_settings_controller').default['removeDevice']>>>
+    }
+  }
+  'notifications.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/notifications'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/notifications/notifications').listNotificationsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'notifications.unread': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/notifications/unread'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/notifications/notifications').readAllValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['unreadCount']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['unreadCount']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['unreadCount']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'notifications.readAll': {
+    methods: ["POST"]
+    pattern: '/api/v1/notifications/read-all'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/notifications/notifications').readAllValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/notifications/notifications').readAllValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['readAll']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['readAll']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['readAll']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'notifications.read': {
+    methods: ["POST"]
+    pattern: '/api/v1/notifications/:id/read'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['read']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['read']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/notifications/notifications_controller').default['read']>>>
+    }
+  }
   'tenant.current': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/tenant'

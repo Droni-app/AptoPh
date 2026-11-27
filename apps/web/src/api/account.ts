@@ -6,6 +6,8 @@ import type {
   ChangePasswordInput,
   InvitationPreview,
   InvitationSession,
+  NotificationList,
+  NotificationPreferences,
   ProfileInput,
   UserProfile,
 } from '@aptoph/shared'
@@ -75,6 +77,33 @@ export const accountApi = {
     api<void>('/api/v1/account/email/verification', {
       method: 'POST',
       body: { app: APP },
+      tenant: false,
+    }),
+}
+
+/**
+ * The bell of this app in the active conjunto, and the channels of the
+ * account (docs/notifications.md)
+ */
+export const notificationsApi = {
+  list: () => api<NotificationList>('/api/v1/notifications', { query: { app: APP } }),
+  unread: () => api<{ unread: number }>('/api/v1/notifications/unread', { query: { app: APP } }),
+  read: (id: string) =>
+    api<{ unread: number }>(`/api/v1/notifications/${id}/read`, { method: 'POST' }),
+  readAll: () =>
+    api<{ unread: number }>('/api/v1/notifications/read-all', {
+      method: 'POST',
+      body: { app: APP },
+    }),
+  preferences: () =>
+    api<{ data: NotificationPreferences; devices: number; pushAvailable: boolean }>(
+      '/api/v1/account/notification-preferences',
+      { tenant: false },
+    ),
+  savePreferences: (preferences: NotificationPreferences) =>
+    api<{ data: NotificationPreferences }>('/api/v1/account/notification-preferences', {
+      method: 'PUT',
+      body: { preferences },
       tenant: false,
     }),
 }

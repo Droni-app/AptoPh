@@ -36,6 +36,7 @@ const dbConfig = defineConfig({
           'database/migrations/tickets',
           'database/migrations/gatehouse',
           'database/migrations/billing',
+          'database/migrations/notifications',
         ],
       },
       schemaGeneration: {

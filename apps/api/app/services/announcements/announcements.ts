@@ -23,6 +23,7 @@ import { signValue } from '#services/secure_token'
 import env from '#start/env'
 import { EmailQuotaService } from '#services/announcements/email_quota'
 import { queueMail } from '#services/mailer'
+import { NotificationService } from '#services/notifications/notifications'
 import { tenantToday } from '#services/resident_scope'
 
 const STAFF_ROLES: EnrollmentRole[] = ['staff', 'security_guard']
@@ -422,8 +423,45 @@ export class AnnouncementsService {
   }
 
   /** People of an audience the email would reach (they have an email address) */
+  /** The audience with email that did not turn off comunicados by email */
   private emailRecipients(target: AudienceTarget) {
-    return recipientsQuery(this.tenant, target).whereNotNull('usr.email')
+    return recipientsQuery(this.tenant, target)
+      .whereNotNull('usr.email')
+      .whereRaw(
+        `coalesce((usr.notification_preferences -> 'announcements' ->> 'email')::boolean, true)`
+      )
+  }
+
+  /**
+   * Bell and push of a published comunicado, to its whole audience (residents
+   * to the portal, staff to the back-office). The email goes apart (quota).
+   */
+  async notifyPublished(announcement: Announcement) {
+    await announcement.load('buildings')
+    const audience = await recipientsQuery(this.tenant, targetOf(announcement))
+      .select('usr.id')
+      .select(
+        db.raw(
+          `exists (select 1 from enrollments e2 where e2.tenant_id = ? and e2.user_id = usr.id and e2.role = 'resident' and e2.status = 'active') as is_resident`,
+          [this.tenant.id]
+        )
+      )
+    const notifications = new NotificationService(this.tenant)
+    const common = {
+      category: 'announcements' as const,
+      type: 'announcement.published',
+      title: announcement.title,
+      body: null,
+      dedupeKey: `announcement:${announcement.id}`,
+    }
+    await notifications.notify(
+      audience.filter((row) => row.is_resident).map((row) => row.id as string),
+      { ...common, app: 'web', path: `/comunicados/${announcement.id}` }
+    )
+    await notifications.notify(
+      audience.filter((row) => !row.is_resident).map((row) => row.id as string),
+      { ...common, app: 'backoffice', path: `/comunicados?id=${announcement.id}` }
+    )
   }
 
   /** Recipients and quota of the month the email would go out (docs/email-quota.md) */
@@ -511,6 +549,22 @@ let dispatching: Promise<void> | null = null
 export function dispatchDueAnnouncementEmails() {
   dispatching ??= (async () => {
     try {
+      // Bell and push of every comunicado published (now or its scheduled time came), once
+      const toNotify = await db.rawQuery(
+        `UPDATE announcements SET notified_at = now()
+         WHERE notified_at IS NULL AND deleted_at IS NULL
+           AND published_at IS NOT NULL AND published_at <= clock_timestamp()
+         RETURNING id, tenant_id`
+      )
+      for (const row of toNotify.rows as Array<{ id: string; tenant_id: string }>) {
+        try {
+          const tenant = await Tenant.findOrFail(row.tenant_id)
+          const announcement = await Announcement.findOrFail(row.id)
+          await new AnnouncementsService(tenant).notifyPublished(announcement)
+        } catch (err) {
+          logger.error({ err, announcementId: row.id }, 'could not notify the announcement')
+        }
+      }
       const claimed = await db.rawQuery(
         `UPDATE announcements SET emailed_at = now()
          WHERE send_email AND emailed_at IS NULL AND deleted_at IS NULL

@@ -46,6 +46,10 @@ export const controllers = {
     ResidentVisits: () => import('#controllers/gatehouse/resident_visits_controller'),
     VisitorParking: () => import('#controllers/gatehouse/visitor_parking_controller'),
   },
+  notifications: {
+    NotificationSettings: () => import('#controllers/notifications/notification_settings_controller'),
+    Notifications: () => import('#controllers/notifications/notifications_controller'),
+  },
   property: {
     Buildings: () => import('#controllers/property/buildings_controller'),
     Parking: () => import('#controllers/property/parking_controller'),

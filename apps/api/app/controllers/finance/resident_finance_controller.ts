@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { notifyPaymentReported } from '#services/notifications/finance_notifications'
 import { RESIDENT_ATTACHMENT_MAX, toCents } from '@aptoph/shared'
 import FieldException from '#exceptions/field_exception'
 import ResourceException from '#exceptions/resource_exception'
@@ -117,6 +118,7 @@ export default class FinanceController {
       unappliedAmount: '0.00',
     })
     await payment.load('unit', (units) => units.preload('building'))
+    await notifyPaymentReported(tenant, payment, user.fullName)
     response.status(201)
     return { data: presentPayment(payment, user.id, []) }
   }

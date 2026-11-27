@@ -471,6 +471,12 @@ export class BillingService {
     return {
       period: billingPeriod,
       created: created.length,
+      /** For the notices to the units, after the transaction */
+      charges: created.map((charge) => ({
+        unitId: charge.unitId,
+        amount: charge.amount,
+        dueOn: charge.dueOn.toISODate()!,
+      })),
       total: added,
       reserveFund: plan.reserveFund,
       warnings: plan.warnings,

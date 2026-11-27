@@ -17,13 +17,11 @@ import {
 } from '@aptoph/shared'
 import FieldException from '#exceptions/field_exception'
 import ResourceException from '#exceptions/resource_exception'
-import TicketMail from '#mails/tickets/ticket_mail'
 import User from '#models/auth/user'
 import type Tenant from '#models/tenants/tenant'
 import type Ticket from '#models/tickets/ticket'
 import TicketComment from '#models/tickets/ticket_comment'
-import { appUrl } from '#services/app_urls'
-import { queueMail } from '#services/mailer'
+import { NotificationService } from '#services/notifications/notifications'
 import { tenantToday } from '#services/resident_scope'
 
 type TicketQuery = ModelQueryBuilderContract<typeof Ticket>
@@ -254,7 +252,7 @@ export class TicketsService {
     if (input.status) this.applyStatus(ticket, input.status)
     await ticket.save()
 
-    if (assignee && assignee.id !== this.viewer.id) this.notifyAssignee(ticket, assignee)
+    if (assignee && assignee.id !== this.viewer.id) await this.notifyAssignee(ticket, assignee)
     if (ticket.status !== previousStatus) {
       await this.notifyRequester(ticket, { status: ticket.status })
     }
@@ -351,10 +349,14 @@ export class TicketsService {
             ? 'Si el problema sigue, respóndenos desde el portal y la solicitud se reabre.'
             : `La administración cambió el estado de tu solicitud a «${status}».`,
         ]
-    queueMail(
-      new TicketMail(requester, this.tenant.name, {
-        subject: `${this.tenant.name}: ${title}`,
-        title,
+    await new NotificationService(this.tenant).notify([requester.id], {
+      app: 'web',
+      category: 'tickets',
+      type: update.reply ? 'ticket.reply' : 'ticket.status',
+      title,
+      body: update.reply ? update.reply.slice(0, 280) : paragraphs[0],
+      path: `/pqrs/${ticket.id}`,
+      email: {
         paragraphs,
         rows: [
           { label: 'Solicitud', value: ref },
@@ -362,21 +364,20 @@ export class TicketsService {
           { label: 'Estado', value: TICKET_STATUS_LABELS[ticket.status] },
         ],
         action: 'Ver la solicitud',
-        url: new URL(`/pqrs/${ticket.id}`, appUrl('web')).toString(),
-      }),
-      'ticket update'
-    )
+      },
+    })
   }
 
-  /** Email to the person a ticket was assigned to */
-  private notifyAssignee(ticket: Ticket, assignee: User) {
-    const title = `Te asignaron la solicitud #${ticket.number}`
-    const url = new URL('/pqrs', appUrl('backoffice'))
-    url.searchParams.set('id', ticket.id)
-    queueMail(
-      new TicketMail(assignee, this.tenant.name, {
-        subject: `${this.tenant.name}: ${title}`,
-        title,
+  /** Bell (and email, push) of the person a ticket was assigned to */
+  private async notifyAssignee(ticket: Ticket, assignee: User) {
+    await new NotificationService(this.tenant).notify([assignee.id], {
+      app: 'backoffice',
+      category: 'tickets',
+      type: 'ticket.assigned',
+      title: `Te asignaron la solicitud #${ticket.number}`,
+      body: ticket.subject,
+      path: `/pqrs?id=${ticket.id}`,
+      email: {
         paragraphs: [ticket.subject],
         rows: [
           { label: 'Tipo', value: TICKET_TYPE_LABELS[ticket.type] },
@@ -390,9 +391,7 @@ export class TicketsService {
           },
         ],
         action: 'Abrir la solicitud',
-        url: url.toString(),
-      }),
-      'ticket assignment'
-    )
+      },
+    })
   }
 }

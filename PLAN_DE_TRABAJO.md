@@ -38,7 +38,7 @@ reales (sección 6).
 | Portería, visitas y paquetes | 🟡 parqueadero de visitantes; visitas y paquetes solo residente | ✅ | ✅ | ⬜ |
 | Documentos | ⬜ (solo tablas) | ⬜ | ⬜ | ⬜ |
 | Auditoría y reportes | ⬜ (solo tablas) | ⬜ | — | — |
-| Notificaciones | 🟡 cuenta, invitaciones, plan, comunicados | — | ⬜ | ⬜ |
+| Notificaciones | ✅ campana, correo y push (FCM) por categoría y canal, recordatorio de vencimiento | ✅ | ✅ | ⬜ |
 | Asambleas | ⬜ | ⬜ | ⬜ | ⬜ |
 | Presupuesto, gastos y contabilidad | ✅ | ✅ | — | — |
 
@@ -72,8 +72,8 @@ Sin esto un administrador no puede operar ni invitar a su gente.
 6. ✅ **Importación del censo desde CSV** con vista previa e importación por fila. *(4.2)*
 7. **Portería para vigilantes**: registrar ingresos de visitas y recepción de paquetes. *(4.8)*
 8. ✅ **Comunicados** con confirmación de lectura, texto con formato e imagen. *(4.6)*
-9. **Notificaciones por correo** de los eventos clave (cobro emitido, pago aplicado, reserva,
-   paquete, respuesta a PQRS). *(4.11)*
+9. ✅ **Notificaciones** de los eventos clave en la campana, por correo y push, con preferencias por
+   categoría y canal. *(4.11)*
 10. **Documentos del conjunto**. *(4.9)*
 11. **Auditoría y reportes** (cartera por edades, recaudo del mes, exportar a Excel). *(4.10)*
 12. 🟡 **Facturación del SaaS**: pago con Wompi hecho; falta pasar a llaves de producción y la
@@ -376,14 +376,20 @@ cancela.
 **Hay hoy:** bienvenida, verificación de correo, invitación, recuperación y cambio de contraseña,
 correos del plan y comunicados (`@adonisjs/mail`, Mailjet). Se envían con `sendLater`, en memoria.
 
+**Hay también** (docs/notifications.md): campana en el portal y el backoffice (consulta cada minuto,
+leído o no), preferencias por categoría y canal en *Mi perfil*, push por Firebase Cloud Messaging
+(apagado hasta configurar `FCM_*` y tener la app) y registro de teléfonos. Eventos: llegada de
+visitas, cuenta del mes, pago confirmado, rechazado o registrado, recordatorio 3 días antes del
+vencimiento, PQRS (nueva, respuesta, estado, asignación), pago reportado, comunicados y sorteo de
+parqueaderos.
+
 **Falta**
-- [ ] Correos transaccionales (P1): cobro emitido, pago aplicado o rechazado, reserva aprobada o
-      rechazada, paquete recibido (la respuesta a PQRS ya avisa por correo).
+- [ ] Reservas aprobadas o rechazadas, y paquete recibido: llegan cuando exista su pantalla en el
+      backoffice (la categoría ya existe).
 - [ ] Cola durable con reintentos (ver 6.2): hoy un reinicio del servidor pierde los correos en
       cola.
-- [ ] Preferencias del usuario: qué avisos recibe y por qué canal.
-- [ ] Centro de notificaciones en el portal (tabla `notifications`).
-- [ ] Push en la app móvil (`device_tokens`, P2).
+- [ ] Horario de silencio para push, resumen diario por correo y registro de entregas.
+- [ ] Avisos masivos urgentes de la administración (cortes de agua, emergencias).
 
 **Tener en cuenta**
 - Masivos (comunicados a 800 unidades) en lotes, respetando los límites de Mailjet.
