@@ -1,6 +1,7 @@
 import { BaseMail } from '@adonisjs/mail'
 import type Announcement from '#models/announcements/announcement'
 import type Tenant from '#models/tenants/tenant'
+import { emailHtml, htmlToText, sanitizeBody } from '#services/announcements/rich_text'
 
 /** A comunicado sent to one person of its audience when it is published */
 export default class AnnouncementMail extends BaseMail {
@@ -9,17 +10,17 @@ export default class AnnouncementMail extends BaseMail {
     private tenant: Tenant,
     private recipient: { fullName: string; email: string },
     readonly url: string,
-    private attachmentCount: number
+    private attachmentCount: number,
+    /** Lasting link to the image (poster), or null */
+    private imageUrl: string | null = null
   ) {
     super()
     this.subject = `${tenant.name}: ${announcement.title}`
   }
 
   prepare() {
-    const paragraphs = this.announcement.body
-      .split(/\n{2,}/)
-      .map((paragraph) => paragraph.trim())
-      .filter(Boolean)
+    // Sanitized again: the body of older rows may be plain text
+    const body = sanitizeBody(this.announcement.body)
     const attachments =
       this.attachmentCount === 0
         ? null
@@ -32,7 +33,8 @@ export default class AnnouncementMail extends BaseMail {
       .htmlView('emails/announcement', {
         tenantName: this.tenant.name,
         title: this.announcement.title,
-        paragraphs,
+        bodyHtml: emailHtml(body),
+        imageUrl: this.imageUrl,
         attachments,
         url: this.url,
       })
@@ -40,9 +42,12 @@ export default class AnnouncementMail extends BaseMail {
         [
           `${this.tenant.name}`,
           this.announcement.title,
-          this.announcement.body,
+          this.imageUrl ? `Incluye una imagen: ${this.imageUrl}` : null,
+          htmlToText(body) || null,
           attachments ? `${attachments} Míralo aquí: ${this.url}` : `Míralo aquí: ${this.url}`,
-        ].join('\n\n')
+        ]
+          .filter(Boolean)
+          .join('\n\n')
       )
   }
 }

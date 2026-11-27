@@ -17,9 +17,9 @@ export default class extends BaseSchema {
       tenantTable(table, this.raw.bind(this))
       table.string('title', 200).notNullable()
       /**
-       * Markdown
+       * Rich text: HTML sanitized by the API ('' when the comunicado is just its image)
        */
-      table.text('body').notNullable()
+      table.text('body').notNullable().defaultTo('')
       table.string('audience', 20).notNullable().defaultTo('all')
       table.timestamp('published_at', { useTz: true }).nullable()
       table.boolean('is_pinned').notNullable().defaultTo(false)

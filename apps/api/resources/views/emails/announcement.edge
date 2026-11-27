@@ -1,8 +1,14 @@
 @component('components/email_layout', { title: title })
   <p style="margin:0 0 4px;color:#5b6475;font-size:13px;">Comunicado de {{ tenantName }}</p>
   <h1 style="margin:0 0 16px;font-size:20px;">{{ title }}</h1>
-  @each(paragraph in paragraphs)
-    <p style="margin:0 0 12px;white-space:pre-line;">{{ paragraph }}</p>
+  @if(imageUrl)
+    <a href="{{ url }}" style="display:block;margin:0 0 16px;">
+      <img src="{{ imageUrl }}" alt="Imagen del comunicado: {{ title }}" width="100%" style="display:block;width:100%;max-width:100%;height:auto;border:0;border-radius:8px;" />
+    </a>
+  @end
+  @if(bodyHtml)
+    {{-- Sanitized by the API (rich_text.ts): only an allowlist of tags with inline styles --}}
+    <div style="margin:0 0 8px;">{{{ bodyHtml }}}</div>
   @end
   @if(attachments)
     <p style="margin:0 0 20px;color:#5b6475;">{{ attachments }}</p>

@@ -918,6 +918,32 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['destroy']>>>
     }
   }
+  'announcements.image.set': {
+    methods: ["PUT"]
+    pattern: '/api/v1/announcements/:id/image'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/files/attachment').uploadAnnouncementImageValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/files/attachment').uploadAnnouncementImageValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['setImage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['setImage']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['setImage']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'announcements.image.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/announcements/:id/image'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['removeImage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['removeImage']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['removeImage']>>>
+    }
+  }
   'announcements.attachments.store': {
     methods: ["POST"]
     pattern: '/api/v1/announcements/:id/attachments'
@@ -1124,6 +1150,19 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/billing/wompi_controller').default['handle']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/billing/wompi_controller').default['handle']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/billing/wompi_controller').default['handle']>>>
+    }
+  }
+  'public.announcementImages.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/public/announcement-images/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/announcements/announcement_images_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/announcements/announcement_images_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/announcement_images_controller').default['show']>>>
     }
   }
   'buildings.store': {

@@ -428,6 +428,18 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"announcements"],[1,"id"]],
     types: placeholder as Registry['announcements.destroy']['types'],
   },
+  'announcements.image.set': {
+    methods: ["PUT"],
+    pattern: '/api/v1/announcements/:id/image',
+    tokens: [[0,"api"],[0,"v1"],[0,"announcements"],[1,"id"],[0,"image"]],
+    types: placeholder as Registry['announcements.image.set']['types'],
+  },
+  'announcements.image.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/announcements/:id/image',
+    tokens: [[0,"api"],[0,"v1"],[0,"announcements"],[1,"id"],[0,"image"]],
+    types: placeholder as Registry['announcements.image.destroy']['types'],
+  },
   'announcements.attachments.store': {
     methods: ["POST"],
     pattern: '/api/v1/announcements/:id/attachments',
@@ -523,6 +535,12 @@ const routes = {
     pattern: '/api/v1/webhooks/wompi',
     tokens: [[0,"api"],[0,"v1"],[0,"webhooks"],[0,"wompi"]],
     types: placeholder as Registry['webhooks.wompi']['types'],
+  },
+  'public.announcementImages.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/public/announcement-images/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"public"],[0,"announcement-images"],[1,"id"]],
+    types: placeholder as Registry['public.announcementImages.show']['types'],
   },
   'buildings.store': {
     methods: ["POST"],

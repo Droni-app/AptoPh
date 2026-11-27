@@ -53,15 +53,17 @@ export default class AnnouncementsController {
     const service = new AnnouncementsService(tenant)
     const rows = await visibleAnnouncements(service, userId)
     const ids = rows.map((row) => row.id)
-    const [reads, counts] = await Promise.all([
+    const [reads, counts, images] = await Promise.all([
       readsOf(tenant.id, userId, ids),
       service.attachmentCounts(ids),
+      service.imageViews(ids),
     ])
     return {
       data: rows.map((row: Announcement) =>
         serializeResidentAnnouncement(row, {
           readAt: reads.get(row.id) ?? null,
           attachmentCount: counts.get(row.id) ?? 0,
+          image: images.get(row.id) ?? null,
         })
       ),
     }
@@ -73,15 +75,17 @@ export default class AnnouncementsController {
     const service = new AnnouncementsService(tenant)
     const announcement = await findVisible(service, userId, params.id)
     await service.markRead(announcement, userId)
-    const [reads, attachments] = await Promise.all([
+    const [reads, attachments, images] = await Promise.all([
       readsOf(tenant.id, userId, [announcement.id]),
       new AttachmentsService(tenant).list('announcement', announcement.id),
+      service.imageViews([announcement.id]),
     ])
     return {
       data: {
         ...serializeResidentAnnouncement(announcement, {
           readAt: reads.get(announcement.id) ?? null,
           attachmentCount: attachments.length,
+          image: images.get(announcement.id) ?? null,
         }),
         attachments: attachments.map(serializeAttachment),
       },

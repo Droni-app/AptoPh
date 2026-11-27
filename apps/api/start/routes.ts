@@ -48,6 +48,8 @@ const ResidentFinanceController = () => import('#controllers/finance/resident_fi
 const ResidentAnnouncementsController = () =>
   import('#controllers/announcements/resident_announcements_controller')
 const AnnouncementsController = () => import('#controllers/announcements/announcements_controller')
+const AnnouncementImagesController = () =>
+  import('#controllers/announcements/announcement_images_controller')
 const FinanceOverviewController = () => import('#controllers/finance/overview_controller')
 const FinanceAccountsController = () => import('#controllers/finance/accounts_controller')
 const CashAccountsController = () => import('#controllers/finance/cash_accounts_controller')
@@ -280,6 +282,10 @@ router
           .post('announcements/:id/unpublish', [AnnouncementsController, 'unpublish'])
           .as('unpublish')
         router.delete('announcements/:id', [AnnouncementsController, 'destroy']).as('destroy')
+        router.put('announcements/:id/image', [AnnouncementsController, 'setImage']).as('image.set')
+        router
+          .delete('announcements/:id/image', [AnnouncementsController, 'removeImage'])
+          .as('image.destroy')
         router
           .post('announcements/:id/attachments', [AnnouncementsController, 'attach'])
           .as('attachments.store')
@@ -345,6 +351,14 @@ router
      * Wompi's events (public; verified by their checksum)
      */
     router.post('webhooks/wompi', [WompiController, 'handle']).as('webhooks.wompi')
+
+    /**
+     * Image of a comunicado linked from its email (public; HMAC-signed link).
+     * Not throttled by IP: email clients load images from a few proxy IPs.
+     */
+    router
+      .get('public/announcement-images/:id', [AnnouncementImagesController, 'show'])
+      .as('public.announcementImages.show')
 
     /**
      * Back-office: write (administration)

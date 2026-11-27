@@ -335,7 +335,7 @@ Los valores son `numeric` y se exponen como `string`; en el código se calcula e
 | `vendors` | Proveedores: documento, contacto, cuenta bancaria y cuenta de gasto habitual. |
 | `bills` / `bill_lines` | Facturas de proveedores: líneas por cuenta de gasto, IVA, retenciones (fuente, IVA, ICA), neto y saldo. |
 | `vendor_payments` / `vendor_payment_allocations` | Comprobantes de egreso numerados y las facturas que pagan. |
-| `attachments` | Adjuntos de facturas, egresos, recibos de caja, comprobantes contables y comunicados (`owner_type` + `owner_id`). Quitar uno solo marca `deleted_at`. Ver [files.md](files.md). |
+| `attachments` | Adjuntos de facturas, egresos, recibos de caja, comprobantes contables, comunicados y la imagen de cada comunicado (`owner_type` + `owner_id`). Quitar uno solo marca `deleted_at`. Ver [files.md](files.md). |
 | `cash_accounts` | Cuentas bancarias y cajas, cada una con su auxiliar contable (`ledger_account_id`). |
 | `budgets` / `budget_items` | Presupuesto anual por cuenta, porcentaje del fondo de imprevistos y aprobación en asamblea. |
 
@@ -400,7 +400,7 @@ para impedir reservas solapadas (requiere la extensión `btree_gist`).
 | created_by_id | uuid FK → users | |
 | created_at / updated_at / deleted_at | | |
 
-El cuerpo es texto plano. Ver [announcements.md](announcements.md).
+El cuerpo es HTML saneado por la API (texto con formato); la imagen (afiche) es un adjunto con `owner_type = 'announcement_image'`. Ver [announcements.md](announcements.md).
 
 ### `announcement_buildings` — torres de un comunicado
 

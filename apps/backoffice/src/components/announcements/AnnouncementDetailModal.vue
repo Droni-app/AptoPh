@@ -5,6 +5,7 @@ import {
   UiBadge,
   UiButton,
   UiModal,
+  UiRichText,
   UiSkeleton,
   UiTabs,
   useToast,
@@ -60,12 +61,6 @@ const audience = computed(() => {
   const label = ANNOUNCEMENT_AUDIENCE_LABELS[a.audience]
   return a.buildings.length ? `${label} · ${a.buildings.map((b) => b.name).join(', ')}` : label
 })
-const paragraphs = computed(() =>
-  (announcement.value?.body ?? '')
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean),
-)
 const read = computed(() => readers.value?.filter((r) => r.readAt) ?? [])
 const pending = computed(() => readers.value?.filter((r) => !r.readAt) ?? [])
 const readerTabs = computed(() => [
@@ -156,10 +151,22 @@ async function remove() {
         </div>
       </dl>
 
-      <article class="flex flex-col gap-3 text-[0.95rem] leading-relaxed">
-        <p v-for="(paragraph, i) in paragraphs" :key="i" class="whitespace-pre-line">
-          {{ paragraph }}
-        </p>
+      <article class="flex flex-col gap-4">
+        <a
+          v-if="announcement.image"
+          :href="announcement.image.url"
+          target="_blank"
+          rel="noopener"
+          class="block overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 dark:border-white/10 dark:bg-white/5"
+          title="Abrir la imagen completa"
+        >
+          <img
+            :src="announcement.image.url"
+            :alt="`Imagen del comunicado ${announcement.title}`"
+            class="mx-auto max-h-[32rem] w-auto object-contain"
+          />
+        </a>
+        <UiRichText v-if="announcement.body" :html="announcement.body" />
       </article>
 
       <AttachmentList

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { UiAlert, UiButton, UiCard, UiSkeleton, useToast } from '@aptoph/ui'
+import { UiAlert, UiButton, UiCard, UiRichText, UiSkeleton, useToast } from '@aptoph/ui'
 import {
   attachmentIcon,
   formatFileSize,
@@ -30,13 +30,6 @@ async function load() {
     else error.value = errorMessage(e, 'No pudimos cargar el comunicado')
   }
 }
-
-const paragraphs = computed(() =>
-  (announcement.value?.body ?? '')
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean),
-)
 
 async function open(file: Attachment, download = false) {
   const signed = () => residentApi.announcements.attachmentUrl(file.id, download)
@@ -72,11 +65,23 @@ onMounted(load)
   <template v-else>
     <PageHeader :title="announcement.title" :subtitle="formatDateTime(announcement.publishedAt)" />
     <article
-      class="flex max-w-3xl flex-col gap-4 rounded-2xl border border-neutral-100 bg-white p-5 leading-relaxed sm:p-6 dark:border-white/10 dark:bg-neutral-900"
+      class="max-w-3xl overflow-hidden rounded-2xl border border-neutral-100 bg-white dark:border-white/10 dark:bg-neutral-900"
     >
-      <p v-for="(paragraph, i) in paragraphs" :key="i" class="whitespace-pre-line">
-        {{ paragraph }}
-      </p>
+      <a
+        v-if="announcement.image"
+        :href="announcement.image.url"
+        target="_blank"
+        rel="noopener"
+        class="block bg-neutral-100 dark:bg-white/5"
+        title="Ver la imagen completa"
+      >
+        <img
+          :src="announcement.image.url"
+          :alt="`Imagen del comunicado ${announcement.title}`"
+          class="mx-auto max-h-[80vh] w-auto object-contain"
+        />
+      </a>
+      <UiRichText v-if="announcement.body" :html="announcement.body" class="p-5 sm:p-6" />
     </article>
 
     <section v-if="announcement.attachments.length" class="mt-6 max-w-3xl">

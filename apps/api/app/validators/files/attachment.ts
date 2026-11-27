@@ -1,5 +1,7 @@
 import vine from '@vinejs/vine'
 import {
+  ANNOUNCEMENT_IMAGE_EXTENSIONS,
+  ANNOUNCEMENT_IMAGE_MAX_MB,
   ATTACHMENT_EXTENSIONS,
   ATTACHMENT_MAX_MB,
   FINANCE_ATTACHMENT_OWNER_TYPES,
@@ -17,4 +19,12 @@ export const uploadAttachmentValidator = vine.create({
 
 export const attachmentUrlValidator = vine.create({
   download: vine.boolean().optional(),
+})
+
+/** Image (poster) of a comunicado: formats every browser and email client shows */
+export const uploadAnnouncementImageValidator = vine.create({
+  file: vine.file({
+    size: `${ANNOUNCEMENT_IMAGE_MAX_MB}mb`,
+    extnames: [...ANNOUNCEMENT_IMAGE_EXTENSIONS],
+  }),
 })

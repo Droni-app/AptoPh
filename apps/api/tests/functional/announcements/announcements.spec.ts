@@ -412,3 +412,190 @@ test.group('Announcements', (group) => {
     assert.lengthOf(after.attachments, 0)
   })
 })
+
+/** A 1×1 PNG (real bytes: the body parser detects the type from the content) */
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  'base64'
+)
+
+function putImage(client: ApiClient, tenant: Tenant, user: User, id: string, name = 'afiche.png') {
+  return client
+    .put(`/api/v1/announcements/${id}/image`)
+    .loginAs(user)
+    .header('X-Tenant-Id', tenant.id)
+    .file('file', PNG, { filename: name })
+}
+
+/** The image a PUT /announcements/:id/image returned */
+const uploadedImage = (response: { body(): unknown }) =>
+  (response.body() as { data: { id: string; url: string; fileName: string } }).data
+
+test.group('Announcements · rich text and image', (group) => {
+  group.each.setup(() => testUtils.db().withGlobalTransaction())
+  group.each.setup(() => {
+    drive.fake()
+    return () => drive.restore()
+  })
+
+  test('the body keeps the formatting and drops anything unsafe', async ({ client, assert }) => {
+    const { admin, owner1 } = await setup(client)
+    const created = await admin.api.post(
+      '/announcements',
+      draft({
+        publish: 'now',
+        body:
+          '<h1>Aviso</h1><p>Hola <b>a todos</b>, <em>gracias</em>.</p>' +
+          '<ul><li>Uno</li><li>Dos</li></ul>' +
+          '<script>alert(1)</script><img src="x" onerror="alert(2)">' +
+          '<p style="color:red" onclick="alert(3)"><a href="javascript:alert(4)">malo</a>' +
+          '<a href="https://aptoph.com">bueno</a></p>',
+      })
+    )
+    created.assertStatus(201)
+    const body: string = created.body().data.body
+
+    assert.include(body, '<h3>Aviso</h3>')
+    assert.include(body, '<strong>a todos</strong>')
+    assert.include(body, '<ul><li>Uno</li><li>Dos</li></ul>')
+    assert.include(
+      body,
+      '<a href="https://aptoph.com" target="_blank" rel="noopener noreferrer">bueno</a>'
+    )
+    for (const unsafe of ['<script', '<img', 'onerror', 'onclick', 'style=', 'javascript:'])
+      assert.notInclude(body, unsafe)
+
+    const [item] = (await dataOf(owner1.api.get('/resident/announcements'))) as Array<{
+      excerpt: string
+    }>
+    assert.equal(
+      item!.excerpt,
+      'Aviso Hola a todos, gracias. • Uno • Dos bueno (https://aptoph.com)'
+    )
+  })
+
+  test('empty paragraphs at the edges are dropped', async ({ client, assert }) => {
+    const { admin } = await setup(client)
+    const created = await admin.api.post(
+      '/announcements',
+      draft({ body: '<p></p><p>Hola</p><p></p><p>Chao</p><p><br></p><p></p>' })
+    )
+    assert.equal(created.body().data.body, '<p>Hola</p><p></p><p>Chao</p>')
+  })
+
+  test('plain text from older clients becomes paragraphs', async ({ client, assert }) => {
+    const { admin } = await setup(client)
+    const created = await admin.api.post('/announcements', draft({ body: 'Uno <b>\n\nDos' }))
+    assert.equal(created.body().data.body, '<p>Uno &lt;b&gt;</p><p>Dos</p>')
+  })
+
+  test('a comunicado can be just an image, which is replaced and removed', async ({
+    client,
+    assert,
+  }) => {
+    const { tenant, admin, owner1, guard } = await setup(client)
+
+    // Published without text nor image: nothing to say
+    const empty = await admin.api.post('/announcements', draft({ body: '<p></p>', publish: 'now' }))
+    empty.assertStatus(422)
+    empty.assertBodyContains({ errors: [{ field: 'body' }] })
+
+    // The form saves a draft, uploads the image and then publishes
+    const created = await admin.api.post('/announcements', draft({ body: '' }))
+    created.assertStatus(201)
+    const id = created.body().data.id
+
+    const forbidden = await putImage(client, tenant, guard.user, id)
+    forbidden.assertStatus(403)
+    const wrongType = await client
+      .put(`/api/v1/announcements/${id}/image`)
+      .loginAs(admin.user)
+      .header('X-Tenant-Id', tenant.id)
+      .file('file', PDF, { filename: 'afiche.pdf' })
+    wrongType.assertStatus(422)
+
+    const first = await putImage(client, tenant, admin.user, id, 'afiche.png')
+    first.assertStatus(200)
+    assert.equal(uploadedImage(first).fileName, 'afiche.png')
+    assert.isString(uploadedImage(first).url)
+    const row = await db.from('attachments').where('id', uploadedImage(first).id).first()
+    assert.match(row.file_key, new RegExp(`^${tenant.slug}/comunicados/imagenes/`))
+
+    const published = await admin.api.put(
+      `/announcements/${id}`,
+      draft({ body: '', publish: 'now' })
+    )
+    published.assertStatus(200)
+    assert.equal(published.body().data.image.id, uploadedImage(first).id)
+
+    // Replacing keeps a single image
+    const second = await putImage(client, tenant, admin.user, id, 'afiche-2.png')
+    second.assertStatus(200)
+    const active = await db
+      .from('attachments')
+      .where({ owner_id: id, owner_type: 'announcement_image' })
+      .whereNull('deleted_at')
+    assert.lengthOf(active, 1)
+
+    const [item] = (await dataOf(owner1.api.get('/resident/announcements'))) as Array<{
+      image: { id: string; url: string } | null
+      excerpt: string
+      attachmentCount: number
+    }>
+    assert.equal(item!.image!.id, uploadedImage(second).id)
+    assert.equal(item!.excerpt, '')
+    // The image is not one of the attachments
+    assert.equal(item!.attachmentCount, 0)
+    const detail = await dataOf(owner1.api.get(`/resident/announcements/${id}`))
+    assert.equal(detail.image.fileName, 'afiche-2.png')
+
+    const removed = await remove(client, tenant, admin.user, `/announcements/${id}/image`)
+    removed.assertStatus(204)
+    const after = await dataOf(owner1.api.get(`/resident/announcements/${id}`))
+    assert.isNull(after.image)
+  })
+
+  test('the email shows the image through a lasting signed link', async ({ client, assert }) => {
+    const { mails } = mail.fake()
+    const { tenant, admin } = await setup(client)
+    const created = await admin.api.post(
+      '/announcements',
+      draft({ body: '<p>Ven a la <strong>asamblea</strong></p>', audience: 'council' })
+    )
+    const id = created.body().data.id
+    const image = await putImage(client, tenant, admin.user, id)
+    const imageId = uploadedImage(image).id
+    await admin.api.put(
+      `/announcements/${id}`,
+      draft({
+        body: '<p>Ven a la <strong>asamblea</strong></p>',
+        audience: 'council',
+        sendEmail: true,
+        publish: 'now',
+      })
+    )
+    await dispatchDueAnnouncementEmails()
+
+    const [sent] = mails.queued((message) => message instanceof AnnouncementMail)
+    await sent!.message.computeContents({ brandName: 'AptoPH' })
+    const { html, text } = sent!.message.toJSON().message
+    assert.include(String(html), '<strong>asamblea</strong>')
+    const src = /<img src="([^"]+)"/.exec(String(html))?.[1]?.replace(/&amp;/g, '&')
+    assert.include(src, `/api/v1/public/announcement-images/${imageId}?s=`)
+    assert.include(String(text), 'Ven a la asamblea')
+
+    // The link works without a session and redirects to the file
+    const path = new URL(src!).pathname + new URL(src!).search
+    const ok = await client.get(path).redirects(0)
+    ok.assertStatus(302)
+    const tampered = await client
+      .get(`/api/v1/public/announcement-images/${imageId}?s=nope`)
+      .redirects(0)
+    tampered.assertStatus(404)
+
+    // Once the image is removed, the link stops working
+    await remove(client, tenant, admin.user, `/announcements/${id}/image`)
+    const gone = await client.get(path).redirects(0)
+    gone.assertStatus(404)
+  })
+})

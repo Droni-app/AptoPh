@@ -14,6 +14,8 @@ export const ATTACHMENT_OWNER_TYPES = [
   'journal_entry',
   // Comunicado
   'announcement',
+  // Imagen (póster) de un comunicado: una por comunicado
+  'announcement_image',
 ] as const
 
 export type AttachmentOwnerType = (typeof ATTACHMENT_OWNER_TYPES)[number]

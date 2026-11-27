@@ -70,3 +70,82 @@
     transition-duration: 1ms !important;
   }
 }
+
+/*
+ * Rich text of the comunicados (UiRichText, UiRichTextEditor). The HTML comes
+ * sanitized by the API: p, strong, em, u, s, h3, ul, ol, li, a, blockquote.
+ */
+@layer components {
+  .ui-prose {
+    color: var(--color-neutral-700);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+  .dark .ui-prose {
+    color: var(--color-neutral-300);
+  }
+  .ui-prose > * + * {
+    margin-top: 0.75em;
+  }
+  .ui-prose h3 {
+    margin-top: 1.25em;
+    color: var(--color-neutral-900);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .dark .ui-prose h3 {
+    color: var(--color-neutral-50);
+  }
+  .ui-prose > h3:first-child {
+    margin-top: 0;
+  }
+  .ui-prose strong {
+    color: var(--color-neutral-900);
+    font-weight: 600;
+  }
+  .dark .ui-prose strong {
+    color: var(--color-neutral-50);
+  }
+  .ui-prose a {
+    color: var(--color-brand-600);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .dark .ui-prose a {
+    color: var(--color-brand-300);
+  }
+  .ui-prose ul,
+  .ui-prose ol {
+    padding-left: 1.4em;
+  }
+  .ui-prose ul {
+    list-style: disc;
+  }
+  .ui-prose ol {
+    list-style: decimal;
+  }
+  .ui-prose li + li {
+    margin-top: 0.25em;
+  }
+  .ui-prose li > p {
+    margin: 0;
+  }
+  .ui-prose blockquote {
+    border-left: 3px solid var(--color-mint-400, #3cc8a8);
+    padding-left: 0.9em;
+    color: var(--color-neutral-600);
+  }
+  .dark .ui-prose blockquote {
+    color: var(--color-neutral-400);
+  }
+  /* Placeholder of the empty editor */
+  .ui-prose p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    color: var(--color-neutral-400);
+    pointer-events: none;
+  }
+}

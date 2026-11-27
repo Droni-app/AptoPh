@@ -74,6 +74,8 @@ export type ScannedRoutes = {
     'announcements.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.unpublish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.image.set': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.image.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
@@ -90,6 +92,7 @@ export type ScannedRoutes = {
     'billing.pay': { paramsTuple?: []; params?: {} }
     'billing.emailPacks': { paramsTuple?: []; params?: {} }
     'webhooks.wompi': { paramsTuple?: []; params?: {} }
+    'public.announcementImages.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.store': { paramsTuple?: []; params?: {} }
     'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -218,6 +221,7 @@ export type ScannedRoutes = {
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.tokens.show': { paramsTuple: [ParamValue,ParamValue]; params: {'type': ParamValue,'tokenId': ParamValue} }
+    'public.announcementImages.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.summary': { paramsTuple?: []; params?: {} }
     'finance.settings': { paramsTuple?: []; params?: {} }
     'finance.accounts.index': { paramsTuple?: []; params?: {} }
@@ -292,6 +296,7 @@ export type ScannedRoutes = {
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.tokens.show': { paramsTuple: [ParamValue,ParamValue]; params: {'type': ParamValue,'tokenId': ParamValue} }
+    'public.announcementImages.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.summary': { paramsTuple?: []; params?: {} }
     'finance.settings': { paramsTuple?: []; params?: {} }
     'finance.accounts.index': { paramsTuple?: []; params?: {} }
@@ -410,6 +415,7 @@ export type ScannedRoutes = {
   PUT: {
     'profile.password': { paramsTuple?: []; params?: {} }
     'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.image.set': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.autoRenew': { paramsTuple?: []; params?: {} }
     'billing.paymentMethod.save': { paramsTuple?: []; params?: {} }
     'finance.write.settings.update': { paramsTuple?: []; params?: {} }
@@ -428,6 +434,7 @@ export type ScannedRoutes = {
     'resident.bookings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'announcements.image.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.paymentMethod.destroy': { paramsTuple?: []; params?: {} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

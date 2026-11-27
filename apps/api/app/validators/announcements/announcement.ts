@@ -8,7 +8,8 @@ import {
 
 export const announcementValidator = vine.create({
   title: vine.string().trim().minLength(3).maxLength(ANNOUNCEMENT_TITLE_MAX),
-  body: vine.string().trim().minLength(1).maxLength(ANNOUNCEMENT_BODY_MAX),
+  /** Rich text (HTML, sanitized by the API). Optional: a comunicado can be just its image */
+  body: vine.string().trim().maxLength(ANNOUNCEMENT_BODY_MAX).optional(),
   audience: vine.enum(ANNOUNCEMENT_AUDIENCES),
   buildingIds: vine.array(vine.string().uuid()).maxLength(200).optional(),
   isPinned: vine.boolean().optional(),

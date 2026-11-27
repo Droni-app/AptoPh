@@ -21,9 +21,6 @@ async function load() {
   }
 }
 
-/** First lines of the message, for the list */
-const preview = (body: string) => body.replace(/\s+/g, ' ').slice(0, 160)
-
 onMounted(load)
 </script>
 
@@ -76,11 +73,17 @@ onMounted(load)
             />
             <span class="truncate">{{ item.title }}</span>
           </p>
-          <p class="mt-0.5 line-clamp-2 text-sm text-neutral-500 dark:text-neutral-300">
-            {{ preview(item.body) }}
+          <p
+            v-if="item.excerpt"
+            class="mt-0.5 line-clamp-2 text-sm text-neutral-500 dark:text-neutral-300"
+          >
+            {{ item.excerpt }}
           </p>
           <p class="mt-1 flex gap-3 text-xs text-neutral-400">
             <span>{{ formatRelative(item.publishedAt) }}</span>
+            <span v-if="item.image"
+              ><i class="mdi mdi-image-outline" aria-hidden="true" /> Imagen</span
+            >
             <span v-if="item.attachmentCount"
               ><i class="mdi mdi-paperclip" aria-hidden="true" />
               {{
@@ -89,6 +92,13 @@ onMounted(load)
             >
           </p>
         </div>
+        <img
+          v-if="item.image"
+          :src="item.image.url"
+          alt=""
+          loading="lazy"
+          class="size-16 shrink-0 rounded-lg border border-neutral-100 bg-neutral-100 object-cover dark:border-white/10 dark:bg-white/5"
+        />
       </RouterLink>
     </li>
   </ul>

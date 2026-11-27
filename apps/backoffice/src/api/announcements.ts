@@ -1,5 +1,6 @@
 import type {
   AnnouncementDetail,
+  AnnouncementImage,
   AnnouncementInput,
   AnnouncementReader,
   AnnouncementStatus,
@@ -32,6 +33,14 @@ export const announcementsApi = {
   emailPreview: (
     body: Pick<AnnouncementInput, 'audience' | 'buildingIds'> & { publishAt?: string | null },
   ) => api<ApiItem<EmailPreview>>(`${base}/email-preview`, { method: 'POST', body }),
+
+  /** Sets or replaces the image (poster) */
+  setImage: (id: string, file: File) => {
+    const body = new FormData()
+    body.append('file', file)
+    return api<ApiItem<AnnouncementImage>>(`${base}/${id}/image`, { method: 'PUT', body })
+  },
+  removeImage: (id: string) => api<void>(`${base}/${id}/image`, { method: 'DELETE' }),
 
   attachments: async (id: string) => ({ data: (await announcementsApi.get(id)).data.attachments }),
   uploadAttachment: (id: string, file: File) => {

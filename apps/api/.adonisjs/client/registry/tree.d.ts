@@ -158,6 +158,10 @@ export interface ApiDefinition {
     publish: typeof routes['announcements.publish']
     unpublish: typeof routes['announcements.unpublish']
     destroy: typeof routes['announcements.destroy']
+    image: {
+      set: typeof routes['announcements.image.set']
+      destroy: typeof routes['announcements.image.destroy']
+    }
   }
   billing: {
     show: typeof routes['billing.show']
@@ -182,6 +186,11 @@ export interface ApiDefinition {
   }
   webhooks: {
     wompi: typeof routes['webhooks.wompi']
+  }
+  public: {
+    announcementImages: {
+      show: typeof routes['public.announcementImages.show']
+    }
   }
   finance: {
     summary: typeof routes['finance.summary']

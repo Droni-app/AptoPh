@@ -8,6 +8,7 @@ export const controllers = {
     ResidentBookings: () => import('#controllers/amenities/resident_bookings_controller'),
   },
   announcements: {
+    AnnouncementImages: () => import('#controllers/announcements/announcement_images_controller'),
     Announcements: () => import('#controllers/announcements/announcements_controller'),
     EmailQuota: () => import('#controllers/announcements/email_quota_controller'),
     ResidentAnnouncements: () => import('#controllers/announcements/resident_announcements_controller'),

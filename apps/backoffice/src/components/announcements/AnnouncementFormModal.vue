@@ -11,14 +11,13 @@ import {
   UiModal,
   UiRadio,
   UiSelect,
+  UiRichTextEditor,
   UiSwitch,
-  UiTextarea,
   useToast,
 } from '@aptoph/ui'
 import {
   ANNOUNCEMENT_AUDIENCES,
   ANNOUNCEMENT_AUDIENCE_LABELS,
-  ANNOUNCEMENT_BODY_MAX,
   ANNOUNCEMENT_TITLE_MAX,
   BUILDING_AUDIENCES,
   type AnnouncementAudience,
@@ -31,6 +30,7 @@ import { announcementsApi } from '@/api/announcements'
 import { buildingsApi } from '@/api/backoffice'
 import AttachmentList from '@/components/attachments/AttachmentList.vue'
 import AttachmentPicker from '@/components/attachments/AttachmentPicker.vue'
+import AnnouncementImageField, { type ImageChange } from './AnnouncementImageField.vue'
 import { uploadAttachments, warnFailedUploads } from '@/lib/attachments'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 import { formatDateTime } from '@/lib/format'
@@ -53,6 +53,9 @@ const form = ref({
   publishAt: '',
 })
 const files = ref<File[]>([])
+const image = ref<ImageChange>({ file: null, remove: false })
+/** Draft created by a save that failed halfway: retrying updates it */
+const createdId = ref<string | null>(null)
 const buildings = ref<Building[]>([])
 const errors = ref<Record<string, string>>({})
 const error = ref<string | null>(null)
@@ -98,6 +101,8 @@ watch(open, async (isOpen) => {
         publishAt: tomorrowAtEight(),
       }
   files.value = []
+  image.value = { file: null, remove: false }
+  createdId.value = null
   errors.value = {}
   error.value = null
   try {
@@ -195,10 +200,18 @@ watch(
   },
 )
 
+const hasImage = computed(
+  () => !!image.value.file || (!!props.announcement?.image && !image.value.remove),
+)
+
 async function submit() {
-  saving.value = true
   errors.value = {}
   error.value = null
+  if (form.value.publish !== 'draft' && !form.value.body && !hasImage.value) {
+    errors.value = { body: 'Escribe el mensaje o agrega una imagen' }
+    return
+  }
+  saving.value = true
   try {
     const input: AnnouncementInput = {
       title: form.value.title,
@@ -213,10 +226,31 @@ async function submit() {
           ? new Date(form.value.publishAt).toISOString()
           : null,
     }
-    const { data } = props.announcement
-      ? await announcementsApi.update(props.announcement.id, input)
-      : await announcementsApi.create(input)
-    const failed = await uploadAttachments('announcement', data.id, files.value)
+    // The image and the files go up before it is published, so the email carries them:
+    // a new comunicado is first saved as a draft
+    let id = props.announcement?.id ?? createdId.value
+    if (!id) {
+      const pending = !!image.value.file || files.value.length > 0
+      const first = await announcementsApi.create(
+        pending ? { ...input, publish: 'draft', publishAt: null } : input,
+      )
+      id = first.data.id
+      createdId.value = id
+    }
+    try {
+      if (image.value.file) await announcementsApi.setImage(id, image.value.file)
+    } catch (e) {
+      errors.value = { image: errorMessage(e) }
+      throw e
+    }
+    const failed = await uploadAttachments('announcement', id, files.value)
+    files.value = []
+    image.value = { file: null, remove: image.value.remove }
+    const { data } = await announcementsApi.update(id, input)
+    if (image.value.remove) {
+      await announcementsApi.removeImage(id)
+      data.image = null
+    }
     toast.success(
       data.status === 'draft'
         ? 'Borrador guardado'
@@ -230,8 +264,10 @@ async function submit() {
     emit('saved', data)
     open.value = false
   } catch (e) {
-    errors.value = fieldErrors(e)
-    error.value = Object.keys(errors.value).length ? null : errorMessage(e)
+    if (!errors.value.image) {
+      errors.value = fieldErrors(e)
+      error.value = Object.keys(errors.value).length ? null : errorMessage(e)
+    }
   } finally {
     saving.value = false
   }
@@ -256,15 +292,17 @@ async function submit() {
           placeholder="Mantenimiento del tanque de agua"
         />
       </UiLabel>
-      <UiLabel title="Mensaje" required :error="errors.body">
-        <UiTextarea
+      <AnnouncementImageField
+        v-model="image"
+        :current-url="announcement?.image?.url"
+        :disabled="saving"
+        :error="errors.image"
+      />
+      <UiLabel title="Mensaje" :error="errors.body">
+        <UiRichTextEditor
           v-model="form.body"
-          :maxlength="ANNOUNCEMENT_BODY_MAX"
-          rows="8"
-          autoheight
-          block
-          required
-          placeholder="Escribe el comunicado. Deja una línea en blanco entre párrafos."
+          :disabled="saving"
+          placeholder="Escribe el comunicado. Usa la barra para dar formato al texto."
         />
       </UiLabel>
 

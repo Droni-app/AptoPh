@@ -12,7 +12,11 @@ import {
   emailPreviewValidator,
   listAnnouncementsValidator,
 } from '#validators/announcements/announcement'
-import { attachmentUrlValidator, uploadAttachmentValidator } from '#validators/files/attachment'
+import {
+  attachmentUrlValidator,
+  uploadAnnouncementImageValidator,
+  uploadAttachmentValidator,
+} from '#validators/files/attachment'
 
 /**
  * Comunicados in the back-office: every back-office role reads them; the
@@ -21,14 +25,16 @@ import { attachmentUrlValidator, uploadAttachmentValidator } from '#validators/f
 export default class AnnouncementsController {
   private async present(service: AnnouncementsService, rows: Announcement[]) {
     const ids = rows.map((row) => row.id)
-    const [counts, stats] = await Promise.all([
+    const [counts, stats, images] = await Promise.all([
       service.attachmentCounts(ids),
       service.readStats(rows),
+      service.imageViews(ids),
     ])
     return (row: Announcement) =>
       serializeAnnouncement(row, {
         attachmentCount: counts.get(row.id) ?? 0,
         reads: stats.get(row.id) ?? null,
+        image: images.get(row.id) ?? null,
       })
   }
 
@@ -87,6 +93,7 @@ export default class AnnouncementsController {
     const announcement = await service.save(
       {
         ...data,
+        body: data.body ?? '',
         buildingIds: data.buildingIds ?? [],
         isPinned: data.isPinned ?? false,
         sendEmail: data.sendEmail ?? false,
@@ -104,6 +111,7 @@ export default class AnnouncementsController {
     const announcement = await service.save(
       {
         ...data,
+        body: data.body ?? '',
         buildingIds: data.buildingIds ?? [],
         isPinned: data.isPinned ?? false,
         sendEmail: data.sendEmail ?? false,
@@ -158,6 +166,23 @@ export default class AnnouncementsController {
     )
     response.status(201)
     return { data: serializeAttachment(attachment) }
+  }
+
+  /** PUT /announcements/:id/image: sets or replaces the image (poster) */
+  async setImage({ tenant, params, request, auth }: HttpContext) {
+    const service = new AnnouncementsService(tenant)
+    const announcement = await service.query().where('id', params.id).firstOrFail()
+    const { file } = await request.validateUsing(uploadAnnouncementImageValidator)
+    const image = await service.setImage(announcement, file, auth.getUserOrFail().id)
+    return { data: await service.imageView(image) }
+  }
+
+  /** DELETE /announcements/:id/image */
+  async removeImage({ tenant, params, response, auth }: HttpContext) {
+    const service = new AnnouncementsService(tenant)
+    const announcement = await service.query().where('id', params.id).firstOrFail()
+    await service.removeImage(announcement, auth.getUserOrFail().id)
+    response.status(204)
   }
 
   async attachmentUrl({ tenant, params, request }: HttpContext) {

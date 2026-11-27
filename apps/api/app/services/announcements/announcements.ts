@@ -2,10 +2,12 @@ import logger from '@adonisjs/core/services/logger'
 import db from '@adonisjs/lucid/services/db'
 import type { DatabaseQueryBuilderContract } from '@adonisjs/lucid/types/querybuilder'
 import { DateTime } from 'luxon'
+import type { MultipartFile } from '@adonisjs/core/bodyparser'
 import {
   BUILDING_AUDIENCES,
   ROLE_LABELS,
   type AnnouncementAudience,
+  type AnnouncementImage,
   type AnnouncementInput,
   type EnrollmentRole,
 } from '@aptoph/shared'
@@ -13,7 +15,12 @@ import FieldException from '#exceptions/field_exception'
 import AnnouncementMail from '#mails/announcements/announcement_mail'
 import Announcement from '#models/announcements/announcement'
 import Tenant from '#models/tenants/tenant'
+import Attachment from '#models/files/attachment'
 import { appUrl } from '#services/app_urls'
+import { AttachmentsService } from '#services/files/attachments'
+import { sanitizeBody } from '#services/announcements/rich_text'
+import { signValue } from '#services/secure_token'
+import env from '#start/env'
 import { EmailQuotaService } from '#services/announcements/email_quota'
 import { queueMail } from '#services/mailer'
 import { tenantToday } from '#services/resident_scope'
@@ -164,6 +171,12 @@ export class AnnouncementsService {
     }
 
     const publishedAt = this.publicationOf(input, announcement)
+    const body = sanitizeBody(input.body)
+    // A published comunicado says something: text, its image or both
+    if (publishedAt && !body) {
+      const hasImage = announcement && (await this.imageOf(announcement.id))
+      if (!hasImage) throw new FieldException('body', 'Escribe el mensaje o agrega una imagen')
+    }
     // Not emailed yet, or skipped for lack of quota and asked again
     const emailPending = !announcement?.emailedAt || announcement.emailSkipped
     if (input.sendEmail && publishedAt && emailPending) {
@@ -175,7 +188,7 @@ export class AnnouncementsService {
       row.merge({
         tenantId: this.tenant.id,
         title: input.title,
-        body: input.body,
+        body,
         audience: input.audience,
         isPinned: input.isPinned,
         sendEmail: input.sendEmail,
@@ -338,6 +351,62 @@ export class AnnouncementsService {
     return counts
   }
 
+  /** The active image (poster) of each announcement */
+  async images(ids: string[]) {
+    const images = new Map<string, Attachment>()
+    if (ids.length === 0) return images
+    const rows = await Attachment.query()
+      .where('tenant_id', this.tenant.id)
+      .where('owner_type', 'announcement_image')
+      .whereIn('owner_id', ids)
+      .whereNull('deleted_at')
+      .orderBy('created_at')
+    // The newest wins (there is one; replacing removes the previous)
+    for (const row of rows) images.set(row.ownerId, row)
+    return images
+  }
+
+  async imageOf(id: string) {
+    const images = await this.images([id])
+    return images.get(id)
+  }
+
+  /** The image with a signed link to show it (expires in minutes) */
+  async imageView(image: Attachment | undefined): Promise<AnnouncementImage | null> {
+    if (!image) return null
+    return {
+      id: image.id,
+      fileName: image.fileName,
+      url: await new AttachmentsService(this.tenant).url(image),
+    }
+  }
+
+  /** Signed links to the images of several announcements */
+  async imageViews(ids: string[]) {
+    const images = await this.images(ids)
+    const views = new Map<string, AnnouncementImage>()
+    await Promise.all(
+      [...images].map(async ([id, image]) => views.set(id, (await this.imageView(image))!))
+    )
+    return views
+  }
+
+  /** Sets (or replaces) the image of the announcement */
+  async setImage(announcement: Announcement, file: MultipartFile, userId: string) {
+    const attachments = new AttachmentsService(this.tenant)
+    const previous = await this.imageOf(announcement.id)
+    const image = await attachments.upload('announcement_image', announcement.id, file, userId, {
+      max: 2,
+    })
+    if (previous) await attachments.remove(previous, userId)
+    return image
+  }
+
+  async removeImage(announcement: Announcement, userId: string) {
+    const image = await this.imageOf(announcement.id)
+    if (image) await new AttachmentsService(this.tenant).remove(image, userId)
+  }
+
   /** Marks it read by the user, once */
   async markRead(announcement: Announcement, userId: string) {
     await db
@@ -398,6 +467,8 @@ export class AnnouncementsService {
       .count('* as total')
       .first()
     const attachmentCount = Number(attachments?.total ?? 0)
+    const image = await this.imageOf(announcement.id)
+    const imageUrl = image ? emailImageUrl(image.id) : null
     if (!(await new EmailQuotaService(this.tenant).reserve(recipients.length))) return null
     for (const recipient of recipients) {
       const url = recipient.is_resident
@@ -409,13 +480,25 @@ export class AnnouncementsService {
           this.tenant,
           { fullName: recipient.full_name, email: recipient.email },
           url,
-          attachmentCount
+          attachmentCount,
+          imageUrl
         ),
         'announcement'
       )
     }
     return recipients.length
   }
+}
+
+/**
+ * Link to the image of a comunicado for emails: it does not expire (an email is
+ * read days later), so the API checks its signature and redirects to a fresh
+ * signed link of the drive. GET /api/v1/public/announcement-images/:id
+ */
+export function emailImageUrl(attachmentId: string) {
+  const url = new URL(`/api/v1/public/announcement-images/${attachmentId}`, env.get('APP_URL'))
+  url.searchParams.set('s', signValue('announcement-image', attachmentId))
+  return url.toString()
 }
 
 let dispatching: Promise<void> | null = null
