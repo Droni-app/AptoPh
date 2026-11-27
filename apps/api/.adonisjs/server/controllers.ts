@@ -5,6 +5,8 @@
 
 export const controllers = {
   amenities: {
+    Amenities: () => import('#controllers/amenities/amenities_controller'),
+    Bookings: () => import('#controllers/amenities/bookings_controller'),
     ResidentBookings: () => import('#controllers/amenities/resident_bookings_controller'),
   },
   announcements: {

@@ -16,6 +16,7 @@ import { dispatchDueAnnouncementEmails } from '#services/announcements/announcem
 import { runBillingTick } from '#services/billing/billing_scheduler'
 import { pruneNotifications } from '#services/notifications/notifications'
 import { remindDueCharges } from '#services/notifications/finance_notifications'
+import { remindUpcomingBookings } from '#services/amenities/bookings'
 
 const EVERY_MINUTE = 60_000
 const EVERY_FIVE_MINUTES = 5 * EVERY_MINUTE
@@ -37,9 +38,10 @@ const billing = setInterval(() => {
 }, EVERY_FIVE_MINUTES)
 billing.unref()
 
-// Hourly: due reminders (once per unit and due date) and old notifications
+// Hourly: due reminders (once per unit and due date), bookings of tomorrow and old notifications
 const notifications = setInterval(() => {
   remindDueCharges()
+    .then(() => remindUpcomingBookings())
     .then(() => pruneNotifications())
     .catch(() => {})
 }, 60 * EVERY_MINUTE)

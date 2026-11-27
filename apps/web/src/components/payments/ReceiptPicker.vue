@@ -11,7 +11,8 @@ import {
 
 /** Receipts picked while reporting a payment, uploaded after the report is saved */
 const files = defineModel<File[]>({ required: true })
-defineProps<{ disabled?: boolean }>()
+const props = defineProps<{ disabled?: boolean; max?: number }>()
+const limit = () => props.max ?? RESIDENT_ATTACHMENT_MAX
 
 const input = ref<HTMLInputElement | null>(null)
 const problems = ref<string[]>([])
@@ -21,8 +22,8 @@ function add(list: FileList | null) {
   for (const file of Array.from(list ?? [])) {
     const problem = attachmentProblem(file)
     if (problem) problems.value.push(problem)
-    else if (files.value.length >= RESIDENT_ATTACHMENT_MAX)
-      problems.value.push(`Puedes adjuntar hasta ${RESIDENT_ATTACHMENT_MAX} archivos`)
+    else if (files.value.length >= limit())
+      problems.value.push(`Puedes adjuntar hasta ${limit()} archivos`)
     else if (!files.value.some((f) => f.name === file.name && f.size === file.size))
       files.value = [...files.value, file]
   }
@@ -57,7 +58,7 @@ function add(list: FileList | null) {
       </li>
     </ul>
     <button
-      v-if="files.length < RESIDENT_ATTACHMENT_MAX"
+      v-if="files.length < limit()"
       type="button"
       class="flex flex-col items-center gap-1 rounded-xl border border-dashed border-neutral-300 px-4 py-4 text-sm hover:border-mint-500 dark:border-white/20"
       @click="input?.click()"

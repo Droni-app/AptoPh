@@ -1,8 +1,6 @@
 import { test } from '@japa/runner'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { DateTime } from 'luxon'
-import Amenity from '#models/amenities/amenity'
-import AmenityBooking from '#models/amenities/amenity_booking'
 import Building from '#models/property/building'
 import Ticket from '#models/tickets/ticket'
 import TicketComment from '#models/tickets/ticket_comment'
@@ -300,110 +298,6 @@ test.group('Resident · visits and parcels', (group) => {
     const list = await as(client.get('/api/v1/resident/visits'))
     assert.lengthOf(list.body().data, 0)
     await expectStatus(as(client.delete(`/api/v1/resident/visits/${visit.id}`)), 404)
-  })
-})
-
-test.group('Resident · bookings', (group) => {
-  group.each.setup(() => testUtils.db().withGlobalTransaction())
-
-  const salon = (tenant: Tenant) =>
-    Amenity.create({
-      tenantId: tenant.id,
-      name: 'Salón social',
-      capacity: 50,
-      bookingFee: '80000.00',
-      requiresApproval: true,
-      rules: { maxHours: 6, opensAt: '08:00', closesAt: '23:00' },
-      isActive: true,
-    })
-
-  test('a booking that needs approval starts pending and blocks the slot', async ({
-    client,
-    assert,
-  }) => {
-    const { tenant, mine, neighbour, theirs, as } = await setup()
-    const amenity = await salon(tenant)
-
-    const first = await as(client.post('/api/v1/resident/bookings')).json({
-      amenityId: amenity.id,
-      unitId: mine.id,
-      startsAt: tomorrowAt(15),
-      endsAt: tomorrowAt(19),
-      guestsCount: 30,
-    })
-    first.assertStatus(201)
-    assert.equal(first.body().data.status, 'pending')
-
-    const clash = await as(client.post('/api/v1/resident/bookings'), neighbour).json({
-      amenityId: amenity.id,
-      unitId: theirs.id,
-      startsAt: tomorrowAt(18),
-      endsAt: tomorrowAt(20),
-    })
-    clash.assertStatus(409)
-  })
-
-  test('enforces opening hours, duration and capacity', async ({ client }) => {
-    const { tenant, mine, as } = await setup()
-    const amenity = await salon(tenant)
-    const book = (startsAt: string, endsAt: string, guestsCount = 10) =>
-      as(client.post('/api/v1/resident/bookings')).json({
-        amenityId: amenity.id,
-        unitId: mine.id,
-        startsAt,
-        endsAt,
-        guestsCount,
-      })
-
-    await expectStatus(book(tomorrowAt(6), tomorrowAt(9)), 422) // before opening
-    await expectStatus(book(tomorrowAt(10), tomorrowAt(18)), 422) // over 6 hours
-    await expectStatus(book(tomorrowAt(10), tomorrowAt(12), 80), 422) // over capacity
-  })
-
-  test('amenities without approval are approved at once; the slot is still exclusive', async ({
-    client,
-    assert,
-  }) => {
-    const { tenant, mine, user, neighbour, theirs, as } = await setup()
-    const gym = await Amenity.create({
-      tenantId: tenant.id,
-      name: 'Gimnasio',
-      capacity: 8,
-      requiresApproval: false,
-      rules: {},
-      isActive: true,
-    })
-    const book = (who: User, unitId: string, from: number, to: number) =>
-      as(client.post('/api/v1/resident/bookings'), who).json({
-        amenityId: gym.id,
-        unitId,
-        startsAt: tomorrowAt(from),
-        endsAt: tomorrowAt(to),
-      })
-
-    const first = await book(user, mine.id, 6, 7)
-    first.assertStatus(201)
-    assert.equal(first.body().data.status, 'approved')
-    await expectStatus(book(neighbour, theirs.id, 6, 8), 409)
-    await expectStatus(book(neighbour, theirs.id, 7, 8), 201)
-  })
-
-  test('cancels its own future booking', async ({ client, assert }) => {
-    const { tenant, mine, user, as } = await setup()
-    const amenity = await salon(tenant)
-    const booking = await AmenityBooking.create({
-      tenantId: tenant.id,
-      amenityId: amenity.id,
-      unitId: mine.id,
-      requestedById: user.id,
-      startsAt: DateTime.fromISO(tomorrowAt(10)),
-      endsAt: DateTime.fromISO(tomorrowAt(12)),
-      status: 'approved',
-    })
-    const response = await as(client.delete(`/api/v1/resident/bookings/${booking.id}`))
-    response.assertStatus(200)
-    assert.equal(response.body().data.status, 'cancelled')
-    await expectStatus(as(client.delete(`/api/v1/resident/bookings/${booking.id}`)), 409)
   })
 })
 

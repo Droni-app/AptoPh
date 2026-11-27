@@ -19,6 +19,8 @@ declare module 'vue-router' {
     tickets?: boolean
     /** Visitor parking: administration and guards */
     parking?: boolean
+    /** Common areas calendar */
+    amenities?: boolean
     /** Parking of the conjunto: administration, council and guards */
     spots?: boolean
     title?: string
@@ -119,6 +121,18 @@ const router = createRouter({
           name: 'tickets',
           component: () => import('@/views/TicketsView.vue'),
           meta: { tenant: true, tickets: true, title: 'PQRS' },
+        },
+        {
+          path: 'zonas-comunes',
+          name: 'amenities',
+          component: () => import('@/views/amenities/BookingsView.vue'),
+          meta: { tenant: true, amenities: true, title: 'Zonas comunes' },
+        },
+        {
+          path: 'zonas-comunes/configuracion',
+          name: 'amenities-settings',
+          component: () => import('@/views/amenities/AmenitiesView.vue'),
+          meta: { tenant: true, manage: true, title: 'Configuración de zonas comunes' },
         },
         {
           path: 'parqueaderos',
@@ -303,6 +317,7 @@ router.beforeEach(async (to) => {
   if (to.meta.parking && !tenant.canUseVisitorParking) return { name: 'dashboard' }
   if (to.meta.spots && !tenant.canReadParking) return { name: 'dashboard' }
   if (to.meta.lotteries && !tenant.canReadParkingLotteries) return { name: 'dashboard' }
+  if (to.meta.amenities && !tenant.canReadAmenities) return { name: 'dashboard' }
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails

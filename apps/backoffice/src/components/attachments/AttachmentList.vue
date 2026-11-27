@@ -33,6 +33,7 @@ const props = withDefaults(
   }>(),
   { editable: false, title: 'Soportes', initial: undefined },
 )
+const emit = defineEmits<{ change: [attachments: Attachment[]] }>()
 const toast = useToast()
 const endpoints = computed(() => attachmentsApiFor(props.ownerType))
 
@@ -78,6 +79,7 @@ async function add(list: FileList | null) {
     try {
       const { data } = await endpoints.value.upload(props.ownerId, file)
       items.value = [...(items.value ?? []), data]
+      emit('change', items.value)
     } catch (e) {
       toast.error(`${file.name}: ${errorMessage(e)}`)
     } finally {
@@ -107,6 +109,7 @@ async function confirmRemove() {
   try {
     await endpoints.value.remove(attachment.id)
     items.value = (items.value ?? []).filter((item) => item.id !== attachment.id)
+    emit('change', items.value)
     toast.success('Soporte quitado')
     removing.value = null
   } catch (e) {

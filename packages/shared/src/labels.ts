@@ -213,6 +213,8 @@ export const JOURNAL_ENTRY_TYPE_LABELS: Record<JournalEntryType, string> = {
   manual: 'Nota de contabilidad',
   reversal: 'Reversión',
   visitor_parking: 'Parqueadero de visitantes',
+  amenity_booking: 'Reserva de zona común',
+  amenity_deposit: 'Depósito de zona común',
 }
 
 export const CASH_ACCOUNT_TYPE_LABELS: Record<CashAccountType, string> = {

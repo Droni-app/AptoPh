@@ -7,6 +7,7 @@ import {
 import type { ApiItem, Attachment } from '@aptoph/shared'
 import { announcementsApi } from '@/api/announcements'
 import { financeApi } from '@/api/finance'
+import { bookingsApi } from '@/api/amenities'
 import { ticketsApi } from '@/api/tickets'
 import { errorMessage } from '@/lib/errors'
 
@@ -19,6 +20,15 @@ export function attachmentsApiFor(ownerType: AttachmentOwnerType) {
         announcementsApi.uploadAttachment(ownerId, file),
       url: announcementsApi.attachmentUrl,
       remove: announcementsApi.removeAttachment,
+    }
+  }
+  if (ownerType === 'amenity_booking') {
+    return {
+      list: (ownerId: string) => bookingsApi.attachments(ownerId),
+      upload: (ownerId: string, file: File): Promise<ApiItem<Attachment>> =>
+        bookingsApi.uploadAttachment(ownerId, file),
+      url: bookingsApi.attachmentUrl,
+      remove: bookingsApi.removeAttachment,
     }
   }
   if (ownerType === 'ticket') {

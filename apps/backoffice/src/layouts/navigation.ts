@@ -57,6 +57,8 @@ export function navigation(options: {
   canUseVisitorParking: boolean
   /** Parking of the conjunto: administration, council and guards */
   canReadParking: boolean
+  /** Common areas: calendar and bookings */
+  canReadAmenities: boolean
   hasSubscription: boolean
 }): NavGroup[] {
   const finance = financeLinks(options.canManageFinance)
@@ -78,6 +80,14 @@ export function navigation(options: {
       items: [
         link('Comunicados', 'mdi-bullhorn-outline', 'announcements'),
         ...(options.canReadTickets ? [link('PQRS', 'mdi-message-alert-outline', 'tickets')] : []),
+        ...(options.canReadAmenities
+          ? [
+              link('Zonas comunes', 'mdi-calendar-star', 'amenities', [
+                'amenities',
+                'amenities-settings',
+              ]),
+            ]
+          : []),
       ],
     },
   ]

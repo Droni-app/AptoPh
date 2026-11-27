@@ -46,8 +46,13 @@ export type ScannedRoutes = {
     'resident.visits.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.parcels.index': { paramsTuple?: []; params?: {} }
     'resident.amenities.index': { paramsTuple?: []; params?: {} }
+    'resident.amenities.availability': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.bookings.index': { paramsTuple?: []; params?: {} }
+    'resident.bookings.quote': { paramsTuple?: []; params?: {} }
+    'resident.bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.bookings.store': { paramsTuple?: []; params?: {} }
+    'resident.bookings.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.bookings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.tickets.index': { paramsTuple?: []; params?: {} }
     'resident.tickets.store': { paramsTuple?: []; params?: {} }
@@ -91,6 +96,23 @@ export type ScannedRoutes = {
     'announcements.image.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.index': { paramsTuple?: []; params?: {} }
+    'bookings.calendar': { paramsTuple?: []; params?: {} }
+    'bookings.stats': { paramsTuple?: []; params?: {} }
+    'bookings.index': { paramsTuple?: []; params?: {} }
+    'bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.store': { paramsTuple?: []; params?: {} }
+    'amenities.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.quote': { paramsTuple?: []; params?: {} }
+    'bookings.store': { paramsTuple?: []; params?: {} }
+    'bookings.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.cancel': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.deposit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.index': { paramsTuple?: []; params?: {} }
     'tickets.stats': { paramsTuple?: []; params?: {} }
     'tickets.assignees': { paramsTuple?: []; params?: {} }
@@ -258,7 +280,10 @@ export type ScannedRoutes = {
     'resident.visits.index': { paramsTuple?: []; params?: {} }
     'resident.parcels.index': { paramsTuple?: []; params?: {} }
     'resident.amenities.index': { paramsTuple?: []; params?: {} }
+    'resident.amenities.availability': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.bookings.index': { paramsTuple?: []; params?: {} }
+    'resident.bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.tickets.index': { paramsTuple?: []; params?: {} }
     'resident.tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
@@ -282,6 +307,12 @@ export type ScannedRoutes = {
     'announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.readers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.index': { paramsTuple?: []; params?: {} }
+    'bookings.calendar': { paramsTuple?: []; params?: {} }
+    'bookings.stats': { paramsTuple?: []; params?: {} }
+    'bookings.index': { paramsTuple?: []; params?: {} }
+    'bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.index': { paramsTuple?: []; params?: {} }
     'tickets.stats': { paramsTuple?: []; params?: {} }
     'tickets.assignees': { paramsTuple?: []; params?: {} }
@@ -356,7 +387,10 @@ export type ScannedRoutes = {
     'resident.visits.index': { paramsTuple?: []; params?: {} }
     'resident.parcels.index': { paramsTuple?: []; params?: {} }
     'resident.amenities.index': { paramsTuple?: []; params?: {} }
+    'resident.amenities.availability': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.bookings.index': { paramsTuple?: []; params?: {} }
+    'resident.bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.tickets.index': { paramsTuple?: []; params?: {} }
     'resident.tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
@@ -380,6 +414,12 @@ export type ScannedRoutes = {
     'announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.readers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.index': { paramsTuple?: []; params?: {} }
+    'bookings.calendar': { paramsTuple?: []; params?: {} }
+    'bookings.stats': { paramsTuple?: []; params?: {} }
+    'bookings.index': { paramsTuple?: []; params?: {} }
+    'bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.index': { paramsTuple?: []; params?: {} }
     'tickets.stats': { paramsTuple?: []; params?: {} }
     'tickets.assignees': { paramsTuple?: []; params?: {} }
@@ -455,7 +495,9 @@ export type ScannedRoutes = {
     'resident.pets.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.household.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.visits.store': { paramsTuple?: []; params?: {} }
+    'resident.bookings.quote': { paramsTuple?: []; params?: {} }
     'resident.bookings.store': { paramsTuple?: []; params?: {} }
+    'resident.bookings.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.tickets.store': { paramsTuple?: []; params?: {} }
     'resident.tickets.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
@@ -469,6 +511,14 @@ export type ScannedRoutes = {
     'announcements.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.unpublish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.store': { paramsTuple?: []; params?: {} }
+    'bookings.quote': { paramsTuple?: []; params?: {} }
+    'bookings.store': { paramsTuple?: []; params?: {} }
+    'bookings.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.cancel': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.deposit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.write.stays.store': { paramsTuple?: []; params?: {} }
@@ -556,6 +606,7 @@ export type ScannedRoutes = {
     'profile.notifications.preferences.update': { paramsTuple?: []; params?: {} }
     'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.image.set': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.settings.update': { paramsTuple?: []; params?: {} }
     'parking.manage.settings.update': { paramsTuple?: []; params?: {} }
     'billing.autoRenew': { paramsTuple?: []; params?: {} }
@@ -579,6 +630,8 @@ export type ScannedRoutes = {
     'announcements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.image.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amenities.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'bookings.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'parking.manage.spots.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.paymentMethod.destroy': { paramsTuple?: []; params?: {} }

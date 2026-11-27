@@ -18,6 +18,8 @@ export const ATTACHMENT_OWNER_TYPES = [
   'announcement_image',
   // PQRS: fotos y soportes que adjunta la administración
   'ticket',
+  // Reserva de zona común: soporte de pago
+  'amenity_booking',
 ] as const
 
 export type AttachmentOwnerType = (typeof ATTACHMENT_OWNER_TYPES)[number]

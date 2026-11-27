@@ -14,6 +14,10 @@
       @end
     </table>
   @end
+  @if(url)
   @!component('components/email_button', { url: url, label: action })
+  @end
+  @if(preferencesUrl)
   <p style="margin:20px 0 0;font-size:12px;color:#5b6475;">Elige qué avisos te llegan por correo en <a href="{{ preferencesUrl }}" style="color:#1e3a5f;">tu perfil</a>.</p>
+  @end
 @end

@@ -31,7 +31,7 @@ reales (sección 6).
 | Estructura y censo | ✅ torres, unidades, ocupantes, importación CSV | ✅ | ✅ hogar, vehículos, mascotas | ⬜ |
 | Cartera (cuotas) | ✅ | ✅ | ✅ estado de cuenta | ⬜ |
 | Pagos y recaudo | 🟡 manual, sin pasarela | ✅ | ✅ reportar pago | ⬜ |
-| Zonas comunes y reservas | 🟡 solo residente | ⬜ | ✅ | ⬜ |
+| Zonas comunes y reservas | ✅ calendario, aprobación, pago, depósito, terceros | ✅ | ✅ | ⬜ |
 | Comunicados | ✅ texto con formato, imagen, correo | ✅ | ✅ | ⬜ |
 | PQRS y mantenimiento | ✅ bandeja, asignación, notas internas, plazos, correo | ✅ | ✅ | ⬜ |
 | Parqueaderos del conjunto | ✅ propios y comunales, asignación, cobro mensual, sorteo y lista de espera | ✅ | ✅ | ⬜ |
@@ -65,7 +65,7 @@ Sin esto un administrador no puede operar ni invitar a su gente.
    coeficiente, cobros puntuales e intereses de mora. Es el corazón del producto. *(4.3)*
 3. ✅ **Registro manual de pagos** con aplicación a cargos y paz y salvo. *(4.4)*
 4. ✅ **Gestión de PQRS en el backoffice**: bandeja, asignación, respuestas y notas internas. *(4.7)*
-5. **Gestión de reservas en el backoffice**: zonas comunes y aprobación de reservas. *(4.5)*
+5. ✅ **Gestión de reservas en el backoffice**: zonas comunes y aprobación de reservas. *(4.5)*
 
 ### Fase 2 — Operación diaria completa (P1)
 
@@ -252,21 +252,23 @@ el residente gestiona su hogar, vehículos y mascotas.
 
 ### 4.5 Zonas comunes y reservas
 
-**Hay hoy:** el residente ve zonas comunes, reserva con validación de horario, aforo y duración, y
-cancela.
+**Hecho** (ver [docs/amenities.md](docs/amenities.md)):
+- [x] CRUD de zonas comunes: modalidad por horas, días o turnos; horario, días de cierre, aforo,
+      tiempo de aseo, tarifa, tarifa para terceros, depósito, reglamento y color.
+- [x] Pago anticipado con soporte o cargo al estado de cuenta, configurable por zona.
+- [x] Aprobar o rechazar con motivo; registro contable del pago, del depósito y de su devolución.
+- [x] Calendario semanal y mensual; bloqueos de mantenimiento; reservas de invitados y terceros.
+- [x] Bloqueo de unidades en mora, anticipación mínima y máxima, límites por unidad y plazo de
+      cancelación.
+- [x] Restricción de exclusión en la base de datos (incluye el tiempo de aseo).
+- [x] Notificaciones y recordatorio 24 horas antes.
 
-**Falta**
-- [ ] CRUD de zonas comunes en el backoffice: horario, aforo, duración máxima, tarifa, depósito,
-      días de cierre, si requiere aprobación.
-- [ ] Aprobar o rechazar reservas con motivo (P0).
-- [ ] Calendario de ocupación por zona.
-- [ ] Cobro automático de la tarifa a la cartera de la unidad al aprobar.
-- [ ] Bloquear reservas a unidades en mora (opcional por conjunto).
-- [ ] Reglas de cancelación (horas mínimas de anticipación).
-
-**Tener en cuenta**
-- Evitar reservas solapadas con una restricción en base de datos, no solo en código.
-- Horas en la zona horaria del conjunto.
+**Siguiente**
+- [ ] Check-in en portería (QR) e inspección de entrega con fotos y checklist.
+- [ ] Pago en línea (Wompi/PSE) del pago anticipado y del depósito.
+- [ ] Tarifas por día de la semana o festivos (calendario de festivos de Colombia).
+- [ ] Lista de espera, inasistencias y sanciones.
+- [ ] Bloqueos recurrentes, reportes de ocupación e ingresos, exportar a iCal.
 
 ---
 
@@ -384,8 +386,8 @@ vencimiento, PQRS (nueva, respuesta, estado, asignación), pago reportado, comun
 parqueaderos.
 
 **Falta**
-- [ ] Reservas aprobadas o rechazadas, y paquete recibido: llegan cuando exista su pantalla en el
-      backoffice (la categoría ya existe).
+- [x] Reservas: solicitud, aprobación, rechazo, cancelación, depósito y recordatorio.
+- [ ] Paquete recibido: llega cuando exista la portería en el backoffice.
 - [ ] Cola durable con reintentos (ver 6.2): hoy un reinicio del servidor pierde los correos en
       cola.
 - [ ] Horario de silencio para push, resumen diario por correo y registro de entregas.
@@ -542,7 +544,7 @@ Lo que recomiendo resolver para operar con conjuntos reales y cobrarles. Ordenad
 ### 6.3 Funcionalidad que los conjuntos van a pedir primero
 
 - [x] **PQRS en el backoffice** (4.7): bandeja, asignación, respuestas, notas internas y correo.
-- [ ] **Reservas en el backoffice** (4.5): crear zonas comunes y aprobar o rechazar reservas.
+- [x] **Reservas en el backoffice** (4.5): crear zonas comunes y aprobar o rechazar reservas.
 - [ ] **Portería** para vigilantes (4.8): visitas y paquetes; hoy solo el residente los usa.
 - [ ] **PDF** del estado de cuenta, la cuenta de cobro, el recibo de caja y el paz y salvo, con
       envío por correo (4.3, 4.4).

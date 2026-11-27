@@ -85,9 +85,16 @@ export interface ApiDefinition {
     }
     amenities: {
       index: typeof routes['resident.amenities.index']
+      availability: typeof routes['resident.amenities.availability']
     }
     bookings: {
       index: typeof routes['resident.bookings.index']
+      quote: typeof routes['resident.bookings.quote']
+      attachments: {
+        url: typeof routes['resident.bookings.attachments.url']
+        store: typeof routes['resident.bookings.attachments.store']
+      }
+      show: typeof routes['resident.bookings.show']
       store: typeof routes['resident.bookings.store']
       destroy: typeof routes['resident.bookings.destroy']
     }
@@ -184,6 +191,29 @@ export interface ApiDefinition {
       set: typeof routes['announcements.image.set']
       destroy: typeof routes['announcements.image.destroy']
     }
+  }
+  amenities: {
+    index: typeof routes['amenities.index']
+    store: typeof routes['amenities.store']
+    update: typeof routes['amenities.update']
+    destroy: typeof routes['amenities.destroy']
+  }
+  bookings: {
+    calendar: typeof routes['bookings.calendar']
+    stats: typeof routes['bookings.stats']
+    index: typeof routes['bookings.index']
+    attachments: {
+      url: typeof routes['bookings.attachments.url']
+      store: typeof routes['bookings.attachments.store']
+      destroy: typeof routes['bookings.attachments.destroy']
+    }
+    show: typeof routes['bookings.show']
+    quote: typeof routes['bookings.quote']
+    store: typeof routes['bookings.store']
+    approve: typeof routes['bookings.approve']
+    reject: typeof routes['bookings.reject']
+    cancel: typeof routes['bookings.cancel']
+    deposit: typeof routes['bookings.deposit']
   }
   tickets: {
     index: typeof routes['tickets.index']

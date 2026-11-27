@@ -44,9 +44,13 @@ export default class NotificationMail extends BaseMail {
           title,
           ...paragraphs,
           rows.map((row) => `${row.label}: ${row.value}`).join('\n'),
-          `${action}: ${url}`,
-          `Elige qué avisos te llegan por correo en tu perfil: ${preferencesUrl}`,
-        ].join('\n\n')
+          url ? `${action}: ${url}` : null,
+          preferencesUrl
+            ? `Elige qué avisos te llegan por correo en tu perfil: ${preferencesUrl}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join('\n\n')
       )
   }
 }

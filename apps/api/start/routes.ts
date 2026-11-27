@@ -14,6 +14,8 @@ import {
   FINANCE_READ_ROLES,
   FINANCE_WRITE_ROLES,
   TICKET_READ_ROLES,
+  AMENITY_MANAGE_ROLES,
+  AMENITY_READ_ROLES,
   TICKET_WORK_ROLES,
   VISITOR_PARKING_ADMIN_ROLES,
   PARKING_MANAGE_ROLES,
@@ -55,6 +57,8 @@ const ResidentBookingsController = () =>
   import('#controllers/amenities/resident_bookings_controller')
 const ResidentTicketsController = () => import('#controllers/tickets/resident_tickets_controller')
 const TicketsController = () => import('#controllers/tickets/tickets_controller')
+const AmenitiesController = () => import('#controllers/amenities/amenities_controller')
+const BookingsController = () => import('#controllers/amenities/bookings_controller')
 const VisitorParkingController = () => import('#controllers/gatehouse/visitor_parking_controller')
 const ParkingController = () => import('#controllers/property/parking_controller')
 const ParkingLotteriesController = () =>
@@ -85,6 +89,8 @@ const backofficeRead = { roles: [...BACKOFFICE_ROLES] }
 const backofficeWrite = { roles: [EnrollmentRole.Administrator] }
 const announcementsWrite = { roles: [...ANNOUNCEMENT_WRITE_ROLES] }
 const ticketsRead = { roles: [...TICKET_READ_ROLES] }
+const amenitiesRead = { roles: [...AMENITY_READ_ROLES] }
+const amenitiesManage = { roles: [...AMENITY_MANAGE_ROLES] }
 const ticketsWork = { roles: [...TICKET_WORK_ROLES] }
 const parkingGate = { roles: [...VISITOR_PARKING_ROLES] }
 const parkingAdmin = { roles: [...VISITOR_PARKING_ADMIN_ROLES] }
@@ -243,8 +249,19 @@ router
 
         // Common areas
         router.get('amenities', [ResidentBookingsController, 'amenities']).as('amenities.index')
+        router
+          .get('amenities/:id/availability', [ResidentBookingsController, 'availability'])
+          .as('amenities.availability')
         router.get('bookings', [ResidentBookingsController, 'index']).as('bookings.index')
+        router.post('bookings/quote', [ResidentBookingsController, 'quote']).as('bookings.quote')
+        router
+          .get('bookings/attachments/:id/url', [ResidentBookingsController, 'attachmentUrl'])
+          .as('bookings.attachments.url')
+        router.get('bookings/:id', [ResidentBookingsController, 'show']).as('bookings.show')
         router.post('bookings', [ResidentBookingsController, 'store']).as('bookings.store')
+        router
+          .post('bookings/:id/attachments', [ResidentBookingsController, 'attach'])
+          .as('bookings.attachments.store')
         router
           .delete('bookings/:id', [ResidentBookingsController, 'destroy'])
           .as('bookings.destroy')
@@ -363,6 +380,43 @@ router
       })
       .as('announcements')
       .use([middleware.auth(), middleware.tenant(announcementsWrite), middleware.subscription()])
+
+    /**
+     * Common areas: the calendar for whoever needs to know who has the salón,
+     * the areas and the review for the administration. docs/amenities.md
+     */
+    router
+      .group(() => {
+        router.get('amenities', [AmenitiesController, 'index']).as('amenities.index')
+        router.get('bookings/calendar', [BookingsController, 'calendar']).as('bookings.calendar')
+        router.get('bookings/stats', [BookingsController, 'stats']).as('bookings.stats')
+        router.get('bookings', [BookingsController, 'index']).as('bookings.index')
+        router
+          .get('bookings/attachments/:id/url', [BookingsController, 'attachmentUrl'])
+          .as('bookings.attachments.url')
+        router.get('bookings/:id', [BookingsController, 'show']).as('bookings.show')
+      })
+      .use([middleware.auth(), middleware.tenant(amenitiesRead)])
+
+    router
+      .group(() => {
+        router.post('amenities', [AmenitiesController, 'store']).as('amenities.store')
+        router.put('amenities/:id', [AmenitiesController, 'update']).as('amenities.update')
+        router.delete('amenities/:id', [AmenitiesController, 'destroy']).as('amenities.destroy')
+        router.post('bookings/quote', [BookingsController, 'quote']).as('bookings.quote')
+        router.post('bookings', [BookingsController, 'store']).as('bookings.store')
+        router.post('bookings/:id/approve', [BookingsController, 'approve']).as('bookings.approve')
+        router.post('bookings/:id/reject', [BookingsController, 'reject']).as('bookings.reject')
+        router.post('bookings/:id/cancel', [BookingsController, 'cancel']).as('bookings.cancel')
+        router.post('bookings/:id/deposit', [BookingsController, 'deposit']).as('bookings.deposit')
+        router
+          .post('bookings/:id/attachments', [BookingsController, 'attach'])
+          .as('bookings.attachments.store')
+        router
+          .delete('bookings/attachments/:id', [BookingsController, 'detach'])
+          .as('bookings.attachments.destroy')
+      })
+      .use([middleware.auth(), middleware.tenant(amenitiesManage), middleware.subscription()])
 
     /**
      * Back-office: PQRS. Administration and council read every ticket, staff only

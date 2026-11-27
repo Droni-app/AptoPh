@@ -90,7 +90,7 @@ export const CHART_TEMPLATE: ChartAccount[] = [
   { code: '2805', name: 'Anticipos y avances recibidos' },
   { code: '280505', name: 'Anticipos de copropietarios (saldos a favor)', key: 'advances.units' },
   { code: '2815', name: 'Ingresos recibidos para terceros' },
-  { code: '281505', name: 'Depósitos recibidos' },
+  { code: '281505', name: 'Depósitos recibidos', key: 'deposits.received' },
 
   { code: '3', name: 'Patrimonio' },
   { code: '33', name: 'Reservas' },

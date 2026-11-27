@@ -8,16 +8,30 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AmenitySchema extends BaseModel {
-  static $columns = ['bookingFee', 'capacity', 'createdAt', 'description', 'id', 'isActive', 'name', 'requiresApproval', 'rules', 'tenantId', 'updatedAt'] as const
+  static $columns = ['allowDelinquent', 'allowExternal', 'allowGuests', 'bookingFee', 'bookingMode', 'capacity', 'color', 'createdAt', 'depositAmount', 'description', 'externalFee', 'id', 'isActive', 'name', 'paymentMode', 'requiresApproval', 'rules', 'tenantId', 'terms', 'updatedAt'] as const
   $columns = AmenitySchema.$columns
+  @column()
+  declare allowDelinquent: boolean
+  @column()
+  declare allowExternal: boolean
+  @column()
+  declare allowGuests: boolean
   @column()
   declare bookingFee: string | null
   @column()
+  declare bookingMode: string
+  @column()
   declare capacity: number | null
+  @column()
+  declare color: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
+  declare depositAmount: string | null
+  @column()
   declare description: string | null
+  @column()
+  declare externalFee: string | null
   @column({ isPrimary: true })
   declare id: string
   @column()
@@ -25,32 +39,84 @@ export class AmenitySchema extends BaseModel {
   @column()
   declare name: string
   @column()
+  declare paymentMode: string
+  @column()
   declare requiresApproval: boolean
   @column()
   declare rules: Record<string, unknown>
   @column()
   declare tenantId: string
+  @column()
+  declare terms: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }
 
 export class AmenityBookingSchema extends BaseModel {
-  static $columns = ['amenityId', 'chargeId', 'createdAt', 'endsAt', 'guestsCount', 'id', 'requestedById', 'reviewedById', 'startsAt', 'status', 'tenantId', 'unitId', 'updatedAt'] as const
+  static $columns = ['amenityId', 'blockedUntil', 'bookingType', 'cancellationReason', 'cancelledAt', 'cancelledById', 'chargeId', 'createdAt', 'depositAmount', 'depositJournalEntryId', 'depositNote', 'depositRetained', 'depositStatus', 'endsAt', 'feeAmount', 'guestsCount', 'holderDocument', 'holderEmail', 'holderName', 'holderPhone', 'id', 'journalEntryId', 'notes', 'number', 'paymentId', 'paymentMode', 'paymentReference', 'remindedAt', 'requestedById', 'reviewNote', 'reviewedAt', 'reviewedById', 'startsAt', 'status', 'tenantId', 'unitId', 'updatedAt'] as const
   $columns = AmenityBookingSchema.$columns
   @column()
   declare amenityId: string
+  @column.dateTime()
+  declare blockedUntil: DateTime
+  @column()
+  declare bookingType: string
+  @column()
+  declare cancellationReason: string | null
+  @column.dateTime()
+  declare cancelledAt: DateTime | null
+  @column()
+  declare cancelledById: string | null
   @column()
   declare chargeId: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
+  @column()
+  declare depositAmount: string
+  @column()
+  declare depositJournalEntryId: string | null
+  @column()
+  declare depositNote: string | null
+  @column()
+  declare depositRetained: string | null
+  @column()
+  declare depositStatus: string | null
   @column.dateTime()
   declare endsAt: DateTime
   @column()
+  declare feeAmount: string
+  @column()
   declare guestsCount: number | null
+  @column()
+  declare holderDocument: string | null
+  @column()
+  declare holderEmail: string | null
+  @column()
+  declare holderName: string | null
+  @column()
+  declare holderPhone: string | null
   @column({ isPrimary: true })
   declare id: string
   @column()
+  declare journalEntryId: string | null
+  @column()
+  declare notes: string | null
+  @column()
+  declare number: number
+  @column()
+  declare paymentId: string | null
+  @column()
+  declare paymentMode: string | null
+  @column()
+  declare paymentReference: string | null
+  @column.dateTime()
+  declare remindedAt: DateTime | null
+  @column()
   declare requestedById: string
+  @column()
+  declare reviewNote: string | null
+  @column.dateTime()
+  declare reviewedAt: DateTime | null
   @column()
   declare reviewedById: string | null
   @column.dateTime()
@@ -60,7 +126,7 @@ export class AmenityBookingSchema extends BaseModel {
   @column()
   declare tenantId: string
   @column()
-  declare unitId: string
+  declare unitId: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

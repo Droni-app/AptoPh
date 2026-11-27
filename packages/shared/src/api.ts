@@ -414,38 +414,9 @@ export type ResidentParcel = {
   deliveredToName: string | null
 }
 
-export type AmenityRules = {
-  maxHours?: number
-  /** "HH:mm", local to the conjunto */
-  opensAt?: string
-  closesAt?: string
-  /** Weekdays in English, lowercase ("monday") */
-  closedOn?: string[]
-  depositRequired?: boolean
-}
-
-export type ResidentAmenity = {
-  id: string
-  name: string
-  description: string | null
-  capacity: number | null
-  bookingFee: string | null
-  requiresApproval: boolean
-  rules: AmenityRules
-}
-
-export type ResidentBooking = {
-  id: string
-  amenity: { id: string; name: string }
-  unit: UnitRef
-  startsAt: string
-  endsAt: string
-  guestsCount: number | null
-  status: BookingStatus
-  bookingFee: string | null
-  isMine: boolean
-  canCancel: boolean
-}
+/** Zonas comunes del portal: ver amenities.ts */
+export type ResidentAmenity = import('./amenities.js').Amenity
+export type ResidentBooking = import('./amenities.js').Booking
 
 export type ResidentTicket = {
   id: string

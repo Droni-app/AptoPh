@@ -554,6 +554,19 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['amenities']>>>
     }
   }
+  'resident.amenities.availability': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/amenities/:id/availability'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/amenities/amenities').rangeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['availability']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['availability']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['availability']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'resident.bookings.index': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/resident/bookings'
@@ -567,30 +580,82 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['index']>>>
     }
   }
-  'resident.bookings.store': {
+  'resident.bookings.quote': {
     methods: ["POST"]
-    pattern: '/api/v1/resident/bookings'
+    pattern: '/api/v1/resident/bookings/quote'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/amenities/resident').createBookingValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').bookingValidator)>>
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/resident').createBookingValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').bookingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['quote']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['quote']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['quote']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'resident.bookings.destroy': {
-    methods: ["DELETE"]
+  'resident.bookings.attachments.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/bookings/attachments/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/files/attachment').attachmentUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['attachmentUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.bookings.show': {
+    methods: ["GET","HEAD"]
     pattern: '/api/v1/resident/bookings/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
       query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['show']>>>
+    }
+  }
+  'resident.bookings.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/bookings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').bookingValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').bookingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.bookings.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/bookings/:id/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/files/attachment').uploadAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/files/attachment').uploadAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['attach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.bookings.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/resident/bookings/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').cancelBookingValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').cancelBookingValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['destroy']>>>
-      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/resident_bookings_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'resident.tickets.index': {
@@ -1137,6 +1202,227 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['detach']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['detach']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/announcements_controller').default['detach']>>>
+    }
+  }
+  'amenities.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/amenities'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['index']>>>
+    }
+  }
+  'bookings.calendar': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/bookings/calendar'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/amenities/amenities').rangeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['calendar']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['calendar']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['calendar']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/bookings/stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['stats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['stats']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['stats']>>>
+    }
+  }
+  'bookings.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/bookings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/amenities/amenities').bookingListValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.attachments.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/bookings/attachments/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/files/attachment').attachmentUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['attachmentUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['attachmentUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/bookings/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['show']>>>
+    }
+  }
+  'amenities.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/amenities'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').amenityValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').amenityValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'amenities.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/amenities/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').amenityValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').amenityValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'amenities.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/amenities/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/amenities_controller').default['destroy']>>>
+    }
+  }
+  'bookings.quote': {
+    methods: ["POST"]
+    pattern: '/api/v1/bookings/quote'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').staffBookingValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').staffBookingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['quote']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['quote']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['quote']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/bookings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').staffBookingValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').staffBookingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.approve': {
+    methods: ["POST"]
+    pattern: '/api/v1/bookings/:id/approve'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').approveBookingValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').approveBookingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['approve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.reject': {
+    methods: ["POST"]
+    pattern: '/api/v1/bookings/:id/reject'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['reject']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['reject']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['reject']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.cancel': {
+    methods: ["POST"]
+    pattern: '/api/v1/bookings/:id/cancel'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').cancelBookingValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').cancelBookingValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['cancel']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['cancel']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['cancel']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.deposit': {
+    methods: ["POST"]
+    pattern: '/api/v1/bookings/:id/deposit'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/amenities/amenities').depositValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/amenities/amenities').depositValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['deposit']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['deposit']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['deposit']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.attachments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/bookings/:id/attachments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/files/attachment').uploadAttachmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/files/attachment').uploadAttachmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['attach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['attach']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'bookings.attachments.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/bookings/attachments/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['detach']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['detach']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['detach']>>>
     }
   }
   'tickets.index': {

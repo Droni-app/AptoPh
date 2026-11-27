@@ -33,7 +33,7 @@ esa app: la abren la campana, el botón del correo y el push.
 | `finance` Pagos y cartera | Cuenta del mes, pago confirmado, rechazado o registrado, vence en 3 días; al backoffice, pago reportado | sí | sí |
 | `announcements` Comunicados | Comunicado publicado | sí | no |
 | `tickets` PQRS | Respuesta o cambio de estado; al backoffice, PQRS nueva, respuesta del residente, asignación | sí | sí |
-| `bookings` Reservas | (reservada: sin eventos hasta que exista la aprobación en el backoffice) | sí | sí |
+| `bookings` Reservas | Solicitud, aprobación, rechazo, cancelación, depósito y recordatorio 24 h antes ([detalle](amenities.md#notificaciones-categoría-bookings)) | sí | sí |
 | `parking` Parqueaderos | Sorteo abierto, resultado, cupo ofrecido o vencido, asignación, cancelación | sí | sí |
 
 Las preferencias viven en `users.notification_preferences` (jsonb) y aplican a todos los conjuntos

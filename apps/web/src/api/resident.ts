@@ -1,5 +1,10 @@
 import type {
+  Amenity,
+  AmenityAvailability,
   ApiItem,
+  Booking,
+  BookingCreateInput,
+  BookingQuote,
   ParkingApplication,
   ParkingApplyInput,
   ResidentParkingOverview,
@@ -10,8 +15,6 @@ import type {
   HouseholdMember,
   HouseholdRelationship,
   PetSpecies,
-  ResidentAmenity,
-  ResidentBooking,
   ResidentHome,
   ResidentParcel,
   ResidentPayment,
@@ -33,6 +36,9 @@ import { api } from '@/lib/http'
 /**
  * Resident endpoints (/api/v1/resident/*). Dates go out as ISO strings with offset.
  */
+/** A booking with its receipts and the area's terms */
+export type ResidentBookingDetail = Booking & { attachments: Attachment[]; terms: string | null }
+
 const base = '/api/v1/resident'
 type List<T> = { data: T[] }
 
@@ -63,13 +69,6 @@ export type VisitInput = {
   vehiclePlate: string | null
   type: VisitType
   expectedAt: string
-}
-export type BookingInput = {
-  amenityId: string
-  unitId: string
-  startsAt: string
-  endsAt: string
-  guestsCount: number | null
 }
 export type TicketInput = {
   unitId: string | null
@@ -156,13 +155,38 @@ export const residentApi = {
       }),
   },
   parcels: () => api<List<ResidentParcel>>(`${base}/parcels`),
-  amenities: () => api<List<ResidentAmenity>>(`${base}/amenities`),
+  amenities: () => api<List<Amenity>>(`${base}/amenities`),
+  availability: (amenityId: string, from: string, to: string) =>
+    api<ApiItem<AmenityAvailability>>(`${base}/amenities/${amenityId}/availability`, {
+      query: { from, to },
+    }),
   bookings: {
-    list: () => api<List<ResidentBooking>>(`${base}/bookings`),
-    create: (body: BookingInput) =>
-      api<ApiItem<ResidentBooking>>(`${base}/bookings`, { method: 'POST', body }),
-    cancel: (id: string) =>
-      api<ApiItem<ResidentBooking>>(`${base}/bookings/${id}`, { method: 'DELETE' }),
+    list: () => api<List<Booking>>(`${base}/bookings`),
+    show: (id: string) => api<ApiItem<ResidentBookingDetail>>(`${base}/bookings/${id}`),
+    quote: (body: BookingCreateInput) =>
+      api<ApiItem<BookingQuote & { startsAt: string; endsAt: string }>>(`${base}/bookings/quote`, {
+        method: 'POST',
+        body,
+      }),
+    create: (body: BookingCreateInput) =>
+      api<ApiItem<ResidentBookingDetail>>(`${base}/bookings`, { method: 'POST', body }),
+    cancel: (id: string, reason: string | null = null) =>
+      api<ApiItem<ResidentBookingDetail>>(`${base}/bookings/${id}`, {
+        method: 'DELETE',
+        body: { reason },
+      }),
+    attach: (id: string, file: File) => {
+      const body = new FormData()
+      body.append('file', file)
+      return api<ApiItem<Attachment>>(`${base}/bookings/${id}/attachments`, {
+        method: 'POST',
+        body,
+      })
+    },
+    attachmentUrl: (id: string, download = false) =>
+      api<ApiItem<{ url: string }>>(`${base}/bookings/attachments/${id}/url`, {
+        query: { download },
+      }),
   },
   tickets: {
     list: () => api<List<ResidentTicket>>(`${base}/tickets`),

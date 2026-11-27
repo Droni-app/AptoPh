@@ -241,4 +241,5 @@ tiene marcadores `__…__` en su lugar.
 - [Parqueaderos del conjunto](docs/parking.md)
 - [Parqueadero de visitantes](docs/visitor-parking.md)
 - [Notificaciones (campana, correo y push)](docs/notifications.md)
+- [Zonas comunes y reservas](docs/amenities.md)
 - [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens

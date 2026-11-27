@@ -424,18 +424,27 @@ Los valores son `numeric` y se exponen como `string`; en el código se calcula e
 
 ## 7. Zonas comunes
 
+Detalle del flujo y de la contabilidad en [amenities.md](amenities.md).
+
 ### `amenities` — zonas comunes reservables
 
 | Columna | Tipo | Notas |
 | --- | --- | --- |
 | id, tenant_id | | |
-| name | varchar(100) | "Salón social", "BBQ", "Cancha" |
+| name | varchar(100) | Único por conjunto: "Salón social", "BBQ", "Cancha" |
 | description | text NULL | |
-| capacity | smallint NULL | |
-| booking_fee | numeric(14,2) NULL | |
-| requires_approval | boolean | |
-| rules | jsonb | Horarios, duración máx., anticipación, límite por unidad |
-| is_active | boolean | |
+| capacity | smallint NULL | Aforo por reserva |
+| booking_mode | varchar(10) | `hours`, `days`, `shifts` |
+| booking_fee | numeric(14,2) NULL | Tarifa de residentes por hora, día o turno |
+| external_fee | numeric(14,2) NULL | Tarifa de terceros (NULL: la de residentes) |
+| deposit_amount | numeric(14,2) NULL | Depósito de garantía |
+| payment_mode | varchar(10) | `prepaid` (soporte antes) o `statement` (al estado de cuenta) |
+| requires_approval | boolean | Forzado a `true` si hay pago anticipado o depósito |
+| allow_delinquent / allow_guests / allow_external | boolean | Unidades en mora, invitados de residentes, terceros externos |
+| terms | text NULL | Reglamento que se acepta al reservar |
+| color | varchar(7) NULL | Color en el calendario |
+| rules | jsonb | Horario, días de cierre, franjas, mín./máx., turnos, aseo, anticipación, límites por unidad, plazo de cancelación |
+| is_active | boolean | Una zona con reservas se desactiva en vez de borrarse |
 | created_at / updated_at | | |
 
 ### `amenity_bookings`
@@ -443,18 +452,32 @@ Los valores son `numeric` y se exponen como `string`; en el código se calcula e
 | Columna | Tipo | Notas |
 | --- | --- | --- |
 | id, tenant_id | | |
+| number | integer | Consecutivo por conjunto (`UNIQUE (tenant_id, number)`) |
 | amenity_id | uuid FK compuesta → amenities | |
-| unit_id | uuid FK compuesta → units | |
+| booking_type | varchar(10) | `resident`, `guest`, `external`, `block` |
+| unit_id | uuid NULL FK compuesta → units | Obligatoria para `resident` y `guest`; NULL para `external` y `block` |
+| holder_name / holder_document / holder_phone / holder_email | NULL | Invitado o tercero (obligatorio el nombre en `guest` y `external`) |
 | requested_by_id | uuid FK → users | |
 | starts_at / ends_at | timestamptz | |
+| blocked_until | timestamptz | `ends_at` + tiempo de aseo (`>= ends_at`) |
 | guests_count | smallint NULL | |
+| notes | text NULL | Motivo del bloqueo o notas del residente |
 | status | varchar(20) | `pending`, `approved`, `rejected`, `cancelled` |
-| charge_id | uuid NULL FK compuesta → charges | Si la reserva genera un cobro |
-| reviewed_by_id | uuid NULL FK → users | |
+| fee_amount / deposit_amount | numeric(14,2) | Congelados al reservar |
+| payment_mode | varchar(10) NULL | Copia del modo de la zona |
+| payment_reference | varchar NULL | Referencia de la transferencia |
+| charge_id / payment_id | uuid NULL | Cargo a la unidad y su pago, si lo hay |
+| journal_entry_id | uuid NULL | Asiento del pago de terceros y del depósito |
+| deposit_status | varchar(10) NULL | `held`, `returned`, `retained` |
+| deposit_retained / deposit_note / deposit_journal_entry_id | NULL | Liquidación del depósito |
+| reviewed_by_id / reviewed_at / review_note | NULL | Aprobación o rechazo |
+| cancelled_at / cancelled_by_id / cancellation_reason | NULL | |
+| reminded_at | timestamptz NULL | Recordatorio de 24 horas enviado |
 | created_at / updated_at | | |
 
-Restricción recomendada: `EXCLUDE USING gist (amenity_id WITH =, tstzrange(starts_at, ends_at) WITH &&) WHERE status IN ('pending','approved')`
-para impedir reservas solapadas (requiere la extensión `btree_gist`).
+`EXCLUDE USING gist (amenity_id WITH =, tstzrange(starts_at, blocked_until) WITH &&) WHERE status IN ('pending','approved')`
+impide reservas solapadas, incluido el tiempo de aseo (extensión `btree_gist`). Los soportes de
+pago son `attachments` con `owner_type = 'amenity_booking'`.
 
 ## 8. Comunicación y solicitudes
 
