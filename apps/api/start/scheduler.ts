@@ -12,8 +12,8 @@
 */
 
 import app from '@adonisjs/core/services/app'
-import { dispatchDueAnnouncementEmails } from '#services/announcements'
-import { runBillingTick } from '#services/billing_scheduler'
+import { dispatchDueAnnouncementEmails } from '#services/announcements/announcements'
+import { runBillingTick } from '#services/billing/billing_scheduler'
 
 const EVERY_MINUTE = 60_000
 const EVERY_FIVE_MINUTES = 5 * EVERY_MINUTE

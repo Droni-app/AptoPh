@@ -17,9 +17,25 @@ const dbConfig = defineConfig({
         // Managed PostgreSQL requires TLS; verify it against the provider's CA
         ssl: env.get('DB_CA_CERT') ? { ca: env.get('DB_CA_CERT') } : undefined,
       },
+      /**
+       * One folder per module, in dependency order: a module can only
+       * reference tables of the modules above it. A new module is added here.
+       */
       migrations: {
         naturalSort: true,
-        paths: ['database/migrations'],
+        paths: [
+          'database/migrations/auth',
+          'database/migrations/tenants',
+          'database/migrations/property',
+          'database/migrations/finance',
+          'database/migrations/files',
+          'database/migrations/documents',
+          'database/migrations/amenities',
+          'database/migrations/announcements',
+          'database/migrations/tickets',
+          'database/migrations/gatehouse',
+          'database/migrations/billing',
+        ],
       },
       schemaGeneration: {
         enabled: true,

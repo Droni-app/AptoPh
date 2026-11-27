@@ -23,8 +23,8 @@ export default class EmailAddPacks extends BaseCommand {
   async run() {
     const { DateTime } = await import('luxon')
     const { EMAIL_PACK_SIZE, EMAIL_PACKS_MAX_PER_REQUEST } = await import('@aptoph/shared')
-    const { default: Tenant } = await import('#models/tenant')
-    const { EmailQuotaService, quotaPeriod } = await import('#services/email_quota')
+    const { default: Tenant } = await import('#models/tenants/tenant')
+    const { EmailQuotaService, quotaPeriod } = await import('#services/announcements/email_quota')
 
     const tenant = await Tenant.findBy('slug', this.slug)
     if (!tenant) {

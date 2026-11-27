@@ -1,4 +1,4 @@
-import { args, BaseCommand, flags } from '@adonisjs/core/ace'
+import { args, BaseCommand } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
 /**
@@ -8,22 +8,16 @@ import type { CommandOptions } from '@adonisjs/core/types/ace'
  */
 export default class SubscriptionActivate extends BaseCommand {
   static commandName = 'subscription:activate'
-  static description = 'Activa (o renueva) el plan pagado de un conjunto'
+  static description = 'Activa (o renueva) el plan pagado de un conjunto (un mes)'
   static options: CommandOptions = { startApp: true }
 
   @args.string({ description: 'Slug del conjunto' })
   declare slug: string
 
-  @flags.string({ description: 'Plan: completo o empresarial (por defecto, el elegido)' })
-  declare plan?: string
-
-  @flags.string({ description: 'Ciclo: monthly o annual (por defecto, el elegido)' })
-  declare cycle?: string
-
   async run() {
     const { DateTime } = await import('luxon')
-    const { PLAN_IDS, BILLING_CYCLES, findPlan } = await import('@aptoph/shared')
-    const { default: Tenant } = await import('#models/tenant')
+    const { PLAN } = await import('@aptoph/shared')
+    const { default: Tenant } = await import('#models/tenants/tenant')
 
     const tenant = await Tenant.findBy('slug', this.slug)
     const subscription = tenant ? await tenant.related('subscription').query().first() : null
@@ -33,18 +27,8 @@ export default class SubscriptionActivate extends BaseCommand {
       return
     }
 
-    if (this.plan && !(PLAN_IDS as readonly string[]).includes(this.plan)) {
-      this.logger.error(`Plan no válido: ${this.plan}`)
-      this.exitCode = 1
-      return
-    }
-    if (this.cycle && !(BILLING_CYCLES as readonly string[]).includes(this.cycle)) {
-      this.logger.error(`Ciclo no válido: ${this.cycle}`)
-      this.exitCode = 1
-      return
-    }
-    if (this.plan) subscription.plan = this.plan as typeof subscription.plan
-    if (this.cycle) subscription.billingCycle = this.cycle as typeof subscription.billingCycle
+    subscription.plan = PLAN.id
+    subscription.billingCycle = 'monthly'
 
     const now = DateTime.now()
     const from =
@@ -55,16 +39,14 @@ export default class SubscriptionActivate extends BaseCommand {
         : now
 
     subscription.status = 'active'
-    subscription.currentPeriodEndsAt = from.plus(
-      subscription.billingCycle === 'annual' ? { years: 1 } : { months: 1 }
-    )
+    subscription.currentPeriodEndsAt = from.plus({ months: 1 })
     await subscription.save()
 
     tenant.status = 'active'
     await tenant.save()
 
     this.logger.success(
-      `${tenant.name}: plan ${findPlan(subscription.plan).name} activo hasta el ${subscription.currentPeriodEndsAt.toISODate()}`
+      `${tenant.name}: plan ${PLAN.name} activo hasta el ${subscription.currentPeriodEndsAt.toISODate()}`
     )
   }
 }

@@ -3,7 +3,7 @@
 > Estado: **propuesta** · Motor: PostgreSQL 18 · ORM: AdonisJS Lucid
 >
 > Este documento describe el modelo sugerido. Cada tabla se implementará como una
-> migración (`apps/api/database/migrations`) y un modelo Lucid (`apps/api/app/models`).
+> migración (`apps/api/database/migrations/<módulo>`) y un modelo Lucid (`apps/api/app/models/<módulo>`).
 > Los nombres de tablas y columnas van en **inglés** y en `snake_case`; Lucid los expone
 > en `camelCase` en los modelos.
 
@@ -120,8 +120,8 @@ administradas (demo, pilotos) y no tienen restricciones. Planes y precios en
 | --- | --- | --- |
 | id | uuid PK | |
 | tenant_id | uuid UNIQUE FK → tenants | `ON DELETE CASCADE` |
-| plan | varchar(20) | `completo`, `empresarial` |
-| billing_cycle | varchar(10) | `monthly`, `annual` |
+| plan | varchar(20) | `completo` (único plan) |
+| billing_cycle | varchar(10) | `monthly` (único ciclo) |
 | status | varchar(20) | `trialing`, `active`, `past_due`, `cancelled` |
 | declared_units | int | Unidades declaradas en el registro (cotización antes de cargar el censo) |
 | trial_ends_at | timestamptz NULL | Fin de la prueba (30 días) |
@@ -497,8 +497,9 @@ El cuerpo es texto plano. Ver [announcements.md](announcements.md).
 
 ## 13. Implementación
 
-Todas las tablas de este documento ya tienen migración (`apps/api/database/migrations`) y modelo
-Lucid (`apps/api/app/models`). Notas:
+Todas las tablas de este documento ya tienen migración (`apps/api/database/migrations/<módulo>`,
+una tabla por archivo, solo `createTable`) y modelo Lucid (`apps/api/app/models/<módulo>`). El orden
+de los módulos está en `config/database.ts` (ver README, *API por módulos*). Notas:
 
 - `database/tenant_schema.ts` define los helpers comunes: `tenantTable` (id uuidv7, `tenant_id`,
   `UNIQUE (tenant_id, id)`) y `tenantForeign` (FK compuesta).

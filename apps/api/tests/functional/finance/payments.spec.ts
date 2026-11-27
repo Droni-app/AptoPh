@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import testUtils from '@adonisjs/core/services/test_utils'
-import UnitOccupant from '#models/unit_occupant'
+import UnitOccupant from '#models/property/unit_occupant'
 import {
   accountBalance,
   apiFor,

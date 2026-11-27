@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { ArrowRight, CalendarCheck, Check, Package, Wallet } from '@lucide/vue'
-import { PRICE_TIERS, TRIAL_DAYS, formatCop } from '@aptoph/shared'
+import { PRICE_PER_UNIT, TRIAL_DAYS, formatCop } from '@aptoph/shared'
 import { art } from '@/art'
 import { heroEvents, proofPoints } from '@/content'
 import { links } from '@/links'
 
-const fromPrice = formatCop(PRICE_TIERS[0]!.pricePerUnit)
-
 const trust = [
   'Sin tarjeta de crédito',
   'Migramos tus datos gratis',
-  `Desde ${fromPrice} por unidad al mes`,
+  `${formatCop(PRICE_PER_UNIT)} por unidad al mes`,
 ]
 
 /** Where each notification lands on the illustration, and how it looks */

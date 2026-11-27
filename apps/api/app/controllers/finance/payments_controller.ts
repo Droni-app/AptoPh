@@ -1,15 +1,15 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import { toCents } from '@aptoph/shared'
-import Payment from '#models/payment'
+import Payment from '#models/finance/payment'
 import { PaymentService } from '#services/finance/payments'
-import { paginated, serializePayment } from '#transformers/finance'
+import { paginated, serializePayment } from '#transformers/finance/finance'
 import {
   confirmPaymentValidator,
   listPaymentsValidator,
   reasonValidator,
   registerPaymentValidator,
-} from '#validators/finance'
+} from '#validators/finance/finance'
 import { finance, paidAtFrom } from '#controllers/finance/helpers'
 import type { FinanceScope } from '#services/finance/scope'
 

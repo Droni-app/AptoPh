@@ -5,66 +5,106 @@
 
 /// <reference path="./manifest.d.ts" />
 import type { InferData, InferVariants } from '@adonisjs/core/types/transformers'
-import type AnnouncementTransformer from '#transformers/announcement_transformer'
-import type AttachmentTransformer from '#transformers/attachment_transformer'
-import type BillingTransformer from '#transformers/billing_transformer'
-import type BuildingTransformer from '#transformers/building_transformer'
-import type FinanceTransformer from '#transformers/finance'
-import type MemberTransformer from '#transformers/member_transformer'
-import type ResidentTransformer from '#transformers/resident'
-import type SubscriptionTransformer from '#transformers/subscription_transformer'
-import type TenantTransformer from '#transformers/tenant_transformer'
-import type UnitOccupantTransformer from '#transformers/unit_occupant_transformer'
-import type UnitTransformer from '#transformers/unit_transformer'
-import type UserTransformer from '#transformers/user_transformer'
+import type AmenitiesResidentTransformer from '#transformers/amenities/resident'
+import type AnnouncementsAnnouncementTransformer from '#transformers/announcements/announcement_transformer'
+import type AuthUserTransformer from '#transformers/auth/user_transformer'
+import type BillingBillingTransformer from '#transformers/billing/billing_transformer'
+import type BillingSubscriptionTransformer from '#transformers/billing/subscription_transformer'
+import type FilesAttachmentTransformer from '#transformers/files/attachment_transformer'
+import type FinanceFinanceTransformer from '#transformers/finance/finance'
+import type GatehouseResidentTransformer from '#transformers/gatehouse/resident'
+import type HelpersTransformer from '#transformers/helpers'
+import type PropertyBuildingTransformer from '#transformers/property/building_transformer'
+import type PropertyResidentTransformer from '#transformers/property/resident'
+import type PropertyUnitOccupantTransformer from '#transformers/property/unit_occupant_transformer'
+import type PropertyUnitTransformer from '#transformers/property/unit_transformer'
+import type TenantsMemberTransformer from '#transformers/tenants/member_transformer'
+import type TenantsTenantTransformer from '#transformers/tenants/tenant_transformer'
+import type TicketsResidentTransformer from '#transformers/tickets/resident'
 
 export namespace Data {
-  export type Announcement = InferData<AnnouncementTransformer>
-  export namespace Announcement {
-    export type Variants = InferVariants<AnnouncementTransformer>
+  export namespace Amenities {
+    export type Resident = InferData<AmenitiesResidentTransformer>
+    export namespace Resident {
+      export type Variants = InferVariants<AmenitiesResidentTransformer>
+    }
   }
-  export type Attachment = InferData<AttachmentTransformer>
-  export namespace Attachment {
-    export type Variants = InferVariants<AttachmentTransformer>
+  export namespace Announcements {
+    export type Announcement = InferData<AnnouncementsAnnouncementTransformer>
+    export namespace Announcement {
+      export type Variants = InferVariants<AnnouncementsAnnouncementTransformer>
+    }
   }
-  export type Billing = InferData<BillingTransformer>
+  export namespace Auth {
+    export type User = InferData<AuthUserTransformer>
+    export namespace User {
+      export type Variants = InferVariants<AuthUserTransformer>
+    }
+  }
   export namespace Billing {
-    export type Variants = InferVariants<BillingTransformer>
+    export type Billing = InferData<BillingBillingTransformer>
+    export namespace Billing {
+      export type Variants = InferVariants<BillingBillingTransformer>
+    }
+    export type Subscription = InferData<BillingSubscriptionTransformer>
+    export namespace Subscription {
+      export type Variants = InferVariants<BillingSubscriptionTransformer>
+    }
   }
-  export type Building = InferData<BuildingTransformer>
-  export namespace Building {
-    export type Variants = InferVariants<BuildingTransformer>
+  export namespace Files {
+    export type Attachment = InferData<FilesAttachmentTransformer>
+    export namespace Attachment {
+      export type Variants = InferVariants<FilesAttachmentTransformer>
+    }
   }
-  export type Finance = InferData<FinanceTransformer>
   export namespace Finance {
-    export type Variants = InferVariants<FinanceTransformer>
+    export type Finance = InferData<FinanceFinanceTransformer>
+    export namespace Finance {
+      export type Variants = InferVariants<FinanceFinanceTransformer>
+    }
   }
-  export type Member = InferData<MemberTransformer>
-  export namespace Member {
-    export type Variants = InferVariants<MemberTransformer>
+  export namespace Gatehouse {
+    export type Resident = InferData<GatehouseResidentTransformer>
+    export namespace Resident {
+      export type Variants = InferVariants<GatehouseResidentTransformer>
+    }
   }
-  export type Resident = InferData<ResidentTransformer>
-  export namespace Resident {
-    export type Variants = InferVariants<ResidentTransformer>
+  export type Helpers = InferData<HelpersTransformer>
+  export namespace Helpers {
+    export type Variants = InferVariants<HelpersTransformer>
   }
-  export type Subscription = InferData<SubscriptionTransformer>
-  export namespace Subscription {
-    export type Variants = InferVariants<SubscriptionTransformer>
+  export namespace Property {
+    export type Building = InferData<PropertyBuildingTransformer>
+    export namespace Building {
+      export type Variants = InferVariants<PropertyBuildingTransformer>
+    }
+    export type Resident = InferData<PropertyResidentTransformer>
+    export namespace Resident {
+      export type Variants = InferVariants<PropertyResidentTransformer>
+    }
+    export type UnitOccupant = InferData<PropertyUnitOccupantTransformer>
+    export namespace UnitOccupant {
+      export type Variants = InferVariants<PropertyUnitOccupantTransformer>
+    }
+    export type Unit = InferData<PropertyUnitTransformer>
+    export namespace Unit {
+      export type Variants = InferVariants<PropertyUnitTransformer>
+    }
   }
-  export type Tenant = InferData<TenantTransformer>
-  export namespace Tenant {
-    export type Variants = InferVariants<TenantTransformer>
+  export namespace Tenants {
+    export type Member = InferData<TenantsMemberTransformer>
+    export namespace Member {
+      export type Variants = InferVariants<TenantsMemberTransformer>
+    }
+    export type Tenant = InferData<TenantsTenantTransformer>
+    export namespace Tenant {
+      export type Variants = InferVariants<TenantsTenantTransformer>
+    }
   }
-  export type UnitOccupant = InferData<UnitOccupantTransformer>
-  export namespace UnitOccupant {
-    export type Variants = InferVariants<UnitOccupantTransformer>
-  }
-  export type Unit = InferData<UnitTransformer>
-  export namespace Unit {
-    export type Variants = InferVariants<UnitTransformer>
-  }
-  export type User = InferData<UserTransformer>
-  export namespace User {
-    export type Variants = InferVariants<UserTransformer>
+  export namespace Tickets {
+    export type Resident = InferData<TicketsResidentTransformer>
+    export namespace Resident {
+      export type Variants = InferVariants<TicketsResidentTransformer>
+    }
   }
 }

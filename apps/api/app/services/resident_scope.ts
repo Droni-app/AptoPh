@@ -1,8 +1,8 @@
 import db from '@adonisjs/lucid/services/db'
 import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import { DateTime } from 'luxon'
-import type Tenant from '#models/tenant'
-import type UnitOccupant from '#models/unit_occupant'
+import type Tenant from '#models/tenants/tenant'
+import type UnitOccupant from '#models/property/unit_occupant'
 import ResourceException from '#exceptions/resource_exception'
 
 /** Today's date in the tenant's timezone (occupancy and due dates are local dates) */

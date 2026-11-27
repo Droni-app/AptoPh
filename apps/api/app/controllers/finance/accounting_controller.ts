@@ -2,12 +2,12 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { Exception } from '@adonisjs/core/exceptions'
 import { fromCents, toCents } from '@aptoph/shared'
 import FieldException from '#exceptions/field_exception'
-import Charge from '#models/charge'
-import JournalEntry from '#models/journal_entry'
-import type Tenant from '#models/tenant'
+import Charge from '#models/finance/charge'
+import JournalEntry from '#models/finance/journal_entry'
+import type Tenant from '#models/tenants/tenant'
 import { FinanceReports } from '#services/finance/reports'
 import { todayFor } from '#services/finance/support'
-import { paginated, serializeCharge, serializeEntry } from '#transformers/finance'
+import { paginated, serializeCharge, serializeEntry } from '#transformers/finance/finance'
 import {
   ledgerReportValidator,
   listJournalValidator,
@@ -15,7 +15,7 @@ import {
   rangeValidator,
   reasonValidator,
   statementValidator,
-} from '#validators/finance'
+} from '#validators/finance/finance'
 import { finance, rangeOf } from '#controllers/finance/helpers'
 
 /** Vouchers that only exist in the ledger and can be reversed from here */

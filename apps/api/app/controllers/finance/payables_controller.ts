@@ -2,9 +2,9 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 import { toCents } from '@aptoph/shared'
 import FieldException from '#exceptions/field_exception'
-import Bill from '#models/bill'
-import type Tenant from '#models/tenant'
-import VendorPayment from '#models/vendor_payment'
+import Bill from '#models/finance/bill'
+import type Tenant from '#models/tenants/tenant'
+import VendorPayment from '#models/finance/vendor_payment'
 import { PayablesService } from '#services/finance/payables'
 import { isBillableAccount } from '#services/finance/chart_template'
 import {
@@ -12,7 +12,7 @@ import {
   serializeBill,
   serializeVendor,
   serializeVendorPayment,
-} from '#transformers/finance'
+} from '#transformers/finance/finance'
 import {
   billValidator,
   listBillsValidator,
@@ -21,7 +21,7 @@ import {
   reasonValidator,
   vendorPaymentValidator,
   vendorValidator,
-} from '#validators/finance'
+} from '#validators/finance/finance'
 import { finance } from '#controllers/finance/helpers'
 
 type VendorBody = Awaited<ReturnType<typeof vendorValidator.validate>>

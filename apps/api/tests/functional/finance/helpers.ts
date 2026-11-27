@@ -1,8 +1,8 @@
 import type { ApiClient, ApiResponse } from '@japa/api-client'
 import type { EnrollmentRole } from '@aptoph/shared'
-import Unit from '#models/unit'
-import type Tenant from '#models/tenant'
-import type User from '#models/user'
+import Unit from '#models/property/unit'
+import type Tenant from '#models/tenants/tenant'
+import type User from '#models/auth/user'
 import { createMember } from '#tests/helpers'
 
 export type Finance = Awaited<ReturnType<typeof financeSetup>>

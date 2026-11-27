@@ -3,12 +3,12 @@ import { Exception } from '@adonisjs/core/exceptions'
 import { toCents } from '@aptoph/shared'
 import { CashService } from '#services/finance/cash'
 import { FinanceReports } from '#services/finance/reports'
-import { serializeCashAccount } from '#transformers/finance'
+import { serializeCashAccount } from '#transformers/finance/finance'
 import {
   cashAccountValidator,
   transferValidator,
   updateCashAccountValidator,
-} from '#validators/finance'
+} from '#validators/finance/finance'
 import { finance } from '#controllers/finance/helpers'
 
 /** Bank accounts and cash boxes (Bancos y caja) */

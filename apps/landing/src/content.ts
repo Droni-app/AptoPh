@@ -19,23 +19,14 @@ import {
   Wallet,
   Wrench,
 } from '@lucide/vue'
-import {
-  ANNUAL_BILLED_MONTHS,
-  MINIMUM_MONTHLY,
-  PRICE_TIERS,
-  formatCop,
-  tierLabel,
-} from '@aptoph/shared'
+import { MINIMUM_COVERS_UNITS, MINIMUM_MONTHLY, PRICE_PER_UNIT, formatCop } from '@aptoph/shared'
 
 /** FAQ answer built from the same prices as the pricing table (@aptoph/shared) */
 function pricingAnswer() {
-  const tiers = PRICE_TIERS.map(
-    (tier) => `${tierLabel(tier).toLowerCase()}, ${formatCop(tier.pricePerUnit)}`,
-  ).join('; ')
   return (
-    `Se paga por unidad privada al mes, con todas las funciones incluidas. El precio de cada unidad depende del tamaño del conjunto: ${tiers}. ` +
-    `El valor es final, sin IVA, con un mínimo de ${formatCop(MINIMUM_MONTHLY)} al mes, y en el pago anual pagas ${ANNUAL_BILLED_MONTHS} meses y recibes 12. ` +
-    'Para administradoras con varias copropiedades hay un plan Empresarial a la medida.'
+    `Se paga ${formatCop(PRICE_PER_UNIT)} por unidad privada al mes, con todas las funciones incluidas, sin importar el tamaño del conjunto. ` +
+    `El valor es final, sin IVA, con un mínimo de ${formatCop(MINIMUM_MONTHLY)} al mes (conjuntos de hasta ${MINIMUM_COVERS_UNITS} unidades). ` +
+    'El pago es mensual y puedes cancelar cuando quieras.'
   )
 }
 
@@ -394,9 +385,9 @@ export const faqs: Faq[] = [
  */
 export const pricingPerks = [
   { title: '30 días gratis', description: 'Todas las funciones, sin tarjeta de crédito.' },
-  { title: '2 meses gratis', description: 'Al pagar el año completo: pagas 10 y recibes 12.' },
+  { title: 'Tarifa única', description: 'El mismo precio por unidad para cualquier tamaño.' },
   { title: 'Migración sin costo', description: 'Pasamos tus datos desde Excel u otro software.' },
-  { title: 'Sin permanencia', description: 'Cambia de plan o cancela cuando quieras.' },
+  { title: 'Sin permanencia', description: 'Pago mensual. Cancela cuando quieras.' },
 ]
 
 /**

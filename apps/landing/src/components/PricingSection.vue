@@ -2,28 +2,22 @@
 import { computed, ref } from 'vue'
 import { ArrowRight, BadgePercent, CalendarHeart, Check, DatabaseZap, Unlock } from '@lucide/vue'
 import {
-  ANNUAL_BILLED_MONTHS,
+  MINIMUM_COVERS_UNITS,
   MINIMUM_MONTHLY,
-  PRICE_TIERS,
+  PLAN as plan,
+  PRICE_PER_UNIT,
   TRIAL_DAYS,
-  findPlan,
   formatCop,
   quote,
-  tierFor,
-  tierLabel,
-  type BillingCycle,
 } from '@aptoph/shared'
 import { pricingPerks } from '@/content'
-import { links, signupUrl } from '@/links'
+import { signupUrl } from '@/links'
 
 const DEFAULT_UNITS = 120
 const SLIDER_MAX = 1000
 
-const plan = findPlan('completo')
-const enterprise = findPlan('empresarial')
 const perkIcons = [CalendarHeart, BadgePercent, DatabaseZap, Unlock]
 
-const cycle = ref<BillingCycle>('annual')
 const unitsInput = ref(DEFAULT_UNITS)
 const units = computed(() => {
   const value = Math.floor(Number(unitsInput.value))
@@ -34,11 +28,7 @@ const slider = computed({
   set: (value: number) => (unitsInput.value = value),
 })
 
-const price = computed(() => quote(units.value, cycle.value))
-const currentTier = computed(() => tierFor(units.value))
-/** Price per unit of a tier in the selected cycle */
-const tierPrice = (pricePerUnit: number) =>
-  cycle.value === 'annual' ? Math.round((pricePerUnit * ANNUAL_BILLED_MONTHS) / 12) : pricePerUnit
+const price = computed(() => quote(units.value))
 </script>
 
 <template>
@@ -52,36 +42,12 @@ const tierPrice = (pricePerUnit: number) =>
             instalación. Empieza con {{ TRIAL_DAYS }} días gratis.
           </p>
         </div>
-
-        <div
-          class="inline-flex self-start rounded-full bg-cream p-1.5 ring-1 ring-brand-900/5 lg:self-auto"
-          role="group"
-          aria-label="Ciclo de pago"
-        >
-          <button
-            v-for="option in ['monthly', 'annual'] as const"
-            :key="option"
-            type="button"
-            class="rounded-full px-4 py-2.5 text-[0.95rem] font-semibold whitespace-nowrap sm:px-5 transition-colors focus-visible:outline-2 focus-visible:outline-brand-700"
-            :class="option === cycle ? 'bg-brand-700 text-white' : 'text-brand-700 hover:bg-white'"
-            :aria-pressed="option === cycle"
-            @click="cycle = option"
-          >
-            {{ option === 'monthly' ? 'Mensual' : 'Anual' }}
-            <span
-              v-if="option === 'annual'"
-              class="ml-1 rounded-full px-2 py-0.5 text-xs"
-              :class="option === cycle ? 'bg-mint-400 text-ink' : 'bg-mint-100 text-mint-700'"
-              >2 meses gratis</span
-            >
-          </button>
-        </div>
       </div>
 
       <div
         class="mt-12 grid overflow-hidden rounded-[2rem] ring-1 ring-brand-900/8 lg:grid-cols-[0.95fr_1.05fr]"
       >
-        <!-- Calculator: the size of the conjunto sets the price of every unit -->
+        <!-- Calculator: units × the single rate, never less than the monthly minimum -->
         <div class="relative overflow-hidden bg-brand-700 p-7 text-white sm:p-10">
           <div
             class="pointer-events-none absolute -right-24 -bottom-24 size-72 rounded-full bg-mint-400/15"
@@ -128,51 +94,43 @@ const tierPrice = (pricePerUnit: number) =>
               <strong class="font-semibold text-white tabular-nums">{{
                 formatCop(price.monthly)
               }}</strong>
-              al mes<template v-if="cycle === 'annual'">
-                ({{ formatCop(price.total) }} al año, ahorras
-                <strong class="font-semibold text-mint-300 tabular-nums">{{
-                  formatCop(price.annualSavings)
-                }}</strong
-                >)</template
-              >.
+              al mes<template v-if="price.minimumApplied"> (el mínimo mensual)</template>.
             </p>
-            <a
-              :href="signupUrl({ plan: plan.id, units })"
-              class="btn-mint btn-lg mt-8 w-full sm:w-auto"
-            >
+            <a :href="signupUrl({ units })" class="btn-mint btn-lg mt-8 w-full sm:w-auto">
               Probar {{ TRIAL_DAYS }} días gratis
               <ArrowRight class="size-4.5" aria-hidden="true" />
             </a>
-            <p class="mt-3 text-sm text-brand-100">
-              Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes.
-            </p>
+            <p class="mt-3 text-sm text-brand-100">Sin IVA. Pago mensual, sin permanencia.</p>
           </div>
         </div>
 
         <div class="bg-cream p-7 sm:p-10">
-          <p class="font-display font-bold text-brand-700">Precio por unidad según el tamaño</p>
+          <p class="font-display font-bold text-brand-700">Así se calcula</p>
           <ul class="mt-4 space-y-2">
             <li
-              v-for="tier in PRICE_TIERS"
-              :key="tier.pricePerUnit"
-              class="flex items-center justify-between gap-4 rounded-2xl px-4 py-3.5 transition-colors"
-              :class="tier === currentTier ? 'bg-white ring-2 ring-mint-400' : 'bg-white/60'"
+              class="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3.5 ring-2 ring-mint-400"
             >
-              <span class="text-ink">
-                {{ tierLabel(tier) }}
-                <span v-if="tier === currentTier" class="ml-1 text-sm font-semibold text-mint-700"
-                  >tu conjunto</span
-                >
-              </span>
+              <span class="text-ink">Tarifa única por unidad</span>
               <span class="font-display text-xl font-extrabold text-brand-700 tabular-nums">
-                {{ formatCop(tierPrice(tier.pricePerUnit)) }}
+                {{ formatCop(PRICE_PER_UNIT) }}
                 <span class="text-sm font-normal text-slate">/ unidad al mes</span>
+              </span>
+            </li>
+            <li class="flex items-center justify-between gap-4 rounded-2xl bg-white/60 px-4 py-3.5">
+              <span class="text-ink"
+                >Mínimo mensual
+                <span class="text-sm text-slate"
+                  >(hasta {{ MINIMUM_COVERS_UNITS.toLocaleString('es-CO') }} unidades)</span
+                ></span
+              >
+              <span class="font-display text-xl font-extrabold text-brand-700 tabular-nums">
+                {{ formatCop(MINIMUM_MONTHLY) }}
+                <span class="text-sm font-normal text-slate">al mes</span>
               </span>
             </li>
           </ul>
           <p class="mt-3 text-sm text-slate">
-            Todas las unidades del conjunto pagan el precio de su tramo.
-            <template v-if="cycle === 'annual'">Valor por unidad pagando el año completo.</template>
+            El mismo precio para cualquier tamaño de conjunto, sin tramos ni costos de instalación.
           </p>
 
           <p class="mt-8 font-display font-bold text-brand-700">Todo incluido</p>
@@ -192,35 +150,6 @@ const tierPrice = (pricePerUnit: number) =>
           </ul>
         </div>
       </div>
-
-      <article
-        class="mt-6 grid gap-6 rounded-[2rem] bg-cream p-7 sm:p-10 lg:grid-cols-[1fr_1.4fr_auto] lg:items-center lg:gap-10"
-      >
-        <div>
-          <h3 class="text-2xl font-extrabold">{{ enterprise.name }}</h3>
-          <p class="mt-1.5 text-slate">{{ enterprise.tagline }}</p>
-          <p class="mt-4 font-display text-xl font-extrabold text-brand-700">A la medida</p>
-          <p class="text-sm text-slate">Tarifa por volumen según tu portafolio</p>
-        </div>
-        <div>
-          <p v-if="enterprise.includesFrom" class="text-sm font-semibold text-brand-700">
-            {{ enterprise.includesFrom }}
-          </p>
-          <ul class="mt-3 grid gap-x-6 gap-y-2.5 text-[0.95rem] text-ink sm:grid-cols-2">
-            <li v-for="feature in enterprise.features" :key="feature" class="flex gap-2.5">
-              <Check
-                class="mt-1 size-4 shrink-0 text-mint-600"
-                stroke-width="2.75"
-                aria-hidden="true"
-              />
-              {{ feature }}
-            </li>
-          </ul>
-        </div>
-        <a :href="links.enterprise" class="btn-ghost self-start lg:self-center"
-          >Hablar con ventas</a
-        >
-      </article>
 
       <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <li v-for="(perk, index) in pricingPerks" :key="perk.title" class="flex gap-4">

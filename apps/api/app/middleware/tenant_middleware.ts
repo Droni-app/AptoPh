@@ -2,8 +2,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import type { EnrollmentRole } from '@aptoph/shared'
 import { DateTime } from 'luxon'
-import Enrollment from '#models/enrollment'
-import type Tenant from '#models/tenant'
+import Enrollment from '#models/tenants/enrollment'
+import type Tenant from '#models/tenants/tenant'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 

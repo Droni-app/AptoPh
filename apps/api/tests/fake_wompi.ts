@@ -7,7 +7,7 @@ import {
   type WompiToken,
   type WompiTransaction,
   type WompiTransactionStatus,
-} from '#services/wompi'
+} from '#services/billing/wompi'
 
 type Outcome = Exclude<WompiTransactionStatus, 'PENDING'>
 

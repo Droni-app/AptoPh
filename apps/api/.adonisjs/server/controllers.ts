@@ -4,19 +4,27 @@
  */
 
 export const controllers = {
-  Account: () => import('#controllers/account_controller'),
-  Auth: () => import('#controllers/auth_controller'),
-  backoffice: {
-    Announcements: () => import('#controllers/backoffice/announcements_controller'),
-    Buildings: () => import('#controllers/backoffice/buildings_controller'),
-    Dashboard: () => import('#controllers/backoffice/dashboard_controller'),
-    EmailQuota: () => import('#controllers/backoffice/email_quota_controller'),
-    Members: () => import('#controllers/backoffice/members_controller'),
-    SubscriptionBilling: () => import('#controllers/backoffice/subscription_billing_controller'),
-    Subscription: () => import('#controllers/backoffice/subscription_controller'),
-    TenantSettings: () => import('#controllers/backoffice/tenant_settings_controller'),
-    UnitOccupants: () => import('#controllers/backoffice/unit_occupants_controller'),
-    Units: () => import('#controllers/backoffice/units_controller'),
+  amenities: {
+    ResidentBookings: () => import('#controllers/amenities/resident_bookings_controller'),
+  },
+  announcements: {
+    Announcements: () => import('#controllers/announcements/announcements_controller'),
+    EmailQuota: () => import('#controllers/announcements/email_quota_controller'),
+    ResidentAnnouncements: () => import('#controllers/announcements/resident_announcements_controller'),
+  },
+  auth: {
+    Account: () => import('#controllers/auth/account_controller'),
+    Auth: () => import('#controllers/auth/auth_controller'),
+    Profile: () => import('#controllers/auth/profile_controller'),
+  },
+  billing: {
+    SubscriptionBilling: () => import('#controllers/billing/subscription_billing_controller'),
+    Subscription: () => import('#controllers/billing/subscription_controller'),
+    Wompi: () => import('#controllers/billing/wompi_controller'),
+  },
+  dashboard: {
+    Dashboard: () => import('#controllers/dashboard/dashboard_controller'),
+    ResidentHome: () => import('#controllers/dashboard/resident_home_controller'),
   },
   finance: {
     Accounting: () => import('#controllers/finance/accounting_controller'),
@@ -30,24 +38,28 @@ export const controllers = {
     Overview: () => import('#controllers/finance/overview_controller'),
     Payables: () => import('#controllers/finance/payables_controller'),
     Payments: () => import('#controllers/finance/payments_controller'),
+    ResidentFinance: () => import('#controllers/finance/resident_finance_controller'),
   },
-  Invitations: () => import('#controllers/invitations_controller'),
-  MyTenants: () => import('#controllers/my_tenants_controller'),
-  Profile: () => import('#controllers/profile_controller'),
-  resident: {
-    Announcements: () => import('#controllers/resident/announcements_controller'),
-    Bookings: () => import('#controllers/resident/bookings_controller'),
-    Finance: () => import('#controllers/resident/finance_controller'),
-    Home: () => import('#controllers/resident/home_controller'),
-    Household: () => import('#controllers/resident/household_controller'),
-    Parcels: () => import('#controllers/resident/parcels_controller'),
-    Pets: () => import('#controllers/resident/pets_controller'),
-    Tickets: () => import('#controllers/resident/tickets_controller'),
-    Units: () => import('#controllers/resident/units_controller'),
-    Vehicles: () => import('#controllers/resident/vehicles_controller'),
-    Visits: () => import('#controllers/resident/visits_controller'),
+  gatehouse: {
+    ResidentParcels: () => import('#controllers/gatehouse/resident_parcels_controller'),
+    ResidentVisits: () => import('#controllers/gatehouse/resident_visits_controller'),
   },
-  webhooks: {
-    Wompi: () => import('#controllers/webhooks/wompi_controller'),
+  property: {
+    Buildings: () => import('#controllers/property/buildings_controller'),
+    ResidentHousehold: () => import('#controllers/property/resident_household_controller'),
+    ResidentPets: () => import('#controllers/property/resident_pets_controller'),
+    ResidentUnits: () => import('#controllers/property/resident_units_controller'),
+    ResidentVehicles: () => import('#controllers/property/resident_vehicles_controller'),
+    UnitOccupants: () => import('#controllers/property/unit_occupants_controller'),
+    Units: () => import('#controllers/property/units_controller'),
+  },
+  tenants: {
+    Invitations: () => import('#controllers/tenants/invitations_controller'),
+    Members: () => import('#controllers/tenants/members_controller'),
+    MyTenants: () => import('#controllers/tenants/my_tenants_controller'),
+    TenantSettings: () => import('#controllers/tenants/tenant_settings_controller'),
+  },
+  tickets: {
+    ResidentTickets: () => import('#controllers/tickets/resident_tickets_controller'),
   },
 }

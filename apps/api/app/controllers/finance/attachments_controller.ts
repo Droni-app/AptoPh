@@ -1,12 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { FINANCE_ATTACHMENT_OWNER_TYPES } from '@aptoph/shared'
-import { AttachmentsService } from '#services/attachments'
-import { serializeAttachment } from '#transformers/attachment_transformer'
+import { AttachmentsService } from '#services/files/attachments'
+import { serializeAttachment } from '#transformers/files/attachment_transformer'
 import {
   attachmentOwnerValidator,
   attachmentUrlValidator,
   uploadAttachmentValidator,
-} from '#validators/attachment'
+} from '#validators/files/attachment'
 
 /**
  * Files attached to finance records: bills, payment vouchers, receipts and

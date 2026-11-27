@@ -23,18 +23,18 @@ Esto no aplica a las cuotas de administración que pagan los residentes (ver [fi
 | Medios automáticos | Tarjeta (crédito o débito, también débito empresarial), Nequi, Bancolombia (botón) y DaviPlata |
 | Pago manual | Checkout de Wompi: PSE (cualquier banco), tarjeta, Nequi, Bancolombia. Sin medio guardado |
 | Prueba | Sin medio de pago. Al activar se cobra el primer periodo desde hoy |
-| Valor | Unidades del día del cobro × precio por unidad (`quote()` en `@aptoph/shared`) |
+| Valor | Un solo plan, mensual: máx(50.000, unidades del día del cobro × 500) COP (`quote()` en `@aptoph/shared`) |
 | Renovación | Automática con el medio guardado, 24 h antes del fin del periodo. Aviso por correo 3 días antes |
 | Pago adelantado | Desde 7 días antes del fin (`PAY_AHEAD_DAYS`). El nuevo periodo empieza al final del anterior |
-| Recordatorios (manual) | Correo 7 y 3 días antes del fin con el enlace de pago y la opción anual (`MANUAL_REMINDER_DAYS`) |
+| Recordatorios (manual) | Correo 7 y 3 días antes del fin con el enlace de pago y el valor (`MANUAL_REMINDER_DAYS`) |
 | Vencido (manual) | Al terminar sin pago: `past_due`, correo "Tu plan venció" y 7 días de gracia |
-| Pago anual | Se sugiere primero a quien paga manual: un pago al año y 2 meses de ahorro |
 | Cobro rechazado | Reintentos 1, 3 y 5 días después del fin, con correo. Plan `past_due` |
 | Gracia | 7 días después del fin se puede seguir editando; luego solo lectura (`402`) |
 | Cancelar | Apagar la renovación: el plan sigue hasta el fin del periodo pagado, sin reembolsos |
 | Correos masivos | Cobro inmediato al medio guardado; sin medio, se paga en el checkout de Wompi |
 | Demo | El conjunto `demo` nunca llega a Wompi (`403`) |
 
+Tarifa en `packages/shared/src/billing.ts`: `PRICE_PER_UNIT`, `MINIMUM_MONTHLY`.
 Constantes en `packages/shared/src/payments.ts`: `RENEWAL_CHARGE_HOURS_BEFORE`,
 `RENEWAL_NOTICE_DAYS`, `RENEWAL_RETRY_DAYS`, `PAST_DUE_GRACE_DAYS`.
 
@@ -73,13 +73,13 @@ API ──▶ Wompi /transactions {payment_source_id, reference, signature} ─�
 Wompi ──▶ POST /webhooks/wompi (evento) ──▶ API consulta la transacción en Wompi ──▶ aplica
 ```
 
-- `app/services/wompi.ts`: único módulo que habla con Wompi. En pruebas se cambia por
+- `app/services/billing/wompi.ts`: único módulo que habla con Wompi. En pruebas se cambia por
   `tests/fake_wompi.ts` (`wompi.swap(fake)`).
-- `app/services/billing.ts`: medios de pago, cobros, aplicación y reintentos.
-- `app/services/billing_scheduler.ts`: cada 5 minutos (`start/scheduler.ts`) revisa cobros
+- `app/services/billing/billing.ts`: medios de pago, cobros, aplicación y reintentos.
+- `app/services/billing/billing_scheduler.ts`: cada 5 minutos (`start/scheduler.ts`) revisa cobros
   pendientes, envía avisos y cobra renovaciones.
-- `app/services/billing_notifications.ts`: comprobantes y avisos a la administración.
-- `app/controllers/webhooks/wompi_controller.ts`: eventos.
+- `app/services/billing/billing_notifications.ts`: comprobantes y avisos a la administración.
+- `app/controllers/billing/wompi_controller.ts`: eventos.
 
 ### Garantías
 
@@ -162,7 +162,7 @@ no cierra el cobro para siempre; si después llega uno aprobado, se reabre y se 
 | DELETE | `/billing/payment-method` | Quitar medio |
 | POST | `/billing/tokens/nequi` · `/daviplata` · `/daviplata/otp` · `/bancolombia` | Tokens que no se crean en el navegador |
 | GET | `/billing/tokens/:type/:tokenId` | Estado del token |
-| POST | `/billing/subscription/pay` `{ billingCycle }` | Pagar el plan: `{ charge, checkoutUrl }` (checkout si no hay medio) |
+| POST | `/billing/subscription/pay` | Pagar un mes del plan: `{ charge, checkoutUrl }` (checkout si no hay medio) |
 | PUT | `/billing/subscription/auto-renew` `{ enabled }` | Renovación automática |
 | GET | `/billing/charges/:id` | Estado de un cobro (consulta a Wompi si está pendiente) |
 | POST | `/email-quota/packs` `{ packs }` | Comprar correos: `{ charge, checkoutUrl }` |
@@ -182,7 +182,7 @@ PSE en el checkout de sandbox: el banco de pruebas permite elegir el resultado.
 
 Cualquier CVC de 3 dígitos y fecha futura. En sandbox no se mueve dinero real y la pantalla lo indica.
 
-Pruebas automáticas: `tests/functional/backoffice/billing.spec.ts` (Wompi falso en memoria).
+Pruebas automáticas: `tests/functional/billing/billing.spec.ts` (Wompi falso en memoria).
 
 ## 10. Paso a producción
 

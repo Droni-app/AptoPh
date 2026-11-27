@@ -37,7 +37,7 @@ todas). Solo cuentan las personas con una vinculación activa al conjunto.
 | Personal | Roles personal y vigilancia (sin torres) |
 
 La regla está dos veces y debe coincidir: `inAudience` (para filtrar lo que ve una persona) y
-`recipientsQuery` (SQL, para el reporte de lectura y el correo), en `app/services/announcements.ts`.
+`recipientsQuery` (SQL, para el reporte de lectura y el correo), en `app/services/announcements/announcements.ts`.
 La audiencia se calcula con los datos de hoy: si alguien se muda, el reporte se ajusta.
 
 ## 4. Lectura

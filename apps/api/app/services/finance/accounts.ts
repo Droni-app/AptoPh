@@ -1,5 +1,5 @@
-import type LedgerAccount from '#models/ledger_account'
-import LedgerAccountModel from '#models/ledger_account'
+import type LedgerAccount from '#models/finance/ledger_account'
+import LedgerAccountModel from '#models/finance/ledger_account'
 import type { Trx } from '#services/finance/support'
 
 /**

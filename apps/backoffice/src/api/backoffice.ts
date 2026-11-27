@@ -2,7 +2,6 @@ import type {
   ApiItem,
   BillingCharge,
   BillingConfig,
-  BillingCycle,
   BillingOverview,
   ChargeRequestResult,
   PaymentMethodInput,
@@ -143,11 +142,8 @@ export const billingApi = {
   tokenStatus: (type: 'nequi' | 'daviplata' | 'bancolombia_transfer', id: string) =>
     api<ApiItem<PaymentTokenStatus>>(`/api/v1/billing/tokens/${type}/${encodeURIComponent(id)}`),
   /** Charged to the saved method, or `checkoutUrl` (PSE, card, wallets) without one */
-  paySubscription: (billingCycle: BillingCycle) =>
-    api<ApiItem<ChargeRequestResult>>('/api/v1/billing/subscription/pay', {
-      method: 'POST',
-      body: { billingCycle },
-    }),
+  paySubscription: () =>
+    api<ApiItem<ChargeRequestResult>>('/api/v1/billing/subscription/pay', { method: 'POST' }),
   setAutoRenew: (enabled: boolean) =>
     api<ApiItem<BillingOverview>>('/api/v1/billing/subscription/auto-renew', {
       method: 'PUT',

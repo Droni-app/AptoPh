@@ -56,6 +56,23 @@ Para ejecutar comandos dentro de una app: `pnpm --filter @aptoph/api exec node a
 | Usuario / contraseña | Los de tu instalación local (`DB_USER` / `DB_PASSWORD` en `apps/api/.env`) |
 | Bases | `aptoph` (dev), `aptoph_test` (tests) |
 
+### API por módulos
+
+La API se organiza por módulo: `auth`, `tenants`, `property`, `finance`, `files`, `documents`,
+`amenities`, `announcements`, `tickets`, `gatehouse`, `billing` y `dashboard`.
+
+- **Migraciones:** `apps/api/database/migrations/<módulo>/`, una tabla por archivo y solo
+  `createTable`, con el esquema final. Mientras no haya datos que conservar, un cambio de esquema
+  se hace editando la migración de la tabla y recreando la base (`node ace migration:fresh --seed`),
+  no con `alterTable`. Las carpetas corren en el orden de `config/database.ts` (un módulo solo
+  referencia tablas de los anteriores); un módulo nuevo se agrega ahí.
+- **Código:** `app/<tipo>/<módulo>/…` (`controllers`, `models`, `services`, `validators`,
+  `transformers`, `mails`), p. ej. `#models/billing/subscription`. Los controladores de la app de
+  residentes llevan el prefijo `resident_`. Lo transversal queda en la raíz de cada tipo
+  (`#services/mailer`, `#validators/helpers`, `#transformers/helpers`).
+- **Pruebas:** `tests/functional/<módulo>/`; `tests/functional/resident/` prueba la app de
+  residentes completa.
+
 ## Correo (SMTP · Mailjet)
 
 Configurado con `@adonisjs/mail` en `apps/api/config/mail.ts`. Completa en `apps/api/.env`:
@@ -144,24 +161,17 @@ Detalles en [apps/landing/README.md](apps/landing/README.md).
 Precio por unidad privada al mes, antes de IVA, con todas las funciones (plan **Completo**).
 `packages/shared/src/billing.ts` es la única fuente para API, backoffice y landing:
 
-| Tamaño del conjunto | Precio por unidad |
-| --- | --- |
-| Hasta 200 unidades | $300 |
-| De 201 a 500 unidades | $400 |
-| Más de 500 unidades | $500 |
+Un solo plan (**Completo**), pago mensual: **$500 por unidad al mes**, sin importar el tamaño del
+conjunto, con un mínimo de **$50.000 al mes** (lo pagan los conjuntos de hasta 100 unidades). Sin IVA.
 
-Todas las unidades pagan el precio del tramo que corresponde al tamaño del conjunto. Mínimo $50.000
-al mes; el pago anual cuesta 10 meses (2 gratis). El plan **Empresarial** (administradoras con varias
-copropiedades) es a la medida.
-
-Flujo: landing (`#precios`) → `admin…/registro?plan=completo&unidades=…` (backoffice) →
+Flujo: landing (`#precios`) → `admin…/registro?unidades=…` (backoffice) →
 `POST /api/v1/auth/signup` crea usuario, conjunto (`trial`), rol de administración y suscripción de
 prueba por 30 días, envía el correo de bienvenida y devuelve la sesión iniciada → panel con la guía
 de primeros pasos. Desde **Plan** el administrador solicita la activación (llega
 un correo a `SALES_EMAIL`); tras recibir el pago:
 
 ```bash
-node ace subscription:activate <slug-del-conjunto> [--plan=completo] [--cycle=annual]
+node ace subscription:activate <slug-del-conjunto>   # activa o renueva un mes
 ```
 
 ## Despliegue (DigitalOcean App Platform)

@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import FieldException from '#exceptions/field_exception'
-import type Tenant from '#models/tenant'
+import type Tenant from '#models/tenants/tenant'
 import { type FinanceScope, withFinance } from '#services/finance/scope'
 import { todayFor } from '#services/finance/support'
 

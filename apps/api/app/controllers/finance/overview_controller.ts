@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { FinanceReports } from '#services/finance/reports'
 import { settingsOf, todayFor } from '#services/finance/support'
-import { financeSettingsValidator } from '#validators/finance'
+import { financeSettingsValidator } from '#validators/finance/finance'
 
 export default class OverviewController {
   /** GET /finance/summary */

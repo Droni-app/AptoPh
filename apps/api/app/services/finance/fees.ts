@@ -12,13 +12,13 @@ import {
   toCents,
 } from '@aptoph/shared'
 import FieldException from '#exceptions/field_exception'
-import Budget from '#models/budget'
-import ChargeConcept from '#models/charge_concept'
-import ContributionModuleUnit from '#models/contribution_module_unit'
-import FeeSchedule from '#models/fee_schedule'
-import RecurringCharge from '#models/recurring_charge'
-import type Tenant from '#models/tenant'
-import Unit from '#models/unit'
+import Budget from '#models/finance/budget'
+import ChargeConcept from '#models/finance/charge_concept'
+import ContributionModuleUnit from '#models/finance/contribution_module_unit'
+import FeeSchedule from '#models/finance/fee_schedule'
+import RecurringCharge from '#models/finance/recurring_charge'
+import type Tenant from '#models/tenants/tenant'
+import Unit from '#models/property/unit'
 import type { FinanceScope } from '#services/finance/scope'
 
 export type FeeInput = {

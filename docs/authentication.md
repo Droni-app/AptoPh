@@ -125,13 +125,13 @@ a `POST /api/v1/auth/logout` y borra el token local.
 
 | Archivo | Rol |
 | --- | --- |
-| `app/controllers/auth_controller.ts` | Login, registro y logout |
-| `app/validators/auth.ts`, `app/validators/signup.ts` | Validación de los formularios |
-| `app/services/signup_service.ts` | Alta del conjunto en una transacción |
-| `app/models/user.ts` | `User.accessTokens` (`DbAccessTokensProvider`, prefijo `oat_`) |
+| `app/controllers/auth/auth_controller.ts` | Login, registro y logout |
+| `app/validators/auth/auth.ts`, `app/validators/auth/signup.ts` | Validación de los formularios |
+| `app/services/auth/signup_service.ts` | Alta del conjunto en una transacción |
+| `app/models/auth/user.ts` | `User.accessTokens` (`DbAccessTokensProvider`, prefijo `oat_`) |
 | `config/auth.ts` | Guard `api` (tokens) y duración del token |
 | `app/middleware/tenant_middleware.ts` | Resolución del tenant activo |
-| `tests/functional/auth.spec.ts`, `tests/functional/signup.spec.ts` | Tests |
+| `tests/functional/auth/auth.spec.ts`, `tests/functional/auth/signup.spec.ts` | Tests |
 
 Seguridad:
 

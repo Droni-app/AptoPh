@@ -5,9 +5,9 @@ import { DateTime } from 'luxon'
 import { Exception } from '@adonisjs/core/exceptions'
 import { addMonths, fromCents, periodLabel, toCents } from '@aptoph/shared'
 import FieldException from '#exceptions/field_exception'
-import ContributionModuleUnit from '#models/contribution_module_unit'
-import RecurringCharge from '#models/recurring_charge'
-import type Tenant from '#models/tenant'
+import ContributionModuleUnit from '#models/finance/contribution_module_unit'
+import RecurringCharge from '#models/finance/recurring_charge'
+import type Tenant from '#models/tenants/tenant'
 import { type FeeInput, FeeCalculator } from '#services/finance/fees'
 import { isoDate } from '#services/finance/reports'
 import { todayFor } from '#services/finance/support'
@@ -16,14 +16,14 @@ import {
   serializeFeeSchedule,
   serializeModule,
   serializeRecurring,
-} from '#transformers/finance'
+} from '#transformers/finance/finance'
 import {
   contributionModuleValidator,
   endRecurringValidator,
   feeScheduleValidator,
   listRecurringValidator,
   recurringChargeValidator,
-} from '#validators/finance'
+} from '#validators/finance/finance'
 import { finance, normalizePeriod } from '#controllers/finance/helpers'
 
 type FeeBody = Awaited<ReturnType<typeof feeScheduleValidator.validate>>

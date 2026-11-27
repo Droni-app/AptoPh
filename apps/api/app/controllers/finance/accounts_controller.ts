@@ -1,18 +1,18 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { Exception } from '@adonisjs/core/exceptions'
 import FieldException from '#exceptions/field_exception'
-import type ChargeConcept from '#models/charge_concept'
-import JournalLine from '#models/journal_line'
-import LedgerAccount from '#models/ledger_account'
-import type Tenant from '#models/tenant'
+import type ChargeConcept from '#models/finance/charge_concept'
+import JournalLine from '#models/finance/journal_line'
+import LedgerAccount from '#models/finance/ledger_account'
+import type Tenant from '#models/tenants/tenant'
 import { accountKeysFor, parentCode } from '#services/finance/chart_template'
-import { serializeAccount, serializeConcept } from '#transformers/finance'
+import { serializeAccount, serializeConcept } from '#transformers/finance/finance'
 import {
   conceptValidator,
   ledgerAccountValidator,
   listAccountsValidator,
   updateLedgerAccountValidator,
-} from '#validators/finance'
+} from '#validators/finance/finance'
 
 /** Account auxiliaries the system creates itself */
 const MANAGED_PREFIXES = ['1105', '1110', '1120']

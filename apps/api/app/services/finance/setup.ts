@@ -1,6 +1,6 @@
-import type Tenant from '#models/tenant'
-import ChargeConcept from '#models/charge_concept'
-import LedgerAccount from '#models/ledger_account'
+import type Tenant from '#models/tenants/tenant'
+import ChargeConcept from '#models/finance/charge_concept'
+import LedgerAccount from '#models/finance/ledger_account'
 import {
   CHART_TEMPLATE,
   DEFAULT_CONCEPTS,

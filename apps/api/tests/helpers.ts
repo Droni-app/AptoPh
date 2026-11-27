@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import type { EnrollmentRole } from '@aptoph/shared'
-import Enrollment from '#models/enrollment'
-import Tenant from '#models/tenant'
-import User from '#models/user'
+import Enrollment from '#models/tenants/enrollment'
+import Tenant from '#models/tenants/tenant'
+import User from '#models/auth/user'
 
 /**
  * Creates a tenant and a user enrolled in it with the given role

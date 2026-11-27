@@ -1,4 +1,4 @@
-import type Tenant from '#models/tenant'
+import type Tenant from '#models/tenants/tenant'
 import type { FinanceSettings } from '@aptoph/shared'
 import { AccountBook } from '#services/finance/accounts'
 import { Ledger } from '#services/finance/ledger'

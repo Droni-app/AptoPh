@@ -1,0 +1,49 @@
+import { UserSchema } from '#database/schema'
+import hash from '@adonisjs/core/services/hash'
+import { compose } from '@adonisjs/core/helpers'
+import { hasMany } from '@adonisjs/lucid/orm'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import { type AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
+import { ACCESS_TOKEN_TTL } from '#config/auth'
+import Enrollment from '#models/tenants/enrollment'
+
+export default class User extends compose(UserSchema, withAuthFinder(hash)) {
+  static accessTokens = DbAccessTokensProvider.forModel(User, {
+    expiresIn: ACCESS_TOKEN_TTL,
+    prefix: 'oat_',
+  })
+  declare currentAccessToken?: AccessToken
+
+  @hasMany(() => Enrollment)
+  declare enrollments: HasMany<typeof Enrollment>
+
+  /** Invited users have no password until they accept the invitation */
+  get hasPassword() {
+    return Boolean(this.password)
+  }
+
+  /**
+   * Users without a password cannot sign in. Hashes anyway so the response takes
+   * as long as a wrong password (no hint that the account exists).
+   */
+  override async verifyPassword(plainPassword: string) {
+    if (!this.password) {
+      await hash.make(plainPassword)
+      return false
+    }
+    return super.verifyPassword(plainPassword)
+  }
+
+  get isBlocked() {
+    return this.status === 'blocked' || this.deletedAt !== null
+  }
+
+  get initials() {
+    const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')
+    if (first && last) {
+      return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
+    }
+    return `${first.slice(0, 2)}`.toUpperCase()
+  }
+}

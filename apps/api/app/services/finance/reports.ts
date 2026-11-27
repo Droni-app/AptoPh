@@ -1,6 +1,6 @@
 import db from '@adonisjs/lucid/services/db'
 import { type AccountClass, addMonths, fromCents, toCents } from '@aptoph/shared'
-import type Tenant from '#models/tenant'
+import type Tenant from '#models/tenants/tenant'
 import { parentCode } from '#services/finance/chart_template'
 import { todayFor } from '#services/finance/support'
 

@@ -58,7 +58,6 @@ export type SignupInput = {
   tenantName: string
   city: string
   units: number
-  plan: string
   fullName: string
   email: string
   phone: string

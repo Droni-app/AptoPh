@@ -2,7 +2,7 @@ import db from '@adonisjs/lucid/services/db'
 import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { DateTime } from 'luxon'
 import { financeSettings, type FinanceSettings } from '@aptoph/shared'
-import type Tenant from '#models/tenant'
+import type Tenant from '#models/tenants/tenant'
 
 export type Trx = TransactionClientContract
 

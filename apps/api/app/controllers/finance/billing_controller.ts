@@ -1,18 +1,18 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 import { fromCents, toCents } from '@aptoph/shared'
-import Charge from '#models/charge'
+import Charge from '#models/finance/charge'
 import { BillingService } from '#services/finance/billing'
 import { ChargeService } from '#services/finance/charges'
 import { todayFor } from '#services/finance/support'
-import { paginated, serializeCharge, serializePeriod } from '#transformers/finance'
+import { paginated, serializeCharge, serializePeriod } from '#transformers/finance/finance'
 import {
   createChargeValidator,
   creditNoteValidator,
   listChargesValidator,
   periodValidator,
   reasonValidator,
-} from '#validators/finance'
+} from '#validators/finance/finance'
 import { finance, normalizePeriod } from '#controllers/finance/helpers'
 
 /**

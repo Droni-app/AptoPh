@@ -3,14 +3,12 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { DuiAlert, DuiButton, DuiCheckbox, DuiForm, DuiInput, DuiLabel } from '@dronico/droni-kit'
 import {
+  MINIMUM_COVERS_UNITS,
   MINIMUM_MONTHLY,
-  PLANS,
-  PRICE_TIERS,
+  PRICE_PER_UNIT,
   TRIAL_DAYS,
   formatCop,
   quote,
-  tierFor,
-  tierLabel,
 } from '@aptoph/shared'
 import AuthShell from '@/components/AuthShell.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -22,10 +20,7 @@ const router = useRouter()
 const auth = useAuthStore()
 const tenant = useTenantStore()
 
-/** The landing links here with `?plan=completo&unidades=120` */
-const selfServe = PLANS.filter((plan) => plan.selfServe).map((plan) => plan.id as string)
-const queryPlan = String(route.query.plan ?? '')
-const plan = selfServe.includes(queryPlan) ? queryPlan : selfServe[0]!
+/** The landing links here with `?unidades=120` */
 const queryUnits = String(route.query.unidades ?? '')
 
 const form = ref({
@@ -43,15 +38,14 @@ const error = ref<string | null>(null)
 const loading = ref(false)
 
 const units = computed(() => Number(form.value.units) || 0)
-const estimate = computed(() => (units.value > 0 ? quote(units.value, 'monthly') : null))
-const currentTier = computed(() => (units.value > 0 ? tierFor(units.value) : null))
+const estimate = computed(() => (units.value > 0 ? quote(units.value) : null))
 
 async function submit() {
   loading.value = true
   errors.value = {}
   error.value = null
   try {
-    const session = await auth.signup({ ...form.value, units: units.value, plan })
+    const session = await auth.signup({ ...form.value, units: units.value })
     tenant.reset()
     await tenant.load()
     tenant.select(session.tenantId)
@@ -119,35 +113,21 @@ async function submit() {
         class="rounded-2xl bg-cream p-4 ring-1 ring-brand-900/5 dark:bg-white/5 dark:ring-white/10"
       >
         <p class="text-sm font-semibold text-brand-700 dark:text-white">
-          Precio por unidad privada al mes, después de la prueba
+          Después de la prueba:
+          <span class="tabular-nums">{{ formatCop(PRICE_PER_UNIT) }}</span> por unidad privada al
+          mes
         </p>
-        <ul class="mt-2 space-y-1 text-sm">
-          <li
-            v-for="tier in PRICE_TIERS"
-            :key="tier.pricePerUnit"
-            class="flex justify-between gap-3"
-            :class="
-              tier === currentTier
-                ? 'font-semibold text-mint-700 dark:text-mint-300'
-                : 'text-neutral-600 dark:text-neutral-300'
-            "
-          >
-            <span>{{ tierLabel(tier) }}</span>
-            <span class="tabular-nums">{{ formatCop(tier.pricePerUnit) }}</span>
-          </li>
-        </ul>
-        <p v-if="estimate" class="mt-3 text-sm text-ink dark:text-neutral-100">
+        <p v-if="estimate" class="mt-2 text-sm text-ink dark:text-neutral-100">
           Tu conjunto pagaría
-          <strong class="tabular-nums">{{ formatCop(estimate.monthly) }}</strong> al mes.
+          <strong class="tabular-nums">{{ formatCop(estimate.monthly) }}</strong> al mes<template
+            v-if="estimate.minimumApplied"
+          >
+            (el mínimo mensual)</template
+          >.
         </p>
         <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-          Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes. Pagando el año: 2 meses
-          gratis. ¿Administras varias copropiedades?
-          <a
-            href="mailto:contacto@aptoph.com?subject=Plan%20Empresarial%20AptoPH"
-            class="font-semibold text-mint-700 underline dark:text-mint-300"
-            >Habla con ventas</a
-          >.
+          Tarifa única, sin IVA. Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes (hasta
+          {{ MINIMUM_COVERS_UNITS.toLocaleString('es-CO') }} unidades).
         </p>
       </div>
 

@@ -1,11 +1,11 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import app from '@adonisjs/core/services/app'
-import Tenant from '#models/tenant'
-import User from '#models/user'
-import Enrollment from '#models/enrollment'
-import Building from '#models/building'
-import Unit from '#models/unit'
-import UnitOccupant from '#models/unit_occupant'
+import Tenant from '#models/tenants/tenant'
+import User from '#models/auth/user'
+import Enrollment from '#models/tenants/enrollment'
+import Building from '#models/property/building'
+import Unit from '#models/property/unit'
+import UnitOccupant from '#models/property/unit_occupant'
 
 /**
  * Development data: a demo tenant and users.

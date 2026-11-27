@@ -13,23 +13,19 @@ import {
   type TableColumn,
 } from '@dronico/droni-kit'
 import {
-  ANNUAL_BILLED_MONTHS,
   BILLING_CHARGE_STATUS_LABELS,
   MANUAL_REMINDER_DAYS,
+  MINIMUM_COVERS_UNITS,
   MINIMUM_MONTHLY,
   PAY_AHEAD_DAYS,
   PAYMENT_METHOD_TYPE_LABELS,
+  PLAN,
   PLAN_LABELS,
-  PRICE_TIERS,
   SUBSCRIPTION_STATUS_LABELS,
-  findPlan,
   formatCop,
   quote,
-  tierFor,
-  tierLabel,
   type BillingCharge,
   type BillingChargeStatus,
-  type BillingCycle,
   type BillingOverview,
 } from '@aptoph/shared'
 import EmailQuotaCard from '@/components/EmailQuotaCard.vue'
@@ -42,7 +38,7 @@ import { useSubscriptionStore } from '@/stores/subscription'
 import { useTenantStore } from '@/stores/tenant'
 
 /** Plan, payment method and payments to AptoPH with Wompi (docs/billing.md) */
-const SALES_EMAIL = 'contacto@aptoph.com'
+const CONTACT_EMAIL = 'contacto@aptoph.com'
 
 const route = useRoute()
 const router = useRouter()
@@ -51,7 +47,6 @@ const tenant = useTenantStore()
 const subscription = useSubscriptionStore()
 const loading = ref(true)
 const error = ref<string | null>(null)
-const cycle = ref<BillingCycle>('annual')
 const overview = ref<BillingOverview | null>(null)
 const methodModal = ref(false)
 const confirmingPay = ref(false)
@@ -89,10 +84,7 @@ async function refresh() {
 onMounted(async () => {
   try {
     await subscription.load(tenant.currentId!, true)
-    if (subscription.current) cycle.value = subscription.current.billingCycle
     await loadOverview()
-    // Manual payment (PSE): one payment a year is the easiest; it is suggested first
-    if (!method.value && subscription.current?.status !== 'active') cycle.value = 'annual'
   } catch (e) {
     error.value = errorMessage(e)
   } finally {
@@ -204,10 +196,7 @@ const status = computed(() => {
   }
 })
 
-const price = computed(() => quote(units.value, cycle.value))
-const currentTier = computed(() => tierFor(units.value))
-const mainPlan = findPlan('completo')
-const enterprise = findPlan('empresarial')
+const price = computed(() => quote(units.value))
 
 /** Paid and far from the end: the renewal takes care of it */
 const paidAhead = computed(() => {
@@ -220,7 +209,6 @@ const pendingPlan = computed(() =>
 )
 /** Charged to a saved method: Wompi answers in seconds. A checkout left open does not block */
 const hasPending = computed(() => !!pendingPlan.value && !pendingPlan.value.checkout)
-const annualQuote = computed(() => quote(units.value, 'annual'))
 const payLabel = computed(() => {
   const value = current.value
   if (value?.status === 'past_due' || value?.status === 'cancelled') return 'Pagar mi plan'
@@ -242,7 +230,7 @@ async function payManually() {
 async function pay() {
   paying.value = true
   try {
-    const { data } = await billingApi.paySubscription(cycle.value)
+    const { data } = await billingApi.paySubscription()
     if (data.checkoutUrl) {
       // Manual payment: PSE (any bank), card or wallet in Wompi; back to /plan?pago=<id>
       window.location.assign(data.checkoutUrl)
@@ -303,10 +291,6 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
   voided: 'neutral',
   expired: 'neutral',
 }
-
-function contactSales() {
-  window.location.href = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(`Plan Empresarial · ${tenant.current?.name ?? ''}`)}`
-}
 </script>
 
 <template>
@@ -324,7 +308,7 @@ function contactSales() {
   <DuiAlert v-else-if="!current" color="neutral" variant="soft">
     Este conjunto tiene un acuerdo administrado directamente con AptoPH. Para cambios en el plan
     escríbenos a
-    <a :href="`mailto:${SALES_EMAIL}`" class="font-medium underline">{{ SALES_EMAIL }}</a
+    <a :href="`mailto:${CONTACT_EMAIL}`" class="font-medium underline">{{ CONTACT_EMAIL }}</a
     >.
   </DuiAlert>
 
@@ -403,7 +387,7 @@ function contactSales() {
                 </p>
                 <p class="mt-1 text-neutral-500 dark:text-neutral-400">
                   Desde cualquier banco, también cuentas empresariales, sin guardar nada. Te
-                  recordamos antes de cada vencimiento. Ideal con el pago anual.
+                  recordamos antes de cada vencimiento.
                 </p>
                 <DuiButton
                   v-if="!paidAhead"
@@ -475,89 +459,44 @@ function contactSales() {
       </div>
     </DuiCard>
 
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-      <div
-        class="inline-flex rounded-lg border border-neutral-200 p-1 dark:border-white/10"
-        role="group"
-        aria-label="Ciclo de pago"
-      >
-        <button
-          v-for="option in ['monthly', 'annual'] as const"
-          :key="option"
-          type="button"
-          class="rounded-md px-4 py-1.5 text-sm font-medium transition"
-          :class="
-            cycle === option
-              ? 'bg-brand-700 text-white dark:bg-brand-400'
-              : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-white/5'
-          "
-          :aria-pressed="cycle === option"
-          @click="cycle = option"
-        >
-          {{ option === 'monthly' ? 'Mensual' : 'Anual' }}
-        </button>
-      </div>
-      <p class="text-sm text-mint-700 dark:text-mint-300">
-        <i class="mdi mdi-gift-outline" aria-hidden="true" />
-        Pago anual: pagas {{ ANNUAL_BILLED_MONTHS }} meses y recibes 12.
-      </p>
-    </div>
-
-    <div class="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+    <div class="max-w-3xl">
       <DuiCard class="ring-2 ring-mint-400">
         <div class="flex h-full flex-col">
           <div class="flex items-center justify-between gap-2">
-            <h3 class="text-lg font-semibold">Plan {{ mainPlan.name }}</h3>
+            <h3 class="text-lg font-semibold">Plan {{ PLAN.name }}</h3>
             <DuiBadge
-              v-if="current.plan === mainPlan.id"
+              v-if="current.plan === PLAN.id"
               label="Tu plan"
               color="primary"
               size="sm"
               variant="soft"
             />
           </div>
-          <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{{ mainPlan.tagline }}</p>
+          <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{{ PLAN.tagline }}</p>
 
           <p class="mt-5 text-4xl font-semibold tabular-nums">
             {{ formatCop(price.pricePerUnit) }}
             <span class="text-base font-normal text-neutral-500">por unidad al mes</span>
           </p>
           <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            Para tus {{ units.toLocaleString('es-CO') }} unidades<template v-if="cycle === 'annual'"
-              >, pagando el año</template
-            >.
+            Tarifa única, sin importar el tamaño del conjunto. Mínimo
+            {{ formatCop(MINIMUM_MONTHLY) }} al mes (hasta
+            {{ MINIMUM_COVERS_UNITS.toLocaleString('es-CO') }} unidades).
           </p>
 
-          <ul
-            class="mt-5 divide-y divide-neutral-200 rounded-lg border border-neutral-200 text-sm dark:divide-white/10 dark:border-white/10"
+          <div
+            class="mt-5 flex items-center justify-between gap-3 rounded-lg border border-neutral-200 px-3 py-2 text-sm dark:border-white/10"
           >
-            <li
-              v-for="tier in PRICE_TIERS"
-              :key="tier.pricePerUnit"
-              class="flex items-center justify-between gap-3 px-3 py-2"
-              :class="tier === currentTier ? 'bg-mint-50 font-medium dark:bg-mint-400/10' : ''"
-            >
-              <span>
-                {{ tierLabel(tier) }}
-                <span
-                  v-if="tier === currentTier"
-                  class="ml-1 text-xs font-semibold text-mint-700 dark:text-mint-300"
-                  >· tu conjunto</span
-                >
-              </span>
-              <span class="tabular-nums">{{ formatCop(tier.pricePerUnit) }} / unidad</span>
-            </li>
-          </ul>
-          <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-            Total estimado: {{ formatCop(price.total) }}
-            {{ cycle === 'annual' ? 'al año' : 'al mes'
-            }}<template v-if="cycle === 'annual'">
-              (ahorras {{ formatCop(price.annualSavings) }})</template
-            >. Mínimo {{ formatCop(MINIMUM_MONTHLY) }} al mes.
-          </p>
+            <span>
+              {{ units.toLocaleString('es-CO') }} unidades
+              <template v-if="price.minimumApplied">· mínimo mensual</template>
+              <template v-else>× {{ formatCop(price.pricePerUnit) }}</template>
+            </span>
+            <span class="font-medium tabular-nums">{{ formatCop(price.total) }} al mes</span>
+          </div>
 
           <ul class="mt-5 grid flex-1 gap-2 text-sm sm:grid-cols-2">
-            <li v-for="feature in mainPlan.features" :key="feature" class="flex gap-2">
+            <li v-for="feature in PLAN.features" :key="feature" class="flex gap-2">
               <i class="mdi mdi-check text-mint-600 dark:text-mint-300" aria-hidden="true" />
               <span>{{ feature }}</span>
             </li>
@@ -578,42 +517,18 @@ function contactSales() {
             >
               <p v-if="method">
                 Se cobrarán <strong>{{ formatCop(price.total) }}</strong> a
-                <strong>{{ method.label }}</strong> por
-                {{ cycle === 'annual' ? '12 meses' : '1 mes' }} del plan {{ mainPlan.name }} ({{
+                <strong>{{ method.label }}</strong> por 1 mes del plan {{ PLAN.name }} ({{
                   units.toLocaleString('es-CO')
                 }}
                 unidades). Después se renueva automáticamente; puedes apagarlo cuando quieras.
               </p>
               <template v-else>
                 <p>
-                  Pagarás <strong>{{ formatCop(price.total) }}</strong> por
-                  {{ cycle === 'annual' ? '12 meses' : '1 mes' }} del plan {{ mainPlan.name }} ({{
-                    units.toLocaleString('es-CO')
-                  }}
-                  unidades) en Wompi con <strong>PSE desde cualquier banco</strong>, tarjeta de
-                  crédito o débito, Nequi o Bancolombia. No guardamos el medio de pago: te
-                  recordaremos por correo {{ MANUAL_REMINDER_DAYS.join(' y ') }} días antes del
-                  siguiente vencimiento.
-                </p>
-                <div
-                  v-if="cycle === 'monthly'"
-                  class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-mint-50 p-3 text-mint-900 dark:bg-mint-400/10 dark:text-mint-100"
-                >
-                  <p>
-                    <i class="mdi mdi-gift-outline" aria-hidden="true" />
-                    <strong>Paga el año y olvídate de pagar cada mes:</strong>
-                    {{ formatCop(annualQuote.total) }} por 12 meses, ahorras
-                    {{ formatCop(annualQuote.annualSavings) }}.
-                  </p>
-                  <DuiButton size="sm" color="primary" variant="soft" @click="cycle = 'annual'"
-                    >Cambiar a anual</DuiButton
-                  >
-                </div>
-                <p v-else class="text-mint-700 dark:text-mint-300">
-                  <i class="mdi mdi-check-circle-outline" aria-hidden="true" />
-                  Un solo pago al año, con {{ 12 - ANNUAL_BILLED_MONTHS }} meses de ahorro ({{
-                    formatCop(annualQuote.annualSavings)
-                  }}).
+                  Pagarás <strong>{{ formatCop(price.total) }}</strong> por 1 mes del plan
+                  {{ PLAN.name }} ({{ units.toLocaleString('es-CO') }} unidades) en Wompi con
+                  <strong>PSE desde cualquier banco</strong>, tarjeta de crédito o débito, Nequi o
+                  Bancolombia. No guardamos el medio de pago: te recordaremos por correo
+                  {{ MANUAL_REMINDER_DAYS.join(' y ') }} días antes del siguiente vencimiento.
                 </p>
                 <p v-if="pendingPlan?.checkout" class="text-xs text-neutral-500">
                   Tienes un pago abierto en Wompi. Si ya pagaste con PSE y el banco aún no lo
@@ -655,33 +570,11 @@ function contactSales() {
           </template>
         </div>
       </DuiCard>
-
-      <DuiCard>
-        <div class="flex h-full flex-col">
-          <h3 class="text-lg font-semibold">{{ enterprise.name }}</h3>
-          <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {{ enterprise.tagline }}
-          </p>
-          <p class="mt-5 text-3xl font-semibold">A la medida</p>
-          <p v-if="enterprise.includesFrom" class="mt-5 text-sm font-medium">
-            {{ enterprise.includesFrom }}
-          </p>
-          <ul class="mt-3 flex-1 space-y-2 text-sm">
-            <li v-for="feature in enterprise.features" :key="feature" class="flex gap-2">
-              <i class="mdi mdi-check text-mint-600 dark:text-mint-300" aria-hidden="true" />
-              <span>{{ feature }}</span>
-            </li>
-          </ul>
-          <DuiButton class="mt-6" block color="neutral" variant="outline" @click="contactSales">
-            Hablar con ventas
-          </DuiButton>
-        </div>
-      </DuiCard>
     </div>
 
     <p class="mt-6 text-sm text-neutral-500 dark:text-neutral-400">
-      El precio por unidad depende del tamaño del conjunto y se ajusta si cambia el número de
-      unidades. Los pagos se procesan con Wompi; te enviamos el comprobante por correo.
+      El valor se calcula con las unidades del día del cobro, así que se ajusta si cambia el número
+      de unidades. Los pagos se procesan con Wompi; te enviamos el comprobante por correo.
       <span v-if="!tenant.canManage">Solo la administración puede pagar el plan.</span>
     </p>
 

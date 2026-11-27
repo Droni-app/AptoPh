@@ -1,8 +1,8 @@
 import { Exception } from '@adonisjs/core/exceptions'
 import type { BankAccountKind, CashAccountType } from '@aptoph/shared'
 import FieldException from '#exceptions/field_exception'
-import CashAccount from '#models/cash_account'
-import LedgerAccount from '#models/ledger_account'
+import CashAccount from '#models/finance/cash_account'
+import LedgerAccount from '#models/finance/ledger_account'
 import type { FinanceScope } from '#services/finance/scope'
 
 /** Parent subaccount of the auxiliaries of each kind of account */
