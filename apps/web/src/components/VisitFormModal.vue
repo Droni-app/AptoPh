@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import {
-  UiAlert,
-  UiButton,
-  UiForm,
-  UiInput,
-  UiLabel,
-  UiModal,
-  UiSelect,
-} from '@aptoph/ui'
+import { UiAlert, UiButton, UiForm, UiInput, UiLabel, UiModal, UiSelect } from '@aptoph/ui'
 import { VISIT_TYPES, VISIT_TYPE_LABELS, type ResidentVisit, type VisitType } from '@aptoph/shared'
 import UnitPicker from '@/components/UnitPicker.vue'
 import { residentApi } from '@/api/resident'
@@ -16,6 +8,8 @@ import { useSubmit } from '@/composables/useSubmit'
 import { todayInput, toIsoInstant } from '@/lib/format'
 import { useUnitsStore } from '@/stores/units'
 
+/** Preselected unit (from a unit's page) */
+const props = defineProps<{ unitId?: string }>()
 const open = defineModel<boolean>({ required: true })
 const emit = defineEmits<{ saved: [visit: ResidentVisit] }>()
 
@@ -34,7 +28,7 @@ function nextHour() {
 }
 
 const empty = () => ({
-  unitId: units.home?.units[0]?.id ?? '',
+  unitId: props.unitId ?? units.home?.units[0]?.id ?? '',
   visitorName: '',
   visitorDocument: '',
   vehiclePlate: '',

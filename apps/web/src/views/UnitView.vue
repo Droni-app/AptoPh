@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import {
   UiAlert,
   UiBadge,
@@ -9,6 +9,7 @@ import {
   UiDropdown,
   UiDropdownItem,
   UiSkeleton,
+  UiTabs,
 } from '@aptoph/ui'
 import {
   CHARGE_STATUS_LABELS,
@@ -21,6 +22,9 @@ import {
   VEHICLE_TYPE_LABELS,
   PARKING_OWNERSHIP_LABELS,
   VEHICLE_OWNER_RELATIONSHIP_LABELS,
+  VISIT_TYPE_LABELS,
+  type ResidentVisit,
+  type VisitStatus,
   type HouseholdMember,
   type ResidentPayment,
   type ResidentPet,
@@ -37,6 +41,7 @@ import PetFormModal from '@/components/PetFormModal.vue'
 import ReportPaymentModal from '@/components/ReportPaymentModal.vue'
 import PaymentReceipts from '@/components/payments/PaymentReceipts.vue'
 import VehicleFormModal from '@/components/VehicleFormModal.vue'
+import VisitFormModal from '@/components/VisitFormModal.vue'
 import { residentApi } from '@/api/resident'
 import { useSubmit } from '@/composables/useSubmit'
 import { ApiError } from '@/lib/http'
@@ -53,6 +58,7 @@ import {
 import { useTenantStore } from '@/stores/tenant'
 
 const route = useRoute()
+const router = useRouter()
 const tenant = useTenantStore()
 const unit = ref<ResidentUnitDetail | null>(null)
 const error = ref<string | null>(null)
@@ -92,6 +98,85 @@ async function load() {
   } catch (e) {
     if (e instanceof ApiError && e.status === 404) notFound.value = true
     else error.value = errorMessage(e, 'No pudimos cargar la unidad')
+  }
+}
+
+/**
+ * Sections of the unit, one at a time (?seccion=… keeps it on reload and
+ * lets other pages link straight to one).
+ */
+const SECTIONS = ['pagos', 'hogar', 'vehiculos', 'mascotas', 'visitas', 'datos'] as const
+type Section = (typeof SECTIONS)[number]
+const sectionOf = (value: unknown): Section =>
+  SECTIONS.includes(value as Section) ? (value as Section) : 'pagos'
+const section = ref<Section>(sectionOf(route.query.seccion))
+watch(section, (value) => {
+  void router.replace({ query: { ...route.query, seccion: value === 'pagos' ? undefined : value } })
+  if (value === 'visitas' && !visits.value) void loadVisits()
+})
+watch(
+  () => route.query.seccion,
+  (value) => (section.value = sectionOf(value)),
+)
+const sections = computed(() => {
+  const u = unit.value
+  const count = (n: number | undefined) => n || undefined
+  return [
+    {
+      label: 'Pagos',
+      value: 'pagos',
+      icon: 'mdi mdi-cash-multiple',
+      badge: count(u?.openCharges.length),
+    },
+    {
+      label: 'Hogar',
+      value: 'hogar',
+      icon: 'mdi mdi-account-group-outline',
+      badge: count(u?.household.length),
+    },
+    {
+      label: 'Vehículos',
+      value: 'vehiculos',
+      icon: 'mdi mdi-car-outline',
+      badge: count(u?.vehicles.length),
+    },
+    { label: 'Mascotas', value: 'mascotas', icon: 'mdi mdi-paw', badge: count(u?.pets.length) },
+    {
+      label: 'Visitas',
+      value: 'visitas',
+      icon: 'mdi mdi-account-clock-outline',
+      badge: count(upcomingVisits.value.length),
+    },
+    { label: 'Datos', value: 'datos', icon: 'mdi mdi-information-outline' },
+  ]
+})
+
+// Visits of this unit (the gate page has the ones of every unit)
+const visits = ref<ResidentVisit[] | null>(null)
+const visitModal = ref(false)
+const VISIT_STATUS: Record<
+  VisitStatus,
+  { label: string; color: 'primary' | 'success' | 'neutral' | 'warning' }
+> = {
+  expected: { label: 'Autorizada', color: 'primary' },
+  inside: { label: 'En el conjunto', color: 'success' },
+  completed: { label: 'Finalizada', color: 'neutral' },
+  expired: { label: 'No llegó', color: 'warning' },
+}
+const upcomingVisits = computed(() =>
+  (visits.value ?? []).filter((v) => v.status === 'expected' || v.status === 'inside'),
+)
+const pastVisits = computed(() =>
+  (visits.value ?? [])
+    .filter((v) => v.status === 'completed' || v.status === 'expired')
+    .slice(0, 10),
+)
+async function loadVisits() {
+  try {
+    const { data } = await residentApi.visits.list()
+    visits.value = data.filter((visit) => visit.unit.id === String(route.params.id))
+  } catch {
+    visits.value = []
   }
 }
 
@@ -140,6 +225,7 @@ const paymentColor = (status: ResidentPayment['status']) =>
 onMounted(() => {
   load()
   loadFinance()
+  loadVisits()
 })
 
 // Editing: one modal per kind, plus a shared delete confirmation
@@ -250,31 +336,14 @@ const removeMember = (member: HouseholdMember) =>
       </template>
     </PageHeader>
 
-    <UiCard class="mb-8">
-      <dl class="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
-        <div>
-          <dt class="text-neutral-500 dark:text-neutral-300">Estado</dt>
-          <dd class="mt-1 font-medium">{{ UNIT_STATUS_LABELS[unit.status] }}</dd>
-        </div>
-        <div>
-          <dt class="text-neutral-500 dark:text-neutral-300">Piso</dt>
-          <dd class="mt-1 font-medium">{{ unit.floor ?? '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-neutral-500 dark:text-neutral-300">Área privada</dt>
-          <dd class="mt-1 font-medium tabular-nums">{{ formatArea(unit.privateArea) }}</dd>
-        </div>
-        <div>
-          <dt class="text-neutral-500 dark:text-neutral-300">Coeficiente de copropiedad</dt>
-          <dd class="mt-1 font-medium tabular-nums">
-            {{ formatCoefficient(unit.ownershipCoefficient) }}
-          </dd>
-        </div>
-      </dl>
-    </UiCard>
+    <div
+      class="sticky top-16 z-20 -mx-4 mb-6 bg-neutral-50/95 px-4 pt-1 backdrop-blur-md sm:-mx-6 sm:px-6 dark:bg-neutral-950/90"
+    >
+      <UiTabs v-model="section" :tabs="sections" aria-label="Secciones de la unidad" />
+    </div>
 
-    <!-- Estado de cuenta -->
-    <section aria-labelledby="account-title" class="mb-8">
+    <!-- Pagos: estado de cuenta, cobros, pagos y movimientos -->
+    <section v-if="section === 'pagos'" aria-labelledby="account-title">
       <h2 id="account-title" class="mb-3 text-lg font-semibold">Estado de cuenta</h2>
       <div class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <div class="col-span-2 rounded-2xl bg-neutral-900 p-4 text-white sm:col-span-1 sm:p-5">
@@ -501,9 +570,9 @@ const removeMember = (member: HouseholdMember) =>
       @saved="afterReport"
     />
 
-    <div class="grid gap-8 lg:grid-cols-2">
+    <div>
       <!-- Hogar -->
-      <section aria-labelledby="household-title" class="lg:row-span-2">
+      <section v-if="section === 'hogar'" aria-labelledby="household-title">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="household-title" class="text-lg font-semibold">Quiénes viven aquí</h2>
           <UiButton
@@ -582,7 +651,7 @@ const removeMember = (member: HouseholdMember) =>
       </section>
 
       <!-- Vehículos -->
-      <section aria-labelledby="vehicles-title">
+      <section v-if="section === 'vehiculos'" aria-labelledby="vehicles-title">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="vehicles-title" class="text-lg font-semibold">Vehículos</h2>
           <UiButton size="sm" variant="outline" @click="editVehicle(null)">
@@ -674,7 +743,7 @@ const removeMember = (member: HouseholdMember) =>
       </section>
 
       <!-- Parqueaderos -->
-      <section v-if="unit.parkingSpots.length" aria-labelledby="parking-title">
+      <section v-if="section === 'vehiculos'" aria-labelledby="parking-title" class="mt-8">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="parking-title" class="text-lg font-semibold">Parqueaderos</h2>
           <RouterLink
@@ -683,7 +752,10 @@ const removeMember = (member: HouseholdMember) =>
             >Sorteo de cupos</RouterLink
           >
         </div>
-        <ul class="grid gap-3 sm:grid-cols-2">
+        <p v-if="!unit.parkingSpots.length" class="text-sm text-neutral-500 dark:text-neutral-300">
+          La unidad no tiene parqueadero propio ni asignado.
+        </p>
+        <ul v-else class="grid gap-3 sm:grid-cols-2">
           <li
             v-for="spot in unit.parkingSpots"
             :key="spot.id"
@@ -726,7 +798,7 @@ const removeMember = (member: HouseholdMember) =>
       </section>
 
       <!-- Mascotas -->
-      <section aria-labelledby="pets-title">
+      <section v-if="section === 'mascotas'" aria-labelledby="pets-title">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="pets-title" class="text-lg font-semibold">Mascotas</h2>
           <UiButton size="sm" variant="outline" @click="editPet(null)">
@@ -780,6 +852,129 @@ const removeMember = (member: HouseholdMember) =>
           </li>
         </ul>
       </section>
+
+      <!-- Visitas -->
+      <section v-if="section === 'visitas'" aria-labelledby="visits-title">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 id="visits-title" class="text-lg font-semibold">Visitas</h2>
+          <UiButton size="sm" variant="outline" @click="visitModal = true">
+            <span class="mr-1" aria-hidden="true"><i class="mdi mdi-plus" /></span>Autorizar
+          </UiButton>
+        </div>
+        <div v-if="!visits" class="space-y-2">
+          <UiSkeleton height="4rem" variant="rounded" />
+          <UiSkeleton height="4rem" variant="rounded" />
+        </div>
+        <EmptyState
+          v-else-if="visits.length === 0"
+          art="sin-resultados"
+          title="Sin visitas"
+          description="Autoriza una visita y portería la verá con su código de acceso."
+        />
+        <template v-else>
+          <ul
+            v-if="upcomingVisits.length"
+            class="divide-y divide-neutral-100 rounded-2xl border border-neutral-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-neutral-900"
+          >
+            <li v-for="visit in upcomingVisits" :key="visit.id" class="flex items-center gap-3 p-4">
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-medium">{{ visit.visitorName }}</p>
+                <p class="text-sm text-neutral-500 dark:text-neutral-300">
+                  {{
+                    [
+                      VISIT_TYPE_LABELS[visit.type],
+                      visit.checkedInAt
+                        ? `Entró ${formatDateTime(visit.checkedInAt)}`
+                        : visit.expectedAt
+                          ? formatDateTime(visit.expectedAt)
+                          : null,
+                      visit.vehiclePlate,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')
+                  }}
+                </p>
+              </div>
+              <span
+                v-if="visit.accessCode"
+                class="rounded-lg bg-neutral-100 px-2 py-1 font-mono text-sm font-semibold tracking-wider dark:bg-white/10"
+                >{{ visit.accessCode }}</span
+              >
+              <UiBadge
+                :label="VISIT_STATUS[visit.status].label"
+                :color="VISIT_STATUS[visit.status].color"
+                variant="soft"
+                size="sm"
+              />
+            </li>
+          </ul>
+          <p v-else class="text-sm text-neutral-500 dark:text-neutral-300">
+            No hay visitas autorizadas en este momento.
+          </p>
+          <template v-if="pastVisits.length">
+            <h3 class="mt-6 mb-2 text-sm font-semibold text-neutral-500 dark:text-neutral-300">
+              Recientes
+            </h3>
+            <ul
+              class="divide-y divide-neutral-100 rounded-2xl border border-neutral-100 bg-white text-sm dark:divide-white/10 dark:border-white/10 dark:bg-neutral-900"
+            >
+              <li
+                v-for="visit in pastVisits"
+                :key="visit.id"
+                class="flex items-center justify-between gap-3 px-4 py-3"
+              >
+                <span class="truncate">{{ visit.visitorName }}</span>
+                <span class="shrink-0 text-neutral-500 dark:text-neutral-300">{{
+                  visit.checkedInAt
+                    ? formatDateTime(visit.checkedInAt)
+                    : VISIT_STATUS[visit.status].label
+                }}</span>
+              </li>
+            </ul>
+          </template>
+        </template>
+        <RouterLink
+          :to="{ name: 'visits' }"
+          class="mt-4 inline-block text-sm font-medium text-mint-700 hover:underline dark:text-mint-300"
+          >Ver portería y paquetes</RouterLink
+        >
+      </section>
+
+      <!-- Datos -->
+      <section v-if="section === 'datos'" aria-labelledby="data-title">
+        <h2 id="data-title" class="mb-3 text-lg font-semibold">Datos de la unidad</h2>
+        <UiCard>
+          <dl class="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
+            <div>
+              <dt class="text-neutral-500 dark:text-neutral-300">Estado</dt>
+              <dd class="mt-1 font-medium">{{ UNIT_STATUS_LABELS[unit.status] }}</dd>
+            </div>
+            <div>
+              <dt class="text-neutral-500 dark:text-neutral-300">Piso</dt>
+              <dd class="mt-1 font-medium">{{ unit.floor ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt class="text-neutral-500 dark:text-neutral-300">Área privada</dt>
+              <dd class="mt-1 font-medium tabular-nums">{{ formatArea(unit.privateArea) }}</dd>
+            </div>
+            <div>
+              <dt class="text-neutral-500 dark:text-neutral-300">Coeficiente de copropiedad</dt>
+              <dd class="mt-1 font-medium tabular-nums">
+                {{ formatCoefficient(unit.ownershipCoefficient) }}
+              </dd>
+            </div>
+          </dl>
+        </UiCard>
+        <p class="mt-4 text-sm text-neutral-500 dark:text-neutral-300">
+          ¿Los datos de la unidad, el propietario o el estado de cuenta no son correctos?
+          <RouterLink
+            :to="{ name: 'tickets', query: { nueva: '1', unidad: unit.id } }"
+            class="font-medium text-mint-700 underline dark:text-mint-300"
+            >Radica una PQRS</RouterLink
+          >
+          y la administración los revisará.
+        </p>
+      </section>
     </div>
 
     <VehicleFormModal
@@ -789,6 +984,7 @@ const removeMember = (member: HouseholdMember) =>
       :allow-third-party="unit.allowThirdPartyVehicles"
       @saved="load"
     />
+    <VisitFormModal v-model="visitModal" :unit-id="unit.id" @saved="loadVisits" />
     <PetFormModal v-model="petModal" :unit-id="unit.id" :pet="editingPet" @saved="load" />
     <HouseholdMemberModal
       v-model="memberModal"
@@ -804,16 +1000,6 @@ const removeMember = (member: HouseholdMember) =>
       :loading="removing"
       @confirm="confirmRemove"
     />
-
-    <p class="mt-8 text-xs text-neutral-500 dark:text-neutral-300">
-      ¿Los datos de la unidad, el propietario o el estado de cuenta no son correctos?
-      <RouterLink
-        :to="{ name: 'tickets', query: { nueva: '1', unidad: unit.id } }"
-        class="font-medium text-mint-700 underline dark:text-mint-300"
-        >Radica una PQRS</RouterLink
-      >
-      y la administración los revisará.
-    </p>
   </template>
 
   <div v-else class="flex flex-col gap-4" aria-busy="true">
