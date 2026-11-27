@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { DuiCard } from '@dronico/droni-kit'
+import { UiCard } from '@aptoph/ui'
 import PageHeader from '@/components/PageHeader.vue'
 import ProfileForm from '@/components/account/ProfileForm.vue'
 import ChangePasswordForm from '@/components/account/ChangePasswordForm.vue'
@@ -19,23 +19,23 @@ const sessions = ref<InstanceType<typeof SessionsList> | null>(null)
   <EmailVerificationNotice class="mb-6" />
 
   <div class="grid gap-6 lg:grid-cols-2">
-    <DuiCard>
+    <UiCard>
       <h2 class="mb-4 text-lg font-semibold">Datos personales</h2>
       <ProfileForm />
-    </DuiCard>
+    </UiCard>
 
     <div class="flex flex-col gap-6">
-      <DuiCard>
+      <UiCard>
         <h2 class="mb-4 text-lg font-semibold">Contraseña</h2>
         <ChangePasswordForm @changed="sessions?.load()" />
-      </DuiCard>
-      <DuiCard>
+      </UiCard>
+      <UiCard>
         <h2 class="text-lg font-semibold">Sesiones abiertas</h2>
         <p class="mt-1 mb-4 text-sm text-neutral-500 dark:text-neutral-400">
           Si no reconoces un dispositivo, cierra su sesión y cambia tu contraseña.
         </p>
         <SessionsList ref="sessions" />
-      </DuiCard>
+      </UiCard>
     </div>
   </div>
 </template>

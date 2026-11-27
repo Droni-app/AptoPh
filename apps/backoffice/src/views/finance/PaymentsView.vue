@@ -2,13 +2,13 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiButton,
-  DuiInput,
-  DuiSelect,
-  DuiTable,
+  UiButton,
+  UiInput,
+  UiSelect,
+  UiTable,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUSES,
@@ -161,29 +161,29 @@ onMounted(load)
     subtitle="Pagos de las unidades y reportes de los residentes por confirmar"
   >
     <template #actions>
-      <DuiButton variant="outline" @click="exportCsv">
+      <UiButton variant="outline" @click="exportCsv">
         <span class="mr-1"><i class="mdi mdi-download" aria-hidden="true" /></span>Exportar
-      </DuiButton>
-      <DuiButton v-if="tenant.canManageFinance" color="primary" @click="formOpen = true">
+      </UiButton>
+      <UiButton v-if="tenant.canManageFinance" color="primary" @click="formOpen = true">
         <span class="mr-1"><i class="mdi mdi-cash-plus" aria-hidden="true" /></span>Registrar pago
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
   <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_12rem_10rem_10rem]">
-    <DuiInput
+    <UiInput
       v-model="filters.search"
       type="search"
       placeholder="Unidad, recibo o referencia"
       aria-label="Buscar"
       block
     />
-    <DuiSelect v-model="filters.status" :options="statusOptions" aria-label="Estado" block />
-    <DuiInput v-model="filters.from" type="date" aria-label="Desde" block />
-    <DuiInput v-model="filters.to" type="date" aria-label="Hasta" block />
+    <UiSelect v-model="filters.status" :options="statusOptions" aria-label="Estado" block />
+    <UiInput v-model="filters.from" type="date" aria-label="Desde" block />
+    <UiInput v-model="filters.to" type="date" aria-label="Hasta" block />
   </div>
 
-  <DuiTable
+  <UiTable
     :columns="columns"
     :rows="payments?.data ?? []"
     :loading="loading"
@@ -235,7 +235,7 @@ onMounted(load)
     <template #empty>
       <EmptyState title="No hay pagos con estos filtros" />
     </template>
-  </DuiTable>
+  </UiTable>
 
   <PaymentFormModal v-model="formOpen" @saved="load" />
   <PaymentDetailModal v-model="detailOpen" :payment-id="detailId" @changed="load" />

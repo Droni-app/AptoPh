@@ -2,14 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
-  DuiAlert,
-  DuiBadge,
-  DuiButton,
-  DuiCard,
-  DuiForm,
-  DuiSkeleton,
-  DuiTextarea,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiBadge,
+  UiButton,
+  UiCard,
+  UiForm,
+  UiSkeleton,
+  UiTextarea,
+} from '@aptoph/ui'
 import { TICKET_STATUS_LABELS, TICKET_TYPE_LABELS, type ResidentTicketDetail } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import { residentApi } from '@/api/resident'
@@ -60,15 +60,15 @@ onMounted(load)
     <span aria-hidden="true"><i class="mdi mdi-arrow-left" /></span> PQRS
   </RouterLink>
 
-  <DuiCard v-if="notFound">
+  <UiCard v-if="notFound">
     <p class="py-6 text-center font-medium">
       Esta solicitud no existe o no está asociada a tu cuenta.
     </p>
-  </DuiCard>
+  </UiCard>
 
   <div v-else-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
   <template v-else-if="ticket">
@@ -77,7 +77,7 @@ onMounted(load)
       :subtitle="`#${ticket.number} · ${TICKET_TYPE_LABELS[ticket.type]} · ${ticket.unit ? unitName(ticket.unit) : 'General'}`"
     >
       <template #actions>
-        <DuiBadge
+        <UiBadge
           :label="TICKET_STATUS_LABELS[ticket.status]"
           :color="TICKET_STATUS_COLORS[ticket.status]"
           variant="soft"
@@ -111,11 +111,11 @@ onMounted(load)
       </li>
     </ol>
 
-    <DuiCard v-if="ticket.status !== 'closed'" class="mt-6">
-      <DuiForm :loading="saving" @submit="send">
-        <DuiAlert v-if="replyError" color="danger" variant="soft">{{ replyError }}</DuiAlert>
+    <UiCard v-if="ticket.status !== 'closed'" class="mt-6">
+      <UiForm :loading="saving" @submit="send">
+        <UiAlert v-if="replyError" color="danger" variant="soft">{{ replyError }}</UiAlert>
         <label for="reply" class="text-sm font-medium">Responder</label>
-        <DuiTextarea id="reply" v-model="reply" rows="3" autoheight maxlength="5000" required />
+        <UiTextarea id="reply" v-model="reply" rows="3" autoheight maxlength="5000" required />
         <p v-if="errors.body" class="text-sm text-red-600">{{ errors.body }}</p>
         <p
           v-if="ticket.status === 'resolved'"
@@ -124,20 +124,20 @@ onMounted(load)
           La solicitud está resuelta; si respondes, se reabrirá.
         </p>
         <div class="flex justify-end">
-          <DuiButton type="submit" color="primary" :loading="saving" :disabled="!reply.trim()"
-            >Enviar</DuiButton
+          <UiButton type="submit" color="primary" :loading="saving" :disabled="!reply.trim()"
+            >Enviar</UiButton
           >
         </div>
-      </DuiForm>
-    </DuiCard>
+      </UiForm>
+    </UiCard>
     <p v-else class="mt-6 text-sm text-neutral-500 dark:text-neutral-300">
       Esta solicitud está cerrada. Si necesitas algo más, radica una nueva.
     </p>
   </template>
 
   <div v-else class="flex flex-col gap-4" aria-busy="true">
-    <DuiSkeleton width="18rem" height="2rem" />
-    <DuiSkeleton height="6rem" variant="rounded" />
-    <DuiSkeleton height="4rem" variant="rounded" />
+    <UiSkeleton width="18rem" height="2rem" />
+    <UiSkeleton height="6rem" variant="rounded" />
+    <UiSkeleton height="4rem" variant="rounded" />
   </div>
 </template>

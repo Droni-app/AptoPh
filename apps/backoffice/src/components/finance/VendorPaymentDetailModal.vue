@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiModal, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiModal, UiSkeleton, useToast } from '@aptoph/ui'
 import { PAYMENT_METHOD_LABELS, type VendorPayment } from '@aptoph/shared'
 import StatusBadge from '@/components/finance/StatusBadge.vue'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
@@ -50,13 +50,13 @@ async function reverse(reason: string) {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="payment ? `Comprobante de egreso ${payment.number}` : 'Egreso'"
     size="md"
   >
-    <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-    <DuiSkeleton v-else-if="!payment" class="h-40 rounded-xl" />
+    <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+    <UiSkeleton v-else-if="!payment" class="h-40 rounded-xl" />
     <div v-else class="flex flex-col gap-5 text-sm">
       <div class="flex items-start justify-between gap-4">
         <div>
@@ -93,8 +93,8 @@ async function reverse(reason: string) {
         </ul>
       </section>
       <p v-if="payment.notes">{{ payment.notes }}</p>
-      <DuiAlert v-if="payment.reversalReason" color="warning" variant="soft"
-        >Reversado: {{ payment.reversalReason }}</DuiAlert
+      <UiAlert v-if="payment.reversalReason" color="warning" variant="soft"
+        >Reversado: {{ payment.reversalReason }}</UiAlert
       >
       <AttachmentList
         owner-type="vendor_payment"
@@ -104,12 +104,12 @@ async function reverse(reason: string) {
     </div>
     <template v-if="payment?.status === 'confirmed' && tenant.canManageFinance" #footer>
       <div class="flex justify-end">
-        <DuiButton variant="ghost" color="danger" @click="reverseOpen = true"
-          >Reversar egreso</DuiButton
+        <UiButton variant="ghost" color="danger" @click="reverseOpen = true"
+          >Reversar egreso</UiButton
         >
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
   <ReasonDialog
     v-model="reverseOpen"
     title="Reversar egreso"

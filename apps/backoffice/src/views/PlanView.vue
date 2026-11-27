@@ -2,16 +2,16 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiAlert,
-  DuiBadge,
-  DuiButton,
-  DuiCard,
-  DuiSkeleton,
-  DuiSwitch,
-  DuiTable,
+  UiAlert,
+  UiBadge,
+  UiButton,
+  UiCard,
+  UiSkeleton,
+  UiSwitch,
+  UiTable,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   BILLING_CHARGE_STATUS_LABELS,
   MANUAL_REMINDER_DAYS,
@@ -296,29 +296,29 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
 <template>
   <PageHeader title="Plan y facturación" :subtitle="tenant.current?.name" />
 
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-6">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-6">{{ error }}</UiAlert>
 
   <template v-if="loading">
-    <DuiSkeleton height="6rem" class="mb-6" />
+    <UiSkeleton height="6rem" class="mb-6" />
     <div class="grid gap-4 lg:grid-cols-3">
-      <DuiSkeleton v-for="n in 3" :key="n" height="22rem" />
+      <UiSkeleton v-for="n in 3" :key="n" height="22rem" />
     </div>
   </template>
 
-  <DuiAlert v-else-if="!current" color="neutral" variant="soft">
+  <UiAlert v-else-if="!current" color="neutral" variant="soft">
     Este conjunto tiene un acuerdo administrado directamente con AptoPH. Para cambios en el plan
     escríbenos a
     <a :href="`mailto:${CONTACT_EMAIL}`" class="font-medium underline">{{ CONTACT_EMAIL }}</a
     >.
-  </DuiAlert>
+  </UiAlert>
 
   <template v-else>
-    <DuiCard class="mb-6">
+    <UiCard class="mb-6">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="flex flex-wrap items-center gap-2">
             <h2 class="text-lg font-semibold">Plan {{ PLAN_LABELS[current.plan] }}</h2>
-            <DuiBadge
+            <UiBadge
               v-if="status"
               :label="status.label"
               :color="status.color"
@@ -333,13 +333,13 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
           </p>
         </div>
       </div>
-    </DuiCard>
+    </UiCard>
 
-    <DuiAlert v-if="processing" color="primary" variant="soft" class="mb-6">
+    <UiAlert v-if="processing" color="primary" variant="soft" class="mb-6">
       <i class="mdi mdi-loading mdi-spin" aria-hidden="true" /> {{ processing }}
-    </DuiAlert>
+    </UiAlert>
 
-    <DuiCard v-if="tenant.canManage" class="mb-6">
+    <UiCard v-if="tenant.canManage" class="mb-6">
       <div class="flex flex-col gap-4">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="min-w-0 flex-1">
@@ -374,9 +374,9 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
                   Guarda una tarjeta de <strong>crédito o débito</strong> (también débito
                   empresarial), Nequi, Bancolombia o DaviPlata y el plan se renueva solo.
                 </p>
-                <DuiButton class="mt-auto self-start" color="primary" @click="methodModal = true">
+                <UiButton class="mt-auto self-start" color="primary" @click="methodModal = true">
                   Activar pago automático
-                </DuiButton>
+                </UiButton>
               </div>
               <div
                 class="flex flex-col gap-3 rounded-lg border border-neutral-200 p-3 dark:border-white/10"
@@ -389,7 +389,7 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
                   Desde cualquier banco, también cuentas empresariales, sin guardar nada. Te
                   recordamos antes de cada vencimiento.
                 </p>
-                <DuiButton
+                <UiButton
                   v-if="!paidAhead"
                   class="mt-auto self-start"
                   color="primary"
@@ -397,7 +397,7 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
                   @click="payManually"
                 >
                   Pagar con PSE
-                </DuiButton>
+                </UiButton>
                 <p v-else class="mt-auto text-xs text-neutral-500">
                   Podrás pagar el siguiente periodo desde {{ PAY_AHEAD_DAYS }} días antes del
                   vencimiento.
@@ -406,21 +406,21 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
             </div>
           </div>
           <div v-if="method" class="flex gap-2">
-            <DuiButton
+            <UiButton
               v-if="method"
               variant="ghost"
               color="danger"
               :loading="removingMethod"
               @click="removeMethod"
-              >Quitar</DuiButton
+              >Quitar</UiButton
             >
-            <DuiButton
+            <UiButton
               :variant="method ? 'outline' : 'solid'"
               color="primary"
               @click="methodModal = true"
             >
               {{ method ? 'Cambiar' : 'Activar pago automático' }}
-            </DuiButton>
+            </UiButton>
           </div>
         </div>
 
@@ -428,7 +428,7 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
           v-if="method && overview"
           class="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-4 dark:border-white/10"
         >
-          <DuiSwitch
+          <UiSwitch
             :model-value="overview.autoRenew"
             :disabled="togglingRenew || !['active', 'past_due'].includes(current.status)"
             label="Renovación automática"
@@ -440,7 +440,7 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
             @update:model-value="setAutoRenew"
           />
         </div>
-        <DuiAlert
+        <UiAlert
           v-if="overview?.failedAttempts && current.status === 'past_due' && method"
           color="warning"
           variant="soft"
@@ -455,16 +455,16 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
             >Puedes seguir usando AptoPH hasta el {{ formatDate(overview.graceEndsAt) }}.</template
           >
           Cambia el medio de pago o paga ahora para evitar el bloqueo.
-        </DuiAlert>
+        </UiAlert>
       </div>
-    </DuiCard>
+    </UiCard>
 
     <div class="max-w-3xl">
-      <DuiCard class="ring-2 ring-mint-400">
+      <UiCard class="ring-2 ring-mint-400">
         <div class="flex h-full flex-col">
           <div class="flex items-center justify-between gap-2">
             <h3 class="text-lg font-semibold">Plan {{ PLAN.name }}</h3>
-            <DuiBadge
+            <UiBadge
               v-if="current.plan === PLAN.id"
               label="Tu plan"
               color="primary"
@@ -536,22 +536,22 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
                 </p>
               </template>
               <div class="flex flex-wrap justify-end gap-2">
-                <DuiButton
+                <UiButton
                   v-if="!method"
                   variant="ghost"
                   :disabled="paying"
                   @click="((confirmingPay = false), (methodModal = true))"
-                  >Prefiero pago automático</DuiButton
+                  >Prefiero pago automático</UiButton
                 >
-                <DuiButton variant="ghost" :disabled="paying" @click="confirmingPay = false"
-                  >Cancelar</DuiButton
+                <UiButton variant="ghost" :disabled="paying" @click="confirmingPay = false"
+                  >Cancelar</UiButton
                 >
-                <DuiButton color="primary" :loading="paying" @click="pay">
+                <UiButton color="primary" :loading="paying" @click="pay">
                   {{ method ? 'Confirmar pago' : 'Ir a pagar en Wompi' }}
-                </DuiButton>
+                </UiButton>
               </div>
             </div>
-            <DuiButton
+            <UiButton
               v-else
               class="mt-6"
               block
@@ -560,7 +560,7 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
               @click="startPay"
             >
               {{ hasPending ? 'Pago en proceso…' : payLabel }}
-            </DuiButton>
+            </UiButton>
             <p
               v-if="!method && !confirmingPay"
               class="mt-2 text-center text-xs text-neutral-500 dark:text-neutral-400"
@@ -569,7 +569,7 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
             </p>
           </template>
         </div>
-      </DuiCard>
+      </UiCard>
     </div>
 
     <p class="mt-6 text-sm text-neutral-500 dark:text-neutral-400">
@@ -578,9 +578,9 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
       <span v-if="!tenant.canManage">Solo la administración puede pagar el plan.</span>
     </p>
 
-    <DuiCard v-if="tenant.canManage && overview?.charges.length" class="mt-6">
+    <UiCard v-if="tenant.canManage && overview?.charges.length" class="mt-6">
       <h2 class="mb-3 text-lg font-semibold">Pagos</h2>
-      <DuiTable :columns="chargeColumns" :rows="overview.charges">
+      <UiTable :columns="chargeColumns" :rows="overview.charges">
         <template #createdAt="{ createdAt }">
           <span class="whitespace-nowrap">{{ dateTimeFormatter.format(new Date(createdAt)) }}</span>
         </template>
@@ -597,7 +597,7 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
           ><span class="tabular-nums">{{ formatCop(amount) }}</span></template
         >
         <template #status="row">
-          <DuiBadge
+          <UiBadge
             :label="BILLING_CHARGE_STATUS_LABELS[row.status as BillingChargeStatus]"
             :color="STATUS_COLORS[row.status as BillingChargeStatus]"
             variant="soft"
@@ -607,8 +607,8 @@ const STATUS_COLORS: Record<BillingChargeStatus, 'success' | 'warning' | 'danger
             row.statusMessage
           }}</span>
         </template>
-      </DuiTable>
-    </DuiCard>
+      </UiTable>
+    </UiCard>
   </template>
 
   <EmailQuotaCard

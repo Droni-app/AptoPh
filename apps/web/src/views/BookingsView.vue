@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { DuiAlert, DuiBadge, DuiButton, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiBadge, UiButton, UiSkeleton, useToast } from '@aptoph/ui'
 import {
   BOOKING_STATUS_LABELS,
   type BookingStatus,
@@ -98,20 +98,20 @@ onMounted(load)
 <template>
   <PageHeader title="Reservas" subtitle="Zonas comunes de tu conjunto" art="reservas">
     <template #actions>
-      <DuiButton color="primary" :disabled="!amenities?.length" @click="book(null)">
+      <UiButton color="primary" :disabled="!amenities?.length" @click="book(null)">
         <span class="mr-1" aria-hidden="true"><i class="mdi mdi-calendar-plus" /></span>Nueva
         reserva
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
   <div v-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
   <div v-else-if="!amenities || !bookings" class="grid gap-3 sm:grid-cols-2" aria-busy="true">
-    <DuiSkeleton v-for="n in 4" :key="n" height="7rem" variant="rounded" />
+    <UiSkeleton v-for="n in 4" :key="n" height="7rem" variant="rounded" />
   </div>
 
   <template v-else>
@@ -151,19 +151,19 @@ onMounted(load)
             </p>
           </div>
           <div class="flex items-center gap-2">
-            <DuiBadge
+            <UiBadge
               :label="BOOKING_STATUS_LABELS[booking.status]"
               :color="STATUS_COLORS[booking.status]"
               variant="soft"
               size="sm"
             />
-            <DuiButton
+            <UiButton
               v-if="booking.canCancel"
               size="sm"
               variant="ghost"
               color="danger"
               @click="askCancel(booking)"
-              >Cancelar</DuiButton
+              >Cancelar</UiButton
             >
           </div>
         </li>
@@ -212,8 +212,8 @@ onMounted(load)
                 .join(' · ')
             }}
           </p>
-          <DuiButton class="mt-4 self-start" size="sm" variant="outline" @click="book(amenity.id)"
-            >Reservar</DuiButton
+          <UiButton class="mt-4 self-start" size="sm" variant="outline" @click="book(amenity.id)"
+            >Reservar</UiButton
           >
         </li>
       </ul>

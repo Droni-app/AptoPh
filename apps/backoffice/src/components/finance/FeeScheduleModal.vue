@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   FEE_METHODS,
   FEE_METHOD_DESCRIPTIONS,
@@ -164,7 +164,7 @@ const changed = computed(
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Calcular cuotas"
     description="Reparte un valor mensual entre las unidades y deja las tarifas listas para facturar"
@@ -172,26 +172,26 @@ const changed = computed(
     :persistent="busy"
     scrollable
   >
-    <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
+    <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
 
     <form v-if="step === 'form'" class="flex flex-col gap-4" @submit.prevent="run('preview')">
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Concepto" required :error="errors.conceptId">
-          <DuiSelect v-model="form.conceptId" :options="conceptOptions" block />
-        </DuiLabel>
-        <DuiLabel
+        <UiLabel title="Concepto" required :error="errors.conceptId">
+          <UiSelect v-model="form.conceptId" :options="conceptOptions" block />
+        </UiLabel>
+        <UiLabel
           title="Desde el mes"
           required
           :error="errors.effectiveFrom"
           help-text="Reemplaza las tarifas vigentes de ese concepto"
         >
-          <DuiInput v-model="form.effectiveFrom" type="month" required />
-        </DuiLabel>
+          <UiInput v-model="form.effectiveFrom" type="month" required />
+        </UiLabel>
       </div>
 
-      <DuiLabel title="Cómo se reparte" required :help-text="FEE_METHOD_DESCRIPTIONS[form.method]">
-        <DuiSelect v-model="form.method" :options="methodOptions" block />
-      </DuiLabel>
+      <UiLabel title="Cómo se reparte" required :help-text="FEE_METHOD_DESCRIPTIONS[form.method]">
+        <UiSelect v-model="form.method" :options="methodOptions" block />
+      </UiLabel>
 
       <template v-if="usesTotal">
         <div class="flex gap-4 text-sm">
@@ -203,38 +203,38 @@ const changed = computed(
             aprobado</label
           >
         </div>
-        <DuiLabel
+        <UiLabel
           v-if="source === 'amount'"
           title="Total mensual a recaudar"
           required
           :error="errors.monthlyTotal"
         >
-          <DuiInput
+          <UiInput
             v-model="form.monthlyTotal"
             inputmode="decimal"
             placeholder="45.000.000"
             required
           />
-        </DuiLabel>
-        <DuiLabel
+        </UiLabel>
+        <UiLabel
           v-else
           title="Presupuesto"
           required
           :error="errors.budgetId"
           help-text="(Gastos + fondo de imprevistos − otros ingresos) ÷ 12"
         >
-          <DuiSelect v-model="form.budgetId" :options="budgetOptions" block />
-        </DuiLabel>
+          <UiSelect v-model="form.budgetId" :options="budgetOptions" block />
+        </UiLabel>
       </template>
 
       <div v-if="form.method === 'fixed_by_type'" class="grid gap-3 sm:grid-cols-3">
-        <DuiLabel v-for="type in UNIT_TYPES" :key="type" :title="UNIT_TYPE_LABELS[type]">
-          <DuiInput
+        <UiLabel v-for="type in UNIT_TYPES" :key="type" :title="UNIT_TYPE_LABELS[type]">
+          <UiInput
             v-model="form.amountsByType[type]"
             inputmode="decimal"
             placeholder="Sin cobro"
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
 
       <div v-if="form.method === 'module'" class="flex flex-col gap-2">
@@ -242,23 +242,23 @@ const changed = computed(
           Aún no hay módulos. Créalos en la pestaña <strong>Módulos</strong> con las unidades y su
           participación.
         </p>
-        <DuiLabel
+        <UiLabel
           v-for="module in modules"
           :key="module.id"
           :title="`${module.name} · ${module.unitsCount} unidades`"
         >
-          <DuiInput
+          <UiInput
             v-model="form.modules[module.id]"
             inputmode="decimal"
             placeholder="Total mensual del módulo"
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
 
       <fieldset v-if="form.method !== 'module'">
         <legend class="mb-2 text-sm font-medium">Tipos de unidad que pagan</legend>
         <div class="flex flex-wrap gap-x-5 gap-y-2">
-          <DuiCheckbox
+          <UiCheckbox
             v-for="type in UNIT_TYPES"
             :key="type"
             :model-value="form.unitTypes.includes(type)"
@@ -275,19 +275,19 @@ const changed = computed(
         <p class="mt-1 text-xs text-neutral-500">Sin selección: todas las unidades activas.</p>
       </fieldset>
 
-      <DuiCheckbox
+      <UiCheckbox
         v-if="form.method !== 'fixed_by_type'"
         v-model="form.mergeAnnexes"
         label="Sumar parqueaderos y depósitos anexos a su unidad principal (una sola cuota)"
       />
 
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Redondeo">
-          <DuiSelect v-model="form.rounding" :options="roundingOptions" block />
-        </DuiLabel>
-        <DuiLabel title="Sentido del redondeo">
-          <DuiSelect v-model="form.roundingMode" :options="roundingModeOptions" block />
-        </DuiLabel>
+        <UiLabel title="Redondeo">
+          <UiSelect v-model="form.rounding" :options="roundingOptions" block />
+        </UiLabel>
+        <UiLabel title="Sentido del redondeo">
+          <UiSelect v-model="form.roundingMode" :options="roundingModeOptions" block />
+        </UiLabel>
       </div>
     </form>
 
@@ -367,21 +367,21 @@ const changed = computed(
     <template #footer>
       <div class="flex w-full justify-end gap-2">
         <template v-if="step === 'form'">
-          <DuiButton variant="ghost" :disabled="busy" @click="open = false">Cancelar</DuiButton>
-          <DuiButton color="primary" :loading="busy" @click="run('preview')">Calcular</DuiButton>
+          <UiButton variant="ghost" :disabled="busy" @click="open = false">Cancelar</UiButton>
+          <UiButton color="primary" :loading="busy" @click="run('preview')">Calcular</UiButton>
         </template>
         <template v-else>
-          <DuiButton variant="ghost" :disabled="busy" @click="step = 'form'">Volver</DuiButton>
-          <DuiButton
+          <UiButton variant="ghost" :disabled="busy" @click="step = 'form'">Volver</UiButton>
+          <UiButton
             color="primary"
             :loading="busy"
             :disabled="!preview?.rows.length"
             @click="run('apply')"
           >
             Aplicar desde {{ formatPeriod(`${form.effectiveFrom}-01`).toLowerCase() }}
-          </DuiButton>
+          </UiButton>
         </template>
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 </template>

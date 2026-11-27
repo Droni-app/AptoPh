@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiBadge,
-  DuiButton,
-  DuiDropdown,
-  DuiDropdownItem,
-  DuiDropdownSeparator,
-  DuiInput,
-  DuiSelect,
-  DuiTable,
-  DuiTabs,
+  UiAlert,
+  UiBadge,
+  UiButton,
+  UiDropdown,
+  UiDropdownItem,
+  UiDropdownSeparator,
+  UiInput,
+  UiSelect,
+  UiTable,
+  UiTabs,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   ENROLLMENT_STATUS_LABELS,
   ROLE_LABELS,
@@ -203,28 +203,28 @@ onMounted(load)
 <template>
   <PageHeader title="Personas" subtitle="Quiénes tienen acceso al conjunto y con qué rol">
     <template #actions>
-      <DuiButton v-if="tenant.canManage" color="primary" @click="openForm(null)">
+      <UiButton v-if="tenant.canManage" color="primary" @click="openForm(null)">
         <span class="mdi mdi-account-plus-outline mr-1" aria-hidden="true" />Invitar
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
-  <DuiTabs v-model="group" :tabs="tabs" class="mb-4" aria-label="Grupo" />
+  <UiTabs v-model="group" :tabs="tabs" class="mb-4" aria-label="Grupo" />
 
   <div class="mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_16rem]">
-    <DuiInput
+    <UiInput
       v-model="search"
       type="search"
       placeholder="Buscar por nombre o correo"
       aria-label="Buscar por nombre o correo"
       block
     />
-    <DuiSelect v-model="status" :options="statusOptions" aria-label="Estado" block />
+    <UiSelect v-model="status" :options="statusOptions" aria-label="Estado" block />
   </div>
 
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
 
-  <DuiTable
+  <UiTable
     :columns="columns"
     :rows="result?.data ?? []"
     :loading="loading"
@@ -245,7 +245,7 @@ onMounted(load)
       <span class="block text-neutral-500">{{ user?.phone ?? '' }}</span>
     </template>
     <template #status="row">
-      <DuiBadge
+      <UiBadge
         :label="ENROLLMENT_STATUS_LABELS[row.status as Member['status']]"
         :color="statusColor[row.status as Member['status']]"
         variant="soft"
@@ -264,7 +264,7 @@ onMounted(load)
       </span>
     </template>
     <template #actions="row">
-      <DuiDropdown
+      <UiDropdown
         v-if="!isMe(row as Member) && row.status !== 'revoked'"
         placement="bottom-end"
         min-width="14rem"
@@ -275,37 +275,37 @@ onMounted(load)
             <i class="mdi mdi-dots-vertical" aria-hidden="true" />
           </span>
         </template>
-        <DuiDropdownItem
+        <UiDropdownItem
           icon="mdi mdi-pencil-outline"
           label="Editar cargo y fechas"
           @click="openForm(row as Member)"
         />
-        <DuiDropdownItem
+        <UiDropdownItem
           v-if="row.status === 'invited'"
           icon="mdi mdi-email-fast-outline"
           label="Reenviar invitación"
           @click="resend(row as Member)"
         />
-        <DuiDropdownItem
+        <UiDropdownItem
           v-if="row.status === 'active'"
           icon="mdi mdi-account-cancel-outline"
           label="Suspender acceso"
           @click="ask(row as Member, 'suspended')"
         />
-        <DuiDropdownItem
+        <UiDropdownItem
           v-if="row.status === 'suspended'"
           icon="mdi mdi-account-check-outline"
           label="Reactivar acceso"
           @click="changeStatus(row as Member, 'active')"
         />
-        <DuiDropdownSeparator />
-        <DuiDropdownItem
+        <UiDropdownSeparator />
+        <UiDropdownItem
           icon="mdi mdi-account-remove-outline"
           :label="row.status === 'invited' ? 'Cancelar invitación' : 'Retirar acceso'"
           danger
           @click="ask(row as Member, 'revoked')"
         />
-      </DuiDropdown>
+      </UiDropdown>
     </template>
     <template #empty>
       <EmptyState
@@ -316,12 +316,12 @@ onMounted(load)
             : undefined
         "
       >
-        <DuiButton v-if="tenant.canManage && !search" color="primary" @click="openForm(null)">
+        <UiButton v-if="tenant.canManage && !search" color="primary" @click="openForm(null)">
           Invitar a una persona
-        </DuiButton>
+        </UiButton>
       </EmptyState>
     </template>
-  </DuiTable>
+  </UiTable>
 
   <MemberFormModal
     v-model="formOpen"

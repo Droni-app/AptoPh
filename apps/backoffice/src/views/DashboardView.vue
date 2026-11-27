@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { DuiAlert, DuiButton, DuiSkeleton } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiSkeleton } from '@aptoph/ui'
 import type { DashboardSummary } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import { dashboardApi } from '@/api/backoffice'
@@ -92,7 +92,7 @@ const firstName = computed(() => auth.user?.fullName.split(' ')[0] ?? '')
 <template>
   <PageHeader :title="`Hola, ${firstName}`" :subtitle="tenant.current?.name" />
 
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-6">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-6">{{ error }}</UiAlert>
 
   <section
     v-if="onboarding"
@@ -155,7 +155,7 @@ const firstName = computed(() => auth.user?.fullName.split(' ')[0] ?? '')
         </li>
       </ol>
       <div v-if="subscription.current">
-        <DuiButton variant="ghost" size="sm" to="/plan">Ver planes y precios</DuiButton>
+        <UiButton variant="ghost" size="sm" to="/plan">Ver planes y precios</UiButton>
       </div>
     </div>
     <img
@@ -182,7 +182,7 @@ const firstName = computed(() => auth.user?.fullName.split(' ')[0] ?? '')
       </span>
       <span class="min-w-0">
         <span class="block text-sm text-neutral-500 dark:text-neutral-400">{{ stat.label }}</span>
-        <DuiSkeleton v-if="!summary && !error" width="4rem" height="2rem" class="mt-1" />
+        <UiSkeleton v-if="!summary && !error" width="4rem" height="2rem" class="mt-1" />
         <span
           v-else
           class="block font-display text-[1.75rem] leading-tight font-extrabold text-brand-700 tabular-nums dark:text-white"

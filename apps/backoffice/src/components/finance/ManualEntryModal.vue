@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import AccountSelect from '@/components/finance/AccountSelect.vue'
 import UnitPicker, { type PickedUnit } from '@/components/finance/UnitPicker.vue'
 import { financeApi } from '@/api/finance'
@@ -99,7 +99,7 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Nota de contabilidad"
     description="Ajustes, depreciaciones, provisiones, causación de intereses bancarios…"
@@ -107,20 +107,20 @@ async function submit() {
     :persistent="saving"
     scrollable
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
-        <DuiLabel title="Fecha" required :error="errors.date">
-          <DuiInput v-model="date" type="date" required />
-        </DuiLabel>
-        <DuiLabel title="Descripción" required :error="errors.description">
-          <DuiInput
+        <UiLabel title="Fecha" required :error="errors.date">
+          <UiInput v-model="date" type="date" required />
+        </UiLabel>
+        <UiLabel title="Descripción" required :error="errors.description">
+          <UiInput
             v-model="description"
             maxlength="255"
             required
             placeholder="Gastos bancarios de noviembre"
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
       <div class="flex flex-col gap-3">
         <div
@@ -129,20 +129,20 @@ async function submit() {
           class="grid gap-2 rounded-lg p-2 ring-1 ring-neutral-200 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_8rem_8rem_2rem] dark:ring-white/10"
         >
           <AccountSelect v-model="line.accountId" :aria-label="`Cuenta de la línea ${i + 1}`" />
-          <DuiInput
+          <UiInput
             v-model="line.description"
             maxlength="255"
             placeholder="Detalle"
             :aria-label="`Detalle de la línea ${i + 1}`"
           />
-          <DuiInput
+          <UiInput
             v-model="line.debit"
             inputmode="decimal"
             placeholder="Débito"
             :aria-label="`Débito de la línea ${i + 1}`"
             @input="line.credit = ''"
           />
-          <DuiInput
+          <UiInput
             v-model="line.credit"
             inputmode="decimal"
             placeholder="Crédito"
@@ -203,16 +203,16 @@ async function submit() {
       <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton
             type="submit"
             color="primary"
             :loading="saving"
             :disabled="difference !== 0 || debit === 0"
-            >Registrar</DuiButton
+            >Registrar</UiButton
           >
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

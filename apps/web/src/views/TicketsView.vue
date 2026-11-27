@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiBadge, DuiButton, DuiSkeleton } from '@dronico/droni-kit'
+import { UiAlert, UiBadge, UiButton, UiSkeleton } from '@aptoph/ui'
 import {
   TICKET_STATUS_LABELS,
   TICKET_TYPE_LABELS,
@@ -52,20 +52,20 @@ onMounted(() => {
     art="comunicados"
   >
     <template #actions>
-      <DuiButton color="primary" @click="formOpen = true">
+      <UiButton color="primary" @click="formOpen = true">
         <span class="mr-1" aria-hidden="true"><i class="mdi mdi-message-plus-outline" /></span
         >Radicar
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
   <div v-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
   <div v-else-if="!tickets" class="flex flex-col gap-3" aria-busy="true">
-    <DuiSkeleton v-for="n in 3" :key="n" height="4.5rem" variant="rounded" />
+    <UiSkeleton v-for="n in 3" :key="n" height="4.5rem" variant="rounded" />
   </div>
 
   <EmptyState
@@ -94,7 +94,7 @@ onMounted(() => {
             {{ formatRelative(ticket.updatedAt ?? ticket.createdAt) }}
           </p>
         </div>
-        <DuiBadge
+        <UiBadge
           :label="TICKET_STATUS_LABELS[ticket.status]"
           :color="TICKET_STATUS_COLORS[ticket.status]"
           variant="soft"

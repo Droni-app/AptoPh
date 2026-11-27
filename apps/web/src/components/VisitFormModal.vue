@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+} from '@aptoph/ui'
 import { VISIT_TYPES, VISIT_TYPE_LABELS, type ResidentVisit, type VisitType } from '@aptoph/shared'
 import UnitPicker from '@/components/UnitPicker.vue'
 import { residentApi } from '@/api/resident'
@@ -72,59 +72,59 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Autorizar visita"
     description="Portería recibirá el nombre del visitante y un código de acceso."
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
         <div class="sm:col-span-2 empty:hidden">
           <UnitPicker v-model="form.unitId" :error="errors.unitId" />
         </div>
-        <DuiLabel
+        <UiLabel
           title="Nombre del visitante"
           required
           :error="errors.visitorName"
           class="sm:col-span-2"
         >
-          <DuiInput v-model="form.visitorName" required minlength="2" maxlength="150" />
-        </DuiLabel>
-        <DuiLabel title="Tipo de visita" required :error="errors.type">
-          <DuiSelect v-model="form.type" :options="typeOptions" />
-        </DuiLabel>
-        <DuiLabel title="Documento" :error="errors.visitorDocument">
-          <DuiInput v-model="form.visitorDocument" maxlength="30" />
-        </DuiLabel>
-        <DuiLabel title="Fecha" required :error="errors.expectedAt">
-          <DuiInput
+          <UiInput v-model="form.visitorName" required minlength="2" maxlength="150" />
+        </UiLabel>
+        <UiLabel title="Tipo de visita" required :error="errors.type">
+          <UiSelect v-model="form.type" :options="typeOptions" />
+        </UiLabel>
+        <UiLabel title="Documento" :error="errors.visitorDocument">
+          <UiInput v-model="form.visitorDocument" maxlength="30" />
+        </UiLabel>
+        <UiLabel title="Fecha" required :error="errors.expectedAt">
+          <UiInput
             v-model="form.date"
             type="date"
             required
             :min="todayInput()"
             :max="todayInput(60)"
           />
-        </DuiLabel>
-        <DuiLabel title="Hora aproximada" required>
-          <DuiInput v-model="form.time" type="time" required />
-        </DuiLabel>
-        <DuiLabel title="Placa del vehículo" :error="errors.vehiclePlate" class="sm:col-span-2">
-          <DuiInput
+        </UiLabel>
+        <UiLabel title="Hora aproximada" required>
+          <UiInput v-model="form.time" type="time" required />
+        </UiLabel>
+        <UiLabel title="Placa del vehículo" :error="errors.vehiclePlate" class="sm:col-span-2">
+          <UiInput
             v-model="form.vehiclePlate"
             maxlength="12"
             class="uppercase"
             placeholder="Si llega en carro o moto"
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Autorizar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Autorizar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

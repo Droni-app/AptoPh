@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { DuiToast } from '@dronico/droni-kit'
+import { UiToast } from '@aptoph/ui'
 </script>
 
 <template>
   <RouterView />
-  <DuiToast position="top-right" />
+  <UiToast position="top-right" />
 </template>

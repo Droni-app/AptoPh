@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   CHARGE_CONCEPT_TYPES,
   CHARGE_CONCEPT_TYPE_LABELS,
@@ -97,32 +97,32 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="concept ? 'Editar concepto' : 'Nuevo concepto'"
     size="md"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel title="Nombre" required :error="errors.name">
-        <DuiInput
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel title="Nombre" required :error="errors.name">
+        <UiInput
           v-model="form.name"
           maxlength="120"
           required
           placeholder="Alquiler de bicicletero"
         />
-      </DuiLabel>
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Tipo" required :error="errors.type">
-          <DuiSelect v-model="form.type" :options="typeOptions" :disabled="system" block />
-        </DuiLabel>
-        <DuiLabel title="Valor sugerido" :error="errors.defaultAmount">
-          <DuiInput v-model="form.defaultAmount" inputmode="decimal" placeholder="Opcional" />
-        </DuiLabel>
+        <UiLabel title="Tipo" required :error="errors.type">
+          <UiSelect v-model="form.type" :options="typeOptions" :disabled="system" block />
+        </UiLabel>
+        <UiLabel title="Valor sugerido" :error="errors.defaultAmount">
+          <UiInput v-model="form.defaultAmount" inputmode="decimal" placeholder="Opcional" />
+        </UiLabel>
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel
+        <UiLabel
           title="Cuenta por cobrar"
           help-text="Vacío: la del tipo"
           :error="errors.receivableAccountId"
@@ -132,8 +132,8 @@ async function submit() {
             :prefixes="['13']"
             placeholder="Automática"
           />
-        </DuiLabel>
-        <DuiLabel
+        </UiLabel>
+        <UiLabel
           title="Cuenta de ingreso"
           help-text="Vacío: la del tipo"
           :error="errors.incomeAccountId"
@@ -143,22 +143,22 @@ async function submit() {
             :classes="['income', 'liability']"
             placeholder="Automática"
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
       <div class="flex flex-col gap-2">
-        <DuiCheckbox
+        <UiCheckbox
           v-model="form.accruesInterest"
           label="Genera intereses de mora si se paga tarde"
         />
-        <DuiCheckbox v-model="form.allowsEarlyDiscount" label="Tiene descuento por pronto pago" />
-        <DuiCheckbox v-if="concept" v-model="form.isActive" label="Activo" />
+        <UiCheckbox v-model="form.allowsEarlyDiscount" label="Tiene descuento por pronto pago" />
+        <UiCheckbox v-if="concept" v-model="form.isActive" label="Activo" />
       </div>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

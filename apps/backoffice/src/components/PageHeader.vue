@@ -7,7 +7,7 @@ defineProps<{ title: string; subtitle?: string }>()
     <div class="min-w-0">
       <slot name="before" />
       <h1
-        class="truncate text-[1.75rem] leading-tight font-extrabold tracking-tight text-brand-700 dark:text-white"
+        class="truncate text-2xl leading-tight font-bold text-neutral-900 dark:text-white"
       >
         {{ title }}
       </h1>

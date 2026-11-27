@@ -2,14 +2,14 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiAlert,
-  DuiBadge,
-  DuiButton,
-  DuiInput,
-  DuiSelect,
-  DuiTable,
+  UiAlert,
+  UiBadge,
+  UiButton,
+  UiInput,
+  UiSelect,
+  UiTable,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   UNIT_STATUSES,
   UNIT_STATUS_LABELS,
@@ -151,27 +151,27 @@ onMounted(async () => {
 <template>
   <PageHeader title="Unidades" subtitle="Apartamentos, casas, locales, parqueaderos y depósitos">
     <template #actions>
-      <DuiButton v-if="tenant.canManage" color="primary" @click="formOpen = true">
+      <UiButton v-if="tenant.canManage" color="primary" @click="formOpen = true">
         <span class="mdi mdi-plus mr-1" aria-hidden="true" />Nueva unidad
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
   <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <DuiInput
+    <UiInput
       v-model="filters.search"
       type="search"
       placeholder="Buscar por código…"
       aria-label="Buscar por código"
     />
-    <DuiSelect v-model="filters.buildingId" :options="buildingOptions" aria-label="Torre" />
-    <DuiSelect v-model="filters.type" :options="typeOptions" aria-label="Tipo" />
-    <DuiSelect v-model="filters.status" :options="statusOptions" aria-label="Estado" />
+    <UiSelect v-model="filters.buildingId" :options="buildingOptions" aria-label="Torre" />
+    <UiSelect v-model="filters.type" :options="typeOptions" aria-label="Tipo" />
+    <UiSelect v-model="filters.status" :options="statusOptions" aria-label="Estado" />
   </div>
 
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
 
-  <DuiTable
+  <UiTable
     :columns="columns"
     :rows="result?.data ?? []"
     :loading="loading"
@@ -193,7 +193,7 @@ onMounted(async () => {
       <span class="tabular-nums">{{ percent(ownershipCoefficient) }}</span>
     </template>
     <template #status="{ status }">
-      <DuiBadge
+      <UiBadge
         :label="UNIT_STATUS_LABELS[status as UnitStatus]"
         :color="statusColor[status as UnitStatus]"
         variant="soft"
@@ -205,7 +205,7 @@ onMounted(async () => {
         title="No hay unidades que coincidan"
         description="Prueba con otros filtros o crea una unidad nueva."
     /></template>
-  </DuiTable>
+  </UiTable>
 
   <UnitFormModal
     v-model="formOpen"

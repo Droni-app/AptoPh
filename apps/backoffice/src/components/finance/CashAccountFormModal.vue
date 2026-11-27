@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   BANK_ACCOUNT_KINDS,
   BANK_ACCOUNT_KIND_LABELS,
@@ -104,14 +104,14 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="account ? 'Editar cuenta' : 'Nueva cuenta de banco o caja'"
     size="md"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div v-if="!account" class="flex gap-4 text-sm">
         <label class="flex items-center gap-1.5"
           ><input v-model="form.type" type="radio" value="bank" /> Cuenta bancaria</label
@@ -120,49 +120,49 @@ async function submit() {
           ><input v-model="form.type" type="radio" value="cash" /> Caja (efectivo)</label
         >
       </div>
-      <DuiLabel title="Nombre" required :error="errors.name">
-        <DuiInput
+      <UiLabel title="Nombre" required :error="errors.name">
+        <UiInput
           v-model="form.name"
           maxlength="80"
           required
           :placeholder="form.type === 'bank' ? 'Bancolombia ahorros' : 'Caja menor'"
         />
-      </DuiLabel>
+      </UiLabel>
       <div v-if="form.type === 'bank'" class="grid gap-4 sm:grid-cols-3">
-        <DuiLabel title="Banco" :error="errors.bankName">
-          <DuiInput v-model="form.bankName" maxlength="80" />
-        </DuiLabel>
-        <DuiLabel title="Tipo">
-          <DuiSelect
+        <UiLabel title="Banco" :error="errors.bankName">
+          <UiInput v-model="form.bankName" maxlength="80" />
+        </UiLabel>
+        <UiLabel title="Tipo">
+          <UiSelect
             v-model="form.accountKind"
             :options="kindOptions"
             :disabled="!!account"
             block
           />
-        </DuiLabel>
-        <DuiLabel title="Número" :error="errors.accountNumber">
-          <DuiInput v-model="form.accountNumber" maxlength="40" />
-        </DuiLabel>
+        </UiLabel>
+        <UiLabel title="Número" :error="errors.accountNumber">
+          <UiInput v-model="form.accountNumber" maxlength="40" />
+        </UiLabel>
       </div>
       <div v-if="!account" class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel
+        <UiLabel
           title="Saldo inicial"
           help-text="Lo que hay hoy en la cuenta"
           :error="errors.openingBalance"
         >
-          <DuiInput v-model="form.openingBalance" inputmode="decimal" placeholder="0" />
-        </DuiLabel>
-        <DuiLabel title="A la fecha" :error="errors.openingDate">
-          <DuiInput v-model="form.openingDate" type="date" />
-        </DuiLabel>
+          <UiInput v-model="form.openingBalance" inputmode="decimal" placeholder="0" />
+        </UiLabel>
+        <UiLabel title="A la fecha" :error="errors.openingDate">
+          <UiInput v-model="form.openingDate" type="date" />
+        </UiLabel>
       </div>
-      <DuiCheckbox v-if="account" v-model="form.isActive" label="Activa" />
+      <UiCheckbox v-if="account" v-model="form.isActive" label="Activa" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

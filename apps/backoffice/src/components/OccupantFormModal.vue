@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   DOCUMENT_TYPES,
   OCCUPANT_RELATIONSHIPS,
@@ -104,47 +104,47 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal v-model="open" :title="occupant ? 'Editar ocupante' : 'Agregar ocupante'" size="lg" :persistent="saving">
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+  <UiModal v-model="open" :title="occupant ? 'Editar ocupante' : 'Agregar ocupante'" size="lg" :persistent="saving">
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Nombre completo" required :error="errors.fullName" class="sm:col-span-2">
-          <DuiInput v-model="form.fullName" required minlength="2" maxlength="150" />
-        </DuiLabel>
-        <DuiLabel title="Vínculo con la unidad" required :error="errors.relationship">
-          <DuiSelect v-model="form.relationship" :options="relationshipOptions" />
-        </DuiLabel>
+        <UiLabel title="Nombre completo" required :error="errors.fullName" class="sm:col-span-2">
+          <UiInput v-model="form.fullName" required minlength="2" maxlength="150" />
+        </UiLabel>
+        <UiLabel title="Vínculo con la unidad" required :error="errors.relationship">
+          <UiSelect v-model="form.relationship" :options="relationshipOptions" />
+        </UiLabel>
         <div class="grid grid-cols-[6rem_1fr] gap-2">
-          <DuiLabel title="Tipo doc." :error="errors.documentType">
-            <DuiSelect v-model="form.documentType" :options="documentOptions" />
-          </DuiLabel>
-          <DuiLabel title="Número" :error="errors.documentNumber">
-            <DuiInput v-model="form.documentNumber" maxlength="30" />
-          </DuiLabel>
+          <UiLabel title="Tipo doc." :error="errors.documentType">
+            <UiSelect v-model="form.documentType" :options="documentOptions" />
+          </UiLabel>
+          <UiLabel title="Número" :error="errors.documentNumber">
+            <UiInput v-model="form.documentNumber" maxlength="30" />
+          </UiLabel>
         </div>
-        <DuiLabel title="Teléfono" :error="errors.phone">
-          <DuiInput v-model="form.phone" type="tel" maxlength="30" />
-        </DuiLabel>
-        <DuiLabel title="Correo" :error="errors.email">
-          <DuiInput v-model="form.email" type="email" maxlength="254" />
-        </DuiLabel>
-        <DuiLabel title="Desde" :error="errors.startsOn">
-          <DuiInput v-model="form.startsOn" type="date" />
-        </DuiLabel>
-        <DuiLabel title="Hasta" :error="errors.endsOn">
-          <DuiInput v-model="form.endsOn" type="date" />
-        </DuiLabel>
+        <UiLabel title="Teléfono" :error="errors.phone">
+          <UiInput v-model="form.phone" type="tel" maxlength="30" />
+        </UiLabel>
+        <UiLabel title="Correo" :error="errors.email">
+          <UiInput v-model="form.email" type="email" maxlength="254" />
+        </UiLabel>
+        <UiLabel title="Desde" :error="errors.startsOn">
+          <UiInput v-model="form.startsOn" type="date" />
+        </UiLabel>
+        <UiLabel title="Hasta" :error="errors.endsOn">
+          <UiInput v-model="form.endsOn" type="date" />
+        </UiLabel>
       </div>
       <div class="flex flex-wrap gap-6">
-        <DuiCheckbox v-model="form.isPrimaryContact" label="Contacto principal" />
-        <DuiCheckbox v-model="form.isBillingResponsible" label="Responsable de pagos" />
+        <UiCheckbox v-model="form.isPrimaryContact" label="Contacto principal" />
+        <UiCheckbox v-model="form.isBillingResponsible" label="Responsable de pagos" />
       </div>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

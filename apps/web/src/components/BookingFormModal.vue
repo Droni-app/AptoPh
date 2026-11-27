@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+} from '@aptoph/ui'
 import type { ResidentAmenity, ResidentBooking } from '@aptoph/shared'
 import UnitPicker from '@/components/UnitPicker.vue'
 import { residentApi } from '@/api/resident'
@@ -66,13 +66,13 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal v-model="open" title="Reservar zona común" :persistent="saving">
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+  <UiModal v-model="open" title="Reservar zona común" :persistent="saving">
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Zona común" required :error="errors.amenityId" class="sm:col-span-2">
-          <DuiSelect v-model="form.amenityId" :options="amenityOptions" />
-        </DuiLabel>
+        <UiLabel title="Zona común" required :error="errors.amenityId" class="sm:col-span-2">
+          <UiSelect v-model="form.amenityId" :options="amenityOptions" />
+        </UiLabel>
         <div
           v-if="amenity"
           class="rounded-xl bg-neutral-50 p-3 text-sm text-neutral-600 sm:col-span-2 dark:bg-white/5 dark:text-neutral-200"
@@ -102,33 +102,33 @@ async function submit() {
         <div class="sm:col-span-2 empty:hidden">
           <UnitPicker v-model="form.unitId" :error="errors.unitId" />
         </div>
-        <DuiLabel title="Fecha" required :error="errors.startsAt" class="sm:col-span-2">
-          <DuiInput
+        <UiLabel title="Fecha" required :error="errors.startsAt" class="sm:col-span-2">
+          <UiInput
             v-model="form.date"
             type="date"
             required
             :min="todayInput()"
             :max="todayInput(90)"
           />
-        </DuiLabel>
-        <DuiLabel title="Desde" required>
-          <DuiInput v-model="form.start" type="time" required />
-        </DuiLabel>
-        <DuiLabel title="Hasta" required :error="errors.endsAt">
-          <DuiInput v-model="form.end" type="time" required />
-        </DuiLabel>
-        <DuiLabel title="Número de personas" :error="errors.guestsCount" class="sm:col-span-2">
-          <DuiInput v-model="form.guests" type="number" min="1" :max="amenity?.capacity ?? 500" />
-        </DuiLabel>
+        </UiLabel>
+        <UiLabel title="Desde" required>
+          <UiInput v-model="form.start" type="time" required />
+        </UiLabel>
+        <UiLabel title="Hasta" required :error="errors.endsAt">
+          <UiInput v-model="form.end" type="time" required />
+        </UiLabel>
+        <UiLabel title="Número de personas" :error="errors.guestsCount" class="sm:col-span-2">
+          <UiInput v-model="form.guests" type="number" min="1" :max="amenity?.capacity ?? 500" />
+        </UiLabel>
       </div>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">
             {{ amenity?.requiresApproval ? 'Solicitar reserva' : 'Reservar' }}
-          </DuiButton>
+          </UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

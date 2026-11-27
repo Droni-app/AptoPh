@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiModal, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiModal, UiSkeleton, useToast } from '@aptoph/ui'
 import { JOURNAL_ENTRY_TYPE_LABELS, type JournalEntry } from '@aptoph/shared'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
 import { financeApi } from '@/api/finance'
@@ -65,14 +65,14 @@ async function reverse(reason: string) {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="entry ? `${JOURNAL_ENTRY_TYPE_LABELS[entry.type]} ${entry.number}` : 'Comprobante'"
     size="xl"
     scrollable
   >
-    <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-    <DuiSkeleton v-else-if="!entry" class="h-48 rounded-xl" />
+    <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+    <UiSkeleton v-else-if="!entry" class="h-48 rounded-xl" />
     <div v-else class="flex flex-col gap-4 text-sm">
       <div class="flex flex-wrap justify-between gap-2">
         <div>
@@ -84,7 +84,7 @@ async function reverse(reason: string) {
         </div>
         <p class="text-lg font-bold tabular-nums">{{ formatMoney(entry.total) }}</p>
       </div>
-      <DuiAlert v-if="entry.reversedByEntryId" color="warning" variant="soft">
+      <UiAlert v-if="entry.reversedByEntryId" color="warning" variant="soft">
         Este comprobante fue reversado.
         <button
           type="button"
@@ -93,8 +93,8 @@ async function reverse(reason: string) {
         >
           Ver la reversión
         </button>
-      </DuiAlert>
-      <DuiAlert v-if="entry.reversesEntryId" color="primary" variant="soft">
+      </UiAlert>
+      <UiAlert v-if="entry.reversesEntryId" color="primary" variant="soft">
         Reversa otro comprobante.
         <button
           type="button"
@@ -103,7 +103,7 @@ async function reverse(reason: string) {
         >
           Ver el original
         </button>
-      </DuiAlert>
+      </UiAlert>
       <div class="overflow-x-auto">
         <table class="w-full min-w-[36rem]">
           <thead class="text-left text-xs text-neutral-500 uppercase">
@@ -152,12 +152,12 @@ async function reverse(reason: string) {
     </div>
     <template v-if="reversible && tenant.canManageFinance" #footer>
       <div class="flex justify-end">
-        <DuiButton variant="ghost" color="danger" @click="reverseOpen = true"
-          >Reversar comprobante</DuiButton
+        <UiButton variant="ghost" color="danger" @click="reverseOpen = true"
+          >Reversar comprobante</UiButton
         >
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
   <ReasonDialog
     v-model="reverseOpen"
     title="Reversar comprobante"

@@ -11,7 +11,7 @@ function apply(value: Theme) {
 }
 
 /**
- * droni-kit uses class-based dark mode (`.dark` on <html>).
+ * Class-based dark mode (`.dark` on <html>).
  * Defaults to the OS preference until the user picks one.
  */
 export function initTheme() {

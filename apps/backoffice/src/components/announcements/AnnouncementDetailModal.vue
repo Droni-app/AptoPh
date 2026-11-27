@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiBadge,
-  DuiButton,
-  DuiModal,
-  DuiSkeleton,
-  DuiTabs,
+  UiAlert,
+  UiBadge,
+  UiButton,
+  UiModal,
+  UiSkeleton,
+  UiTabs,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   ANNOUNCEMENT_AUDIENCE_LABELS,
   ANNOUNCEMENT_STATUS_LABELS,
@@ -104,18 +104,18 @@ async function remove() {
 </script>
 
 <template>
-  <DuiModal v-model="open" :title="announcement?.title ?? 'Comunicado'" size="lg" scrollable>
-    <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-    <DuiSkeleton v-else-if="!announcement" class="h-64 rounded-xl" />
+  <UiModal v-model="open" :title="announcement?.title ?? 'Comunicado'" size="lg" scrollable>
+    <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+    <UiSkeleton v-else-if="!announcement" class="h-64 rounded-xl" />
     <div v-else class="flex flex-col gap-5 text-sm">
       <div class="flex flex-wrap items-center gap-2">
-        <DuiBadge
+        <UiBadge
           :label="ANNOUNCEMENT_STATUS_LABELS[announcement.status]"
           :color="statusColor(announcement.status)"
           variant="soft"
           size="sm"
         />
-        <DuiBadge
+        <UiBadge
           v-if="announcement.isPinned"
           label="Fijado"
           color="warning"
@@ -190,9 +190,9 @@ async function remove() {
             :style="{ width: `${(announcement.reads.read / announcement.reads.total) * 100}%` }"
           />
         </div>
-        <DuiSkeleton v-if="readers === null" class="h-24 rounded-lg" />
+        <UiSkeleton v-if="readers === null" class="h-24 rounded-lg" />
         <template v-else-if="readers.length">
-          <DuiTabs v-model="readersTab" :tabs="readerTabs" class="mb-2" aria-label="Lectura" />
+          <UiTabs v-model="readersTab" :tabs="readerTabs" class="mb-2" aria-label="Lectura" />
           <ul class="max-h-72 divide-y divide-neutral-100 overflow-y-auto dark:divide-white/10">
             <li
               v-for="reader in readersTab === 'read' ? read : pending"
@@ -223,39 +223,39 @@ async function remove() {
 
     <template v-if="announcement && tenant.canManageAnnouncements" #footer>
       <div class="flex flex-wrap justify-end gap-2">
-        <DuiButton variant="ghost" color="danger" :disabled="busy" @click="confirmDelete = true"
-          >Eliminar</DuiButton
+        <UiButton variant="ghost" color="danger" :disabled="busy" @click="confirmDelete = true"
+          >Eliminar</UiButton
         >
-        <DuiButton
+        <UiButton
           v-if="announcement.status !== 'draft'"
           variant="ghost"
           :loading="busy"
           @click="act(() => announcementsApi.unpublish(announcement!.id), 'Volvió a borrador')"
-          >Despublicar</DuiButton
+          >Despublicar</UiButton
         >
-        <DuiButton variant="outline" :disabled="busy" @click="emit('edit', announcement)"
-          >Editar</DuiButton
+        <UiButton variant="outline" :disabled="busy" @click="emit('edit', announcement)"
+          >Editar</UiButton
         >
-        <DuiButton
+        <UiButton
           v-if="announcement.status !== 'published'"
           color="primary"
           :loading="busy"
           @click="act(() => announcementsApi.publish(announcement!.id), 'Comunicado publicado')"
-          >Publicar ahora</DuiButton
+          >Publicar ahora</UiButton
         >
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 
-  <DuiModal v-model="confirmDelete" title="Eliminar comunicado" size="sm">
+  <UiModal v-model="confirmDelete" title="Eliminar comunicado" size="sm">
     <p class="text-sm">
       Se quita del portal y del backoffice. Los residentes ya no podrán verlo ni abrir sus adjuntos.
     </p>
     <template #footer>
       <div class="flex w-full justify-end gap-2">
-        <DuiButton variant="ghost" @click="confirmDelete = false">Cancelar</DuiButton>
-        <DuiButton color="danger" :loading="busy" @click="remove">Eliminar</DuiButton>
+        <UiButton variant="ghost" @click="confirmDelete = false">Cancelar</UiButton>
+        <UiButton color="danger" :loading="busy" @click="remove">Eliminar</UiButton>
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 </template>

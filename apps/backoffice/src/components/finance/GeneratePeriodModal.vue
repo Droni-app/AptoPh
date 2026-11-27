@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSkeleton,
+  UiAlert,
+  UiButton,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSkeleton,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import type { BillingPreview } from '@aptoph/shared'
 import { financeApi } from '@/api/finance'
 import { errorMessage } from '@/lib/errors'
@@ -73,33 +73,33 @@ async function generate() {
 </script>
 
 <template>
-  <DuiModal v-model="open" title="Facturar un mes" size="lg" :persistent="generating" scrollable>
+  <UiModal v-model="open" title="Facturar un mes" size="lg" :persistent="generating" scrollable>
     <div class="flex flex-col gap-4">
-      <DuiLabel
+      <UiLabel
         title="Mes"
         help-text="Se crean los cobros de las tarifas vigentes, los intereses de mora y se aplican los saldos a favor"
       >
-        <DuiInput v-model="month" type="month" required />
-      </DuiLabel>
+        <UiInput v-model="month" type="month" required />
+      </UiLabel>
 
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiSkeleton v-if="loading && !preview" class="h-40 rounded-xl" />
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiSkeleton v-if="loading && !preview" class="h-40 rounded-xl" />
 
       <template v-if="preview">
-        <DuiAlert v-if="closed" color="warning" variant="soft">
+        <UiAlert v-if="closed" color="warning" variant="soft">
           {{ formatPeriod(preview.period) }} está cerrado. Reábrelo para facturar de nuevo.
-        </DuiAlert>
-        <DuiAlert
+        </UiAlert>
+        <UiAlert
           v-else-if="preview.existing && preview.count === 0"
           color="success"
           variant="soft"
         >
           {{ formatPeriod(preview.period) }} ya está facturado y no falta nada por cobrar.
-        </DuiAlert>
-        <DuiAlert v-else-if="preview.existing" color="primary" variant="soft">
+        </UiAlert>
+        <UiAlert v-else-if="preview.existing" color="primary" variant="soft">
           {{ formatPeriod(preview.period) }} ya se facturó. Solo se agregará lo que falta (tarifas
           nuevas o intereses).
-        </DuiAlert>
+        </UiAlert>
 
         <dl class="grid gap-3 rounded-xl bg-neutral-50 p-4 text-sm sm:grid-cols-3 dark:bg-white/5">
           <div>
@@ -198,16 +198,16 @@ async function generate() {
     </div>
     <template #footer>
       <div class="flex w-full justify-end gap-2">
-        <DuiButton variant="ghost" :disabled="generating" @click="open = false">Cancelar</DuiButton>
-        <DuiButton
+        <UiButton variant="ghost" :disabled="generating" @click="open = false">Cancelar</UiButton>
+        <UiButton
           color="primary"
           :loading="generating"
           :disabled="!preview || closed || preview.count === 0"
           @click="generate"
         >
           Generar {{ preview?.count ? `${preview.count} cobros` : '' }}
-        </DuiButton>
+        </UiButton>
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 </template>

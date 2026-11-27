@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { DuiBadge, DuiButton } from '@dronico/droni-kit'
+import { UiBadge, UiButton } from '@aptoph/ui'
 import {
   BANK_ACCOUNT_KIND_LABELS,
   CASH_ACCOUNT_TYPE_LABELS,
@@ -32,16 +32,16 @@ const total = computed(() =>
 <template>
   <PageHeader title="Bancos y caja" :subtitle="`Disponible: ${formatMoney(total)}`">
     <template v-if="tenant.canManageFinance" #actions>
-      <DuiButton
+      <UiButton
         variant="outline"
         :disabled="catalog.activeCashAccounts.value.length < 2"
         @click="transferOpen = true"
       >
         <span class="mr-1"><i class="mdi mdi-swap-horizontal" aria-hidden="true" /></span>Trasladar
-      </DuiButton>
-      <DuiButton color="primary" @click="((editing = null), (formOpen = true))">
+      </UiButton>
+      <UiButton color="primary" @click="((editing = null), (formOpen = true))">
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nueva cuenta
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
@@ -79,7 +79,7 @@ const total = computed(() =>
             </p>
           </div>
         </div>
-        <DuiBadge v-if="!account.isActive" label="Inactiva" size="sm" variant="soft" />
+        <UiBadge v-if="!account.isActive" label="Inactiva" size="sm" variant="soft" />
       </div>
       <p class="text-2xl font-bold text-brand-700 tabular-nums dark:text-white">
         {{ formatMoney(account.balance) }}
@@ -95,12 +95,12 @@ const total = computed(() =>
         >
           Ver movimientos · {{ account.ledgerAccount.code }}
         </RouterLink>
-        <DuiButton
+        <UiButton
           v-if="tenant.canManageFinance"
           size="sm"
           variant="ghost"
           @click="((editing = account), (formOpen = true))"
-          >Editar</DuiButton
+          >Editar</UiButton
         >
       </div>
     </article>

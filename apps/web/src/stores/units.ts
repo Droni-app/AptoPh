@@ -21,7 +21,7 @@ export const useUnitsStore = defineStore('units', () => {
     return loading
   }
 
-  /** Options for <DuiSelect> */
+  /** Options for <UiSelect> */
   function options() {
     return (home.value?.units ?? []).map((unit) => ({ value: unit.id, label: unitName(unit) }))
   }

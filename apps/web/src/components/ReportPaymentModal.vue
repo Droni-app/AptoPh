@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import { PAYMENT_METHODS, PAYMENT_METHOD_LABELS, type PaymentMethod } from '@aptoph/shared'
 import { residentApi } from '@/api/resident'
 import ReceiptPicker from '@/components/payments/ReceiptPicker.vue'
@@ -85,43 +85,43 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Reportar un pago"
     description="¿Ya pagaste por transferencia, PSE o consignación? Cuéntanos para que la administración lo aplique."
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Valor pagado" required :error="errors.amount">
-          <DuiInput v-model="form.amount" inputmode="decimal" required placeholder="350.000" />
-        </DuiLabel>
-        <DuiLabel title="Fecha del pago" required :error="errors.paidOn ?? errors.paidAt">
-          <DuiInput v-model="form.paidOn" type="date" :max="todayInput()" required />
-        </DuiLabel>
-        <DuiLabel title="Medio" required :error="errors.method">
-          <DuiSelect v-model="form.method" :options="methodOptions" block />
-        </DuiLabel>
-        <DuiLabel title="Referencia" :error="errors.reference">
-          <DuiInput v-model="form.reference" maxlength="120" placeholder="N.º de la transacción" />
-        </DuiLabel>
+        <UiLabel title="Valor pagado" required :error="errors.amount">
+          <UiInput v-model="form.amount" inputmode="decimal" required placeholder="350.000" />
+        </UiLabel>
+        <UiLabel title="Fecha del pago" required :error="errors.paidOn ?? errors.paidAt">
+          <UiInput v-model="form.paidOn" type="date" :max="todayInput()" required />
+        </UiLabel>
+        <UiLabel title="Medio" required :error="errors.method">
+          <UiSelect v-model="form.method" :options="methodOptions" block />
+        </UiLabel>
+        <UiLabel title="Referencia" :error="errors.reference">
+          <UiInput v-model="form.reference" maxlength="120" placeholder="N.º de la transacción" />
+        </UiLabel>
       </div>
-      <DuiLabel title="Comentario" :error="errors.notes">
-        <DuiInput v-model="form.notes" maxlength="500" placeholder="Opcional" />
-      </DuiLabel>
+      <UiLabel title="Comentario" :error="errors.notes">
+        <UiInput v-model="form.notes" maxlength="500" placeholder="Opcional" />
+      </UiLabel>
       <ReceiptPicker v-model="files" :disabled="saving" />
       <p class="text-sm text-neutral-500 dark:text-neutral-300">
         Tu saldo se actualiza cuando la administración confirme que el dinero llegó.
       </p>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving" :disabled="amount <= 0">
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving" :disabled="amount <= 0">
             Reportar {{ amount > 0 ? formatMoney(amount) : '' }}
-          </DuiButton>
+          </UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

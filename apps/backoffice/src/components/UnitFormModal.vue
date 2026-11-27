@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-  DuiTextarea,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+  UiTextarea,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   UNIT_STATUSES,
   UNIT_STATUS_LABELS,
@@ -103,45 +103,45 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal v-model="open" :title="unit ? `Editar unidad ${unit.code}` : 'Nueva unidad'" size="lg" :persistent="saving">
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+  <UiModal v-model="open" :title="unit ? `Editar unidad ${unit.code}` : 'Nueva unidad'" size="lg" :persistent="saving">
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Torre" :error="errors.buildingId">
-          <DuiSelect v-model="form.buildingId" :options="buildingOptions" />
-        </DuiLabel>
-        <DuiLabel title="Código" required :error="errors.code" help-text="Ej. 302, T1-302, P-15">
-          <DuiInput v-model="form.code" required maxlength="30" />
-        </DuiLabel>
-        <DuiLabel title="Tipo" :error="errors.type">
-          <DuiSelect v-model="form.type" :options="typeOptions" />
-        </DuiLabel>
-        <DuiLabel title="Estado" :error="errors.status">
-          <DuiSelect v-model="form.status" :options="statusOptions" />
-        </DuiLabel>
-        <DuiLabel title="Piso" :error="errors.floor">
-          <DuiInput v-model="form.floor" type="number" min="-10" max="200" />
-        </DuiLabel>
-        <DuiLabel title="Área privada (m²)" :error="errors.privateArea">
-          <DuiInput v-model="form.privateArea" type="number" min="0" step="0.01" />
-        </DuiLabel>
-        <DuiLabel
+        <UiLabel title="Torre" :error="errors.buildingId">
+          <UiSelect v-model="form.buildingId" :options="buildingOptions" />
+        </UiLabel>
+        <UiLabel title="Código" required :error="errors.code" help-text="Ej. 302, T1-302, P-15">
+          <UiInput v-model="form.code" required maxlength="30" />
+        </UiLabel>
+        <UiLabel title="Tipo" :error="errors.type">
+          <UiSelect v-model="form.type" :options="typeOptions" />
+        </UiLabel>
+        <UiLabel title="Estado" :error="errors.status">
+          <UiSelect v-model="form.status" :options="statusOptions" />
+        </UiLabel>
+        <UiLabel title="Piso" :error="errors.floor">
+          <UiInput v-model="form.floor" type="number" min="-10" max="200" />
+        </UiLabel>
+        <UiLabel title="Área privada (m²)" :error="errors.privateArea">
+          <UiInput v-model="form.privateArea" type="number" min="0" step="0.01" />
+        </UiLabel>
+        <UiLabel
           title="Coeficiente de copropiedad (%)"
           :error="errors.ownershipCoefficient"
           help-text="Porcentaje según el reglamento, ej. 1.2345"
         >
-          <DuiInput v-model="form.coefficientPercent" type="number" min="0" max="100" step="0.0001" />
-        </DuiLabel>
+          <UiInput v-model="form.coefficientPercent" type="number" min="0" max="100" step="0.0001" />
+        </UiLabel>
       </div>
-      <DuiLabel title="Notas" :error="errors.notes">
-        <DuiTextarea v-model="form.notes" rows="3" maxlength="2000" />
-      </DuiLabel>
+      <UiLabel title="Notas" :error="errors.notes">
+        <UiTextarea v-model="form.notes" rows="3" maxlength="2000" />
+      </UiLabel>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

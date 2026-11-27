@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-  DuiTextarea,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+  UiTextarea,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   BANK_ACCOUNT_KINDS,
   BANK_ACCOUNT_KIND_LABELS,
@@ -120,51 +120,51 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="vendor ? 'Editar proveedor' : 'Nuevo proveedor'"
     size="lg"
     :persistent="saving"
     scrollable
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel title="Nombre o razón social" required :error="errors.name">
-        <DuiInput v-model="form.name" maxlength="120" required />
-      </DuiLabel>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel title="Nombre o razón social" required :error="errors.name">
+        <UiInput v-model="form.name" maxlength="120" required />
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Tipo de documento" :error="errors.documentType">
-          <DuiSelect v-model="form.documentType" :options="documentOptions" block />
-        </DuiLabel>
-        <DuiLabel title="Número" :error="errors.documentNumber">
-          <DuiInput v-model="form.documentNumber" maxlength="30" placeholder="900123456-7" />
-        </DuiLabel>
-        <DuiLabel title="Contacto" :error="errors.contactName">
-          <DuiInput v-model="form.contactName" maxlength="120" />
-        </DuiLabel>
-        <DuiLabel title="Teléfono" :error="errors.phone">
-          <DuiInput v-model="form.phone" maxlength="30" type="tel" />
-        </DuiLabel>
-        <DuiLabel title="Correo" :error="errors.email">
-          <DuiInput v-model="form.email" type="email" maxlength="254" />
-        </DuiLabel>
-        <DuiLabel title="Dirección" :error="errors.address">
-          <DuiInput v-model="form.address" maxlength="200" />
-        </DuiLabel>
+        <UiLabel title="Tipo de documento" :error="errors.documentType">
+          <UiSelect v-model="form.documentType" :options="documentOptions" block />
+        </UiLabel>
+        <UiLabel title="Número" :error="errors.documentNumber">
+          <UiInput v-model="form.documentNumber" maxlength="30" placeholder="900123456-7" />
+        </UiLabel>
+        <UiLabel title="Contacto" :error="errors.contactName">
+          <UiInput v-model="form.contactName" maxlength="120" />
+        </UiLabel>
+        <UiLabel title="Teléfono" :error="errors.phone">
+          <UiInput v-model="form.phone" maxlength="30" type="tel" />
+        </UiLabel>
+        <UiLabel title="Correo" :error="errors.email">
+          <UiInput v-model="form.email" type="email" maxlength="254" />
+        </UiLabel>
+        <UiLabel title="Dirección" :error="errors.address">
+          <UiInput v-model="form.address" maxlength="200" />
+        </UiLabel>
       </div>
       <fieldset class="grid gap-4 sm:grid-cols-3">
         <legend class="mb-2 text-sm font-semibold">Cuenta para pagarle</legend>
-        <DuiLabel title="Banco" :error="errors.bankName">
-          <DuiInput v-model="form.bankName" maxlength="80" />
-        </DuiLabel>
-        <DuiLabel title="Tipo" :error="errors.bankAccountKind">
-          <DuiSelect v-model="form.bankAccountKind" :options="kindOptions" block />
-        </DuiLabel>
-        <DuiLabel title="Número" :error="errors.bankAccountNumber">
-          <DuiInput v-model="form.bankAccountNumber" maxlength="40" />
-        </DuiLabel>
+        <UiLabel title="Banco" :error="errors.bankName">
+          <UiInput v-model="form.bankName" maxlength="80" />
+        </UiLabel>
+        <UiLabel title="Tipo" :error="errors.bankAccountKind">
+          <UiSelect v-model="form.bankAccountKind" :options="kindOptions" block />
+        </UiLabel>
+        <UiLabel title="Número" :error="errors.bankAccountNumber">
+          <UiInput v-model="form.bankAccountNumber" maxlength="40" />
+        </UiLabel>
       </fieldset>
-      <DuiLabel
+      <UiLabel
         title="Cuenta de gasto habitual"
         help-text="Se propone al registrar sus facturas"
         :error="errors.defaultAccountId"
@@ -175,17 +175,17 @@ async function submit() {
           :exclude-prefixes="['1592']"
           placeholder="Ninguna"
         />
-      </DuiLabel>
-      <DuiLabel title="Notas" :error="errors.notes">
-        <DuiTextarea v-model="form.notes" rows="2" maxlength="1000" />
-      </DuiLabel>
-      <DuiCheckbox v-if="vendor" v-model="form.isActive" label="Activo" />
+      </UiLabel>
+      <UiLabel title="Notas" :error="errors.notes">
+        <UiTextarea v-model="form.notes" rows="2" maxlength="1000" />
+      </UiLabel>
+      <UiCheckbox v-if="vendor" v-model="form.isActive" label="Activo" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

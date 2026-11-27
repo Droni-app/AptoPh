@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   ENROLLMENT_ROLES,
   ROLE_DESCRIPTIONS,
@@ -100,7 +100,7 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="
       editing
@@ -112,62 +112,62 @@ async function submit() {
     size="md"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <p v-if="!editing" class="text-sm text-neutral-600 dark:text-neutral-300">
         Le enviaremos un correo con un enlace para aceptar. Si aún no tiene cuenta en AptoPH, creará
         su contraseña al aceptar. El enlace vence en 7 días.
       </p>
 
-      <DuiLabel title="Correo electrónico" required :error="errors.email">
-        <DuiInput
+      <UiLabel title="Correo electrónico" required :error="errors.email">
+        <UiInput
           v-model="form.email"
           type="email"
           :disabled="editing || Boolean(preset?.occupantId && preset.email)"
           required
           block
         />
-      </DuiLabel>
-      <DuiLabel title="Nombre completo" required :error="errors.fullName">
-        <DuiInput v-model="form.fullName" :disabled="editing" required block />
-      </DuiLabel>
-      <DuiLabel title="Rol" required :error="errors.role">
-        <DuiSelect
+      </UiLabel>
+      <UiLabel title="Nombre completo" required :error="errors.fullName">
+        <UiInput v-model="form.fullName" :disabled="editing" required block />
+      </UiLabel>
+      <UiLabel title="Rol" required :error="errors.role">
+        <UiSelect
           v-model="form.role"
           :options="roleOptions"
           :disabled="editing || Boolean(preset?.occupantId)"
           block
         />
-      </DuiLabel>
+      </UiLabel>
       <p
         class="-mt-2 rounded-xl bg-neutral-50 px-3 py-2 text-sm text-neutral-600 dark:bg-white/5 dark:text-neutral-300"
       >
         {{ ROLE_DESCRIPTIONS[form.role] }}
       </p>
-      <DuiLabel title="Cargo (opcional)" :error="errors.title">
-        <DuiInput
+      <UiLabel title="Cargo (opcional)" :error="errors.title">
+        <UiInput
           v-model="form.title"
           maxlength="100"
           placeholder="Presidente del consejo, portero turno noche…"
           block
         />
-      </DuiLabel>
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Acceso desde" :error="errors.startsOn">
-          <DuiInput v-model="form.startsOn" type="date" block />
-        </DuiLabel>
-        <DuiLabel title="Acceso hasta (vacío: sin fin)" :error="errors.endsOn">
-          <DuiInput v-model="form.endsOn" type="date" :min="form.startsOn || undefined" block />
-        </DuiLabel>
+        <UiLabel title="Acceso desde" :error="errors.startsOn">
+          <UiInput v-model="form.startsOn" type="date" block />
+        </UiLabel>
+        <UiLabel title="Acceso hasta (vacío: sin fin)" :error="errors.endsOn">
+          <UiInput v-model="form.endsOn" type="date" :min="form.startsOn || undefined" block />
+        </UiLabel>
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">
             {{ editing ? 'Guardar' : 'Enviar invitación' }}
-          </DuiButton>
+          </UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

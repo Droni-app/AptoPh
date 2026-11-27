@@ -1,0 +1,28 @@
+{
+  "name": "@aptoph/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sistema de diseño de AptoPH: componentes Vue con Tailwind 4 e íconos MDI",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0",
+    "vue-router": "^5.0.0"
+  },
+  "devDependencies": {
+    "@vue/tsconfig": "^0.9.1",
+    "typescript": "~6.0.3",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1",
+    "vue-tsc": "^3.3.11"
+  }
+}

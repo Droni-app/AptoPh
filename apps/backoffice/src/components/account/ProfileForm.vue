@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
-import { DuiButton, DuiForm, DuiInput, DuiLabel, DuiSelect, useToast } from '@dronico/droni-kit'
+import { UiButton, UiForm, UiInput, UiLabel, UiSelect, useToast } from '@aptoph/ui'
 import { DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS, type DocumentType } from '@aptoph/shared'
 import { accountApi } from '@/api/account'
 import { useAuthStore } from '@/stores/auth'
@@ -51,40 +51,40 @@ async function submit() {
 </script>
 
 <template>
-  <DuiForm :loading="saving" @submit="submit">
-    <DuiLabel title="Nombre completo" required :error="errors.fullName">
-      <DuiInput v-model="form.fullName" autocomplete="name" required block />
-    </DuiLabel>
-    <DuiLabel
+  <UiForm :loading="saving" @submit="submit">
+    <UiLabel title="Nombre completo" required :error="errors.fullName">
+      <UiInput v-model="form.fullName" autocomplete="name" required block />
+    </UiLabel>
+    <UiLabel
       title="Correo electrónico"
       help-text="Es tu usuario para entrar. Para cambiarlo, escribe a contacto@aptoph.com."
     >
-      <DuiInput :model-value="auth.user?.email ?? ''" type="email" disabled block />
-    </DuiLabel>
-    <DuiLabel title="Celular" :error="errors.phone">
-      <DuiInput
+      <UiInput :model-value="auth.user?.email ?? ''" type="email" disabled block />
+    </UiLabel>
+    <UiLabel title="Celular" :error="errors.phone">
+      <UiInput
         v-model="form.phone"
         type="tel"
         autocomplete="tel"
         placeholder="300 123 4567"
         block
       />
-    </DuiLabel>
+    </UiLabel>
     <div class="grid gap-4 sm:grid-cols-2">
-      <DuiLabel title="Tipo de documento" :error="errors.documentType">
-        <DuiSelect v-model="form.documentType" :options="documentOptions" block />
-      </DuiLabel>
-      <DuiLabel title="Número de documento" :error="errors.documentNumber">
-        <DuiInput
+      <UiLabel title="Tipo de documento" :error="errors.documentType">
+        <UiSelect v-model="form.documentType" :options="documentOptions" block />
+      </UiLabel>
+      <UiLabel title="Número de documento" :error="errors.documentNumber">
+        <UiInput
           v-model="form.documentNumber"
           :disabled="!form.documentType"
           inputmode="numeric"
           block
         />
-      </DuiLabel>
+      </UiLabel>
     </div>
     <div>
-      <DuiButton type="submit" color="primary" :loading="saving">Guardar cambios</DuiButton>
+      <UiButton type="submit" color="primary" :loading="saving">Guardar cambios</UiButton>
     </div>
-  </DuiForm>
+  </UiForm>
 </template>

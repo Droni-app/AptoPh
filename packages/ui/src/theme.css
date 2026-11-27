@@ -1,0 +1,72 @@
+/*
+ * AptoPH design system (packages/ui). Import after tailwindcss and branding/tokens.css:
+ *   @import 'tailwindcss';
+ *   @import '../../../../branding/tokens.css';
+ *   @import '@aptoph/ui/theme.css';
+ * Class-based dark mode: `.dark` on <html>.
+ */
+
+/* Material Design Icons in the base layer, so Tailwind utilities (size, color) win over it */
+@import '@mdi/font/css/materialdesignicons.css' layer(base);
+
+/* Tailwind scans the components of this package for their classes */
+@source './';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Neutrals tinted with the brand blue: grays, borders and the dark surfaces (navy,
+ * like the brand's ink) match the rest of the palette.
+ */
+@theme {
+  --color-neutral-50: #f6f8fb;
+  --color-neutral-100: #edf1f6;
+  --color-neutral-200: #dde3ec;
+  --color-neutral-300: #c2cbd8;
+  --color-neutral-400: #92a0b4;
+  --color-neutral-500: #63748b;
+  --color-neutral-600: #4a607a;
+  --color-neutral-700: #33465d;
+  --color-neutral-800: #1c2b40;
+  --color-neutral-900: #132136;
+  --color-neutral-950: #0b1526;
+
+  /* Sidebar of the back-office */
+  --color-rail: #102038;
+  --color-rail-hover: #182c4a;
+
+  --shadow-overlay: 0 16px 40px -12px rgb(16 32 56 / 0.28), 0 2px 6px -2px rgb(16 32 56 / 0.12);
+
+  --animate-ui-in: ui-in 140ms ease-out;
+  @keyframes ui-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px) scale(0.98);
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-mint-500);
+    outline-offset: 2px;
+  }
+  .mdi::before {
+    line-height: inherit;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}

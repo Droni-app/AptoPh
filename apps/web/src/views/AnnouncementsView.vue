@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { DuiAlert, DuiButton, DuiSkeleton } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiSkeleton } from '@aptoph/ui'
 import type { ResidentAnnouncement } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -35,12 +35,12 @@ onMounted(load)
   />
 
   <div v-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
   <div v-else-if="!announcements" class="flex flex-col gap-3" aria-busy="true">
-    <DuiSkeleton v-for="n in 3" :key="n" height="5rem" variant="rounded" />
+    <UiSkeleton v-for="n in 3" :key="n" height="5rem" variant="rounded" />
   </div>
 
   <EmptyState

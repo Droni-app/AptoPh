@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiForm, UiInput, UiLabel, useToast } from '@aptoph/ui'
 import AuthShell from '@/components/AuthShell.vue'
 import { publicAuthApi } from '@/api/account'
 import { useAuthStore } from '@/stores/auth'
@@ -61,24 +61,24 @@ async function submit() {
       Crea una contraseña nueva
     </h1>
 
-    <DuiAlert v-if="!token" color="danger" variant="soft" class="mt-6" role="alert">
+    <UiAlert v-if="!token" color="danger" variant="soft" class="mt-6" role="alert">
       El enlace está incompleto. Ábrelo de nuevo desde el correo o solicita uno nuevo.
-    </DuiAlert>
+    </UiAlert>
 
     <template v-else>
       <p class="mt-2 text-neutral-600 dark:text-neutral-300">
         Usa al menos 8 caracteres. Al guardarla cerraremos las sesiones abiertas en otros
         dispositivos.
       </p>
-      <DuiForm class="mt-8" :loading="loading" @submit="submit">
-        <DuiAlert v-if="error" color="danger" variant="soft" role="alert">
+      <UiForm class="mt-8" :loading="loading" @submit="submit">
+        <UiAlert v-if="error" color="danger" variant="soft" role="alert">
           {{ error }}
           <RouterLink to="/recuperar-contrasena" class="ml-1 font-semibold underline">
             Solicitar otro enlace
           </RouterLink>
-        </DuiAlert>
-        <DuiLabel title="Contraseña nueva" :error="errors.password">
-          <DuiInput
+        </UiAlert>
+        <UiLabel title="Contraseña nueva" :error="errors.password">
+          <UiInput
             v-model="form.password"
             type="password"
             autocomplete="new-password"
@@ -87,20 +87,20 @@ async function submit() {
             autofocus
             block
           />
-        </DuiLabel>
-        <DuiLabel title="Repite la contraseña" :error="errors.confirmation">
-          <DuiInput
+        </UiLabel>
+        <UiLabel title="Repite la contraseña" :error="errors.confirmation">
+          <UiInput
             v-model="form.confirmation"
             type="password"
             autocomplete="new-password"
             required
             block
           />
-        </DuiLabel>
-        <DuiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
+        </UiLabel>
+        <UiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
           Guardar y entrar
-        </DuiButton>
-      </DuiForm>
+        </UiButton>
+      </UiForm>
     </template>
 
     <p class="mt-8 text-sm">

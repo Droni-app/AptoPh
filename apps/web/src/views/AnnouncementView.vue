@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { DuiAlert, DuiButton, DuiCard, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiCard, UiSkeleton, useToast } from '@aptoph/ui'
 import {
   attachmentIcon,
   formatFileSize,
@@ -58,16 +58,16 @@ onMounted(load)
     <span aria-hidden="true"><i class="mdi mdi-arrow-left" /></span> Comunicados
   </RouterLink>
 
-  <DuiCard v-if="notFound">
+  <UiCard v-if="notFound">
     <p class="py-6 text-center font-medium">Este comunicado no existe o ya no está disponible.</p>
-  </DuiCard>
+  </UiCard>
 
   <div v-else-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
-  <DuiSkeleton v-else-if="!announcement" height="16rem" variant="rounded" />
+  <UiSkeleton v-else-if="!announcement" height="16rem" variant="rounded" />
 
   <template v-else>
     <PageHeader :title="announcement.title" :subtitle="formatDateTime(announcement.publishedAt)" />
@@ -98,14 +98,14 @@ onMounted(load)
             <span class="block truncate font-medium hover:underline">{{ file.fileName }}</span>
             <span class="block text-xs text-neutral-500">{{ formatFileSize(file.sizeBytes) }}</span>
           </button>
-          <DuiButton
+          <UiButton
             variant="ghost"
             size="sm"
             :aria-label="`Descargar ${file.fileName}`"
             @click="open(file, true)"
           >
             <i class="mdi mdi-download" aria-hidden="true" />
-          </DuiButton>
+          </UiButton>
         </li>
       </ul>
     </section>

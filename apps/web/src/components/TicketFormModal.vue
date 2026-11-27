@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-  DuiTextarea,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+  UiTextarea,
+} from '@aptoph/ui'
 import {
   TICKET_TYPES,
   TICKET_TYPE_LABELS,
@@ -69,13 +69,13 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal v-model="open" title="Radicar PQRS" size="lg" :persistent="saving">
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+  <UiModal v-model="open" title="Radicar PQRS" size="lg" :persistent="saving">
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Tipo de solicitud" required :error="errors.type">
-          <DuiSelect v-model="form.type" :options="typeOptions" />
-        </DuiLabel>
+        <UiLabel title="Tipo de solicitud" required :error="errors.type">
+          <UiSelect v-model="form.type" :options="typeOptions" />
+        </UiLabel>
         <UnitPicker
           v-model="form.unitId"
           optional
@@ -85,11 +85,11 @@ async function submit() {
         <p class="text-xs text-neutral-500 sm:col-span-2 dark:text-neutral-300">
           {{ HINTS[form.type] }}
         </p>
-        <DuiLabel title="Asunto" required :error="errors.subject" class="sm:col-span-2">
-          <DuiInput v-model="form.subject" required minlength="5" maxlength="200" />
-        </DuiLabel>
-        <DuiLabel title="Descripción" required :error="errors.description" class="sm:col-span-2">
-          <DuiTextarea
+        <UiLabel title="Asunto" required :error="errors.subject" class="sm:col-span-2">
+          <UiInput v-model="form.subject" required minlength="5" maxlength="200" />
+        </UiLabel>
+        <UiLabel title="Descripción" required :error="errors.description" class="sm:col-span-2">
+          <UiTextarea
             v-model="form.description"
             required
             minlength="10"
@@ -97,14 +97,14 @@ async function submit() {
             rows="6"
             autoheight
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Radicar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Radicar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

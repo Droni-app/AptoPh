@@ -2,16 +2,16 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCard,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSkeleton,
-  DuiTabs,
+  UiAlert,
+  UiButton,
+  UiCard,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSkeleton,
+  UiTabs,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import type { BudgetDetail, BudgetExecutionRow } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
@@ -202,8 +202,8 @@ function exportCsv() {
 </script>
 
 <template>
-  <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-  <DuiSkeleton v-else-if="!budget" class="h-64 rounded-2xl" />
+  <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+  <UiSkeleton v-else-if="!budget" class="h-64 rounded-2xl" />
   <template v-else>
     <PageHeader
       :title="budget.name"
@@ -225,16 +225,16 @@ function exportCsv() {
         <StatusBadge kind="budget" :status="budget.status" />
         <template v-if="tenant.canManageFinance">
           <template v-if="budget.status === 'draft'">
-            <DuiButton variant="ghost" color="danger" @click="deleteOpen = true"
-              >Eliminar</DuiButton
+            <UiButton variant="ghost" color="danger" @click="deleteOpen = true"
+              >Eliminar</UiButton
             >
-            <DuiButton variant="outline" :loading="saving" :disabled="!dirty" @click="save"
-              >Guardar</DuiButton
+            <UiButton variant="outline" :loading="saving" :disabled="!dirty" @click="save"
+              >Guardar</UiButton
             >
-            <DuiButton color="primary" @click="approveOpen = true">Aprobar</DuiButton>
+            <UiButton color="primary" @click="approveOpen = true">Aprobar</UiButton>
           </template>
-          <DuiButton v-else variant="outline" :loading="busy" @click="reopen"
-            >Volver a borrador</DuiButton
+          <UiButton v-else variant="outline" :loading="busy" @click="reopen"
+            >Volver a borrador</UiButton
           >
         </template>
       </template>
@@ -270,7 +270,7 @@ function exportCsv() {
       />
     </div>
 
-    <DuiTabs
+    <UiTabs
       v-model="tab"
       :tabs="[
         { label: 'Ejecución', value: 'execution', icon: 'mdi mdi-chart-bar' },
@@ -288,11 +288,11 @@ function exportCsv() {
           >Al {{ formatDate(budget.execution.asOf) }} · {{ budget.execution.monthsElapsed }} de 12
           meses transcurridos</span
         >
-        <DuiButton size="sm" variant="outline" @click="exportCsv">
+        <UiButton size="sm" variant="outline" @click="exportCsv">
           <span class="mr-1"><i class="mdi mdi-download" aria-hidden="true" /></span>CSV
-        </DuiButton>
+        </UiButton>
       </div>
-      <DuiCard
+      <UiCard
         v-for="kind in ['income', 'expense'] as const"
         :key="kind"
         :title="kind === 'income' ? 'Ingresos' : 'Gastos'"
@@ -374,39 +374,39 @@ function exportCsv() {
             </tfoot>
           </table>
         </div>
-      </DuiCard>
+      </UiCard>
     </template>
 
-    <DuiCard v-else>
+    <UiCard v-else>
       <div class="mb-4 grid gap-4 sm:grid-cols-[minmax(0,1fr)_8rem_10rem]">
-        <DuiLabel title="Nombre" :error="errors.name">
-          <DuiInput
+        <UiLabel title="Nombre" :error="errors.name">
+          <UiInput
             v-model="form.name"
             :disabled="!editable"
             maxlength="120"
             @input="dirty = true"
           />
-        </DuiLabel>
-        <DuiLabel title="Año" :error="errors.year">
-          <DuiInput
+        </UiLabel>
+        <UiLabel title="Año" :error="errors.year">
+          <UiInput
             v-model.number="form.year"
             type="number"
             :disabled="!editable"
             @input="dirty = true"
           />
-        </DuiLabel>
-        <DuiLabel
+        </UiLabel>
+        <UiLabel
           title="Fondo de imprevistos %"
           help-text="Mínimo 1 % (Ley 675)"
           :error="errors.reserveFundRate"
         >
-          <DuiInput
+          <UiInput
             v-model="form.reserveFundRate"
             inputmode="decimal"
             :disabled="!editable"
             @input="dirty = true"
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
       <div class="flex flex-col gap-2">
         <div
@@ -425,7 +425,7 @@ function exportCsv() {
             >{{ catalog.accounts.value.find((a) => a.id === item.accountId)?.code }} ·
             {{ catalog.accounts.value.find((a) => a.id === item.accountId)?.name }}</span
           >
-          <DuiInput
+          <UiInput
             v-model="item.description"
             maxlength="255"
             placeholder="Detalle"
@@ -433,7 +433,7 @@ function exportCsv() {
             :aria-label="`Detalle de la partida ${i + 1}`"
             @input="dirty = true"
           />
-          <DuiInput
+          <UiInput
             v-model="item.annualAmount"
             inputmode="decimal"
             placeholder="Valor anual"
@@ -481,30 +481,30 @@ function exportCsv() {
           <dd class="font-semibold tabular-nums">{{ formatMoney(budget.monthlyBase.monthly) }}</dd>
         </div>
       </dl>
-    </DuiCard>
+    </UiCard>
 
-    <DuiModal v-model="approveOpen" title="Aprobar presupuesto" size="sm" :persistent="busy">
+    <UiModal v-model="approveOpen" title="Aprobar presupuesto" size="sm" :persistent="busy">
       <div class="flex flex-col gap-4">
-        <DuiLabel title="Fecha de la asamblea" required>
-          <DuiInput v-model="approval.approvedOn" type="date" required />
-        </DuiLabel>
-        <DuiLabel title="Acta" help-text="Referencia del acta de asamblea">
-          <DuiInput
+        <UiLabel title="Fecha de la asamblea" required>
+          <UiInput v-model="approval.approvedOn" type="date" required />
+        </UiLabel>
+        <UiLabel title="Acta" help-text="Referencia del acta de asamblea">
+          <UiInput
             v-model="approval.approvalReference"
             maxlength="120"
             placeholder="Acta 23 de asamblea ordinaria"
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="busy" @click="approveOpen = false"
-            >Cancelar</DuiButton
+          <UiButton variant="ghost" :disabled="busy" @click="approveOpen = false"
+            >Cancelar</UiButton
           >
-          <DuiButton color="primary" :loading="busy" @click="approve">Aprobar</DuiButton>
+          <UiButton color="primary" :loading="busy" @click="approve">Aprobar</UiButton>
         </div>
       </template>
-    </DuiModal>
+    </UiModal>
     <ConfirmDialog
       v-model="deleteOpen"
       title="Eliminar presupuesto"

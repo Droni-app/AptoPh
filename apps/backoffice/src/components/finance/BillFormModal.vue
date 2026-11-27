@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   PAYMENT_METHODS,
   PAYMENT_METHOD_LABELS,
@@ -187,7 +187,7 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Registrar gasto"
     description="Factura o cuenta de cobro de un proveedor"
@@ -195,36 +195,36 @@ async function submit() {
     :persistent="saving"
     scrollable
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_12rem]">
-        <DuiLabel title="Proveedor" required :error="errors.vendorId">
+        <UiLabel title="Proveedor" required :error="errors.vendorId">
           <div class="flex gap-2">
-            <DuiSelect v-model="form.vendorId" :options="vendorOptions" class="flex-1" block />
-            <DuiButton variant="outline" aria-label="Nuevo proveedor" @click="vendorFormOpen = true"
+            <UiSelect v-model="form.vendorId" :options="vendorOptions" class="flex-1" block />
+            <UiButton variant="outline" aria-label="Nuevo proveedor" @click="vendorFormOpen = true"
               ><i class="mdi mdi-plus" aria-hidden="true"
-            /></DuiButton>
+            /></UiButton>
           </div>
-        </DuiLabel>
-        <DuiLabel title="N.º de factura" :error="errors.number">
-          <DuiInput v-model="form.number" maxlength="40" placeholder="FE-1234" />
-        </DuiLabel>
+        </UiLabel>
+        <UiLabel title="N.º de factura" :error="errors.number">
+          <UiInput v-model="form.number" maxlength="40" placeholder="FE-1234" />
+        </UiLabel>
       </div>
-      <DuiLabel title="Descripción" required :error="errors.description">
-        <DuiInput
+      <UiLabel title="Descripción" required :error="errors.description">
+        <UiInput
           v-model="form.description"
           maxlength="255"
           required
           placeholder="Vigilancia de noviembre"
         />
-      </DuiLabel>
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Fecha de la factura" required :error="errors.issuedOn">
-          <DuiInput v-model="form.issuedOn" type="date" required />
-        </DuiLabel>
-        <DuiLabel v-if="!payNow" title="Vence" required :error="errors.dueOn">
-          <DuiInput v-model="form.dueOn" type="date" required />
-        </DuiLabel>
+        <UiLabel title="Fecha de la factura" required :error="errors.issuedOn">
+          <UiInput v-model="form.issuedOn" type="date" required />
+        </UiLabel>
+        <UiLabel v-if="!payNow" title="Vence" required :error="errors.dueOn">
+          <UiInput v-model="form.dueOn" type="date" required />
+        </UiLabel>
       </div>
 
       <fieldset class="flex flex-col gap-2">
@@ -240,13 +240,13 @@ async function submit() {
             :exclude-prefixes="['1592']"
             :aria-label="`Cuenta de la línea ${i + 1}`"
           />
-          <DuiInput
+          <UiInput
             v-model="line.description"
             maxlength="255"
             placeholder="Detalle (opcional)"
             :aria-label="`Detalle de la línea ${i + 1}`"
           />
-          <DuiInput
+          <UiInput
             v-model="line.amount"
             inputmode="decimal"
             placeholder="Valor"
@@ -272,20 +272,20 @@ async function submit() {
         </button>
       </fieldset>
 
-      <DuiCheckbox v-model="showTaxes" label="Tiene IVA o retenciones" />
+      <UiCheckbox v-model="showTaxes" label="Tiene IVA o retenciones" />
       <div v-if="showTaxes" class="grid gap-4 sm:grid-cols-4">
-        <DuiLabel title="IVA" help-text="Se lleva como mayor gasto" :error="errors.taxAmount">
-          <DuiInput v-model="form.taxAmount" inputmode="decimal" />
-        </DuiLabel>
-        <DuiLabel title="Retención en la fuente" :error="errors.withholdingIncomeTax">
-          <DuiInput v-model="form.withholdingIncomeTax" inputmode="decimal" />
-        </DuiLabel>
-        <DuiLabel title="Retención de IVA" :error="errors.withholdingVat">
-          <DuiInput v-model="form.withholdingVat" inputmode="decimal" />
-        </DuiLabel>
-        <DuiLabel title="Retención de ICA" :error="errors.withholdingIca">
-          <DuiInput v-model="form.withholdingIca" inputmode="decimal" />
-        </DuiLabel>
+        <UiLabel title="IVA" help-text="Se lleva como mayor gasto" :error="errors.taxAmount">
+          <UiInput v-model="form.taxAmount" inputmode="decimal" />
+        </UiLabel>
+        <UiLabel title="Retención en la fuente" :error="errors.withholdingIncomeTax">
+          <UiInput v-model="form.withholdingIncomeTax" inputmode="decimal" />
+        </UiLabel>
+        <UiLabel title="Retención de IVA" :error="errors.withholdingVat">
+          <UiInput v-model="form.withholdingVat" inputmode="decimal" />
+        </UiLabel>
+        <UiLabel title="Retención de ICA" :error="errors.withholdingIca">
+          <UiInput v-model="form.withholdingIca" inputmode="decimal" />
+        </UiLabel>
       </div>
 
       <dl
@@ -309,31 +309,31 @@ async function submit() {
         </div>
       </dl>
 
-      <DuiCheckbox v-model="payNow" label="Ya se pagó (gasto de caja menor o pago inmediato)" />
+      <UiCheckbox v-model="payNow" label="Ya se pagó (gasto de caja menor o pago inmediato)" />
       <div v-if="payNow" class="grid gap-4 sm:grid-cols-4">
-        <DuiLabel title="Pagado desde" required :error="errors['payNow.cashAccountId']">
-          <DuiSelect v-model="payment.cashAccountId" :options="cashOptions" block />
-        </DuiLabel>
-        <DuiLabel title="Fecha del pago" required :error="errors['payNow.paidOn']">
-          <DuiInput v-model="payment.paidOn" type="date" required />
-        </DuiLabel>
-        <DuiLabel title="Medio">
-          <DuiSelect v-model="payment.method" :options="methodOptions" block />
-        </DuiLabel>
-        <DuiLabel title="Referencia">
-          <DuiInput v-model="payment.reference" maxlength="80" />
-        </DuiLabel>
+        <UiLabel title="Pagado desde" required :error="errors['payNow.cashAccountId']">
+          <UiSelect v-model="payment.cashAccountId" :options="cashOptions" block />
+        </UiLabel>
+        <UiLabel title="Fecha del pago" required :error="errors['payNow.paidOn']">
+          <UiInput v-model="payment.paidOn" type="date" required />
+        </UiLabel>
+        <UiLabel title="Medio">
+          <UiSelect v-model="payment.method" :options="methodOptions" block />
+        </UiLabel>
+        <UiLabel title="Referencia">
+          <UiInput v-model="payment.reference" maxlength="80" />
+        </UiLabel>
       </div>
       <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">{{
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">{{
             payNow ? 'Registrar y pagar' : 'Registrar factura'
-          }}</DuiButton>
+          }}</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
   <VendorFormModal v-model="vendorFormOpen" :vendor="null" @saved="onVendorCreated" />
 </template>

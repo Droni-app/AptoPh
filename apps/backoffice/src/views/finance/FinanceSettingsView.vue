@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCard,
-  DuiCheckbox,
-  DuiInput,
-  DuiLabel,
-  DuiSelect,
-  DuiSkeleton,
+  UiAlert,
+  UiButton,
+  UiCard,
+  UiCheckbox,
+  UiInput,
+  UiLabel,
+  UiSelect,
+  UiSkeleton,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   MAX_MONTHLY_INTEREST_RATE,
   PAYMENT_APPLICATION_ORDERS,
@@ -98,94 +98,94 @@ async function save() {
     subtitle="Reglas de facturación, mora y cierre contable del conjunto"
   >
     <template #actions>
-      <DuiButton
+      <UiButton
         v-if="tenant.canManageFinance"
         color="primary"
         :loading="saving"
         :disabled="!settings"
         @click="save"
-        >Guardar</DuiButton
+        >Guardar</UiButton
       >
     </template>
   </PageHeader>
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
-  <DuiSkeleton v-if="!settings" class="h-64 rounded-2xl" />
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
+  <UiSkeleton v-if="!settings" class="h-64 rounded-2xl" />
 
   <form v-else class="grid gap-6 lg:grid-cols-2" @submit.prevent="save">
-    <DuiCard title="Facturación">
+    <UiCard title="Facturación">
       <div class="flex flex-col gap-4">
-        <DuiLabel
+        <UiLabel
           title="Día de vencimiento"
           help-text="Las cuotas del mes vencen este día (1 a 28)"
           :error="errors.dueDay"
         >
-          <DuiInput v-model.number="settings.dueDay" type="number" min="1" max="28" />
-        </DuiLabel>
+          <UiInput v-model.number="settings.dueDay" type="number" min="1" max="28" />
+        </UiLabel>
         <div class="grid gap-4 sm:grid-cols-2">
-          <DuiLabel title="Redondeo de las cuotas" :error="errors.rounding">
-            <DuiSelect v-model="settings.rounding" :options="roundingOptions" block />
-          </DuiLabel>
-          <DuiLabel title="Sentido">
-            <DuiSelect v-model="settings.roundingMode" :options="roundingModeOptions" block />
-          </DuiLabel>
+          <UiLabel title="Redondeo de las cuotas" :error="errors.rounding">
+            <UiSelect v-model="settings.rounding" :options="roundingOptions" block />
+          </UiLabel>
+          <UiLabel title="Sentido">
+            <UiSelect v-model="settings.roundingMode" :options="roundingModeOptions" block />
+          </UiLabel>
         </div>
-        <DuiLabel
+        <UiLabel
           title="Cómo se aplican los pagos"
           help-text="Orden en que un pago abona a la deuda"
           :error="errors.applicationOrder"
         >
-          <DuiSelect v-model="settings.applicationOrder" :options="orderOptions" block />
-        </DuiLabel>
+          <UiSelect v-model="settings.applicationOrder" :options="orderOptions" block />
+        </UiLabel>
       </div>
-    </DuiCard>
+    </UiCard>
 
-    <DuiCard title="Intereses de mora">
+    <UiCard title="Intereses de mora">
       <div class="flex flex-col gap-4">
-        <DuiCheckbox v-model="settings.lateInterest.enabled" label="Cobrar intereses de mora" />
-        <DuiLabel
+        <UiCheckbox v-model="settings.lateInterest.enabled" label="Cobrar intereses de mora" />
+        <UiLabel
           v-if="settings.lateInterest.enabled"
           title="Tasa mensual %"
           :help-text="`Máximo legal: 1,5 veces el interés bancario corriente certificado por la Superfinanciera, sin superar la usura (art. 30 Ley 675). Tope del sistema: ${MAX_MONTHLY_INTEREST_RATE} %.`"
           :error="errors['lateInterest.monthlyRate']"
         >
-          <DuiInput v-model="settings.lateInterest.monthlyRate" inputmode="decimal" />
-        </DuiLabel>
+          <UiInput v-model="settings.lateInterest.monthlyRate" inputmode="decimal" />
+        </UiLabel>
         <p class="text-sm text-neutral-500">
           Se calcula al facturar cada mes sobre el capital vencido (cuotas, multas, parqueaderos),
           nunca sobre intereses.
         </p>
       </div>
-    </DuiCard>
+    </UiCard>
 
-    <DuiCard title="Descuento por pronto pago">
+    <UiCard title="Descuento por pronto pago">
       <div class="flex flex-col gap-4">
-        <DuiCheckbox
+        <UiCheckbox
           v-model="settings.earlyDiscount.enabled"
           label="Dar descuento a quien pague a tiempo"
         />
         <div v-if="settings.earlyDiscount.enabled" class="grid gap-4 sm:grid-cols-2">
-          <DuiLabel title="Descuento %" :error="errors['earlyDiscount.rate']">
-            <DuiInput v-model="settings.earlyDiscount.rate" inputmode="decimal" />
-          </DuiLabel>
-          <DuiLabel title="Hasta el día" :error="errors['earlyDiscount.day']">
-            <DuiInput v-model.number="settings.earlyDiscount.day" type="number" min="1" max="28" />
-          </DuiLabel>
+          <UiLabel title="Descuento %" :error="errors['earlyDiscount.rate']">
+            <UiInput v-model="settings.earlyDiscount.rate" inputmode="decimal" />
+          </UiLabel>
+          <UiLabel title="Hasta el día" :error="errors['earlyDiscount.day']">
+            <UiInput v-model.number="settings.earlyDiscount.day" type="number" min="1" max="28" />
+          </UiLabel>
         </div>
         <p class="text-sm text-neutral-500">
           Aplica a los conceptos marcados con pronto pago, si el cobro se paga completo hasta ese
           día.
         </p>
       </div>
-    </DuiCard>
+    </UiCard>
 
-    <DuiCard title="Cierre contable">
+    <UiCard title="Cierre contable">
       <div class="flex flex-col gap-4">
-        <DuiLabel
+        <UiLabel
           title="Contabilidad cerrada hasta"
           help-text="No se podrán registrar ni reversar movimientos con fecha igual o anterior. Úsalo cuando el revisor fiscal apruebe el mes."
           :error="errors.lockedUntil"
         >
-          <DuiInput
+          <UiInput
             :model-value="settings.lockedUntil ?? ''"
             type="date"
             :max="today"
@@ -193,12 +193,12 @@ async function save() {
               (value: string | number) => (settings!.lockedUntil = value ? String(value) : null)
             "
           />
-        </DuiLabel>
+        </UiLabel>
         <p v-if="settings.lockedUntil" class="text-sm">
           Cerrado hasta el <strong>{{ formatDate(settings.lockedUntil) }}</strong
           >.
         </p>
       </div>
-    </DuiCard>
+    </UiCard>
   </form>
 </template>

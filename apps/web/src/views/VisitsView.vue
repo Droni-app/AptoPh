@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiBadge, DuiButton, DuiSkeleton, DuiTabs } from '@dronico/droni-kit'
+import { UiAlert, UiBadge, UiButton, UiSkeleton, UiTabs } from '@aptoph/ui'
 import {
   PARCEL_STATUS_LABELS,
   VISIT_TYPE_LABELS,
@@ -108,14 +108,14 @@ onMounted(() => {
     art="porteria"
   >
     <template #actions>
-      <DuiButton color="primary" @click="formOpen = true">
+      <UiButton color="primary" @click="formOpen = true">
         <span class="mr-1" aria-hidden="true"><i class="mdi mdi-account-plus-outline" /></span
         >Autorizar visita
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
-  <DuiTabs
+  <UiTabs
     :model-value="tab"
     :tabs="tabs"
     aria-label="Portería"
@@ -124,12 +124,12 @@ onMounted(() => {
   />
 
   <div v-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
   <div v-else-if="!visits || !parcels" class="flex flex-col gap-3" aria-busy="true">
-    <DuiSkeleton v-for="n in 3" :key="n" height="5rem" variant="rounded" />
+    <UiSkeleton v-for="n in 3" :key="n" height="5rem" variant="rounded" />
   </div>
 
   <!-- Visitas -->
@@ -157,7 +157,7 @@ onMounted(() => {
                 <template v-if="showUnit"> · {{ unitName(visit.unit) }}</template>
               </p>
             </div>
-            <DuiBadge
+            <UiBadge
               :label="STATUS[visit.status].label"
               :color="STATUS[visit.status].color"
               variant="soft"
@@ -186,7 +186,7 @@ onMounted(() => {
               </p>
             </div>
           </div>
-          <DuiButton
+          <UiButton
             v-if="visit.canCancel"
             size="sm"
             variant="ghost"
@@ -195,7 +195,7 @@ onMounted(() => {
             @click="askCancel(visit)"
           >
             Cancelar autorización
-          </DuiButton>
+          </UiButton>
         </li>
       </ul>
     </section>
@@ -217,7 +217,7 @@ onMounted(() => {
               {{ formatDateTime((visit.checkedInAt ?? visit.expectedAt)!) }}
             </p>
           </div>
-          <DuiBadge
+          <UiBadge
             :label="STATUS[visit.status].label"
             :color="STATUS[visit.status].color"
             variant="soft"
@@ -264,7 +264,7 @@ onMounted(() => {
             <template v-if="showUnit"> · {{ unitName(parcel.unit) }}</template>
           </p>
         </div>
-        <DuiBadge
+        <UiBadge
           :label="PARCEL_STATUS_LABELS[parcel.status]"
           :color="parcel.status === 'pending' ? 'primary' : 'neutral'"
           variant="soft"

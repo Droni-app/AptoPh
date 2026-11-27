@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiInput,
-  DuiTable,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiInput,
+  UiTable,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import { UNIT_TYPE_LABELS, type ReceivablesAging } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -91,12 +91,12 @@ function exportCsv() {
     "
   >
     <template #actions>
-      <DuiButton variant="outline" :disabled="!aging" @click="exportCsv">
+      <UiButton variant="outline" :disabled="!aging" @click="exportCsv">
         <span class="mr-1"><i class="mdi mdi-download" aria-hidden="true" /></span>Exportar
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
 
   <div v-if="aging" class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     <StatTile
@@ -127,17 +127,17 @@ function exportCsv() {
   </div>
 
   <div class="mb-4 flex flex-wrap items-center gap-4">
-    <DuiInput
+    <UiInput
       v-model="search"
       type="search"
       placeholder="Buscar unidad"
       aria-label="Buscar unidad"
       class="w-full sm:w-72"
     />
-    <DuiCheckbox v-model="onlyArrears" label="Solo unidades en mora" />
+    <UiCheckbox v-model="onlyArrears" label="Solo unidades en mora" />
   </div>
 
-  <DuiTable :columns="columns" :rows="rows" :loading="!aging && !error">
+  <UiTable :columns="columns" :rows="rows" :loading="!aging && !error">
     <template #unit="row">
       <RouterLink
         :to="{ name: 'finance-statement', params: { unitId: row.unitId } }"
@@ -177,5 +177,5 @@ function exportCsv() {
         description="Todas las unidades están al día."
       />
     </template>
-  </DuiTable>
+  </UiTable>
 </template>

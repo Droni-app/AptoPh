@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DuiBadge } from '@dronico/droni-kit'
+import { UiBadge } from '@aptoph/ui'
 import type { UnitBalance } from '@aptoph/shared'
 import { isZero } from '@/lib/format'
 
@@ -14,5 +14,5 @@ const state = computed(() => {
 </script>
 
 <template>
-  <DuiBadge :label="state.label" :color="state.color" variant="soft" size="sm" />
+  <UiBadge :label="state.label" :color="state.color" variant="soft" size="sm" />
 </template>

@@ -2,19 +2,19 @@
 import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiRadio,
-  DuiSelect,
-  DuiSwitch,
-  DuiTextarea,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiRadio,
+  UiSelect,
+  UiSwitch,
+  UiTextarea,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   ANNOUNCEMENT_AUDIENCES,
   ANNOUNCEMENT_AUDIENCE_LABELS,
@@ -239,25 +239,25 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="announcement ? 'Editar comunicado' : 'Nuevo comunicado'"
     size="lg"
     :persistent="saving"
     scrollable
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel title="Título" required :error="errors.title">
-        <DuiInput
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel title="Título" required :error="errors.title">
+        <UiInput
           v-model="form.title"
           :maxlength="ANNOUNCEMENT_TITLE_MAX"
           required
           placeholder="Mantenimiento del tanque de agua"
         />
-      </DuiLabel>
-      <DuiLabel title="Mensaje" required :error="errors.body">
-        <DuiTextarea
+      </UiLabel>
+      <UiLabel title="Mensaje" required :error="errors.body">
+        <UiTextarea
           v-model="form.body"
           :maxlength="ANNOUNCEMENT_BODY_MAX"
           rows="8"
@@ -266,14 +266,14 @@ async function submit() {
           required
           placeholder="Escribe el comunicado. Deja una línea en blanco entre párrafos."
         />
-      </DuiLabel>
+      </UiLabel>
 
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Para" required :error="errors.audience">
-          <DuiSelect v-model="form.audience" :options="audienceOptions" block />
-        </DuiLabel>
+        <UiLabel title="Para" required :error="errors.audience">
+          <UiSelect v-model="form.audience" :options="audienceOptions" block />
+        </UiLabel>
         <div class="flex items-end pb-1">
-          <DuiSwitch
+          <UiSwitch
             v-model="form.isPinned"
             label="Fijar arriba"
             description="Aparece primero en el portal"
@@ -285,7 +285,7 @@ async function submit() {
         <legend class="mb-1 text-sm font-semibold">Torres</legend>
         <p class="text-xs text-neutral-500">Sin marcar ninguna, va a todas las torres.</p>
         <div class="flex flex-wrap gap-x-5 gap-y-2">
-          <DuiCheckbox
+          <UiCheckbox
             v-for="building in buildings"
             :key="building.id"
             v-model="form.buildingIds"
@@ -298,39 +298,39 @@ async function submit() {
 
       <fieldset class="flex flex-col gap-2">
         <legend class="mb-1 text-sm font-semibold">Publicación</legend>
-        <DuiRadio
+        <UiRadio
           v-model="form.publish"
           :options="publishOptions"
           name="publish"
           orientation="horizontal"
         />
-        <DuiLabel
+        <UiLabel
           v-if="form.publish === 'schedule'"
           title="Fecha y hora"
           required
           :error="errors.publishAt"
           class="max-w-xs"
         >
-          <DuiInput v-model="form.publishAt" type="datetime-local" required />
-        </DuiLabel>
+          <UiInput v-model="form.publishAt" type="datetime-local" required />
+        </UiLabel>
       </fieldset>
 
       <div>
-        <DuiSwitch
+        <UiSwitch
           v-model="form.sendEmail"
           label="Enviar por correo"
           :description="emailDescription"
           :disabled="!!alreadyEmailed"
         />
         <template v-if="wantsEmail && preview">
-          <DuiAlert v-if="overQuota" color="warning" variant="soft" class="mt-3">
+          <UiAlert v-if="overQuota" color="warning" variant="soft" class="mt-3">
             Le llegaría a {{ number(preview.recipients) }}
             {{ preview.recipients === 1 ? 'persona' : 'personas' }} y
             {{ remaining(preview.quota.available) }} de {{ quotaMonth }}. Publícalo sin correo o
             <RouterLink :to="{ name: 'plan' }" class="font-medium underline"
               >compra correos adicionales</RouterLink
             >.
-          </DuiAlert>
+          </UiAlert>
           <p v-else class="mt-2 text-xs text-neutral-500">
             <i class="mdi mdi-email-outline" aria-hidden="true" />
             Le llegará a {{ number(preview.recipients) }}
@@ -354,10 +354,10 @@ async function submit() {
 
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">{{ submitLabel }}</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">{{ submitLabel }}</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

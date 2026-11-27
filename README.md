@@ -14,6 +14,7 @@ apps/
 docs/              Documentación del proyecto (modelo de datos, decisiones)
 packages/
   shared/          Tipos/constantes TS compartidos (roles, contratos)
+  ui/              Sistema de diseño: componentes Vue (Tailwind 4 + íconos MDI)
 ```
 
 Monorepo con **pnpm workspaces** + **Turborepo**.
@@ -136,7 +137,7 @@ demo (los usuarios demo solo pertenecen a ese conjunto).
 
 ## Backoffice (`apps/backoffice`)
 
-Vue 3 + [droni-kit](https://www.npmjs.com/package/@dronico/droni-kit) + Tailwind 4. Inicio de sesión
+Vue 3 + `@aptoph/ui` + Tailwind 4. Inicio de sesión
 (`/login`) y registro de conjuntos nuevos (`/registro`) con correo y contraseña contra la API, que
 entrega un access token. La URL de la API está en `apps/backoffice/.env.development`.
 
@@ -145,10 +146,31 @@ Todo el personal del backoffice puede consultar; solo la administración puede c
 
 ## App de residentes (`apps/web`)
 
-Vue 3 + droni-kit con la marca AptoPH. El residente inicia sesión con correo y contraseña y ve
+Vue 3 + `@aptoph/ui` con la marca AptoPH. El residente inicia sesión con correo y contraseña y ve
 su conjunto, sus unidades con el saldo, y el detalle de cada unidad: estado de cuenta (cobros
 abiertos y vencidos), quiénes viven ahí, vehículos y mascotas. Solo ve las unidades donde es ocupante
 activo (la API responde 404 para las demás). Detalles en [apps/web/README.md](apps/web/README.md).
+
+## Sistema de diseño (`packages/ui`)
+
+`@aptoph/ui` reúne los componentes de las dos apps: botones, campos (`UiInput`, `UiSelect`,
+`UiTextarea`, `UiCheckbox`, `UiRadio`, `UiSwitch`) dentro de `UiLabel`, que les da el `id`, el
+error y la ayuda; `UiForm`, `UiCard`, `UiTable` (columnas con slot por nombre y paginación),
+`UiModal`, `UiTabs`, `UiDropdown`, `UiAlert`, `UiBadge`, `UiSkeleton` y los avisos (`UiToast` +
+`useToast()`). Íconos: Material Design Icons (`<i class="mdi mdi-…" />`; los props `icon` reciben
+la clase, p. ej. `mdi-plus`).
+
+Cada app importa los estilos en su CSS, después de Tailwind y los tokens de marca:
+
+```css
+@import 'tailwindcss';
+@import '../../../../branding/tokens.css';
+@import '@aptoph/ui/theme.css';
+```
+
+El tema define los grises con el tono azul de la marca, el modo oscuro por clase (`.dark` en
+`<html>`) y escanea los componentes del paquete. El backoffice usa un menú lateral cuyas secciones
+están en `apps/backoffice/src/layouts/navigation.ts` (las de finanzas incluidas).
 
 ## Landing (`apps/landing`)
 

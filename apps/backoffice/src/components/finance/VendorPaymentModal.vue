@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   PAYMENT_METHODS,
   PAYMENT_METHOD_LABELS,
@@ -131,7 +131,7 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Pagar a proveedor"
     description="Genera el comprobante de egreso"
@@ -139,11 +139,11 @@ async function submit() {
     :persistent="saving"
     scrollable
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel title="Proveedor" required :error="errors.vendorId">
-        <DuiSelect v-model="form.vendorId" :options="vendorOptions" block />
-      </DuiLabel>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel title="Proveedor" required :error="errors.vendorId">
+        <UiSelect v-model="form.vendorId" :options="vendorOptions" block />
+      </UiLabel>
       <p v-if="vendor?.bankAccountNumber" class="-mt-2 text-sm text-neutral-500">
         Cuenta {{ vendor.bankAccountKind === 'checking' ? 'corriente' : 'de ahorros' }}
         {{ vendor.bankName }} {{ vendor.bankAccountNumber }}
@@ -189,37 +189,37 @@ async function submit() {
       </p>
 
       <div class="grid gap-4 sm:grid-cols-3">
-        <DuiLabel title="Pagado desde" required :error="errors.cashAccountId">
-          <DuiSelect v-model="form.cashAccountId" :options="cashOptions" block />
-        </DuiLabel>
-        <DuiLabel title="Fecha" required :error="errors.paidOn">
-          <DuiInput v-model="form.paidOn" type="date" required />
-        </DuiLabel>
-        <DuiLabel title="Medio">
-          <DuiSelect v-model="form.method" :options="methodOptions" block />
-        </DuiLabel>
+        <UiLabel title="Pagado desde" required :error="errors.cashAccountId">
+          <UiSelect v-model="form.cashAccountId" :options="cashOptions" block />
+        </UiLabel>
+        <UiLabel title="Fecha" required :error="errors.paidOn">
+          <UiInput v-model="form.paidOn" type="date" required />
+        </UiLabel>
+        <UiLabel title="Medio">
+          <UiSelect v-model="form.method" :options="methodOptions" block />
+        </UiLabel>
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Referencia" :error="errors.reference">
-          <DuiInput
+        <UiLabel title="Referencia" :error="errors.reference">
+          <UiInput
             v-model="form.reference"
             maxlength="80"
             placeholder="N.º de transferencia o cheque"
           />
-        </DuiLabel>
-        <DuiLabel title="Notas" :error="errors.notes">
-          <DuiInput v-model="form.notes" maxlength="500" />
-        </DuiLabel>
+        </UiLabel>
+        <UiLabel title="Notas" :error="errors.notes">
+          <UiInput v-model="form.notes" maxlength="500" />
+        </UiLabel>
       </div>
       <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving" :disabled="total <= 0"
-            >Pagar {{ total > 0 ? formatMoney(total) : '' }}</DuiButton
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving" :disabled="total <= 0"
+            >Pagar {{ total > 0 ? formatMoney(total) : '' }}</UiButton
           >
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

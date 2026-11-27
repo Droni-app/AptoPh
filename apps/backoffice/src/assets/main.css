@@ -1,14 +1,8 @@
 @import 'tailwindcss';
 /* Brand tokens: blue/mint/coral scales, Plus Jakarta Sans + Inter (branding/README.md) */
 @import '../../../../branding/tokens.css';
-/* droni-kit and neutral grays in the brand palette (shared with apps/web) */
-@import '../../../../branding/droni-kit-theme.css';
-
-/*
- * droni-kit components use their own `dk:`-prefixed classes (imported in main.ts).
- * Tailwind here is only for the app layout.
- */
-@custom-variant dark (&:where(.dark, .dark *));
+/* Design system: brand-tinted neutrals, dark mode, MDI icons and the Ui* components */
+@import '@aptoph/ui/theme.css';
 
 html,
 body,
@@ -17,18 +11,12 @@ body,
 }
 
 body {
-  @apply bg-cream text-ink antialiased dark:bg-neutral-950 dark:text-neutral-100;
-  font-family: var(--font-sans);
+  @apply bg-neutral-50 font-sans text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+  font-feature-settings: 'cv11', 'ss01';
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--font-display);
+  @apply font-display tracking-tight;
 }
-
-/*
- * The MDI stylesheet (loaded by droni-kit) is unlayered, so it wins over Tailwind's
- * layered utilities: never put size/color utilities on the same element as `.mdi`.
- * Wrap the icon instead: <span class="text-2xl"><i class="mdi mdi-…" /></span>
- */

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+} from '@aptoph/ui'
 import {
   DOCUMENT_TYPES,
   DOCUMENT_TYPE_LABELS,
@@ -83,40 +83,40 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="member ? 'Editar persona' : 'Agregar persona al hogar'"
     description="Familiares, empleadas de servicio u otras personas que viven o trabajan en la unidad."
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Nombre completo" required :error="errors.fullName" class="sm:col-span-2">
-          <DuiInput v-model="form.fullName" required minlength="2" maxlength="150" />
-        </DuiLabel>
-        <DuiLabel title="Vínculo" required :error="errors.relationship">
-          <DuiSelect v-model="form.relationship" :options="relationshipOptions" />
-        </DuiLabel>
-        <DuiLabel title="Teléfono" :error="errors.phone">
-          <DuiInput v-model="form.phone" type="tel" maxlength="30" />
-        </DuiLabel>
-        <DuiLabel title="Tipo de documento" :error="errors.documentType">
-          <DuiSelect v-model="form.documentType" :options="documentOptions" />
-        </DuiLabel>
-        <DuiLabel title="Número de documento" :error="errors.documentNumber">
-          <DuiInput v-model="form.documentNumber" maxlength="30" :disabled="!form.documentType" />
-        </DuiLabel>
+        <UiLabel title="Nombre completo" required :error="errors.fullName" class="sm:col-span-2">
+          <UiInput v-model="form.fullName" required minlength="2" maxlength="150" />
+        </UiLabel>
+        <UiLabel title="Vínculo" required :error="errors.relationship">
+          <UiSelect v-model="form.relationship" :options="relationshipOptions" />
+        </UiLabel>
+        <UiLabel title="Teléfono" :error="errors.phone">
+          <UiInput v-model="form.phone" type="tel" maxlength="30" />
+        </UiLabel>
+        <UiLabel title="Tipo de documento" :error="errors.documentType">
+          <UiSelect v-model="form.documentType" :options="documentOptions" />
+        </UiLabel>
+        <UiLabel title="Número de documento" :error="errors.documentNumber">
+          <UiInput v-model="form.documentNumber" maxlength="30" :disabled="!form.documentType" />
+        </UiLabel>
       </div>
       <p class="text-xs text-neutral-500 dark:text-neutral-300">
         Los propietarios, arrendatarios y responsables de pago los registra la administración.
       </p>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

@@ -2,15 +2,15 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiAlert,
-  DuiBadge,
-  DuiButton,
-  DuiCard,
-  DuiSkeleton,
-  DuiTable,
+  UiAlert,
+  UiBadge,
+  UiButton,
+  UiCard,
+  UiSkeleton,
+  UiTable,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   OCCUPANT_RELATIONSHIP_LABELS,
   UNIT_STATUS_LABELS,
@@ -127,7 +127,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
 
   <template v-else-if="unit">
     <PageHeader
@@ -147,28 +147,28 @@ onMounted(() => {
           v-if="tenant.canReadFinance"
           :to="{ name: 'finance-statement', params: { unitId: unit.id } }"
         >
-          <DuiButton variant="outline">
+          <UiButton variant="outline">
             <span class="mr-1"><i class="mdi mdi-account-cash-outline" aria-hidden="true" /></span
             >Estado de cuenta
-          </DuiButton>
+          </UiButton>
         </RouterLink>
         <template v-if="tenant.canManage">
-          <DuiButton variant="outline" @click="unitFormOpen = true">
+          <UiButton variant="outline" @click="unitFormOpen = true">
             <span class="mdi mdi-pencil-outline mr-1" aria-hidden="true" />Editar
-          </DuiButton>
-          <DuiButton variant="ghost" color="danger" @click="deleteUnitOpen = true"
-            >Eliminar</DuiButton
+          </UiButton>
+          <UiButton variant="ghost" color="danger" @click="deleteUnitOpen = true"
+            >Eliminar</UiButton
           >
         </template>
       </template>
     </PageHeader>
 
-    <DuiCard class="mb-6">
+    <UiCard class="mb-6">
       <dl class="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <dt class="text-neutral-500 dark:text-neutral-400">Estado</dt>
           <dd class="mt-1">
-            <DuiBadge :label="UNIT_STATUS_LABELS[unit.status]" variant="soft" size="sm" />
+            <UiBadge :label="UNIT_STATUS_LABELS[unit.status]" variant="soft" size="sm" />
           </dd>
         </div>
         <div>
@@ -203,27 +203,27 @@ onMounted(() => {
       >
         {{ unit.notes }}
       </p>
-    </DuiCard>
+    </UiCard>
 
     <div class="mb-3 flex items-center justify-between gap-4">
       <h2 class="text-lg font-semibold">Ocupantes</h2>
-      <DuiButton v-if="tenant.canManage" size="sm" color="primary" @click="editOccupant(null)">
+      <UiButton v-if="tenant.canManage" size="sm" color="primary" @click="editOccupant(null)">
         <span class="mdi mdi-account-plus-outline mr-1" aria-hidden="true" />Agregar
-      </DuiButton>
+      </UiButton>
     </div>
 
-    <DuiTable :columns="occupantColumns" :rows="unit.occupants ?? []">
+    <UiTable :columns="occupantColumns" :rows="unit.occupants ?? []">
       <template #fullName="{ fullName, isPrimaryContact, isBillingResponsible }">
         <span class="font-medium">{{ fullName }}</span>
         <span class="mt-1 flex flex-wrap gap-1">
-          <DuiBadge
+          <UiBadge
             v-if="isPrimaryContact"
             label="Contacto principal"
             size="xs"
             color="primary"
             variant="soft"
           />
-          <DuiBadge
+          <UiBadge
             v-if="isBillingResponsible"
             label="Responsable de pagos"
             size="xs"
@@ -238,7 +238,7 @@ onMounted(() => {
       <template #contact="{ email, phone, userId }">
         <span class="block">{{ email ?? '' }}</span>
         <span class="block text-neutral-500">{{ phone ?? '' }}</span>
-        <DuiBadge
+        <UiBadge
           v-if="userId"
           label="Cuenta vinculada"
           size="xs"
@@ -252,7 +252,7 @@ onMounted(() => {
       </template>
       <template #actions="row">
         <div class="flex justify-end gap-1">
-          <DuiButton
+          <UiButton
             v-if="!row.userId"
             variant="ghost"
             size="sm"
@@ -261,16 +261,16 @@ onMounted(() => {
             @click="inviteOccupant(row as UnitOccupant)"
           >
             <span class="mdi mdi-email-plus-outline" />
-          </DuiButton>
-          <DuiButton
+          </UiButton>
+          <UiButton
             variant="ghost"
             size="sm"
             :aria-label="`Editar ${row.fullName}`"
             @click="editOccupant(row as UnitOccupant)"
           >
             <span class="mdi mdi-pencil-outline" />
-          </DuiButton>
-          <DuiButton
+          </UiButton>
+          <UiButton
             variant="ghost"
             color="danger"
             size="sm"
@@ -278,7 +278,7 @@ onMounted(() => {
             @click="askDeleteOccupant(row as UnitOccupant)"
           >
             <span class="mdi mdi-trash-can-outline" />
-          </DuiButton>
+          </UiButton>
         </div>
       </template>
       <template #empty
@@ -287,7 +287,7 @@ onMounted(() => {
           title="Sin ocupantes registrados"
           description="Agrega al propietario, los arrendatarios y quienes viven en la unidad."
       /></template>
-    </DuiTable>
+    </UiTable>
 
     <UnitFormModal v-model="unitFormOpen" :unit="unit" :buildings="buildings" @saved="load" />
     <OccupantFormModal
@@ -327,8 +327,8 @@ onMounted(() => {
   </template>
 
   <div v-else class="flex flex-col gap-4" aria-busy="true">
-    <DuiSkeleton width="12rem" height="2rem" />
-    <DuiSkeleton height="6rem" variant="rounded" />
-    <DuiSkeleton height="12rem" variant="rounded" />
+    <UiSkeleton width="12rem" height="2rem" />
+    <UiSkeleton height="6rem" variant="rounded" />
+    <UiSkeleton height="12rem" variant="rounded" />
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DuiButton } from '@dronico/droni-kit'
+import { UiButton } from '@aptoph/ui'
 import EmptyState from '@/components/EmptyState.vue'
 </script>
 
@@ -11,7 +11,7 @@ import EmptyState from '@/components/EmptyState.vue'
         title="No encontramos esta página"
         description="Puede que el enlace esté mal escrito o que la página ya no exista."
       >
-        <DuiButton color="primary" to="/">Ir al inicio</DuiButton>
+        <UiButton color="primary" to="/">Ir al inicio</UiButton>
       </EmptyState>
     </div>
   </main>

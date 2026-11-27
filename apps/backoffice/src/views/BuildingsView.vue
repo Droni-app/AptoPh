@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { DuiAlert, DuiButton, DuiTable, useToast, type TableColumn } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiTable, useToast, type TableColumn } from '@aptoph/ui'
 import type { Building } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -73,15 +73,15 @@ onMounted(load)
 <template>
   <PageHeader title="Torres" subtitle="Torres, bloques o etapas del conjunto">
     <template #actions>
-      <DuiButton v-if="tenant.canManage" color="primary" @click="openForm(null)">
+      <UiButton v-if="tenant.canManage" color="primary" @click="openForm(null)">
         <span class="mdi mdi-plus mr-1" aria-hidden="true" />Nueva torre
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
 
-  <DuiTable :columns="columns" :rows="buildings" :loading="loading">
+  <UiTable :columns="columns" :rows="buildings" :loading="loading">
     <template #floors="{ floors }">{{ floors ?? '—' }}</template>
     <template #unitsCount="{ id, unitsCount }">
       <RouterLink
@@ -93,15 +93,15 @@ onMounted(load)
     </template>
     <template #actions="row">
       <div class="flex justify-end gap-1">
-        <DuiButton
+        <UiButton
           variant="ghost"
           size="sm"
           :aria-label="`Editar ${row.name}`"
           @click="openForm(row as Building)"
         >
           <span class="mdi mdi-pencil-outline" />
-        </DuiButton>
-        <DuiButton
+        </UiButton>
+        <UiButton
           variant="ghost"
           color="danger"
           size="sm"
@@ -109,7 +109,7 @@ onMounted(load)
           @click="askDelete(row as Building)"
         >
           <span class="mdi mdi-trash-can-outline" />
-        </DuiButton>
+        </UiButton>
       </div>
     </template>
     <template #empty
@@ -118,7 +118,7 @@ onMounted(load)
         title="Aún no hay torres registradas"
         description="Crea las torres, bloques o etapas del conjunto para empezar a cargar las unidades."
     /></template>
-  </DuiTable>
+  </UiTable>
 
   <BuildingFormModal v-model="formOpen" :building="editing" @saved="load" />
   <ConfirmDialog

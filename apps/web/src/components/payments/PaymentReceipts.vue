@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useToast } from '@dronico/droni-kit'
+import { useToast } from '@aptoph/ui'
 import {
   ATTACHMENT_ACCEPT,
   RESIDENT_ATTACHMENT_MAX,

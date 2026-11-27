@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import UnitPicker, { type PickedUnit } from '@/components/finance/UnitPicker.vue'
 import { financeApi } from '@/api/finance'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
@@ -79,16 +79,16 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Tarifa de una unidad"
     description="Un cobro que se repite cada mes: parqueadero asignado, cuota pactada, cuota extraordinaria a plazos…"
     size="md"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel title="Unidad" required :error="errors.unitId">
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel title="Unidad" required :error="errors.unitId">
         <div
           v-if="unit"
           class="flex items-center justify-between rounded-lg bg-mint-50 px-3 py-2 text-sm dark:bg-mint-400/10"
@@ -99,34 +99,34 @@ async function submit() {
           </button>
         </div>
         <UnitPicker v-else @pick="unit = $event" />
-      </DuiLabel>
-      <DuiLabel title="Concepto" required :error="errors.conceptId">
-        <DuiSelect v-model="form.conceptId" :options="conceptOptions" block />
-      </DuiLabel>
+      </UiLabel>
+      <UiLabel title="Concepto" required :error="errors.conceptId">
+        <UiSelect v-model="form.conceptId" :options="conceptOptions" block />
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-3">
-        <DuiLabel title="Valor mensual" required :error="errors.amount">
-          <DuiInput v-model="form.amount" inputmode="decimal" required />
-        </DuiLabel>
-        <DuiLabel title="Desde" required :error="errors.startsOn">
-          <DuiInput v-model="form.startsOn" type="month" required />
-        </DuiLabel>
-        <DuiLabel title="Hasta" help-text="Vacío: indefinido" :error="errors.endsOn">
-          <DuiInput v-model="form.endsOn" type="month" />
-        </DuiLabel>
+        <UiLabel title="Valor mensual" required :error="errors.amount">
+          <UiInput v-model="form.amount" inputmode="decimal" required />
+        </UiLabel>
+        <UiLabel title="Desde" required :error="errors.startsOn">
+          <UiInput v-model="form.startsOn" type="month" required />
+        </UiLabel>
+        <UiLabel title="Hasta" help-text="Vacío: indefinido" :error="errors.endsOn">
+          <UiInput v-model="form.endsOn" type="month" />
+        </UiLabel>
       </div>
-      <DuiLabel title="Detalle" :error="errors.description">
-        <DuiInput
+      <UiLabel title="Detalle" :error="errors.description">
+        <UiInput
           v-model="form.description"
           maxlength="255"
           placeholder="Parqueadero cubierto S-14"
         />
-      </DuiLabel>
+      </UiLabel>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

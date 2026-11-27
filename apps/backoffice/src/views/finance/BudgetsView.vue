@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { DuiButton, DuiTable, useToast, type TableColumn } from '@dronico/droni-kit'
+import { UiButton, UiTable, useToast, type TableColumn } from '@aptoph/ui'
 import type { Budget } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -69,12 +69,12 @@ async function create() {
     subtitle="Presupuesto anual aprobado por la asamblea y su ejecución"
   >
     <template v-if="tenant.canManageFinance" #actions>
-      <DuiButton color="primary" :loading="creating" @click="create">
+      <UiButton color="primary" :loading="creating" @click="create">
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nuevo presupuesto
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
-  <DuiTable :columns="columns" :rows="budgets" :loading="loading">
+  <UiTable :columns="columns" :rows="budgets" :loading="loading">
     <template #year="row">
       <RouterLink
         :to="{ name: 'finance-budget', params: { id: row.id } }"
@@ -103,5 +103,5 @@ async function create() {
         description="Crea el presupuesto del año: con él se calculan las cuotas y se controla la ejecución del gasto."
       />
     </template>
-  </DuiTable>
+  </UiTable>
 </template>

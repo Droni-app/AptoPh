@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import { UNIT_TYPE_LABELS, type ContributionModule } from '@aptoph/shared'
 import UnitPicker, { type PickedUnit } from '@/components/finance/UnitPicker.vue'
 import { financeApi } from '@/api/finance'
@@ -104,7 +104,7 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="module ? 'Editar módulo' : 'Nuevo módulo de contribución'"
     description="Un sector con su propio gasto (torre con ascensor, locales, parqueaderos). La participación es relativa: cada unidad paga su parte del total del módulo."
@@ -112,17 +112,17 @@ async function submit() {
     :persistent="saving"
     scrollable
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Nombre" required :error="errors.name">
-          <DuiInput v-model="name" maxlength="120" required placeholder="Torre 2 · ascensor" />
-        </DuiLabel>
-        <DuiLabel title="Descripción" :error="errors.description">
-          <DuiInput v-model="description" maxlength="255" />
-        </DuiLabel>
+        <UiLabel title="Nombre" required :error="errors.name">
+          <UiInput v-model="name" maxlength="120" required placeholder="Torre 2 · ascensor" />
+        </UiLabel>
+        <UiLabel title="Descripción" :error="errors.description">
+          <UiInput v-model="description" maxlength="255" />
+        </UiLabel>
       </div>
-      <DuiLabel title="Unidades del módulo" required :error="errors.units">
+      <UiLabel title="Unidades del módulo" required :error="errors.units">
         <div class="flex flex-col gap-2">
           <div class="flex gap-2">
             <UnitPicker
@@ -130,8 +130,8 @@ async function submit() {
               :exclude="rows.map((row) => row.id)"
               @pick="rows.push({ ...$event, share: '1' })"
             />
-            <DuiButton variant="outline" :loading="loadingAll" @click="addAll"
-              >Agregar todas</DuiButton
+            <UiButton variant="outline" :loading="loadingAll" @click="addAll"
+              >Agregar todas</UiButton
             >
           </div>
           <div
@@ -169,15 +169,15 @@ async function submit() {
             {{ totalShare.toLocaleString('es-CO', { maximumFractionDigits: 4 }) }}
           </p>
         </div>
-      </DuiLabel>
+      </UiLabel>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving" :disabled="rows.length === 0"
-            >Guardar</DuiButton
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving" :disabled="rows.length === 0"
+            >Guardar</UiButton
           >
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

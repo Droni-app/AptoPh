@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DuiLabel, DuiSelect } from '@dronico/droni-kit'
+import { UiLabel, UiSelect } from '@aptoph/ui'
 import { useUnitsStore } from '@/stores/units'
 
 /** Unit selector; hidden when the resident has a single unit (it is preselected) */
@@ -14,15 +14,15 @@ const options = computed(() => units.options())
 </script>
 
 <template>
-  <DuiLabel
+  <UiLabel
     v-if="options.length > 1 || optional"
     title="Unidad"
     :required="!optional"
     :error="error"
   >
-    <DuiSelect
+    <UiSelect
       v-model="model"
       :options="optional ? [{ value: '', label: optionalLabel }, ...options] : options"
     />
-  </DuiLabel>
+  </UiLabel>
 </template>

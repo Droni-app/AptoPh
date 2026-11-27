@@ -2,15 +2,15 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiBadge,
-  DuiButton,
-  DuiInput,
-  DuiSelect,
-  DuiTable,
-  DuiTabs,
+  UiBadge,
+  UiButton,
+  UiInput,
+  UiSelect,
+  UiTable,
+  UiTabs,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   CHARGE_CONCEPT_TYPE_LABELS,
   FEE_METHOD_LABELS,
@@ -182,29 +182,29 @@ onMounted(() => {
     subtitle="Lo que paga cada unidad cada mes y cómo se calcula"
   >
     <template v-if="tenant.canManageFinance" #actions>
-      <DuiButton variant="outline" @click="recurringOpen = true">
+      <UiButton variant="outline" @click="recurringOpen = true">
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Tarifa de una unidad
-      </DuiButton>
-      <DuiButton color="primary" @click="calculatorOpen = true">
+      </UiButton>
+      <UiButton color="primary" @click="calculatorOpen = true">
         <span class="mr-1"><i class="mdi mdi-calculator-variant-outline" aria-hidden="true" /></span
         >Calcular cuotas
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
-  <DuiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
+  <UiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
 
   <template v-if="tab === 'fees'">
     <div class="mb-4 grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)_16rem]">
-      <DuiInput v-model="month" type="month" aria-label="Mes" block />
-      <DuiInput
+      <UiInput v-model="month" type="month" aria-label="Mes" block />
+      <UiInput
         v-model="search"
         type="search"
         placeholder="Buscar por unidad"
         aria-label="Buscar por unidad"
         block
       />
-      <DuiSelect v-model="conceptId" :options="conceptOptions" aria-label="Concepto" block />
+      <UiSelect v-model="conceptId" :options="conceptOptions" aria-label="Concepto" block />
     </div>
     <p v-if="fees" class="mb-3 text-sm text-neutral-600 dark:text-neutral-300">
       En {{ formatPeriod(`${month}-01`).toLowerCase() }} se facturan
@@ -212,7 +212,7 @@ onMounted(() => {
       <strong>{{ formatMoney(fees.total) }}</strong
       >.
     </p>
-    <DuiTable
+    <UiTable
       :columns="feeColumns"
       :rows="fees?.data ?? []"
       :loading="loadingFees"
@@ -247,13 +247,13 @@ onMounted(() => {
         ><span class="font-semibold tabular-nums">{{ formatMoney(amount) }}</span></template
       >
       <template #actions="row">
-        <DuiButton
+        <UiButton
           v-if="!row.endsOn"
           size="sm"
           variant="ghost"
           color="danger"
           @click="((ending = row as RecurringCharge), (endOpen = true))"
-          >Terminar</DuiButton
+          >Terminar</UiButton
         >
       </template>
       <template #empty>
@@ -262,10 +262,10 @@ onMounted(() => {
           description="Usa «Calcular cuotas» para repartir el presupuesto entre las unidades, o agrega la tarifa de una unidad."
         />
       </template>
-    </DuiTable>
+    </UiTable>
   </template>
 
-  <DuiTable v-else-if="tab === 'schedules'" :columns="scheduleColumns" :rows="schedules">
+  <UiTable v-else-if="tab === 'schedules'" :columns="scheduleColumns" :rows="schedules">
     <template #effectiveFrom="{ effectiveFrom }"
       ><span class="font-medium">{{ formatPeriod(effectiveFrom) }}</span></template
     >
@@ -283,19 +283,19 @@ onMounted(() => {
         description="Cada cálculo queda aquí como historial de los cambios de tarifa."
       />
     </template>
-  </DuiTable>
+  </UiTable>
 
   <template v-else-if="tab === 'concepts'">
     <div v-if="tenant.canManageFinance" class="mb-3 flex justify-end">
-      <DuiButton
+      <UiButton
         size="sm"
         color="primary"
         @click="((editingConcept = null), (conceptFormOpen = true))"
       >
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nuevo concepto
-      </DuiButton>
+      </UiButton>
     </div>
-    <DuiTable :columns="conceptColumns" :rows="catalog.concepts.value">
+    <UiTable :columns="conceptColumns" :rows="catalog.concepts.value">
       <template #name="row">
         <span class="font-medium" :class="row.isActive ? '' : 'text-neutral-400 line-through'">{{
           row.name
@@ -314,36 +314,36 @@ onMounted(() => {
       </template>
       <template #rules="row">
         <div class="flex flex-wrap gap-1">
-          <DuiBadge
+          <UiBadge
             v-if="row.accruesInterest"
             label="Genera mora"
             size="sm"
             variant="soft"
             color="warning"
           />
-          <DuiBadge
+          <UiBadge
             v-if="row.allowsEarlyDiscount"
             label="Pronto pago"
             size="sm"
             variant="soft"
             color="success"
           />
-          <DuiBadge v-if="row.isSystem" label="Del sistema" size="sm" variant="soft" />
+          <UiBadge v-if="row.isSystem" label="Del sistema" size="sm" variant="soft" />
         </div>
       </template>
       <template #defaultAmount="{ defaultAmount }"
         ><span class="tabular-nums">{{ formatMoney(defaultAmount) }}</span></template
       >
       <template #actions="row">
-        <DuiButton
+        <UiButton
           v-if="row.type !== 'interest'"
           size="sm"
           variant="ghost"
           @click="((editingConcept = row as ChargeConcept), (conceptFormOpen = true))"
-          >Editar</DuiButton
+          >Editar</UiButton
         >
       </template>
-    </DuiTable>
+    </UiTable>
   </template>
 
   <template v-else>
@@ -353,14 +353,14 @@ onMounted(() => {
         locales comerciales, zona de parqueaderos. Cada unidad paga su parte del total de cada
         módulo al que pertenece.
       </p>
-      <DuiButton
+      <UiButton
         v-if="tenant.canManageFinance"
         size="sm"
         color="primary"
         @click="((editingModule = null), (moduleFormOpen = true))"
       >
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nuevo módulo
-      </DuiButton>
+      </UiButton>
     </div>
     <div v-if="modules.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <article
@@ -372,18 +372,18 @@ onMounted(() => {
         <p v-if="module.description" class="text-sm text-neutral-500">{{ module.description }}</p>
         <p class="mt-2 text-sm">{{ module.unitsCount }} unidades</p>
         <div v-if="tenant.canManageFinance" class="mt-3 flex gap-2">
-          <DuiButton
+          <UiButton
             size="sm"
             variant="outline"
             @click="((editingModule = module), (moduleFormOpen = true))"
-            >Editar</DuiButton
+            >Editar</UiButton
           >
-          <DuiButton
+          <UiButton
             size="sm"
             variant="ghost"
             color="danger"
             @click="((deletingModule = module), (deleteModuleOpen = true))"
-            >Eliminar</DuiButton
+            >Eliminar</UiButton
           >
         </div>
       </article>

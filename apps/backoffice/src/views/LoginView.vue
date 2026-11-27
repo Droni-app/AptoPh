@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiForm, UiInput, UiLabel } from '@aptoph/ui'
 import AuthShell from '@/components/AuthShell.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
@@ -54,10 +54,10 @@ async function submit() {
       Entra al panel de tu conjunto: administración, consejo, contabilidad y portería.
     </p>
 
-    <DuiForm class="mt-8" :loading="loading" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</DuiAlert>
-      <DuiLabel title="Correo electrónico" :error="errors.email">
-        <DuiInput
+    <UiForm class="mt-8" :loading="loading" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</UiAlert>
+      <UiLabel title="Correo electrónico" :error="errors.email">
+        <UiInput
           v-model="form.email"
           type="email"
           autocomplete="username"
@@ -65,16 +65,16 @@ async function submit() {
           autofocus
           block
         />
-      </DuiLabel>
-      <DuiLabel title="Contraseña" :error="errors.password">
-        <DuiInput
+      </UiLabel>
+      <UiLabel title="Contraseña" :error="errors.password">
+        <UiInput
           v-model="form.password"
           type="password"
           autocomplete="current-password"
           required
           block
         />
-      </DuiLabel>
+      </UiLabel>
       <p class="-mt-1 text-right text-sm">
         <RouterLink
           to="/recuperar-contrasena"
@@ -83,10 +83,10 @@ async function submit() {
           ¿Olvidaste tu contraseña?
         </RouterLink>
       </p>
-      <DuiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
+      <UiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
         Iniciar sesión
-      </DuiButton>
-    </DuiForm>
+      </UiButton>
+    </UiForm>
 
     <p
       class="mt-8 rounded-2xl bg-mint-50 px-4 py-3 text-sm text-mint-800 dark:bg-mint-400/10 dark:text-mint-200"

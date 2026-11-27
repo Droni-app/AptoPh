@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel, DuiModal, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiForm, UiInput, UiLabel, UiModal, useToast } from '@aptoph/ui'
 import type { Building } from '@aptoph/shared'
 import { buildingsApi } from '@/api/backoffice'
 import { errorMessage, fieldErrors } from '@/lib/errors'
@@ -44,21 +44,21 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal v-model="open" :title="building ? 'Editar torre' : 'Nueva torre'" size="sm" :persistent="saving">
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel title="Nombre" required :error="errors.name">
-        <DuiInput v-model="form.name" required maxlength="80" placeholder="Torre 1" autofocus />
-      </DuiLabel>
-      <DuiLabel title="Número de pisos" :error="errors.floors">
-        <DuiInput v-model="form.floors" type="number" min="1" max="200" />
-      </DuiLabel>
+  <UiModal v-model="open" :title="building ? 'Editar torre' : 'Nueva torre'" size="sm" :persistent="saving">
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel title="Nombre" required :error="errors.name">
+        <UiInput v-model="form.name" required maxlength="80" placeholder="Torre 1" autofocus />
+      </UiLabel>
+      <UiLabel title="Número de pisos" :error="errors.floors">
+        <UiInput v-model="form.floors" type="number" min="1" max="200" />
+      </UiLabel>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

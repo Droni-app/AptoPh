@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
-import {
-  DuiButton,
-  DuiDropdown,
-  DuiDropdownItem,
-  DuiDropdownSeparator,
-  DuiNavbar,
-  type NavbarItem,
-} from '@dronico/droni-kit'
+import { UiDropdown, UiDropdownItem, UiDropdownSeparator } from '@aptoph/ui'
 import BrandLogo from '@/components/BrandLogo.vue'
 import EmailVerificationNotice from '@/components/account/EmailVerificationNotice.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -23,38 +15,38 @@ const tenant = useTenantStore()
 const units = useUnitsStore()
 const { theme, toggle } = useTheme()
 
-const items = computed<NavbarItem[]>(() => [
-  {
-    label: 'Inicio',
-    icon: 'mdi mdi-home-outline',
-    to: '/',
-    active: route.name === 'home' || route.name === 'unit',
-  },
+const items = [
+  { label: 'Inicio', icon: 'mdi-home-outline', active: 'mdi-home', to: '/', match: ['home', 'unit'] },
   {
     label: 'Comunicados',
-    icon: 'mdi mdi-bullhorn-outline',
+    icon: 'mdi-bullhorn-outline',
+    active: 'mdi-bullhorn',
     to: '/comunicados',
-    active: route.name === 'announcements' || route.name === 'announcement',
+    match: ['announcements', 'announcement'],
   },
   {
     label: 'Portería',
-    icon: 'mdi mdi-account-clock-outline',
+    icon: 'mdi-account-clock-outline',
+    active: 'mdi-account-clock',
     to: '/porteria',
-    active: route.name === 'visits',
+    match: ['visits'],
   },
   {
     label: 'Reservas',
-    icon: 'mdi mdi-calendar-check-outline',
+    icon: 'mdi-calendar-check-outline',
+    active: 'mdi-calendar-check',
     to: '/reservas',
-    active: route.name === 'bookings',
+    match: ['bookings'],
   },
   {
     label: 'PQRS',
-    icon: 'mdi mdi-message-text-outline',
+    icon: 'mdi-message-text-outline',
+    active: 'mdi-message-text',
     to: '/pqrs',
-    active: route.name === 'tickets' || route.name === 'ticket',
+    match: ['tickets', 'ticket'],
   },
-])
+]
+const isActive = (item: (typeof items)[number]) => item.match.includes(String(route.name))
 
 async function switchTenant() {
   units.reset()
@@ -64,71 +56,136 @@ async function switchTenant() {
 </script>
 
 <template>
-  <div class="flex min-h-full flex-col">
-    <DuiNavbar :items="items" class="sticky top-0 z-30">
-      <template #brand>
-        <RouterLink to="/" class="flex h-8 items-center" aria-label="AptoPH, ir al inicio">
+  <div class="flex min-h-full flex-col pb-16 md:pb-0">
+    <header
+      class="sticky top-0 z-30 border-b border-neutral-200 bg-white/90 backdrop-blur-md dark:border-white/8 dark:bg-neutral-950/85"
+    >
+      <div class="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
+        <RouterLink to="/" class="flex h-7 shrink-0 items-center" aria-label="AptoPH, ir al inicio">
           <BrandLogo class="h-7" />
         </RouterLink>
-      </template>
-      <template #actions>
-        <DuiButton
-          variant="ghost"
-          size="sm"
-          :title="theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro'"
-          :aria-label="theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro'"
-          @click="toggle"
-        >
-          <span class="text-lg"
-            ><i :class="theme === 'dark' ? 'mdi mdi-weather-sunny' : 'mdi mdi-weather-night'"
-          /></span>
-        </DuiButton>
-        <DuiDropdown placement="bottom-end" min-width="16rem" aria-label="Menú de usuario">
-          <template #trigger>
-            <span class="flex items-center gap-2">
+
+        <nav class="hidden h-full items-stretch gap-1 md:flex" aria-label="Secciones">
+          <RouterLink
+            v-for="item in items"
+            :key="item.to"
+            :to="item.to"
+            class="relative flex items-center gap-2 px-3 text-sm font-medium transition-colors"
+            :class="
+              isActive(item)
+                ? 'text-neutral-900 dark:text-white'
+                : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+            "
+            :aria-current="isActive(item) ? 'page' : undefined"
+          >
+            <i
+              :class="[
+                'mdi text-lg',
+                isActive(item) ? `${item.active} text-mint-600 dark:text-mint-400` : item.icon,
+              ]"
+              aria-hidden="true"
+            />
+            {{ item.label }}
+            <span
+              v-if="isActive(item)"
+              class="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-mint-500"
+              aria-hidden="true"
+            />
+          </RouterLink>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-1.5">
+          <button
+            type="button"
+            class="grid size-9 place-items-center rounded-lg text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-white/8 dark:hover:text-white"
+            :title="theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro'"
+            :aria-label="theme === 'dark' ? 'Usar tema claro' : 'Usar tema oscuro'"
+            @click="toggle"
+          >
+            <i
+              :class="['mdi text-xl', theme === 'dark' ? 'mdi-weather-sunny' : 'mdi-weather-night']"
+              aria-hidden="true"
+            />
+          </button>
+          <UiDropdown
+            placement="bottom-end"
+            min-width="16rem"
+            aria-label="Menú de usuario"
+            trigger-class="flex h-9 items-center gap-2 rounded-lg pl-1 pr-2 hover:bg-neutral-100 dark:hover:bg-white/8"
+          >
+            <template #trigger>
               <span
-                class="grid size-8 place-items-center rounded-full bg-mint-100 text-xs font-semibold text-mint-800 dark:bg-mint-500/20 dark:text-mint-200"
+                class="grid size-7 place-items-center rounded-full bg-mint-100 text-[11px] font-semibold text-mint-800 dark:bg-mint-400/20 dark:text-mint-200"
               >
                 {{ auth.user?.initials ?? '…' }}
               </span>
-              <span class="hidden max-w-40 truncate text-left text-sm md:block">
+              <span
+                class="hidden max-w-40 truncate text-sm font-medium text-neutral-700 lg:block dark:text-neutral-200"
+              >
                 {{ tenant.current?.name }}
               </span>
-            </span>
-          </template>
-          <div class="px-3 py-2 text-sm">
-            <p class="font-medium">{{ auth.user?.fullName }}</p>
-            <p class="truncate text-neutral-500 dark:text-neutral-300">{{ auth.user?.email }}</p>
-            <p class="mt-1 text-xs text-mint-700 dark:text-mint-300">{{ tenant.current?.name }}</p>
-          </div>
-          <DuiDropdownSeparator />
-          <DuiDropdownItem
-            icon="mdi mdi-account-outline"
-            label="Mi perfil"
-            @click="router.push({ name: 'profile' })"
-          />
-          <DuiDropdownItem
-            v-if="tenant.residentTenants.length > 1"
-            icon="mdi mdi-swap-horizontal"
-            label="Cambiar de conjunto"
-            @click="switchTenant"
-          />
-          <DuiDropdownItem
-            icon="mdi mdi-logout"
-            label="Cerrar sesión"
-            danger
-            @click="auth.logout()"
-          />
-        </DuiDropdown>
-      </template>
-    </DuiNavbar>
+              <i class="mdi mdi-chevron-down hidden text-neutral-400 lg:block" aria-hidden="true" />
+            </template>
+            <div class="px-2.5 py-2">
+              <p class="truncate text-sm font-medium">{{ auth.user?.fullName }}</p>
+              <p class="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                {{ auth.user?.email }}
+              </p>
+              <p class="mt-1 truncate text-xs font-medium text-mint-700 dark:text-mint-300">
+                {{ tenant.current?.name }}
+              </p>
+            </div>
+            <UiDropdownSeparator />
+            <UiDropdownItem
+              icon="mdi-account-outline"
+              label="Mi perfil"
+              @click="router.push({ name: 'profile' })"
+            />
+            <UiDropdownItem
+              v-if="tenant.residentTenants.length > 1"
+              icon="mdi-swap-horizontal"
+              label="Cambiar de conjunto"
+              @click="switchTenant"
+            />
+            <UiDropdownSeparator />
+            <UiDropdownItem icon="mdi-logout" label="Cerrar sesión" danger @click="auth.logout()" />
+          </UiDropdown>
+        </div>
+      </div>
+    </header>
 
     <EmailVerificationNotice v-if="route.name !== 'profile'" compact />
 
-    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+    <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
       <RouterView :key="tenant.currentId ?? ''" />
     </main>
 
-    <footer class="py-6 text-center text-xs text-neutral-400">AptoPH · Portal de residentes</footer>
+    <!-- Tab bar on phones -->
+    <nav
+      class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-neutral-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden dark:border-white/8 dark:bg-neutral-950/95"
+      aria-label="Secciones"
+    >
+      <RouterLink
+        v-for="item in items"
+        :key="item.to"
+        :to="item.to"
+        class="flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-medium"
+        :class="
+          isActive(item)
+            ? 'text-neutral-900 dark:text-white'
+            : 'text-neutral-500 dark:text-neutral-400'
+        "
+        :aria-current="isActive(item) ? 'page' : undefined"
+      >
+        <i
+          :class="[
+            'mdi text-[22px] leading-none',
+            isActive(item) ? `${item.active} text-mint-600 dark:text-mint-400` : item.icon,
+          ]"
+          aria-hidden="true"
+        />
+        {{ item.label }}
+      </RouterLink>
+    </nav>
   </div>
 </template>

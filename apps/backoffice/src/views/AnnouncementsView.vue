@@ -2,14 +2,14 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiBadge,
-  DuiButton,
-  DuiInput,
-  DuiTable,
-  DuiTabs,
+  UiBadge,
+  UiButton,
+  UiInput,
+  UiTable,
+  UiTabs,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   ANNOUNCEMENT_AUDIENCE_LABELS,
   ANNOUNCEMENT_STATUS_LABELS,
@@ -115,15 +115,15 @@ onMounted(() => {
     subtitle="Circulares y avisos para los residentes, el consejo y el personal"
   >
     <template v-if="tenant.canManageAnnouncements" #actions>
-      <DuiButton color="primary" @click="create">
+      <UiButton color="primary" @click="create">
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nuevo comunicado
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
   <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-    <DuiTabs v-model="status" :tabs="tabs" aria-label="Estado" />
-    <DuiInput
+    <UiTabs v-model="status" :tabs="tabs" aria-label="Estado" />
+    <UiInput
       v-model="search"
       type="search"
       placeholder="Buscar por título"
@@ -132,7 +132,7 @@ onMounted(() => {
     />
   </div>
 
-  <DuiTable
+  <UiTable
     :columns="columns"
     :rows="list?.data ?? []"
     :loading="loading"
@@ -185,7 +185,7 @@ onMounted(() => {
       <span v-else class="text-neutral-400">—</span>
     </template>
     <template #status="row">
-      <DuiBadge
+      <UiBadge
         :label="ANNOUNCEMENT_STATUS_LABELS[row.status as AnnouncementStatus]"
         :color="statusColor(row.status)"
         variant="soft"
@@ -199,7 +199,7 @@ onMounted(() => {
         description="Publica circulares y avisos: cortes de agua, asambleas, mantenimientos. Llegan al portal de residentes y, si quieres, por correo."
       />
     </template>
-  </DuiTable>
+  </UiTable>
 
   <AnnouncementFormModal v-model="formOpen" :announcement="editing" @saved="onSaved" />
   <AnnouncementDetailModal

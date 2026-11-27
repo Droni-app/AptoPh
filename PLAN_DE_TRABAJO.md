@@ -116,7 +116,7 @@ Aplican a cualquier funcionalidad nueva; un módulo no se da por terminado si no
 
 **Producto**
 - Textos en español de Colombia, montos en COP con `formatCop`, fechas en `America/Bogota`.
-- Diseño con la marca (`branding/`): droni-kit, `PageHeader`, `EmptyState` e ilustraciones.
+- Diseño con la marca (`branding/`): `@aptoph/ui`, `PageHeader`, `EmptyState` e ilustraciones.
 - Toda acción sobre dinero o datos personales deja registro en `audit_logs`.
 - Datos personales según la Ley 1581 de 2012: pedir solo lo necesario y permitir corregirlos.
 - Actualizar `docs/` y el README de la app cuando cambie un flujo o una variable de entorno.

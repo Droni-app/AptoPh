@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import type { LedgerAccount } from '@aptoph/shared'
 import { financeApi } from '@/api/finance'
 import { useFinanceCatalog } from '@/composables/useFinanceCatalog'
@@ -73,33 +73,33 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="account ? `Cuenta ${account.code}` : `Subcuenta de ${parent?.code} · ${parent?.name}`"
     size="sm"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel
         v-if="!account"
         title="Código"
         required
         help-text="6 a 10 dígitos, empezando por el de la cuenta padre"
         :error="errors.code"
       >
-        <DuiInput v-model="code" inputmode="numeric" maxlength="10" required />
-      </DuiLabel>
-      <DuiLabel title="Nombre" required :error="errors.name">
-        <DuiInput v-model="name" maxlength="120" required />
-      </DuiLabel>
-      <DuiCheckbox v-if="account && !account.systemKey" v-model="isActive" label="Activa" />
+        <UiInput v-model="code" inputmode="numeric" maxlength="10" required />
+      </UiLabel>
+      <UiLabel title="Nombre" required :error="errors.name">
+        <UiInput v-model="name" maxlength="120" required />
+      </UiLabel>
+      <UiCheckbox v-if="account && !account.systemKey" v-model="isActive" label="Activa" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

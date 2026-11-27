@@ -2,14 +2,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCard,
-  DuiInput,
-  DuiSkeleton,
-  DuiTable,
+  UiAlert,
+  UiButton,
+  UiCard,
+  UiInput,
+  UiSkeleton,
+  UiTable,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   JOURNAL_ENTRY_TYPE_LABELS,
   type BackofficeUnitStatement,
@@ -113,8 +113,8 @@ function exportCsv() {
 </script>
 
 <template>
-  <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-  <DuiSkeleton v-else-if="!statement" class="h-64 rounded-2xl" />
+  <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+  <UiSkeleton v-else-if="!statement" class="h-64 rounded-2xl" />
   <template v-else>
     <PageHeader
       :title="`Estado de cuenta · ${unitLabel(statement.unit)}`"
@@ -130,11 +130,11 @@ function exportCsv() {
       </template>
       <template #actions>
         <RouterLink :to="{ name: 'unit', params: { id: unitId } }"
-          ><DuiButton variant="ghost">Ver unidad</DuiButton></RouterLink
+          ><UiButton variant="ghost">Ver unidad</UiButton></RouterLink
         >
         <template v-if="tenant.canManageFinance">
-          <DuiButton variant="outline" @click="chargeOpen = true">Nuevo cobro</DuiButton>
-          <DuiButton color="primary" @click="paymentOpen = true">Registrar pago</DuiButton>
+          <UiButton variant="outline" @click="chargeOpen = true">Nuevo cobro</UiButton>
+          <UiButton color="primary" @click="paymentOpen = true">Registrar pago</UiButton>
         </template>
       </template>
     </PageHeader>
@@ -171,7 +171,7 @@ function exportCsv() {
     </div>
 
     <h2 class="mb-3 text-lg font-semibold">Cobros pendientes</h2>
-    <DuiTable :columns="openColumns" :rows="statement.openCharges" class="mb-8">
+    <UiTable :columns="openColumns" :rows="statement.openCharges" class="mb-8">
       <template #concept="row">
         <button
           type="button"
@@ -202,24 +202,24 @@ function exportCsv() {
       <template #empty
         ><p class="py-6 text-center text-sm text-neutral-500">La unidad está al día.</p></template
       >
-    </DuiTable>
+    </UiTable>
 
-    <DuiCard>
+    <UiCard>
       <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
         <h2 class="text-lg font-semibold">Movimientos</h2>
         <div class="flex flex-wrap items-center gap-2">
           <div class="w-40">
-            <DuiInput v-model="from" type="date" aria-label="Desde" @change="load" />
+            <UiInput v-model="from" type="date" aria-label="Desde" @change="load" />
           </div>
           <div class="w-40">
-            <DuiInput v-model="to" type="date" aria-label="Hasta" @change="load" />
+            <UiInput v-model="to" type="date" aria-label="Hasta" @change="load" />
           </div>
-          <DuiButton variant="outline" @click="exportCsv">
+          <UiButton variant="outline" @click="exportCsv">
             <span class="mr-1"><i class="mdi mdi-download" aria-hidden="true" /></span>CSV
-          </DuiButton>
+          </UiButton>
         </div>
       </div>
-      <DuiTable :columns="movementColumns" :rows="statement.rows">
+      <UiTable :columns="movementColumns" :rows="statement.rows">
         <template #date="{ date }"
           ><span class="whitespace-nowrap">{{ formatDate(date) }}</span></template
         >
@@ -250,12 +250,12 @@ function exportCsv() {
             Sin movimientos en el rango.
           </p></template
         >
-      </DuiTable>
+      </UiTable>
       <p class="mt-3 flex justify-between text-sm text-neutral-600 dark:text-neutral-300">
         <span>Saldo inicial {{ formatMoney(statement.opening) }}</span>
         <span class="font-semibold">Saldo final {{ formatMoney(statement.closing) }}</span>
       </p>
-    </DuiCard>
+    </UiCard>
 
     <PaymentFormModal v-model="paymentOpen" :fixed-unit="picked" @saved="load" />
     <ChargeFormModal v-model="chargeOpen" :fixed-unit="picked" @saved="load" />

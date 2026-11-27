@@ -2,14 +2,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiSkeleton,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiSkeleton,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import { BACKOFFICE_ROLES, type InvitationPreview } from '@aptoph/shared'
 import AuthShell from '@/components/AuthShell.vue'
 import { publicAuthApi } from '@/api/account'
@@ -85,8 +85,8 @@ async function accept() {
 <template>
   <AuthShell>
     <div v-if="!invitation && !loadError" aria-busy="true" class="flex flex-col gap-3">
-      <DuiSkeleton width="70%" height="2.5rem" />
-      <DuiSkeleton height="6rem" variant="rounded" />
+      <UiSkeleton width="70%" height="2.5rem" />
+      <UiSkeleton height="6rem" variant="rounded" />
     </div>
 
     <template v-else-if="loadError">
@@ -95,8 +95,8 @@ async function accept() {
       >
         Invitación no disponible
       </h1>
-      <DuiAlert color="danger" variant="soft" class="mt-6" role="alert">{{ loadError }}</DuiAlert>
-      <DuiButton class="mt-6" variant="outline" block to="/login">Ir a iniciar sesión</DuiButton>
+      <UiAlert color="danger" variant="soft" class="mt-6" role="alert">{{ loadError }}</UiAlert>
+      <UiButton class="mt-6" variant="outline" block to="/login">Ir a iniciar sesión</UiButton>
     </template>
 
     <template v-else-if="invitation">
@@ -117,22 +117,22 @@ async function accept() {
         <template v-if="invitation.title"> Cargo: {{ invitation.title }}.</template>
       </p>
 
-      <DuiAlert v-if="isStaff" color="warning" variant="soft" class="mt-6">
+      <UiAlert v-if="isStaff" color="warning" variant="soft" class="mt-6">
         Esta invitación es para el panel de administración. Ábrela desde el enlace del correo.
-      </DuiAlert>
+      </UiAlert>
 
-      <DuiForm v-else class="mt-8" :loading="loading" @submit="accept">
-        <DuiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</DuiAlert>
+      <UiForm v-else class="mt-8" :loading="loading" @submit="accept">
+        <UiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</UiAlert>
         <template v-if="invitation.needsPassword">
-          <DuiLabel title="Tu nombre completo" :error="errors.fullName">
-            <DuiInput v-model="form.fullName" autocomplete="name" required block />
-          </DuiLabel>
-          <DuiLabel
+          <UiLabel title="Tu nombre completo" :error="errors.fullName">
+            <UiInput v-model="form.fullName" autocomplete="name" required block />
+          </UiLabel>
+          <UiLabel
             title="Crea una contraseña"
             help-text="Mínimo 8 caracteres."
             :error="errors.password"
           >
-            <DuiInput
+            <UiInput
               v-model="form.password"
               type="password"
               autocomplete="new-password"
@@ -140,24 +140,24 @@ async function accept() {
               required
               block
             />
-          </DuiLabel>
-          <DuiLabel title="Repite la contraseña" :error="errors.confirmation">
-            <DuiInput
+          </UiLabel>
+          <UiLabel title="Repite la contraseña" :error="errors.confirmation">
+            <UiInput
               v-model="form.confirmation"
               type="password"
               autocomplete="new-password"
               required
               block
             />
-          </DuiLabel>
+          </UiLabel>
         </template>
         <p v-else class="text-sm text-neutral-600 dark:text-neutral-300">
           Ya tienes una cuenta en AptoPH: después de aceptar entrarás con tu contraseña de siempre.
         </p>
-        <DuiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
+        <UiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
           Aceptar invitación
-        </DuiButton>
-      </DuiForm>
+        </UiButton>
+      </UiForm>
     </template>
   </AuthShell>
 </template>

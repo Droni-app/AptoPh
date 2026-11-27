@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSkeleton,
+  UiAlert,
+  UiButton,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSkeleton,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   CHARGE_ADJUSTMENT_TYPE_LABELS,
   CHARGE_SOURCE_LABELS,
@@ -98,9 +98,9 @@ async function creditNote(reason: string) {
 </script>
 
 <template>
-  <DuiModal v-model="open" title="Detalle del cobro" size="md" scrollable>
-    <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-    <DuiSkeleton v-else-if="!charge" class="h-48 rounded-xl" />
+  <UiModal v-model="open" title="Detalle del cobro" size="md" scrollable>
+    <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+    <UiSkeleton v-else-if="!charge" class="h-48 rounded-xl" />
     <div v-else class="flex flex-col gap-5 text-sm">
       <div class="flex items-start justify-between gap-4">
         <div>
@@ -183,18 +183,18 @@ async function creditNote(reason: string) {
     </div>
     <template v-if="charge && tenant.canManageFinance" #footer>
       <div class="flex flex-wrap justify-end gap-2">
-        <DuiButton
+        <UiButton
           v-if="canNote"
           variant="outline"
           @click="((noteAmount = String(Number(charge.balance))), (noteOpen = true))"
-          >Nota crédito</DuiButton
+          >Nota crédito</UiButton
         >
-        <DuiButton v-if="canCancel" variant="ghost" color="danger" @click="cancelOpen = true"
-          >Anular cobro</DuiButton
+        <UiButton v-if="canCancel" variant="ghost" color="danger" @click="cancelOpen = true"
+          >Anular cobro</UiButton
         >
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 
   <ReasonDialog
     v-model="cancelOpen"
@@ -214,12 +214,12 @@ async function creditNote(reason: string) {
     placeholder="Ej.: descuento aprobado por el consejo, acta 14"
     @confirm="creditNote"
   >
-    <DuiLabel
+    <UiLabel
       title="Valor de la nota"
       required
       :help-text="charge ? `Saldo actual ${formatMoney(charge.balance)}` : undefined"
     >
-      <DuiInput v-model="noteAmount" inputmode="decimal" required />
-    </DuiLabel>
+      <UiInput v-model="noteAmount" inputmode="decimal" required />
+    </UiLabel>
   </ReasonDialog>
 </template>

@@ -1,0 +1,33 @@
+/**
+ * @aptoph/ui: design system of the back-office and the resident app.
+ * Tailwind 4 + Material Design Icons; import '@aptoph/ui/theme.css' in the app CSS.
+ */
+export { default as UiAlert } from './components/UiAlert.vue'
+export { default as UiBadge } from './components/UiBadge.vue'
+export { default as UiButton } from './components/UiButton.vue'
+export { default as UiCard } from './components/UiCard.vue'
+export { default as UiCheckbox } from './components/UiCheckbox.vue'
+export { default as UiDropdown } from './components/UiDropdown.vue'
+export { default as UiDropdownItem } from './components/UiDropdownItem.vue'
+export { default as UiDropdownSeparator } from './components/UiDropdownSeparator.vue'
+export { default as UiForm } from './components/UiForm.vue'
+export { default as UiInput } from './components/UiInput.vue'
+export { default as UiLabel } from './components/UiLabel.vue'
+export { default as UiModal } from './components/UiModal.vue'
+export { default as UiPagination } from './components/UiPagination.vue'
+export { default as UiRadio } from './components/UiRadio.vue'
+export { default as UiSelect } from './components/UiSelect.vue'
+export { default as UiSkeleton } from './components/UiSkeleton.vue'
+export { default as UiSwitch } from './components/UiSwitch.vue'
+export { default as UiTable } from './components/UiTable.vue'
+export { default as UiTabs } from './components/UiTabs.vue'
+export { default as UiTextarea } from './components/UiTextarea.vue'
+export { default as UiToast } from './components/UiToast.vue'
+
+export type { TableColumn, PaginationData } from './components/UiTable.vue'
+export type { UiTab } from './components/UiTabs.vue'
+export type { UiRadioOption } from './components/UiRadio.vue'
+export { useToast } from './toast'
+export type { ToastOptions, ToastItem, ToastColor, ToastPosition } from './toast'
+export { cx } from './styles'
+export type { UiColor, UiVariant, UiSize } from './styles'

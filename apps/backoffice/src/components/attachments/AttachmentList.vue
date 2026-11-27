@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { DuiButton, DuiModal, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiButton, UiModal, UiSkeleton, useToast } from '@aptoph/ui'
 import {
   ATTACHMENT_ACCEPT,
   ATTACHMENT_MAX_PER_OWNER,
@@ -121,13 +121,13 @@ async function confirmRemove() {
   <section>
     <div class="mb-2 flex items-center justify-between gap-2">
       <h3 class="font-semibold">{{ title }}</h3>
-      <DuiButton
+      <UiButton
         v-if="editable && (items?.length ?? 0) < ATTACHMENT_MAX_PER_OWNER"
         size="sm"
         variant="ghost"
         :loading="uploading > 0"
         @click="input?.click()"
-        ><i class="mdi mdi-paperclip" aria-hidden="true" /> Adjuntar</DuiButton
+        ><i class="mdi mdi-paperclip" aria-hidden="true" /> Adjuntar</UiButton
       >
       <input
         ref="input"
@@ -138,7 +138,7 @@ async function confirmRemove() {
         @change="add(($event.target as HTMLInputElement).files)"
       />
     </div>
-    <DuiSkeleton v-if="items === null" class="h-12 rounded-lg" />
+    <UiSkeleton v-if="items === null" class="h-12 rounded-lg" />
     <p v-else-if="error" class="text-coral-700">{{ error }}</p>
     <p v-else-if="!items.length" class="text-neutral-500">
       {{ title === 'Soportes' ? 'Sin soportes adjuntos.' : 'Sin archivos adjuntos.' }}
@@ -184,7 +184,7 @@ async function confirmRemove() {
       </li>
     </ul>
   </section>
-  <DuiModal
+  <UiModal
     :model-value="removing !== null"
     title="Quitar soporte"
     size="sm"
@@ -196,11 +196,11 @@ async function confirmRemove() {
     </p>
     <template #footer>
       <div class="flex w-full justify-end gap-2">
-        <DuiButton variant="ghost" @click="removing = null">Cancelar</DuiButton>
-        <DuiButton color="danger" :loading="busyId === removing?.id" @click="confirmRemove"
-          >Quitar</DuiButton
+        <UiButton variant="ghost" @click="removing = null">Cancelar</UiButton>
+        <UiButton color="danger" :loading="busyId === removing?.id" @click="confirmRemove"
+          >Quitar</UiButton
         >
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 </template>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-  DuiSkeleton,
+  UiAlert,
+  UiButton,
+  UiLabel,
+  UiModal,
+  UiSelect,
+  UiSkeleton,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import { PAYMENT_METHOD_LABELS, type FinancePayment } from '@aptoph/shared'
 import StatusBadge from '@/components/finance/StatusBadge.vue'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
@@ -80,14 +80,14 @@ const reverse = (reason: string) =>
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="payment?.number ? `Recibo de caja ${payment.number}` : 'Pago reportado'"
     size="md"
     scrollable
   >
-    <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-    <DuiSkeleton v-else-if="!payment" class="h-48 rounded-xl" />
+    <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+    <UiSkeleton v-else-if="!payment" class="h-48 rounded-xl" />
     <div v-else class="flex flex-col gap-5 text-sm">
       <div class="flex items-start justify-between gap-4">
         <div>
@@ -123,12 +123,12 @@ const reverse = (reason: string) =>
         </div>
       </dl>
       <p v-if="payment.notes" class="whitespace-pre-line">{{ payment.notes }}</p>
-      <DuiAlert v-if="payment.rejectionReason" color="danger" variant="soft"
-        >Rechazado: {{ payment.rejectionReason }}</DuiAlert
+      <UiAlert v-if="payment.rejectionReason" color="danger" variant="soft"
+        >Rechazado: {{ payment.rejectionReason }}</UiAlert
       >
-      <DuiAlert v-if="payment.reversalReason" color="warning" variant="soft">
+      <UiAlert v-if="payment.reversalReason" color="warning" variant="soft">
         Reversado el {{ formatDateTime(payment.reversedAt) }}: {{ payment.reversalReason }}
-      </DuiAlert>
+      </UiAlert>
 
       <section v-if="payment.allocations?.length">
         <h3 class="mb-2 font-semibold">Aplicado a</h3>
@@ -155,9 +155,9 @@ const reverse = (reason: string) =>
           El residente reportó este pago. Verifica que el dinero esté en la cuenta antes de
           confirmarlo.
         </p>
-        <DuiLabel title="Entró a">
-          <DuiSelect v-model="cashAccountId" :options="cashOptions" block />
-        </DuiLabel>
+        <UiLabel title="Entró a">
+          <UiSelect v-model="cashAccountId" :options="cashOptions" block />
+        </UiLabel>
       </div>
       <AttachmentList
         owner-type="payment"
@@ -168,23 +168,23 @@ const reverse = (reason: string) =>
     <template v-if="payment && tenant.canManageFinance" #footer>
       <div class="flex flex-wrap justify-end gap-2">
         <template v-if="payment.status === 'pending_review'">
-          <DuiButton variant="ghost" color="danger" :disabled="busy" @click="rejectOpen = true"
-            >Rechazar</DuiButton
+          <UiButton variant="ghost" color="danger" :disabled="busy" @click="rejectOpen = true"
+            >Rechazar</UiButton
           >
-          <DuiButton color="primary" :loading="busy" :disabled="!cashAccountId" @click="confirm"
-            >Confirmar y aplicar</DuiButton
+          <UiButton color="primary" :loading="busy" :disabled="!cashAccountId" @click="confirm"
+            >Confirmar y aplicar</UiButton
           >
         </template>
-        <DuiButton
+        <UiButton
           v-else-if="payment.status === 'confirmed'"
           variant="ghost"
           color="danger"
           @click="reverseOpen = true"
-          >Reversar pago</DuiButton
+          >Reversar pago</UiButton
         >
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 
   <ReasonDialog
     v-model="rejectOpen"

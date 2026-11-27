@@ -2,17 +2,17 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiDropdown,
-  DuiDropdownItem,
-  DuiInput,
-  DuiSelect,
-  DuiTable,
-  DuiTabs,
+  UiAlert,
+  UiButton,
+  UiDropdown,
+  UiDropdownItem,
+  UiInput,
+  UiSelect,
+  UiTable,
+  UiTabs,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import type { ApiPaginated, BillingPeriod, ChargeFilters, FinanceCharge } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -188,20 +188,20 @@ onMounted(() => {
 <template>
   <PageHeader title="Facturación" subtitle="Cuotas del mes, intereses de mora y cobros puntuales">
     <template v-if="tenant.canManageFinance" #actions>
-      <DuiButton variant="outline" @click="chargeFormOpen = true">
+      <UiButton variant="outline" @click="chargeFormOpen = true">
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nuevo cobro
-      </DuiButton>
-      <DuiButton color="primary" @click="((generateMonth = undefined), (generateOpen = true))">
+      </UiButton>
+      <UiButton color="primary" @click="((generateMonth = undefined), (generateOpen = true))">
         <span class="mr-1"><i class="mdi mdi-calendar-sync-outline" aria-hidden="true" /></span
         >Facturar mes
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
-  <DuiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
+  <UiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
 
-  <DuiTable
+  <UiTable
     v-if="tab === 'periods'"
     :columns="periodColumns"
     :rows="periods"
@@ -230,7 +230,7 @@ onMounted(() => {
     >
     <template #status="{ status }"><StatusBadge kind="period" :status="status" /></template>
     <template #actions="row">
-      <DuiDropdown
+      <UiDropdown
         v-if="tenant.canManageFinance"
         placement="bottom-end"
         min-width="14rem"
@@ -241,25 +241,25 @@ onMounted(() => {
             ><i class="mdi mdi-dots-vertical" aria-hidden="true"
           /></span>
         </template>
-        <DuiDropdownItem
+        <UiDropdownItem
           icon="mdi mdi-format-list-bulleted"
           label="Ver cobros"
           @click="showCharges(row as BillingPeriod)"
         />
-        <DuiDropdownItem
+        <UiDropdownItem
           v-if="row.status === 'open'"
           icon="mdi mdi-refresh"
           label="Completar facturación"
           @click="regenerate(row as BillingPeriod)"
         />
-        <DuiDropdownItem
+        <UiDropdownItem
           :icon="
             row.status === 'open' ? 'mdi mdi-lock-outline' : 'mdi mdi-lock-open-variant-outline'
           "
           :label="row.status === 'open' ? 'Cerrar periodo' : 'Reabrir periodo'"
           @click="togglePeriod(row as BillingPeriod)"
         />
-      </DuiDropdown>
+      </UiDropdown>
     </template>
     <template #empty>
       <EmptyState
@@ -269,32 +269,32 @@ onMounted(() => {
       >
         <div class="flex flex-wrap justify-center gap-2">
           <RouterLink :to="{ name: 'finance-fees' }"
-            ><DuiButton variant="outline">Configurar tarifas</DuiButton></RouterLink
+            ><UiButton variant="outline">Configurar tarifas</UiButton></RouterLink
           >
-          <DuiButton v-if="tenant.canManageFinance" color="primary" @click="generateOpen = true"
-            >Facturar mes</DuiButton
+          <UiButton v-if="tenant.canManageFinance" color="primary" @click="generateOpen = true"
+            >Facturar mes</UiButton
           >
         </div>
       </EmptyState>
     </template>
-  </DuiTable>
+  </UiTable>
 
   <template v-else>
     <div class="mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_14rem_14rem]">
-      <DuiInput
+      <UiInput
         v-model="filters.search"
         type="search"
         placeholder="Buscar por unidad"
         aria-label="Buscar por unidad"
         block
       />
-      <DuiSelect
+      <UiSelect
         v-model="filters.conceptId"
         :options="conceptOptions"
         aria-label="Concepto"
         block
       />
-      <DuiSelect v-model="filters.status" :options="statusOptions" aria-label="Estado" block />
+      <UiSelect v-model="filters.status" :options="statusOptions" aria-label="Estado" block />
     </div>
     <p v-if="selectedPeriod" class="mb-3 flex items-center gap-2 text-sm">
       <span
@@ -310,7 +310,7 @@ onMounted(() => {
         Ver todos los meses
       </button>
     </p>
-    <DuiTable
+    <UiTable
       :columns="chargeColumns"
       :rows="charges?.data ?? []"
       :loading="loadingCharges"
@@ -360,7 +360,7 @@ onMounted(() => {
       <template #empty>
         <EmptyState title="No hay cobros con estos filtros" />
       </template>
-    </DuiTable>
+    </UiTable>
   </template>
 
   <GeneratePeriodModal

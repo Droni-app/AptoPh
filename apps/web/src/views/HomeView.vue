@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { DuiAlert, DuiButton, DuiSkeleton } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiSkeleton } from '@aptoph/ui'
 import { OCCUPANT_RELATIONSHIP_LABELS, type ApiItem, type ResidentHome } from '@aptoph/shared'
 import BalanceBadge from '@/components/BalanceBadge.vue'
 import EmptyState from '@/components/EmptyState.vue'
@@ -40,8 +40,8 @@ onMounted(load)
 
 <template>
   <div v-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
   <template v-else-if="home">
@@ -167,11 +167,11 @@ onMounted(load)
   </template>
 
   <div v-else class="flex flex-col gap-4" aria-busy="true">
-    <DuiSkeleton width="16rem" height="2.25rem" />
-    <DuiSkeleton height="8rem" variant="rounded" />
+    <UiSkeleton width="16rem" height="2.25rem" />
+    <UiSkeleton height="8rem" variant="rounded" />
     <div class="grid gap-4 sm:grid-cols-2">
-      <DuiSkeleton height="10rem" variant="rounded" />
-      <DuiSkeleton height="10rem" variant="rounded" />
+      <UiSkeleton height="10rem" variant="rounded" />
+      <UiSkeleton height="10rem" variant="rounded" />
     </div>
   </div>
 </template>

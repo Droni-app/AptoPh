@@ -2,14 +2,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
-  DuiAlert,
-  DuiBadge,
-  DuiButton,
-  DuiCard,
-  DuiDropdown,
-  DuiDropdownItem,
-  DuiSkeleton,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiBadge,
+  UiButton,
+  UiCard,
+  UiDropdown,
+  UiDropdownItem,
+  UiSkeleton,
+} from '@aptoph/ui'
 import {
   CHARGE_STATUS_LABELS,
   OCCUPANT_RELATIONSHIP_LABELS,
@@ -209,19 +209,19 @@ const removeMember = (member: HouseholdMember) =>
     <span aria-hidden="true"><i class="mdi mdi-arrow-left" /></span> Inicio
   </RouterLink>
 
-  <DuiCard v-if="notFound">
+  <UiCard v-if="notFound">
     <div class="flex flex-col items-center gap-2 py-6 text-center">
       <span class="text-4xl text-neutral-300" aria-hidden="true"
         ><i class="mdi mdi-door-closed-lock"
       /></span>
       <p class="font-medium">Esta unidad no está asociada a tu cuenta</p>
-      <DuiButton class="mt-2" color="primary" to="/">Ver mis unidades</DuiButton>
+      <UiButton class="mt-2" color="primary" to="/">Ver mis unidades</UiButton>
     </div>
-  </DuiCard>
+  </UiCard>
 
   <div v-else-if="error" class="flex flex-col items-start gap-4">
-    <DuiAlert color="danger" variant="soft" class="w-full">{{ error }}</DuiAlert>
-    <DuiButton variant="outline" @click="load">Reintentar</DuiButton>
+    <UiAlert color="danger" variant="soft" class="w-full">{{ error }}</UiAlert>
+    <UiButton variant="outline" @click="load">Reintentar</UiButton>
   </div>
 
   <template v-else-if="unit">
@@ -238,7 +238,7 @@ const removeMember = (member: HouseholdMember) =>
       </template>
     </PageHeader>
 
-    <DuiCard class="mb-8">
+    <UiCard class="mb-8">
       <dl class="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
         <div>
           <dt class="text-neutral-500 dark:text-neutral-300">Estado</dt>
@@ -259,7 +259,7 @@ const removeMember = (member: HouseholdMember) =>
           </dd>
         </div>
       </dl>
-    </DuiCard>
+    </UiCard>
 
     <!-- Estado de cuenta -->
     <section aria-labelledby="account-title" class="mb-8">
@@ -342,7 +342,7 @@ const removeMember = (member: HouseholdMember) =>
             >
               de {{ money(charge.amount) }}
             </p>
-            <DuiBadge
+            <UiBadge
               class="mt-1"
               :label="charge.isOverdue ? 'Vencido' : CHARGE_STATUS_LABELS[charge.status]"
               :color="
@@ -383,10 +383,10 @@ const removeMember = (member: HouseholdMember) =>
             Tienes {{ money(String(pendingReview)) }} reportados por confirmar.
           </p>
         </div>
-        <DuiButton color="primary" @click="reportOpen = true">
+        <UiButton color="primary" @click="reportOpen = true">
           <span class="mr-1"><i class="mdi mdi-cash-check" aria-hidden="true" /></span>Reportar un
           pago
-        </DuiButton>
+        </UiButton>
       </div>
 
       <div v-if="payments.length" class="mt-6">
@@ -415,7 +415,7 @@ const removeMember = (member: HouseholdMember) =>
             </div>
             <div class="text-right">
               <p class="font-semibold tabular-nums">{{ money(payment.amount) }}</p>
-              <DuiBadge
+              <UiBadge
                 class="mt-1"
                 :label="PAYMENT_STATUS_LABELS[payment.status]"
                 :color="paymentColor(payment.status)"
@@ -494,7 +494,7 @@ const removeMember = (member: HouseholdMember) =>
       <section aria-labelledby="household-title" class="lg:row-span-2">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="household-title" class="text-lg font-semibold">Quiénes viven aquí</h2>
-          <DuiButton
+          <UiButton
             v-if="unit.canManageHousehold"
             size="sm"
             variant="outline"
@@ -502,7 +502,7 @@ const removeMember = (member: HouseholdMember) =>
           >
             <span class="mr-1" aria-hidden="true"><i class="mdi mdi-account-plus-outline" /></span
             >Agregar
-          </DuiButton>
+          </UiButton>
         </div>
         <ul
           class="divide-y divide-neutral-100 overflow-hidden rounded-2xl border border-neutral-100 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-neutral-900"
@@ -530,14 +530,14 @@ const removeMember = (member: HouseholdMember) =>
                 v-if="person.isPrimaryContact || person.isBillingResponsible"
                 class="mt-1 flex flex-wrap gap-1"
               >
-                <DuiBadge
+                <UiBadge
                   v-if="person.isPrimaryContact"
                   label="Contacto principal"
                   size="xs"
                   color="primary"
                   variant="soft"
                 />
-                <DuiBadge
+                <UiBadge
                   v-if="person.isBillingResponsible"
                   label="Responsable de pagos"
                   size="xs"
@@ -547,15 +547,15 @@ const removeMember = (member: HouseholdMember) =>
               </span>
             </div>
             <div v-if="person.editable" class="flex shrink-0 gap-1">
-              <DuiButton
+              <UiButton
                 variant="ghost"
                 size="sm"
                 :aria-label="`Editar a ${person.fullName}`"
                 @click="editMember(person)"
               >
                 <span aria-hidden="true"><i class="mdi mdi-pencil-outline" /></span>
-              </DuiButton>
-              <DuiButton
+              </UiButton>
+              <UiButton
                 variant="ghost"
                 size="sm"
                 color="danger"
@@ -563,7 +563,7 @@ const removeMember = (member: HouseholdMember) =>
                 @click="removeMember(person)"
               >
                 <span aria-hidden="true"><i class="mdi mdi-account-remove-outline" /></span>
-              </DuiButton>
+              </UiButton>
             </div>
           </li>
         </ul>
@@ -573,9 +573,9 @@ const removeMember = (member: HouseholdMember) =>
       <section aria-labelledby="vehicles-title">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="vehicles-title" class="text-lg font-semibold">Vehículos</h2>
-          <DuiButton size="sm" variant="outline" @click="editVehicle(null)">
+          <UiButton size="sm" variant="outline" @click="editVehicle(null)">
             <span class="mr-1" aria-hidden="true"><i class="mdi mdi-plus" /></span>Registrar
-          </DuiButton>
+          </UiButton>
         </div>
         <p
           v-if="unit.vehicles.length === 0"
@@ -602,25 +602,25 @@ const removeMember = (member: HouseholdMember) =>
                 }}
               </p>
             </div>
-            <DuiDropdown placement="bottom-end" :aria-label="`Acciones de ${vehicle.plate}`">
+            <UiDropdown placement="bottom-end" :aria-label="`Acciones de ${vehicle.plate}`">
               <template #trigger>
                 <span
                   class="grid size-8 place-items-center rounded-lg text-neutral-500 hover:bg-neutral-50 dark:hover:bg-white/10"
                   ><i class="mdi mdi-dots-vertical"
                 /></span>
               </template>
-              <DuiDropdownItem
+              <UiDropdownItem
                 icon="mdi mdi-pencil-outline"
                 label="Editar"
                 @click="editVehicle(vehicle)"
               />
-              <DuiDropdownItem
+              <UiDropdownItem
                 icon="mdi mdi-trash-can-outline"
                 label="Eliminar"
                 danger
                 @click="removeVehicle(vehicle)"
               />
-            </DuiDropdown>
+            </UiDropdown>
           </li>
         </ul>
       </section>
@@ -629,9 +629,9 @@ const removeMember = (member: HouseholdMember) =>
       <section aria-labelledby="pets-title">
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 id="pets-title" class="text-lg font-semibold">Mascotas</h2>
-          <DuiButton size="sm" variant="outline" @click="editPet(null)">
+          <UiButton size="sm" variant="outline" @click="editPet(null)">
             <span class="mr-1" aria-hidden="true"><i class="mdi mdi-plus" /></span>Registrar
-          </DuiButton>
+          </UiButton>
         </div>
         <p
           v-if="unit.pets.length === 0"
@@ -653,7 +653,7 @@ const removeMember = (member: HouseholdMember) =>
               <p class="truncate text-sm text-neutral-500 dark:text-neutral-300">
                 {{ [PET_SPECIES_LABELS[pet.species], pet.breed].filter(Boolean).join(' · ') }}
               </p>
-              <DuiBadge
+              <UiBadge
                 v-if="pet.isPotentiallyDangerous"
                 class="mt-1"
                 label="Potencialmente peligrosa"
@@ -662,21 +662,21 @@ const removeMember = (member: HouseholdMember) =>
                 variant="soft"
               />
             </div>
-            <DuiDropdown placement="bottom-end" :aria-label="`Acciones de ${pet.name}`">
+            <UiDropdown placement="bottom-end" :aria-label="`Acciones de ${pet.name}`">
               <template #trigger>
                 <span
                   class="grid size-8 place-items-center rounded-lg text-neutral-500 hover:bg-neutral-50 dark:hover:bg-white/10"
                   ><i class="mdi mdi-dots-vertical"
                 /></span>
               </template>
-              <DuiDropdownItem icon="mdi mdi-pencil-outline" label="Editar" @click="editPet(pet)" />
-              <DuiDropdownItem
+              <UiDropdownItem icon="mdi mdi-pencil-outline" label="Editar" @click="editPet(pet)" />
+              <UiDropdownItem
                 icon="mdi mdi-trash-can-outline"
                 label="Eliminar"
                 danger
                 @click="removePet(pet)"
               />
-            </DuiDropdown>
+            </UiDropdown>
           </li>
         </ul>
       </section>
@@ -716,8 +716,8 @@ const removeMember = (member: HouseholdMember) =>
   </template>
 
   <div v-else class="flex flex-col gap-4" aria-busy="true">
-    <DuiSkeleton width="14rem" height="2rem" />
-    <DuiSkeleton height="5rem" variant="rounded" />
-    <DuiSkeleton height="12rem" variant="rounded" />
+    <UiSkeleton width="14rem" height="2rem" />
+    <UiSkeleton height="5rem" variant="rounded" />
+    <UiSkeleton height="12rem" variant="rounded" />
   </div>
 </template>

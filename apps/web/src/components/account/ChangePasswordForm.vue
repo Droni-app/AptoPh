@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { DuiButton, DuiForm, DuiInput, DuiLabel, useToast } from '@dronico/droni-kit'
+import { UiButton, UiForm, UiInput, UiLabel, useToast } from '@aptoph/ui'
 import { accountApi } from '@/api/account'
 import { errorMessage, fieldErrors } from '@/lib/errors'
 
@@ -37,22 +37,22 @@ async function submit() {
 </script>
 
 <template>
-  <DuiForm :loading="saving" @submit="submit">
-    <DuiLabel title="Contraseña actual" :error="errors.currentPassword">
-      <DuiInput
+  <UiForm :loading="saving" @submit="submit">
+    <UiLabel title="Contraseña actual" :error="errors.currentPassword">
+      <UiInput
         v-model="form.currentPassword"
         type="password"
         autocomplete="current-password"
         required
         block
       />
-    </DuiLabel>
-    <DuiLabel
+    </UiLabel>
+    <UiLabel
       title="Contraseña nueva"
       :error="errors.password"
       :help-text="errors.password ? undefined : 'Mínimo 8 caracteres, distinta a la actual.'"
     >
-      <DuiInput
+      <UiInput
         v-model="form.password"
         type="password"
         autocomplete="new-password"
@@ -60,18 +60,18 @@ async function submit() {
         required
         block
       />
-    </DuiLabel>
-    <DuiLabel title="Repite la contraseña nueva" :error="errors.confirmation">
-      <DuiInput
+    </UiLabel>
+    <UiLabel title="Repite la contraseña nueva" :error="errors.confirmation">
+      <UiInput
         v-model="form.confirmation"
         type="password"
         autocomplete="new-password"
         required
         block
       />
-    </DuiLabel>
+    </UiLabel>
     <div>
-      <DuiButton type="submit" color="primary" :loading="saving">Cambiar contraseña</DuiButton>
+      <UiButton type="submit" color="primary" :loading="saving">Cambiar contraseña</UiButton>
     </div>
-  </DuiForm>
+  </UiForm>
 </template>

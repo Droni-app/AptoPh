@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { DuiButton, useToast } from '@dronico/droni-kit'
+import { UiButton, useToast } from '@aptoph/ui'
 import { accountApi } from '@/api/account'
 import { useAuthStore } from '@/stores/auth'
 import { errorMessage } from '@/lib/errors'
@@ -42,7 +42,7 @@ async function send() {
       Confirma tu correo <strong>{{ auth.user.email }}</strong> para recibir avisos y poder
       recuperar tu cuenta.
     </span>
-    <DuiButton
+    <UiButton
       v-if="!sent"
       size="sm"
       variant="ghost"
@@ -51,7 +51,7 @@ async function send() {
       @click="send"
     >
       Enviar enlace
-    </DuiButton>
+    </UiButton>
     <span v-else class="ml-1 font-semibold">Enlace enviado, revisa tu correo.</span>
   </div>
 </template>

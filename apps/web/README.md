@@ -30,8 +30,9 @@ El hogar se muestra sin documentos ni datos de contacto de los demás ocupantes.
 - `src/lib/format.ts`: dinero (COP), fechas, periodos, coeficientes y áreas en `es-CO`.
 - `src/components/BrandLogo.vue`: logo de `branding/logo` (versión blanca en modo oscuro).
 - Estilos: Tailwind 4 + `branding/tokens.css` (escalas `brand`/`mint`/`coral`, Plus Jakarta Sans e
-  Inter) y `branding/droni-kit-theme.css` (compartido con el backoffice) para los componentes de
-  droni-kit.
+  Inter) y el sistema de diseño `@aptoph/ui` (`packages/ui`, compartido con el backoffice).
+- Navegación: barra superior en escritorio y barra de pestañas inferior en el teléfono
+  (`src/layouts/AppLayout.vue`).
 - Ilustraciones de `branding/` en `src/assets/img`: cabeceras de Reservas, Portería y PQRS
   (`PageHeader` con `art`), la de comunidad en el login y el inicio, y los estados vacíos
   (`EmptyState`).

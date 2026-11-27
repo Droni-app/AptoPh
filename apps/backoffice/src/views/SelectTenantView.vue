@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiBadge, DuiButton } from '@dronico/droni-kit'
+import { UiAlert, UiBadge, UiButton } from '@aptoph/ui'
 import { ROLE_LABELS } from '@aptoph/shared'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
@@ -30,10 +30,10 @@ async function choose(id: string) {
       </p>
     </div>
 
-    <DuiAlert v-if="tenant.backofficeTenants.length === 0" color="warning" variant="soft">
+    <UiAlert v-if="tenant.backofficeTenants.length === 0" color="warning" variant="soft">
       Tu cuenta no tiene acceso de administración en ningún conjunto. Si eres residente, usa la
       aplicación de residentes.
-    </DuiAlert>
+    </UiAlert>
 
     <ul class="flex flex-col gap-3">
       <li v-for="item in tenant.backofficeTenants" :key="item.id">
@@ -56,7 +56,7 @@ async function choose(id: string) {
               item.city
             }}</span>
             <span class="mt-2 flex flex-wrap gap-1">
-              <DuiBadge
+              <UiBadge
                 v-for="role in item.roles"
                 :key="role"
                 :label="ROLE_LABELS[role]"
@@ -77,7 +77,7 @@ async function choose(id: string) {
     </ul>
 
     <div class="mt-8 text-center">
-      <DuiButton variant="ghost" size="sm" @click="auth.logout()">Cerrar sesión</DuiButton>
+      <UiButton variant="ghost" size="sm" @click="auth.logout()">Cerrar sesión</UiButton>
     </div>
   </main>
 </template>

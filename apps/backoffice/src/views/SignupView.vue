@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiButton, DuiCheckbox, DuiForm, DuiInput, DuiLabel } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiCheckbox, UiForm, UiInput, UiLabel } from '@aptoph/ui'
 import {
   MINIMUM_COVERS_UNITS,
   MINIMUM_MONTHLY,
@@ -78,11 +78,11 @@ async function submit() {
       plan; si no, tu información queda guardada en modo consulta.
     </p>
 
-    <DuiForm class="mt-8" :loading="loading" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</DuiAlert>
+    <UiForm class="mt-8" :loading="loading" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</UiAlert>
 
-      <DuiLabel title="Nombre del conjunto o edificio" required :error="errors.tenantName">
-        <DuiInput
+      <UiLabel title="Nombre del conjunto o edificio" required :error="errors.tenantName">
+        <UiInput
           v-model="form.tenantName"
           autocomplete="organization"
           placeholder="Conjunto Residencial Los Álamos"
@@ -90,13 +90,13 @@ async function submit() {
           autofocus
           block
         />
-      </DuiLabel>
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Ciudad" required :error="errors.city">
-          <DuiInput v-model="form.city" autocomplete="address-level2" required block />
-        </DuiLabel>
-        <DuiLabel title="Número de unidades" required :error="errors.units">
-          <DuiInput
+        <UiLabel title="Ciudad" required :error="errors.city">
+          <UiInput v-model="form.city" autocomplete="address-level2" required block />
+        </UiLabel>
+        <UiLabel title="Número de unidades" required :error="errors.units">
+          <UiInput
             v-model="form.units"
             type="number"
             min="1"
@@ -106,7 +106,7 @@ async function submit() {
             required
             block
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
 
       <div
@@ -131,15 +131,15 @@ async function submit() {
         </p>
       </div>
 
-      <DuiLabel title="Tu nombre completo" required :error="errors.fullName">
-        <DuiInput v-model="form.fullName" autocomplete="name" required block />
-      </DuiLabel>
+      <UiLabel title="Tu nombre completo" required :error="errors.fullName">
+        <UiInput v-model="form.fullName" autocomplete="name" required block />
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Correo electrónico" required :error="errors.email">
-          <DuiInput v-model="form.email" type="email" autocomplete="email" required block />
-        </DuiLabel>
-        <DuiLabel title="Celular" required :error="errors.phone">
-          <DuiInput
+        <UiLabel title="Correo electrónico" required :error="errors.email">
+          <UiInput v-model="form.email" type="email" autocomplete="email" required block />
+        </UiLabel>
+        <UiLabel title="Celular" required :error="errors.phone">
+          <UiInput
             v-model="form.phone"
             type="tel"
             autocomplete="tel"
@@ -147,15 +147,15 @@ async function submit() {
             required
             block
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
-      <DuiLabel
+      <UiLabel
         title="Contraseña"
         required
         :error="errors.password"
         :help-text="errors.password ? undefined : 'Mínimo 8 caracteres.'"
       >
-        <DuiInput
+        <UiInput
           v-model="form.password"
           type="password"
           minlength="8"
@@ -163,10 +163,10 @@ async function submit() {
           required
           block
         />
-      </DuiLabel>
+      </UiLabel>
 
       <div>
-        <DuiCheckbox
+        <UiCheckbox
           v-model="form.acceptTerms"
           label="Acepto los términos del servicio y el tratamiento de datos personales (Ley 1581 de 2012)."
         />
@@ -175,10 +175,10 @@ async function submit() {
         </p>
       </div>
 
-      <DuiButton type="submit" color="primary" size="lg" block :loading="loading">
+      <UiButton type="submit" color="primary" size="lg" block :loading="loading">
         Empezar prueba gratis
-      </DuiButton>
-    </DuiForm>
+      </UiButton>
+    </UiForm>
 
     <p class="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-300">
       ¿Ya tienes cuenta?

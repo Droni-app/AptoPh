@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCard,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiSelect,
-  DuiSkeleton,
+  UiAlert,
+  UiButton,
+  UiCard,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiSelect,
+  UiSkeleton,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   PROPERTY_TYPES,
   PROPERTY_TYPE_LABELS,
@@ -94,61 +94,61 @@ async function submit() {
     subtitle="Datos legales y de contacto de la copropiedad"
   />
 
-  <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
 
   <div v-else-if="!settings" class="max-w-2xl" aria-busy="true">
-    <DuiSkeleton height="22rem" variant="rounded" />
+    <UiSkeleton height="22rem" variant="rounded" />
   </div>
 
-  <DuiCard v-else class="max-w-2xl">
-    <DuiAlert v-if="!tenant.canManage" color="primary" variant="soft" class="mb-4">
+  <UiCard v-else class="max-w-2xl">
+    <UiAlert v-if="!tenant.canManage" color="primary" variant="soft" class="mb-4">
       Solo la administración puede cambiar estos datos.
-    </DuiAlert>
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiLabel title="Nombre del conjunto" required :error="errors.name">
-        <DuiInput v-model="form.name" required :disabled="!tenant.canManage" block />
-      </DuiLabel>
-      <DuiLabel
+    </UiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiLabel title="Nombre del conjunto" required :error="errors.name">
+        <UiInput v-model="form.name" required :disabled="!tenant.canManage" block />
+      </UiLabel>
+      <UiLabel
         title="Razón social"
         :error="errors.legalName"
         :help-text="errors.legalName ? undefined : 'Como aparece en el certificado de existencia.'"
       >
-        <DuiInput
+        <UiInput
           v-model="form.legalName"
           placeholder="Conjunto Residencial Los Álamos P.H."
           :disabled="!tenant.canManage"
           block
         />
-      </DuiLabel>
+      </UiLabel>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="NIT" :error="errors.taxId">
-          <DuiInput
+        <UiLabel title="NIT" :error="errors.taxId">
+          <UiInput
             v-model="form.taxId"
             placeholder="900.123.456-7"
             :disabled="!tenant.canManage"
             block
           />
-        </DuiLabel>
-        <DuiLabel title="Tipo de copropiedad" :error="errors.propertyType">
-          <DuiSelect
+        </UiLabel>
+        <UiLabel title="Tipo de copropiedad" :error="errors.propertyType">
+          <UiSelect
             v-model="form.propertyType"
             :options="propertyOptions"
             :disabled="!tenant.canManage"
             block
           />
-        </DuiLabel>
+        </UiLabel>
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Dirección" :error="errors.address">
-          <DuiInput v-model="form.address" :disabled="!tenant.canManage" block />
-        </DuiLabel>
-        <DuiLabel title="Ciudad" required :error="errors.city">
-          <DuiInput v-model="form.city" required :disabled="!tenant.canManage" block />
-        </DuiLabel>
+        <UiLabel title="Dirección" :error="errors.address">
+          <UiInput v-model="form.address" :disabled="!tenant.canManage" block />
+        </UiLabel>
+        <UiLabel title="Ciudad" required :error="errors.city">
+          <UiInput v-model="form.city" required :disabled="!tenant.canManage" block />
+        </UiLabel>
       </div>
       <div v-if="tenant.canManage">
-        <DuiButton type="submit" color="primary" :loading="saving">Guardar cambios</DuiButton>
+        <UiButton type="submit" color="primary" :loading="saving">Guardar cambios</UiButton>
       </div>
-    </DuiForm>
-  </DuiCard>
+    </UiForm>
+  </UiCard>
 </template>

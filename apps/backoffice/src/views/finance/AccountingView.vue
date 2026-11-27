@@ -2,14 +2,14 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiButton,
-  DuiInput,
-  DuiSelect,
-  DuiTable,
-  DuiTabs,
+  UiButton,
+  UiInput,
+  UiSelect,
+  UiTable,
+  UiTabs,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   ACCOUNT_CLASSES,
   ACCOUNT_CLASS_LABELS,
@@ -133,27 +133,27 @@ onMounted(() => {
     subtitle="Comprobantes por partida doble y plan único de cuentas (PUC)"
   >
     <template v-if="tenant.canManageFinance" #actions>
-      <DuiButton color="primary" @click="manualOpen = true">
+      <UiButton color="primary" @click="manualOpen = true">
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nota de contabilidad
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
-  <DuiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
+  <UiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
 
   <template v-if="tab === 'journal'">
     <div class="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_14rem_10rem_10rem]">
-      <DuiInput
+      <UiInput
         v-model="filters.search"
         type="search"
         placeholder="Número o descripción"
         aria-label="Buscar"
         block
       />
-      <DuiSelect v-model="filters.type" :options="typeOptions" aria-label="Tipo" block />
-      <DuiInput v-model="filters.from" type="date" aria-label="Desde" block />
-      <DuiInput v-model="filters.to" type="date" aria-label="Hasta" block />
+      <UiSelect v-model="filters.type" :options="typeOptions" aria-label="Tipo" block />
+      <UiInput v-model="filters.from" type="date" aria-label="Desde" block />
+      <UiInput v-model="filters.to" type="date" aria-label="Hasta" block />
     </div>
-    <DuiTable
+    <UiTable
       :columns="columns"
       :rows="journal?.data ?? []"
       :loading="loading"
@@ -191,19 +191,19 @@ onMounted(() => {
         ><span class="tabular-nums">{{ formatMoney(total) }}</span></template
       >
       <template #empty><EmptyState title="No hay comprobantes con estos filtros" /></template>
-    </DuiTable>
+    </UiTable>
   </template>
 
   <template v-else>
     <div class="mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_14rem]">
-      <DuiInput
+      <UiInput
         v-model="accountSearch"
         type="search"
         placeholder="Código o nombre"
         aria-label="Buscar cuenta"
         block
       />
-      <DuiSelect v-model="accountClass" :options="classOptions" aria-label="Clase" block />
+      <UiSelect v-model="accountClass" :options="classOptions" aria-label="Clase" block />
     </div>
     <div
       class="overflow-hidden rounded-2xl bg-white ring-1 ring-brand-900/5 dark:bg-neutral-900 dark:ring-white/10"
@@ -233,19 +233,19 @@ onMounted(() => {
             v-if="tenant.canManageFinance"
             class="flex shrink-0 gap-1 opacity-100 sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
           >
-            <DuiButton
+            <UiButton
               v-if="canAddUnder(account)"
               size="sm"
               variant="ghost"
               @click="((parent = account), (editing = null), (accountModalOpen = true))"
-              >+ Subcuenta</DuiButton
+              >+ Subcuenta</UiButton
             >
-            <DuiButton
+            <UiButton
               v-if="account.code.length >= 6"
               size="sm"
               variant="ghost"
               @click="((editing = account), (parent = null), (accountModalOpen = true))"
-              >Editar</DuiButton
+              >Editar</UiButton
             >
           </span>
         </li>

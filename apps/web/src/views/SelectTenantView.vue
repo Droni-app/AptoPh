@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { DuiAlert, DuiButton } from '@dronico/droni-kit'
+import { UiAlert, UiButton } from '@aptoph/ui'
 import BrandLogo from '@/components/BrandLogo.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
@@ -27,10 +27,10 @@ async function choose(id: string) {
       </p>
     </div>
 
-    <DuiAlert v-if="tenant.residentTenants.length === 0" color="warning" variant="soft">
+    <UiAlert v-if="tenant.residentTenants.length === 0" color="warning" variant="soft">
       Tu cuenta no está registrada como residente en ningún conjunto. Pídele a la administración que
       te vincule a tu unidad.
-    </DuiAlert>
+    </UiAlert>
 
     <ul class="flex flex-col gap-3">
       <li v-for="item in tenant.residentTenants" :key="item.id">
@@ -48,7 +48,7 @@ async function choose(id: string) {
     </ul>
 
     <div class="mt-8 text-center">
-      <DuiButton variant="ghost" size="sm" @click="auth.logout()">Cerrar sesión</DuiButton>
+      <UiButton variant="ghost" size="sm" @click="auth.logout()">Cerrar sesión</UiButton>
     </div>
   </main>
 </template>

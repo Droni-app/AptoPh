@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DuiButton, DuiModal } from '@dronico/droni-kit'
+import { UiButton, UiModal } from '@aptoph/ui'
 
 defineProps<{ title: string; message: string; confirmLabel?: string; loading?: boolean }>()
 const open = defineModel<boolean>({ required: true })
@@ -7,15 +7,15 @@ const emit = defineEmits<{ confirm: [] }>()
 </script>
 
 <template>
-  <DuiModal v-model="open" :title="title" size="sm" :persistent="loading">
+  <UiModal v-model="open" :title="title" size="sm" :persistent="loading">
     <p class="text-sm text-neutral-600 dark:text-neutral-200">{{ message }}</p>
     <template #footer>
       <div class="flex justify-end gap-2">
-        <DuiButton variant="ghost" :disabled="loading" @click="open = false">Cancelar</DuiButton>
-        <DuiButton color="danger" :loading="loading" @click="emit('confirm')">
+        <UiButton variant="ghost" :disabled="loading" @click="open = false">Cancelar</UiButton>
+        <UiButton color="danger" :loading="loading" @click="emit('confirm')">
           {{ confirmLabel ?? 'Eliminar' }}
-        </DuiButton>
+        </UiButton>
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { DuiAlert, DuiButton, DuiCard, DuiInput, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiCard, UiInput, UiSkeleton, useToast } from '@aptoph/ui'
 import {
   EMAIL_PACK_PRICE,
   EMAIL_PACK_SIZE,
@@ -94,7 +94,7 @@ async function buy() {
 </script>
 
 <template>
-  <DuiCard>
+  <UiCard>
     <div class="flex flex-col gap-4">
       <div>
         <h2 class="text-lg font-semibold">Correos masivos</h2>
@@ -104,8 +104,8 @@ async function buy() {
         </p>
       </div>
 
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiSkeleton v-else-if="!quota" height="4rem" />
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiSkeleton v-else-if="!quota" height="4rem" />
       <template v-else>
         <div>
           <div class="mb-1 flex flex-wrap items-baseline justify-between gap-2 text-sm">
@@ -149,7 +149,7 @@ async function buy() {
             </div>
             <label class="flex flex-col gap-1 text-sm">
               <span>Paquetes</span>
-              <DuiInput
+              <UiInput
                 v-model="packs"
                 type="number"
                 min="1"
@@ -159,9 +159,9 @@ async function buy() {
                 @update:model-value="confirming = false"
               />
             </label>
-            <DuiButton v-if="!confirming" type="submit" color="primary" :disabled="!validPacks">
+            <UiButton v-if="!confirming" type="submit" color="primary" :disabled="!validPacks">
               Comprar · {{ formatCop(total) }}
-            </DuiButton>
+            </UiButton>
           </div>
           <div
             v-if="confirming"
@@ -179,12 +179,12 @@ async function buy() {
               </template>
             </p>
             <div class="flex gap-2">
-              <DuiButton variant="ghost" :disabled="sending" @click="confirming = false"
-                >Cancelar</DuiButton
+              <UiButton variant="ghost" :disabled="sending" @click="confirming = false"
+                >Cancelar</UiButton
               >
-              <DuiButton type="submit" color="primary" :loading="sending">
+              <UiButton type="submit" color="primary" :loading="sending">
                 {{ props.paymentMethod ? 'Confirmar pago' : 'Ir a pagar' }}
-              </DuiButton>
+              </UiButton>
             </div>
           </div>
         </form>
@@ -193,5 +193,5 @@ async function buy() {
         </p>
       </template>
     </div>
-  </DuiCard>
+  </UiCard>
 </template>

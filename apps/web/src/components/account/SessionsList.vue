@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { DuiAlert, DuiBadge, DuiButton, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiBadge, UiButton, UiSkeleton, useToast } from '@aptoph/ui'
 import type { AccountSession } from '@aptoph/shared'
 import { accountApi } from '@/api/account'
 import { errorMessage } from '@/lib/errors'
@@ -53,9 +53,9 @@ onMounted(load)
 </script>
 
 <template>
-  <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
   <div v-else-if="!sessions" class="flex flex-col gap-2" aria-busy="true">
-    <DuiSkeleton v-for="n in 2" :key="n" height="3.5rem" variant="rounded" />
+    <UiSkeleton v-for="n in 2" :key="n" height="3.5rem" variant="rounded" />
   </div>
   <template v-else>
     <ul
@@ -79,7 +79,7 @@ onMounted(load)
           <div class="min-w-0">
             <p class="flex items-center gap-2 font-medium">
               {{ session.device }}
-              <DuiBadge
+              <UiBadge
                 v-if="session.current"
                 label="Esta sesión"
                 size="xs"
@@ -92,7 +92,7 @@ onMounted(load)
             </p>
           </div>
         </div>
-        <DuiButton
+        <UiButton
           v-if="!session.current"
           size="sm"
           variant="outline"
@@ -100,10 +100,10 @@ onMounted(load)
           @click="close(session)"
         >
           Cerrar
-        </DuiButton>
+        </UiButton>
       </li>
     </ul>
-    <DuiButton
+    <UiButton
       v-if="sessions.length > 1"
       class="mt-3"
       size="sm"
@@ -113,6 +113,6 @@ onMounted(load)
       @click="closeOthers"
     >
       Cerrar todas las demás sesiones
-    </DuiButton>
+    </UiButton>
   </template>
 </template>

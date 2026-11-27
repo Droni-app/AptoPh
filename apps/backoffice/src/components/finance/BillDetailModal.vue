@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { DuiAlert, DuiButton, DuiModal, DuiSkeleton, useToast } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiModal, UiSkeleton, useToast } from '@aptoph/ui'
 import type { Bill } from '@aptoph/shared'
 import StatusBadge from '@/components/finance/StatusBadge.vue'
 import ReasonDialog from '@/components/finance/ReasonDialog.vue'
@@ -50,14 +50,14 @@ async function cancel(reason: string) {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="bill ? `Factura ${bill.number ?? 'sin número'}` : 'Factura'"
     size="md"
     scrollable
   >
-    <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-    <DuiSkeleton v-else-if="!bill" class="h-48 rounded-xl" />
+    <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+    <UiSkeleton v-else-if="!bill" class="h-48 rounded-xl" />
     <div v-else class="flex flex-col gap-5 text-sm">
       <div class="flex items-start justify-between gap-4">
         <div>
@@ -142,22 +142,22 @@ async function cancel(reason: string) {
     </div>
     <template v-if="bill && tenant.canManageFinance" #footer>
       <div class="flex flex-wrap justify-end gap-2">
-        <DuiButton
+        <UiButton
           v-if="bill.status === 'pending'"
           variant="ghost"
           color="danger"
           @click="cancelOpen = true"
-          >Anular</DuiButton
+          >Anular</UiButton
         >
-        <DuiButton
+        <UiButton
           v-if="['pending', 'partially_paid'].includes(bill.status)"
           color="primary"
           @click="emit('pay', bill)"
-          >Pagar</DuiButton
+          >Pagar</UiButton
         >
       </div>
     </template>
-  </DuiModal>
+  </UiModal>
   <ReasonDialog
     v-model="cancelOpen"
     title="Anular factura"

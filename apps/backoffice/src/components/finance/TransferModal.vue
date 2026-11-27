@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import { financeApi } from '@/api/finance'
 import AttachmentPicker from '@/components/attachments/AttachmentPicker.vue'
 import { uploadAttachments, warnFailedUploads } from '@/lib/attachments'
@@ -80,43 +80,43 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Trasladar dinero"
     description="Retiro para caja menor, consignación de efectivo o traslado entre cuentas"
     size="md"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Sale de" required :error="errors.fromId">
-          <DuiSelect v-model="form.fromId" :options="options" block />
-        </DuiLabel>
-        <DuiLabel title="Entra a" required :error="errors.toId">
-          <DuiSelect v-model="form.toId" :options="options" block />
-        </DuiLabel>
-        <DuiLabel title="Valor" required :error="errors.amount">
-          <DuiInput v-model="form.amount" inputmode="decimal" required />
-        </DuiLabel>
-        <DuiLabel title="Fecha" required :error="errors.date">
-          <DuiInput v-model="form.date" type="date" required />
-        </DuiLabel>
+        <UiLabel title="Sale de" required :error="errors.fromId">
+          <UiSelect v-model="form.fromId" :options="options" block />
+        </UiLabel>
+        <UiLabel title="Entra a" required :error="errors.toId">
+          <UiSelect v-model="form.toId" :options="options" block />
+        </UiLabel>
+        <UiLabel title="Valor" required :error="errors.amount">
+          <UiInput v-model="form.amount" inputmode="decimal" required />
+        </UiLabel>
+        <UiLabel title="Fecha" required :error="errors.date">
+          <UiInput v-model="form.date" type="date" required />
+        </UiLabel>
       </div>
-      <DuiLabel title="Detalle" :error="errors.description">
-        <DuiInput
+      <UiLabel title="Detalle" :error="errors.description">
+        <UiInput
           v-model="form.description"
           maxlength="255"
           placeholder="Reembolso de caja menor"
         />
-      </DuiLabel>
+      </UiLabel>
       <AttachmentPicker v-model="files" :disabled="saving" />
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Trasladar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Trasladar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

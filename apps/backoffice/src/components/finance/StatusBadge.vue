@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DuiBadge } from '@dronico/droni-kit'
+import { UiBadge } from '@aptoph/ui'
 import {
   BILL_STATUS_LABELS,
   BILLING_PERIOD_STATUS_LABELS,
@@ -48,5 +48,5 @@ const color = computed(() => (props.overdue ? 'danger' : (COLORS[props.status] ?
 </script>
 
 <template>
-  <DuiBadge :label="label" :color="color" variant="soft" size="sm" />
+  <UiBadge :label="label" :color="color" variant="soft" size="sm" />
 </template>

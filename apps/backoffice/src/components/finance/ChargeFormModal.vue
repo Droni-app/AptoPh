@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
   useToast,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import { UNIT_TYPES, UNIT_TYPE_LABELS, type UnitType } from '@aptoph/shared'
 import UnitPicker, { type PickedUnit } from '@/components/finance/UnitPicker.vue'
 import { financeApi } from '@/api/finance'
@@ -121,20 +121,20 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     title="Nuevo cobro"
     description="Multas, cuotas extraordinarias, servicios y otros cobros puntuales"
     size="md"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiLabel title="Concepto" required :error="errors.conceptId">
-        <DuiSelect v-model="form.conceptId" :options="conceptOptions" block />
-      </DuiLabel>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiLabel title="Concepto" required :error="errors.conceptId">
+        <UiSelect v-model="form.conceptId" :options="conceptOptions" block />
+      </UiLabel>
 
-      <DuiLabel title="A quién" required :error="errors.unitIds">
+      <UiLabel title="A quién" required :error="errors.unitIds">
         <div class="flex flex-col gap-2">
           <div class="flex gap-4 text-sm">
             <label class="flex items-center gap-1.5"
@@ -164,32 +164,32 @@ async function submit() {
               </li>
             </ul>
           </template>
-          <DuiSelect v-else v-model="unitType" :options="typeOptions" block />
+          <UiSelect v-else v-model="unitType" :options="typeOptions" block />
         </div>
-      </DuiLabel>
+      </UiLabel>
 
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Valor por unidad" required :error="errors.amount">
-          <DuiInput v-model="form.amount" inputmode="decimal" required placeholder="150.000" />
-        </DuiLabel>
-        <DuiLabel title="Mes del cobro" :error="errors.period">
-          <DuiInput v-model="form.period" type="month" required />
-        </DuiLabel>
-        <DuiLabel title="Vence" required :error="errors.dueOn">
-          <DuiInput v-model="form.dueOn" type="date" required />
-        </DuiLabel>
+        <UiLabel title="Valor por unidad" required :error="errors.amount">
+          <UiInput v-model="form.amount" inputmode="decimal" required placeholder="150.000" />
+        </UiLabel>
+        <UiLabel title="Mes del cobro" :error="errors.period">
+          <UiInput v-model="form.period" type="month" required />
+        </UiLabel>
+        <UiLabel title="Vence" required :error="errors.dueOn">
+          <UiInput v-model="form.dueOn" type="date" required />
+        </UiLabel>
       </div>
-      <DuiLabel
+      <UiLabel
         title="Detalle"
         help-text="Aparece en el estado de cuenta del residente"
         :error="errors.description"
       >
-        <DuiInput
+        <UiInput
           v-model="form.description"
           maxlength="255"
           placeholder="Cuota 1 de 4 · pintura de fachada"
         />
-      </DuiLabel>
+      </UiLabel>
       <template #footer>
         <div class="flex w-full items-center justify-between gap-2">
           <span class="text-sm text-neutral-500">
@@ -198,11 +198,11 @@ async function submit() {
             </template>
           </span>
           <div class="flex gap-2">
-            <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-            <DuiButton type="submit" color="primary" :loading="saving">Crear cobro</DuiButton>
+            <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+            <UiButton type="submit" color="primary" :loading="saving">Crear cobro</UiButton>
           </div>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

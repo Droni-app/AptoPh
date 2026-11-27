@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCheckbox,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-  DuiTabs,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiButton,
+  UiCheckbox,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+  UiTabs,
+} from '@aptoph/ui'
 import type { BillingConfig, BillingOverview, PaymentMethodType } from '@aptoph/shared'
 import { billingApi } from '@/api/backoffice'
 import { errorMessage, fieldErrors } from '@/lib/errors'
@@ -238,28 +238,28 @@ const submitLabel = computed(() => {
 </script>
 
 <template>
-  <DuiModal v-model="open" title="Medio de pago" size="lg" :persistent="busy" scrollable>
-    <DuiAlert v-if="loadError" color="danger" variant="soft">{{ loadError }}</DuiAlert>
-    <DuiForm v-else :loading="busy" @submit="submit">
-      <DuiTabs
+  <UiModal v-model="open" title="Medio de pago" size="lg" :persistent="busy" scrollable>
+    <UiAlert v-if="loadError" color="danger" variant="soft">{{ loadError }}</UiAlert>
+    <UiForm v-else :loading="busy" @submit="submit">
+      <UiTabs
         v-model="tab"
         :tabs="tabs"
         aria-label="Medio de pago"
         @update:model-value="() => ((error = null), (errors = {}))"
       />
 
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
-      <DuiAlert v-if="waiting" color="primary" variant="soft">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
+      <UiAlert v-if="waiting" color="primary" variant="soft">
         <i class="mdi mdi-cellphone-check" aria-hidden="true" /> {{ waiting }}
-      </DuiAlert>
+      </UiAlert>
 
       <template v-if="tab === 'CARD'">
         <p class="text-sm text-neutral-500">
           <strong>Crédito o débito</strong>, también tarjetas débito empresariales. Los datos van
           directo a Wompi; AptoPH no los recibe ni los guarda.
         </p>
-        <DuiLabel title="Número de la tarjeta" required :error="errors.number">
-          <DuiInput
+        <UiLabel title="Número de la tarjeta" required :error="errors.number">
+          <UiInput
             v-model="card.number"
             inputmode="numeric"
             autocomplete="cc-number"
@@ -267,13 +267,13 @@ const submitLabel = computed(() => {
             placeholder="4242 4242 4242 4242"
             required
           />
-        </DuiLabel>
-        <DuiLabel title="Nombre en la tarjeta" required :error="errors.holder">
-          <DuiInput v-model="card.holder" autocomplete="cc-name" maxlength="60" required />
-        </DuiLabel>
+        </UiLabel>
+        <UiLabel title="Nombre en la tarjeta" required :error="errors.holder">
+          <UiInput v-model="card.holder" autocomplete="cc-name" maxlength="60" required />
+        </UiLabel>
         <div class="grid grid-cols-3 gap-3">
-          <DuiLabel title="Mes" required :error="errors.expMonth">
-            <DuiInput
+          <UiLabel title="Mes" required :error="errors.expMonth">
+            <UiInput
               v-model="card.expMonth"
               inputmode="numeric"
               autocomplete="cc-exp-month"
@@ -281,9 +281,9 @@ const submitLabel = computed(() => {
               placeholder="MM"
               required
             />
-          </DuiLabel>
-          <DuiLabel title="Año" required :error="errors.expYear">
-            <DuiInput
+          </UiLabel>
+          <UiLabel title="Año" required :error="errors.expYear">
+            <UiInput
               v-model="card.expYear"
               inputmode="numeric"
               autocomplete="cc-exp-year"
@@ -291,9 +291,9 @@ const submitLabel = computed(() => {
               placeholder="AA"
               required
             />
-          </DuiLabel>
-          <DuiLabel title="CVC" required :error="errors.cvc">
-            <DuiInput
+          </UiLabel>
+          <UiLabel title="CVC" required :error="errors.cvc">
+            <UiInput
               v-model="card.cvc"
               inputmode="numeric"
               autocomplete="cc-csc"
@@ -301,7 +301,7 @@ const submitLabel = computed(() => {
               type="password"
               required
             />
-          </DuiLabel>
+          </UiLabel>
         </div>
       </template>
 
@@ -309,8 +309,8 @@ const submitLabel = computed(() => {
         <p class="text-sm text-neutral-500">
           Te llegará una notificación en la app Nequi para autorizar los cobros de AptoPH.
         </p>
-        <DuiLabel title="Celular Nequi" required :error="errors.phoneNumber">
-          <DuiInput
+        <UiLabel title="Celular Nequi" required :error="errors.phoneNumber">
+          <UiInput
             v-model="nequiPhone"
             inputmode="numeric"
             autocomplete="tel-national"
@@ -318,7 +318,7 @@ const submitLabel = computed(() => {
             placeholder="3001234567"
             required
           />
-        </DuiLabel>
+        </UiLabel>
       </template>
 
       <template v-else-if="tab === 'BANCOLOMBIA_TRANSFER'">
@@ -334,15 +334,15 @@ const submitLabel = computed(() => {
         </p>
         <template v-if="!daviHandle">
           <div class="grid gap-3 sm:grid-cols-2">
-            <DuiLabel title="Tipo de documento" required>
-              <DuiSelect v-model="davi.documentType" :options="documentTypes" block />
-            </DuiLabel>
-            <DuiLabel title="Número de documento" required :error="errors.documentNumber">
-              <DuiInput v-model="davi.documentNumber" inputmode="numeric" maxlength="15" required />
-            </DuiLabel>
+            <UiLabel title="Tipo de documento" required>
+              <UiSelect v-model="davi.documentType" :options="documentTypes" block />
+            </UiLabel>
+            <UiLabel title="Número de documento" required :error="errors.documentNumber">
+              <UiInput v-model="davi.documentNumber" inputmode="numeric" maxlength="15" required />
+            </UiLabel>
           </div>
-          <DuiLabel title="Celular DaviPlata" required :error="errors.phoneNumber">
-            <DuiInput
+          <UiLabel title="Celular DaviPlata" required :error="errors.phoneNumber">
+            <UiInput
               v-model="davi.phoneNumber"
               inputmode="numeric"
               autocomplete="tel-national"
@@ -350,18 +350,18 @@ const submitLabel = computed(() => {
               placeholder="3001234567"
               required
             />
-          </DuiLabel>
+          </UiLabel>
         </template>
         <template v-else>
-          <DuiLabel title="Código que te llegó" required :error="errors.code">
-            <DuiInput
+          <UiLabel title="Código que te llegó" required :error="errors.code">
+            <UiInput
               v-model="davi.code"
               inputmode="numeric"
               autocomplete="one-time-code"
               maxlength="6"
               required
             />
-          </DuiLabel>
+          </UiLabel>
           <button
             type="button"
             class="self-start text-sm text-mint-700 hover:underline dark:text-mint-300"
@@ -377,7 +377,7 @@ const submitLabel = computed(() => {
         class="flex flex-col gap-2 rounded-xl bg-neutral-50 p-4 text-sm dark:bg-white/5"
       >
         <legend class="sr-only">Contratos de Wompi</legend>
-        <DuiCheckbox v-model="accepted.policy" :disabled="!config">
+        <UiCheckbox v-model="accepted.policy" :disabled="!config">
           <span>
             Acepto los
             <a
@@ -389,8 +389,8 @@ const submitLabel = computed(() => {
             >
             de Wompi.
           </span>
-        </DuiCheckbox>
-        <DuiCheckbox v-model="accepted.personalData" :disabled="!config">
+        </UiCheckbox>
+        <UiCheckbox v-model="accepted.personalData" :disabled="!config">
           <span>
             Autorizo el
             <a
@@ -402,7 +402,7 @@ const submitLabel = computed(() => {
             >
             por parte de Wompi.
           </span>
-        </DuiCheckbox>
+        </UiCheckbox>
       </fieldset>
       <p v-if="config?.environment === 'sandbox'" class="text-xs text-amber-700">
         Modo de pruebas (Sandbox): no se cobra dinero real.
@@ -410,16 +410,16 @@ const submitLabel = computed(() => {
 
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="busy" @click="open = false">Cancelar</DuiButton>
-          <DuiButton
+          <UiButton variant="ghost" :disabled="busy" @click="open = false">Cancelar</UiButton>
+          <UiButton
             type="submit"
             color="primary"
             :loading="busy"
             :disabled="tab === 'DAVIPLATA' && daviHandle ? busy : !canContinue"
-            >{{ submitLabel }}</DuiButton
+            >{{ submitLabel }}</UiButton
           >
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

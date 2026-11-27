@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { DuiAlert, DuiButton, DuiCard, DuiSkeleton } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiCard, UiSkeleton } from '@aptoph/ui'
 import type { CashAccount, FinanceSummary } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import StatTile from '@/components/finance/StatTile.vue'
@@ -72,24 +72,24 @@ const trend = computed(() => {
   >
     <template v-if="tenant.canManageFinance" #actions>
       <RouterLink :to="{ name: 'finance-payments', query: { nuevo: '1' } }">
-        <DuiButton color="primary">
+        <UiButton color="primary">
           <span class="mr-1"><i class="mdi mdi-cash-plus" aria-hidden="true" /></span>Registrar pago
-        </DuiButton>
+        </UiButton>
       </RouterLink>
       <RouterLink :to="{ name: 'finance-billing' }">
-        <DuiButton variant="outline">Facturar el mes</DuiButton>
+        <UiButton variant="outline">Facturar el mes</UiButton>
       </RouterLink>
     </template>
   </PageHeader>
 
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-6">{{ error }}</DuiAlert>
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-6">{{ error }}</UiAlert>
 
   <div v-if="!summary && !error" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-    <DuiSkeleton v-for="i in 8" :key="i" class="h-20 rounded-2xl" />
+    <UiSkeleton v-for="i in 8" :key="i" class="h-20 rounded-2xl" />
   </div>
 
   <template v-else-if="summary">
-    <DuiAlert v-if="summary.pendingReview.count > 0" color="warning" variant="soft" class="mb-6">
+    <UiAlert v-if="summary.pendingReview.count > 0" color="warning" variant="soft" class="mb-6">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <span>
           Hay <strong>{{ summary.pendingReview.count }}</strong>
@@ -102,7 +102,7 @@ const trend = computed(() => {
           >Revisar</RouterLink
         >
       </div>
-    </DuiAlert>
+    </UiAlert>
 
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <StatTile
@@ -172,7 +172,7 @@ const trend = computed(() => {
     </div>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
-      <DuiCard title="Últimos seis meses">
+      <UiCard title="Últimos seis meses">
         <div class="mb-3 flex flex-wrap gap-4 text-xs text-neutral-500 dark:text-neutral-400">
           <span class="flex items-center gap-1.5"
             ><span class="size-2.5 rounded-sm bg-brand-300 dark:bg-brand-400/60" />Facturado</span
@@ -206,9 +206,9 @@ const trend = computed(() => {
             >
           </div>
         </div>
-      </DuiCard>
+      </UiCard>
 
-      <DuiCard title="Saldos en bancos y caja">
+      <UiCard title="Saldos en bancos y caja">
         <ul class="divide-y divide-neutral-100 text-sm dark:divide-white/10">
           <li
             v-for="account in cashAccounts"
@@ -230,7 +230,7 @@ const trend = computed(() => {
             >
           </li>
         </ul>
-      </DuiCard>
+      </UiCard>
     </div>
   </template>
 </template>

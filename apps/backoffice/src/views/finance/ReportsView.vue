@@ -2,15 +2,15 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiCard,
-  DuiInput,
-  DuiLabel,
-  DuiSelect,
-  DuiSkeleton,
-  DuiTabs,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiButton,
+  UiCard,
+  UiInput,
+  UiLabel,
+  UiSelect,
+  UiSkeleton,
+  UiTabs,
+} from '@aptoph/ui'
 import {
   JOURNAL_ENTRY_TYPE_LABELS,
   type BalanceSheet,
@@ -181,33 +181,33 @@ function exportCsv() {
     subtitle="Estados financieros para el consejo, la revisoría fiscal y la asamblea"
   >
     <template #actions>
-      <DuiButton variant="outline" @click="exportCsv">
+      <UiButton variant="outline" @click="exportCsv">
         <span class="mr-1"><i class="mdi mdi-download" aria-hidden="true" /></span>Exportar CSV
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
-  <DuiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Informe" />
+  <UiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Informe" />
 
   <div class="mb-4 flex flex-wrap items-end gap-3">
-    <DuiLabel v-if="tab === 'ledger'" title="Cuenta" class="w-full sm:w-96">
+    <UiLabel v-if="tab === 'ledger'" title="Cuenta" class="w-full sm:w-96">
       <AccountSelect v-model="accountId" />
-    </DuiLabel>
-    <DuiLabel v-if="tab !== 'balance'" title="Desde"
-      ><DuiInput v-model="from" type="date"
-    /></DuiLabel>
-    <DuiLabel :title="tab === 'balance' ? 'Corte' : 'Hasta'"
-      ><DuiInput v-model="to" type="date"
-    /></DuiLabel>
-    <DuiLabel v-if="tab === 'trial' || tab === 'balance'" title="Nivel">
-      <DuiSelect v-model="level" :options="levelOptions" />
-    </DuiLabel>
+    </UiLabel>
+    <UiLabel v-if="tab !== 'balance'" title="Desde"
+      ><UiInput v-model="from" type="date"
+    /></UiLabel>
+    <UiLabel :title="tab === 'balance' ? 'Corte' : 'Hasta'"
+      ><UiInput v-model="to" type="date"
+    /></UiLabel>
+    <UiLabel v-if="tab === 'trial' || tab === 'balance'" title="Nivel">
+      <UiSelect v-model="level" :options="levelOptions" />
+    </UiLabel>
   </div>
 
-  <DuiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</DuiAlert>
-  <DuiSkeleton v-if="loading" class="h-64 rounded-2xl" />
+  <UiAlert v-if="error" color="danger" variant="soft" class="mb-4">{{ error }}</UiAlert>
+  <UiSkeleton v-if="loading" class="h-64 rounded-2xl" />
 
   <template v-else-if="tab === 'income' && income">
-    <DuiCard
+    <UiCard
       v-for="section in [
         ['Ingresos', income.income],
         ['Gastos', income.expense],
@@ -236,7 +236,7 @@ function exportCsv() {
           </tr>
         </tfoot>
       </table>
-    </DuiCard>
+    </UiCard>
     <div
       class="flex justify-between rounded-2xl p-4 text-lg font-bold ring-1"
       :class="
@@ -255,7 +255,7 @@ function exportCsv() {
 
   <template v-else-if="tab === 'balance' && balance">
     <div class="grid gap-4 lg:grid-cols-2">
-      <DuiCard title="Activo">
+      <UiCard title="Activo">
         <table class="w-full text-sm">
           <tbody class="divide-y divide-neutral-100 dark:divide-white/10">
             <tr
@@ -276,8 +276,8 @@ function exportCsv() {
             </tr>
           </tfoot>
         </table>
-      </DuiCard>
-      <DuiCard title="Pasivo y patrimonio">
+      </UiCard>
+      <UiCard title="Pasivo y patrimonio">
         <table class="w-full text-sm">
           <tbody class="divide-y divide-neutral-100 dark:divide-white/10">
             <tr
@@ -310,7 +310,7 @@ function exportCsv() {
             </tr>
           </tfoot>
         </table>
-      </DuiCard>
+      </UiCard>
     </div>
     <p
       v-if="balance.assets.total !== balance.totalLiabilitiesAndEquity"
@@ -320,7 +320,7 @@ function exportCsv() {
     </p>
   </template>
 
-  <DuiCard v-else-if="tab === 'trial' && trial">
+  <UiCard v-else-if="tab === 'trial' && trial">
     <div class="overflow-x-auto">
       <table class="w-full min-w-[44rem] text-sm">
         <thead class="text-left text-xs text-neutral-500 uppercase">
@@ -378,15 +378,15 @@ function exportCsv() {
         </tfoot>
       </table>
     </div>
-  </DuiCard>
+  </UiCard>
 
   <template v-else-if="tab === 'ledger'">
     <p v-if="!accountId" class="py-10 text-center text-sm text-neutral-500">
       Elige una cuenta para ver sus movimientos.
     </p>
-    <DuiCard v-else-if="ledger" :title="`${ledger.account.code} · ${ledger.account.name}`">
-      <DuiAlert v-if="ledger.truncated" color="warning" variant="soft" class="mb-3"
-        >Se muestran los primeros movimientos: acota el rango de fechas.</DuiAlert
+    <UiCard v-else-if="ledger" :title="`${ledger.account.code} · ${ledger.account.name}`">
+      <UiAlert v-if="ledger.truncated" color="warning" variant="soft" class="mb-3"
+        >Se muestran los primeros movimientos: acota el rango de fechas.</UiAlert
       >
       <div class="overflow-x-auto">
         <table class="w-full min-w-[48rem] text-sm">
@@ -436,7 +436,7 @@ function exportCsv() {
           </tfoot>
         </table>
       </div>
-    </DuiCard>
+    </UiCard>
   </template>
 
   <JournalEntryModal v-model="entryOpen" :entry-id="entryId" @show="(id) => (entryId = id)" />

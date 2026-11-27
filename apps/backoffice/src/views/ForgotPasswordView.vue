@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { DuiAlert, DuiButton, DuiForm, DuiInput, DuiLabel } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiForm, UiInput, UiLabel } from '@aptoph/ui'
 import AuthShell from '@/components/AuthShell.vue'
 import { publicAuthApi } from '@/api/account'
 import { errorMessage, fieldErrors } from '@/lib/errors'
@@ -36,29 +36,29 @@ async function submit() {
     </h1>
 
     <template v-if="sent">
-      <DuiAlert color="success" variant="soft" class="mt-6" role="status">
+      <UiAlert color="success" variant="soft" class="mt-6" role="status">
         Si <strong>{{ email }}</strong> tiene una cuenta en AptoPH, te enviamos un enlace para crear
         una contraseña nueva. Revisa tu bandeja de entrada y la carpeta de spam; el enlace funciona
         durante 1 hora.
-      </DuiAlert>
-      <DuiButton class="mt-6" variant="outline" block @click="sent = false">
+      </UiAlert>
+      <UiButton class="mt-6" variant="outline" block @click="sent = false">
         Enviar a otro correo
-      </DuiButton>
+      </UiButton>
     </template>
 
     <template v-else>
       <p class="mt-2 text-neutral-600 dark:text-neutral-300">
         Escribe el correo con el que entras y te enviaremos un enlace para crear una nueva.
       </p>
-      <DuiForm class="mt-8" :loading="loading" @submit="submit">
-        <DuiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</DuiAlert>
-        <DuiLabel title="Correo electrónico" :error="errors.email">
-          <DuiInput v-model="email" type="email" autocomplete="username" required autofocus block />
-        </DuiLabel>
-        <DuiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
+      <UiForm class="mt-8" :loading="loading" @submit="submit">
+        <UiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</UiAlert>
+        <UiLabel title="Correo electrónico" :error="errors.email">
+          <UiInput v-model="email" type="email" autocomplete="username" required autofocus block />
+        </UiLabel>
+        <UiButton type="submit" color="primary" size="lg" block :loading="loading" class="mt-2">
           Enviar enlace
-        </DuiButton>
-      </DuiForm>
+        </UiButton>
+      </UiForm>
     </template>
 
     <p class="mt-8 text-sm">

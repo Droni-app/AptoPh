@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import {
-  DuiAlert,
-  DuiButton,
-  DuiForm,
-  DuiInput,
-  DuiLabel,
-  DuiModal,
-  DuiSelect,
-} from '@dronico/droni-kit'
+  UiAlert,
+  UiButton,
+  UiForm,
+  UiInput,
+  UiLabel,
+  UiModal,
+  UiSelect,
+} from '@aptoph/ui'
 import {
   VEHICLE_TYPES,
   VEHICLE_TYPE_LABELS,
@@ -66,16 +66,16 @@ async function submit() {
 </script>
 
 <template>
-  <DuiModal
+  <UiModal
     v-model="open"
     :title="vehicle ? 'Editar vehículo' : 'Registrar vehículo'"
     :persistent="saving"
   >
-    <DuiForm :loading="saving" @submit="submit">
-      <DuiAlert v-if="error" color="danger" variant="soft">{{ error }}</DuiAlert>
+    <UiForm :loading="saving" @submit="submit">
+      <UiAlert v-if="error" color="danger" variant="soft">{{ error }}</UiAlert>
       <div class="grid gap-4 sm:grid-cols-2">
-        <DuiLabel title="Placa" required :error="errors.plate">
-          <DuiInput
+        <UiLabel title="Placa" required :error="errors.plate">
+          <UiInput
             v-model="form.plate"
             required
             maxlength="12"
@@ -83,26 +83,26 @@ async function submit() {
             class="uppercase"
             placeholder="ABC123"
           />
-        </DuiLabel>
-        <DuiLabel title="Tipo" required :error="errors.type">
-          <DuiSelect v-model="form.type" :options="typeOptions" />
-        </DuiLabel>
-        <DuiLabel title="Marca" :error="errors.brand">
-          <DuiInput v-model="form.brand" maxlength="60" />
-        </DuiLabel>
-        <DuiLabel title="Línea o modelo" :error="errors.model">
-          <DuiInput v-model="form.model" maxlength="60" />
-        </DuiLabel>
-        <DuiLabel title="Color" :error="errors.color">
-          <DuiInput v-model="form.color" maxlength="30" />
-        </DuiLabel>
+        </UiLabel>
+        <UiLabel title="Tipo" required :error="errors.type">
+          <UiSelect v-model="form.type" :options="typeOptions" />
+        </UiLabel>
+        <UiLabel title="Marca" :error="errors.brand">
+          <UiInput v-model="form.brand" maxlength="60" />
+        </UiLabel>
+        <UiLabel title="Línea o modelo" :error="errors.model">
+          <UiInput v-model="form.model" maxlength="60" />
+        </UiLabel>
+        <UiLabel title="Color" :error="errors.color">
+          <UiInput v-model="form.color" maxlength="30" />
+        </UiLabel>
       </div>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
-          <DuiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</DuiButton>
-          <DuiButton type="submit" color="primary" :loading="saving">Guardar</DuiButton>
+          <UiButton variant="ghost" :disabled="saving" @click="open = false">Cancelar</UiButton>
+          <UiButton type="submit" color="primary" :loading="saving">Guardar</UiButton>
         </div>
       </template>
-    </DuiForm>
-  </DuiModal>
+    </UiForm>
+  </UiModal>
 </template>

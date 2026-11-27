@@ -2,14 +2,14 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DuiButton,
-  DuiInput,
-  DuiSelect,
-  DuiTable,
-  DuiTabs,
+  UiButton,
+  UiInput,
+  UiSelect,
+  UiTable,
+  UiTabs,
   useToast,
   type TableColumn,
-} from '@dronico/droni-kit'
+} from '@aptoph/ui'
 import {
   BILL_STATUS_LABELS,
   PAYMENT_METHOD_LABELS,
@@ -183,23 +183,23 @@ onMounted(() => {
     subtitle="Facturas por pagar, egresos y proveedores de la copropiedad"
   >
     <template v-if="tenant.canManageFinance" #actions>
-      <DuiButton variant="outline" @click="pay()">
+      <UiButton variant="outline" @click="pay()">
         <span class="mr-1"><i class="mdi mdi-bank-transfer-out" aria-hidden="true" /></span>Pagar
-      </DuiButton>
-      <DuiButton color="primary" @click="billFormOpen = true">
+      </UiButton>
+      <UiButton color="primary" @click="billFormOpen = true">
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Registrar gasto
-      </DuiButton>
+      </UiButton>
     </template>
   </PageHeader>
 
-  <DuiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
+  <UiTabs v-model="tab" :tabs="tabs" class="mb-4" aria-label="Vista" />
 
   <template v-if="tab === 'bills'">
     <div class="mb-4 grid gap-3 sm:grid-cols-[14rem_minmax(0,18rem)]">
-      <DuiSelect v-model="billStatus" :options="billStatusOptions" aria-label="Estado" block />
-      <DuiSelect v-model="billVendor" :options="vendorOptions" aria-label="Proveedor" block />
+      <UiSelect v-model="billStatus" :options="billStatusOptions" aria-label="Estado" block />
+      <UiSelect v-model="billVendor" :options="vendorOptions" aria-label="Proveedor" block />
     </div>
-    <DuiTable
+    <UiTable
       :columns="billColumns"
       :rows="bills?.data ?? []"
       :loading="loadingBills"
@@ -252,10 +252,10 @@ onMounted(() => {
           description="Registra las facturas de vigilancia, aseo, servicios públicos y demás gastos para controlar lo que se debe y pagarlo a tiempo."
         />
       </template>
-    </DuiTable>
+    </UiTable>
   </template>
 
-  <DuiTable
+  <UiTable
     v-else-if="tab === 'payments'"
     :columns="paymentColumns"
     :rows="payments?.data ?? []"
@@ -293,27 +293,27 @@ onMounted(() => {
     >
     <template #status="row"><StatusBadge kind="vendorPayment" :status="row.status" /></template>
     <template #empty><EmptyState title="Aún no hay egresos" /></template>
-  </DuiTable>
+  </UiTable>
 
   <template v-else-if="tab === 'vendors'">
     <div class="mb-4 flex flex-wrap justify-between gap-3">
-      <DuiInput
+      <UiInput
         v-model="vendorSearch"
         type="search"
         placeholder="Nombre o NIT"
         aria-label="Buscar proveedor"
         class="w-full sm:w-72"
       />
-      <DuiButton
+      <UiButton
         v-if="tenant.canManageFinance"
         size="sm"
         color="primary"
         @click="((editingVendor = null), (vendorFormOpen = true))"
       >
         <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nuevo proveedor
-      </DuiButton>
+      </UiButton>
     </div>
-    <DuiTable :columns="vendorColumns" :rows="filteredVendors">
+    <UiTable :columns="vendorColumns" :rows="filteredVendors">
       <template #name="row">
         <span class="font-medium" :class="row.isActive ? '' : 'text-neutral-400 line-through'">{{
           row.name
@@ -338,14 +338,14 @@ onMounted(() => {
       >
       <template #actions="row">
         <div class="flex justify-end gap-1">
-          <DuiButton v-if="Number(row.balance) > 0" size="sm" variant="outline" @click="pay(row.id)"
-            >Pagar</DuiButton
+          <UiButton v-if="Number(row.balance) > 0" size="sm" variant="outline" @click="pay(row.id)"
+            >Pagar</UiButton
           >
-          <DuiButton
+          <UiButton
             size="sm"
             variant="ghost"
             @click="((editingVendor = row as Vendor), (vendorFormOpen = true))"
-            >Editar</DuiButton
+            >Editar</UiButton
           >
         </div>
       </template>
@@ -354,10 +354,10 @@ onMounted(() => {
           title="Sin proveedores"
           description="Agrega la empresa de vigilancia, aseo, mantenimiento de ascensores y demás."
       /></template>
-    </DuiTable>
+    </UiTable>
   </template>
 
-  <DuiTable v-else :columns="agingColumns" :rows="aging?.rows ?? []" :loading="!aging">
+  <UiTable v-else :columns="agingColumns" :rows="aging?.rows ?? []" :loading="!aging">
     <template #name="row">
       <span class="font-medium">{{ row.name }}</span>
       <span v-if="row.documentNumber" class="block text-xs text-neutral-500">{{
@@ -382,7 +382,7 @@ onMounted(() => {
       ><span class="font-semibold tabular-nums">{{ formatMoney(total) }}</span></template
     >
     <template #empty><EmptyState title="No se le debe a ningún proveedor" /></template>
-  </DuiTable>
+  </UiTable>
   <p v-if="tab === 'aging' && aging" class="mt-3 text-right text-sm font-semibold">
     Total por pagar {{ formatMoney(aging.totals.total) }}
   </p>

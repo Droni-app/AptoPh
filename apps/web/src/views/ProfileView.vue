@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { DuiButton, DuiCard } from '@dronico/droni-kit'
+import { UiButton, UiCard } from '@aptoph/ui'
 import { ROLE_LABELS } from '@aptoph/shared'
 import PageHeader from '@/components/PageHeader.vue'
 import ProfileForm from '@/components/account/ProfileForm.vue'
@@ -20,7 +20,7 @@ const sessions = ref<InstanceType<typeof SessionsList> | null>(null)
 
   <EmailVerificationNotice class="mb-6" />
 
-  <DuiCard v-if="auth.user" class="mb-6">
+  <UiCard v-if="auth.user" class="mb-6">
     <div class="flex flex-wrap items-center gap-4">
       <span
         class="grid size-14 place-items-center rounded-full bg-mint-100 font-display text-xl font-semibold text-mint-800 dark:bg-mint-500/20 dark:text-mint-200"
@@ -37,29 +37,29 @@ const sessions = ref<InstanceType<typeof SessionsList> | null>(null)
         </p>
       </div>
     </div>
-  </DuiCard>
+  </UiCard>
 
   <div class="grid gap-6 lg:grid-cols-2">
-    <DuiCard>
+    <UiCard>
       <h2 class="mb-4 text-lg font-semibold">Datos personales</h2>
       <ProfileForm />
-    </DuiCard>
+    </UiCard>
     <div class="flex flex-col gap-6">
-      <DuiCard>
+      <UiCard>
         <h2 class="mb-4 text-lg font-semibold">Contraseña</h2>
         <ChangePasswordForm @changed="sessions?.load()" />
-      </DuiCard>
-      <DuiCard>
+      </UiCard>
+      <UiCard>
         <h2 class="text-lg font-semibold">Sesiones abiertas</h2>
         <p class="mt-1 mb-4 text-sm text-neutral-500 dark:text-neutral-400">
           Si no reconoces un dispositivo, cierra su sesión y cambia tu contraseña.
         </p>
         <SessionsList ref="sessions" />
-      </DuiCard>
+      </UiCard>
     </div>
   </div>
 
-  <DuiButton class="mt-6" variant="outline" color="danger" @click="auth.logout()">
+  <UiButton class="mt-6" variant="outline" color="danger" @click="auth.logout()">
     <span class="mr-1" aria-hidden="true"><i class="mdi mdi-logout" /></span>Cerrar sesión
-  </DuiButton>
+  </UiButton>
 </template>

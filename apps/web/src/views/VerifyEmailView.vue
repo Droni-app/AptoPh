@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { DuiAlert, DuiButton, DuiSkeleton } from '@dronico/droni-kit'
+import { UiAlert, UiButton, UiSkeleton } from '@aptoph/ui'
 import AuthShell from '@/components/AuthShell.vue'
 import { publicAuthApi } from '@/api/account'
 import { useAuthStore } from '@/stores/auth'
@@ -38,9 +38,9 @@ onMounted(async () => {
     </h1>
 
     <div v-if="state === 'loading'" class="mt-6" aria-busy="true">
-      <DuiSkeleton height="4rem" variant="rounded" />
+      <UiSkeleton height="4rem" variant="rounded" />
     </div>
-    <DuiAlert
+    <UiAlert
       v-else-if="state === 'done'"
       color="success"
       variant="soft"
@@ -48,13 +48,13 @@ onMounted(async () => {
       role="status"
     >
       ¡Gracias! Tu correo quedó confirmado.
-    </DuiAlert>
-    <DuiAlert v-else color="danger" variant="soft" class="mt-6" role="alert">
+    </UiAlert>
+    <UiAlert v-else color="danger" variant="soft" class="mt-6" role="alert">
       {{ error }} Puedes pedir un enlace nuevo desde «Mi perfil».
-    </DuiAlert>
+    </UiAlert>
 
-    <DuiButton class="mt-6" color="primary" block :to="auth.isAuthenticated ? '/' : '/login'">
+    <UiButton class="mt-6" color="primary" block :to="auth.isAuthenticated ? '/' : '/login'">
       {{ auth.isAuthenticated ? 'Ir al portal' : 'Iniciar sesión' }}
-    </DuiButton>
+    </UiButton>
   </AuthShell>
 </template>
