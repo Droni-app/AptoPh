@@ -79,6 +79,12 @@ const router = createRouter({
           meta: { tenant: true, title: 'Portería' },
         },
         {
+          path: 'parqueaderos',
+          name: 'parking',
+          component: () => import('@/views/ParkingView.vue'),
+          meta: { tenant: true, title: 'Parqueaderos' },
+        },
+        {
           path: 'reservas',
           name: 'bookings',
           component: () => import('@/views/BookingsView.vue'),

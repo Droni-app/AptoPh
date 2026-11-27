@@ -19,6 +19,8 @@ import {
   UNIT_STATUS_LABELS,
   UNIT_TYPE_LABELS,
   VEHICLE_TYPE_LABELS,
+  PARKING_OWNERSHIP_LABELS,
+  VEHICLE_OWNER_RELATIONSHIP_LABELS,
   type HouseholdMember,
   type ResidentPayment,
   type ResidentPet,
@@ -65,6 +67,16 @@ const vehicleIcons: Record<string, string> = {
   bicycle: 'mdi mdi-bicycle',
   other: 'mdi mdi-car-side',
 }
+/** Today in the conjunto, to flag expired SOAT and inspection */
+const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' })
+const expired = (date: string | null) => !!date && date < today
+const shortDate = (iso: string) =>
+  new Date(`${iso}T12:00:00`).toLocaleDateString('es-CO', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+
 const petIcons: Record<string, string> = {
   dog: 'mdi mdi-dog',
   cat: 'mdi mdi-cat',
@@ -601,6 +613,42 @@ const removeMember = (member: HouseholdMember) =>
                     .join(' · ')
                 }}
               </p>
+              <p
+                v-if="vehicle.ownerType === 'third_party'"
+                class="truncate text-xs text-neutral-500 dark:text-neutral-300"
+              >
+                A nombre de {{ vehicle.ownerName
+                }}<template v-if="vehicle.ownerRelationship">
+                  ({{
+                    VEHICLE_OWNER_RELATIONSHIP_LABELS[vehicle.ownerRelationship].toLowerCase()
+                  }})</template
+                >
+              </p>
+              <p
+                v-if="vehicle.soatExpiresOn || vehicle.inspectionExpiresOn"
+                class="flex flex-wrap gap-x-3 text-xs"
+              >
+                <span
+                  v-if="vehicle.soatExpiresOn"
+                  :class="
+                    expired(vehicle.soatExpiresOn)
+                      ? 'font-medium text-coral-700 dark:text-coral-300'
+                      : 'text-neutral-500 dark:text-neutral-300'
+                  "
+                  >SOAT {{ expired(vehicle.soatExpiresOn) ? 'venció' : 'hasta' }}
+                  {{ shortDate(vehicle.soatExpiresOn) }}</span
+                >
+                <span
+                  v-if="vehicle.inspectionExpiresOn"
+                  :class="
+                    expired(vehicle.inspectionExpiresOn)
+                      ? 'font-medium text-coral-700 dark:text-coral-300'
+                      : 'text-neutral-500 dark:text-neutral-300'
+                  "
+                  >Tecnomecánica {{ expired(vehicle.inspectionExpiresOn) ? 'venció' : 'hasta' }}
+                  {{ shortDate(vehicle.inspectionExpiresOn) }}</span
+                >
+              </p>
             </div>
             <UiDropdown placement="bottom-end" :aria-label="`Acciones de ${vehicle.plate}`">
               <template #trigger>
@@ -621,6 +669,58 @@ const removeMember = (member: HouseholdMember) =>
                 @click="removeVehicle(vehicle)"
               />
             </UiDropdown>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Parqueaderos -->
+      <section v-if="unit.parkingSpots.length" aria-labelledby="parking-title">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 id="parking-title" class="text-lg font-semibold">Parqueaderos</h2>
+          <RouterLink
+            :to="{ name: 'parking' }"
+            class="text-sm font-medium text-brand-700 hover:underline dark:text-brand-200"
+            >Sorteo de cupos</RouterLink
+          >
+        </div>
+        <ul class="grid gap-3 sm:grid-cols-2">
+          <li
+            v-for="spot in unit.parkingSpots"
+            :key="spot.id"
+            class="flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white p-4 dark:border-white/10 dark:bg-neutral-900"
+          >
+            <span
+              class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-50 font-bold text-brand-700 dark:bg-brand-400/15 dark:text-brand-200"
+              aria-hidden="true"
+              ><i class="mdi mdi-parking text-xl"
+            /></span>
+            <div class="min-w-0 flex-1">
+              <p class="font-mono font-semibold">{{ spot.code }}</p>
+              <p class="truncate text-sm text-neutral-500 dark:text-neutral-300">
+                {{
+                  [
+                    PARKING_OWNERSHIP_LABELS[spot.ownership],
+                    VEHICLE_TYPE_LABELS[spot.vehicleType],
+                    spot.location,
+                    spot.isCovered ? 'Cubierto' : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')
+                }}
+              </p>
+              <p
+                v-if="spot.ownership === 'communal'"
+                class="text-xs text-neutral-500 dark:text-neutral-300"
+              >
+                <template v-if="spot.endsOn"
+                  >Asignado hasta el {{ shortDate(spot.endsOn) }}</template
+                ><template v-else>Asignado</template
+                ><template v-if="spot.vehiclePlate"> · {{ spot.vehiclePlate }}</template
+                ><template v-if="spot.monthlyRate">
+                  · {{ money(String(spot.monthlyRate)) }} al mes</template
+                >
+              </p>
+            </div>
           </li>
         </ul>
       </section>
@@ -686,6 +786,7 @@ const removeMember = (member: HouseholdMember) =>
       v-model="vehicleModal"
       :unit-id="unit.id"
       :vehicle="editingVehicle"
+      :allow-third-party="unit.allowThirdPartyVehicles"
       @saved="load"
     />
     <PetFormModal v-model="petModal" :unit-id="unit.id" :pet="editingPet" @saved="load" />

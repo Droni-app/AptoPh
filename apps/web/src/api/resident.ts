@@ -1,5 +1,8 @@
 import type {
   ApiItem,
+  ParkingApplication,
+  ParkingApplyInput,
+  ResidentParkingOverview,
   ResidentAnnouncement,
   ResidentAnnouncementDetail,
   Attachment,
@@ -142,6 +145,15 @@ export const residentApi = {
     create: (body: VisitInput) =>
       api<ApiItem<ResidentVisit>>(`${base}/visits`, { method: 'POST', body }),
     cancel: (id: string) => api<void>(`${base}/visits/${id}`, { method: 'DELETE' }),
+  },
+  parking: {
+    overview: () => api<ApiItem<ResidentParkingOverview>>(`${base}/parking`),
+    apply: (body: ParkingApplyInput) =>
+      api<ApiItem<ParkingApplication>>(`${base}/parking/applications`, { method: 'POST', body }),
+    respond: (id: string, action: 'withdraw' | 'accept' | 'decline') =>
+      api<ApiItem<ParkingApplication>>(`${base}/parking/applications/${id}/${action}`, {
+        method: 'POST',
+      }),
   },
   parcels: () => api<List<ResidentParcel>>(`${base}/parcels`),
   amenities: () => api<List<ResidentAmenity>>(`${base}/amenities`),

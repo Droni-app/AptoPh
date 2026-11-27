@@ -7,6 +7,50 @@ import ResourceException from '#exceptions/resource_exception'
 import { findOwnUnit, residentUnitIds } from '#services/resident_scope'
 import { presentVehicle } from '#transformers/property/resident'
 import { createVehicleValidator, updateVehicleValidator } from '#validators/property/resident'
+import { parkingSettings } from '@aptoph/shared'
+import db from '@adonisjs/lucid/services/db'
+
+type VehicleInput = Awaited<ReturnType<typeof createVehicleValidator.validate>>
+
+/**
+ * Owner and document fields as stored: a resident's own vehicle has no owner
+ * data; someone else's needs the name, and only if the conjunto allows it.
+ */
+function ownerFields(tenant: Tenant, data: Partial<VehicleInput>, current?: Vehicle) {
+  const { soatExpiresOn, inspectionExpiresOn, ...rest } = data
+  const fields: Partial<Vehicle> = {}
+  const dates = { soatExpiresOn, inspectionExpiresOn }
+  for (const [key, value] of Object.entries(dates)) {
+    if (value !== undefined) {
+      ;(fields as Record<string, unknown>)[key] = value ? DateTime.fromISO(value) : null
+    }
+  }
+  const ownerType = rest.ownerType ?? current?.ownerType ?? 'resident'
+  if (ownerType === 'resident') {
+    return {
+      ...rest,
+      ...fields,
+      ownerType,
+      ownerName: null,
+      ownerDocumentType: null,
+      ownerDocumentNumber: null,
+      ownerRelationship: null,
+      ownerPhone: null,
+    }
+  }
+  const allowed = parkingSettings((tenant.settings ?? {}).parking).allowThirdPartyVehicles
+  if (!allowed && current?.ownerType !== 'third_party') {
+    throw new FieldException(
+      'ownerType',
+      'El conjunto no permite registrar vehículos a nombre de terceros'
+    )
+  }
+  const ownerName = rest.ownerName === undefined ? current?.ownerName : rest.ownerName
+  if (!ownerName?.trim()) {
+    throw new FieldException('ownerName', 'Escribe el nombre del propietario del vehículo')
+  }
+  return { ...rest, ...fields, ownerType }
+}
 
 /**
  * Vehicles of the resident's units:
@@ -21,7 +65,11 @@ export default class VehiclesController {
     const data = await request.validateUsing(createVehicleValidator)
     await this.assertPlateIsFree(tenant, data.plate)
 
-    const vehicle = await Vehicle.create({ ...data, tenantId: tenant.id, unitId: params.unitId })
+    const vehicle = await Vehicle.create({
+      ...ownerFields(tenant, data),
+      tenantId: tenant.id,
+      unitId: params.unitId,
+    })
     response.status(201)
     return { data: presentVehicle(vehicle) }
   }
@@ -32,7 +80,7 @@ export default class VehiclesController {
     if (data.plate && data.plate !== vehicle.plate) {
       await this.assertPlateIsFree(ctx.tenant, data.plate, vehicle.id)
     }
-    vehicle.merge(data)
+    vehicle.merge(ownerFields(ctx.tenant, data, vehicle))
     await vehicle.save()
     return { data: presentVehicle(vehicle) }
   }
@@ -40,7 +88,16 @@ export default class VehiclesController {
   async destroy(ctx: HttpContext) {
     const vehicle = await this.find(ctx)
     vehicle.deletedAt = DateTime.now()
-    await vehicle.save()
+    await db.transaction(async (trx) => {
+      await vehicle.useTransaction(trx).save()
+      // The spot stays with the unit, without this vehicle
+      await trx
+        .from('parking_assignments')
+        .where('tenant_id', ctx.tenant.id)
+        .where('vehicle_id', vehicle.id)
+        .whereIn('status', ['offered', 'active'])
+        .update({ vehicle_id: null, updated_at: new Date() })
+    })
     return ctx.response.noContent()
   }
 

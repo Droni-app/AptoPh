@@ -48,8 +48,11 @@ export const controllers = {
   },
   property: {
     Buildings: () => import('#controllers/property/buildings_controller'),
+    Parking: () => import('#controllers/property/parking_controller'),
+    ParkingLotteries: () => import('#controllers/property/parking_lotteries_controller'),
     PropertyImport: () => import('#controllers/property/property_import_controller'),
     ResidentHousehold: () => import('#controllers/property/resident_household_controller'),
+    ResidentParking: () => import('#controllers/property/resident_parking_controller'),
     ResidentPets: () => import('#controllers/property/resident_pets_controller'),
     ResidentUnits: () => import('#controllers/property/resident_units_controller'),
     ResidentVehicles: () => import('#controllers/property/resident_vehicles_controller'),

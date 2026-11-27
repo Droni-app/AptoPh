@@ -34,6 +34,7 @@ reales (sección 6).
 | Zonas comunes y reservas | 🟡 solo residente | ⬜ | ✅ | ⬜ |
 | Comunicados | ✅ texto con formato, imagen, correo | ✅ | ✅ | ⬜ |
 | PQRS y mantenimiento | ✅ bandeja, asignación, notas internas, plazos, correo | ✅ | ✅ | ⬜ |
+| Parqueaderos del conjunto | ✅ propios y comunales, asignación, cobro mensual, sorteo y lista de espera | ✅ | ✅ | ⬜ |
 | Portería, visitas y paquetes | 🟡 parqueadero de visitantes; visitas y paquetes solo residente | ✅ | ✅ | ⬜ |
 | Documentos | ⬜ (solo tablas) | ⬜ | ⬜ | ⬜ |
 | Auditoría y reportes | ⬜ (solo tablas) | ⬜ | — | — |
@@ -183,6 +184,13 @@ el residente gestiona su hogar, vehículos y mascotas.
 - [ ] Importación de vehículos y mascotas, y de saldos iniciales de cartera.
 - [ ] Validar que los coeficientes sumen 1 (o 100 %) y mostrar la diferencia en el backoffice.
 - [ ] Vehículos y mascotas visibles y editables desde el backoffice (portería los necesita).
+- [x] **Parqueaderos del conjunto** (`docs/parking.md`): propios y comunales, máximo por unidad,
+      tarifas mensuales por tipo de vehículo que se cobran con la cuota (prorrateadas), asignación
+      con requisitos, cancelación y rechazo con motivo, consulta en portería, vehículos de terceros
+      y fechas de SOAT y tecnomecánica.
+- [x] Parqueaderos, fase 2: sorteo auditable con postulaciones desde el portal, lista de espera,
+      ofertas con plazo, correos y cierre del periodo.
+- [ ] Parqueaderos: proceso programado que venza ofertas y recuerde antes del vencimiento.
 - [ ] Historial de ocupantes (quién vivió y cuándo) en vez de borrar.
 - [ ] Exportar el censo a Excel.
 

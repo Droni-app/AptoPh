@@ -37,7 +37,11 @@ async function checkItems(tenant: Tenant, items: BudgetBody['items']) {
   }
 }
 
-async function present(budget: Budget) {
+/**
+ * The full detail (BudgetDetail), the same in every response: the page
+ * replaces what it shows with it, so `execution` cannot be missing.
+ */
+async function present(tenant: Tenant, budget: Budget) {
   await budget.load('items', (items) =>
     items
       .preload('account')
@@ -52,6 +56,7 @@ async function present(budget: Budget) {
       otherIncome: fromCents(base.otherIncome),
       monthly: fromCents(base.monthly),
     },
+    execution: await new FinanceReports(tenant).budgetExecution(budget),
   }
 }
 
@@ -69,10 +74,7 @@ export default class BudgetsController {
 
   async show({ tenant, params }: HttpContext) {
     const budget = await tenant.related('budgets').query().where('id', params.id).firstOrFail()
-    const data = await present(budget)
-    return {
-      data: { ...data, execution: await new FinanceReports(tenant).budgetExecution(budget) },
-    }
+    return { data: await present(tenant, budget) }
   }
 
   async store({ tenant, request, response }: HttpContext) {
@@ -96,7 +98,7 @@ export default class BudgetsController {
       return created
     })
     response.status(201)
-    return { data: await present(budget) }
+    return { data: await present(tenant, budget) }
   }
 
   async update({ tenant, params, request }: HttpContext) {
@@ -124,7 +126,7 @@ export default class BudgetsController {
       await BudgetItem.query({ client: trx }).where('budget_id', budget.id).delete()
       await this.saveItems(tenant, budget.id, data.items, trx)
     })
-    return { data: await present(budget) }
+    return { data: await present(tenant, budget) }
   }
 
   /** Approved by the assembly: the base of the fees and of the reserve fund */
@@ -139,7 +141,7 @@ export default class BudgetsController {
       approvalReference: data.approvalReference ?? null,
     })
     await budget.save()
-    return { data: await present(budget) }
+    return { data: await present(tenant, budget) }
   }
 
   /** Back to draft, e.g. to fix a typo before the assembly */
@@ -147,7 +149,7 @@ export default class BudgetsController {
     const budget = await tenant.related('budgets').query().where('id', params.id).firstOrFail()
     budget.merge({ status: 'draft', approvedOn: null, approvalReference: null })
     await budget.save()
-    return { data: await present(budget) }
+    return { data: await present(tenant, budget) }
   }
 
   async destroy({ tenant, params, response }: HttpContext) {

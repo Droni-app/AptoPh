@@ -16,6 +16,8 @@ import {
   TICKET_READ_ROLES,
   TICKET_WORK_ROLES,
   VISITOR_PARKING_ADMIN_ROLES,
+  PARKING_MANAGE_ROLES,
+  PARKING_READ_ROLES,
   VISITOR_PARKING_ROLES,
 } from '@aptoph/shared'
 import { throttleBilling, throttlePublic, throttleSignup } from '#start/limiter'
@@ -51,6 +53,10 @@ const ResidentBookingsController = () =>
 const ResidentTicketsController = () => import('#controllers/tickets/resident_tickets_controller')
 const TicketsController = () => import('#controllers/tickets/tickets_controller')
 const VisitorParkingController = () => import('#controllers/gatehouse/visitor_parking_controller')
+const ParkingController = () => import('#controllers/property/parking_controller')
+const ParkingLotteriesController = () =>
+  import('#controllers/property/parking_lotteries_controller')
+const ResidentParkingController = () => import('#controllers/property/resident_parking_controller')
 const ResidentFinanceController = () => import('#controllers/finance/resident_finance_controller')
 const ResidentAnnouncementsController = () =>
   import('#controllers/announcements/resident_announcements_controller')
@@ -79,6 +85,12 @@ const ticketsRead = { roles: [...TICKET_READ_ROLES] }
 const ticketsWork = { roles: [...TICKET_WORK_ROLES] }
 const parkingGate = { roles: [...VISITOR_PARKING_ROLES] }
 const parkingAdmin = { roles: [...VISITOR_PARKING_ADMIN_ROLES] }
+const spotsRead = { roles: [...PARKING_READ_ROLES] }
+const spotsManage = { roles: [...PARKING_MANAGE_ROLES] }
+/** The lottery: the council consults it, the guards do not */
+const lotteriesRead = {
+  roles: PARKING_READ_ROLES.filter((role) => role !== 'security_guard'),
+}
 const financeRead = { roles: [...FINANCE_READ_ROLES] }
 const financeWrite = { roles: [...FINANCE_WRITE_ROLES] }
 /** `:ownerType` of the finance attachment routes */
@@ -245,6 +257,20 @@ router
         router
           .get('announcements/:id', [ResidentAnnouncementsController, 'show'])
           .as('announcements.show')
+        // Sorteo de parqueaderos
+        router.get('parking', [ResidentParkingController, 'show']).as('parking.show')
+        router
+          .post('parking/applications', [ResidentParkingController, 'apply'])
+          .as('parking.apply')
+        router
+          .post('parking/applications/:id/withdraw', [ResidentParkingController, 'withdraw'])
+          .as('parking.withdraw')
+        router
+          .post('parking/applications/:id/accept', [ResidentParkingController, 'accept'])
+          .as('parking.accept')
+        router
+          .post('parking/applications/:id/decline', [ResidentParkingController, 'decline'])
+          .as('parking.decline')
       })
       .prefix('resident')
       .as('resident')
@@ -369,6 +395,80 @@ router
       .put('visitor-parking/settings', [VisitorParkingController, 'updateSettings'])
       .as('visitorParking.settings.update')
       .use([middleware.auth(), middleware.tenant(parkingAdmin), middleware.subscription()])
+
+    /**
+     * Back-office: parking of the conjunto (assigned spots). The council and
+     * the guards consult it; the administration manages it. docs/parking.md
+     */
+    router
+      .group(() => {
+        router.get('summary', [ParkingController, 'summary']).as('summary')
+        router.get('spots', [ParkingController, 'spots']).as('spots.index')
+        router.get('assignments', [ParkingController, 'assignments']).as('assignments.index')
+        router.get('lookup', [ParkingController, 'lookup']).as('lookup')
+      })
+      .prefix('parking')
+      .as('parking')
+      .use([middleware.auth(), middleware.tenant(spotsRead)])
+
+    router
+      .group(() => {
+        router.get('settings', [ParkingController, 'settings']).as('settings')
+        router.get('eligibility', [ParkingController, 'eligibility']).as('eligibility')
+      })
+      .prefix('parking')
+      .as('parking.manage.read')
+      .use([middleware.auth(), middleware.tenant(spotsManage)])
+
+    router
+      .group(() => {
+        router.get('lotteries', [ParkingLotteriesController, 'index']).as('lotteries.index')
+        router.get('lotteries/:id', [ParkingLotteriesController, 'show']).as('lotteries.show')
+        router
+          .get('lotteries/:id/applications', [ParkingLotteriesController, 'applications'])
+          .as('lotteries.applications')
+      })
+      .prefix('parking')
+      .as('parking.lotteries.read')
+      .use([middleware.auth(), middleware.tenant(lotteriesRead)])
+
+    router
+      .group(() => {
+        router.put('settings', [ParkingController, 'updateSettings']).as('settings.update')
+        router.post('spots', [ParkingController, 'storeSpot']).as('spots.store')
+        router.post('spots/batch', [ParkingController, 'storeBatch']).as('spots.batch')
+        router.post('spots/import', [ParkingController, 'importSpots']).as('spots.import')
+        router.patch('spots/:id', [ParkingController, 'updateSpot']).as('spots.update')
+        router.delete('spots/:id', [ParkingController, 'destroySpot']).as('spots.destroy')
+        router.post('assignments', [ParkingController, 'assign']).as('assignments.store')
+        router
+          .patch('assignments/:id', [ParkingController, 'updateAssignment'])
+          .as('assignments.update')
+        router
+          .post('assignments/:id/end', [ParkingController, 'endAssignment'])
+          .as('assignments.end')
+        router.post('lotteries', [ParkingLotteriesController, 'store']).as('lotteries.store')
+        router.patch('lotteries/:id', [ParkingLotteriesController, 'update']).as('lotteries.update')
+        router
+          .post('lotteries/:id/cancel', [ParkingLotteriesController, 'cancel'])
+          .as('lotteries.cancel')
+        router.post('lotteries/:id/draw', [ParkingLotteriesController, 'draw']).as('lotteries.draw')
+        router
+          .post('lotteries/:id/offer', [ParkingLotteriesController, 'offer'])
+          .as('lotteries.offer')
+        router
+          .post('lotteries/:id/applications', [ParkingLotteriesController, 'apply'])
+          .as('lotteries.apply')
+        router
+          .post('applications/:id/withdraw', [ParkingLotteriesController, 'withdraw'])
+          .as('applications.withdraw')
+        router
+          .post('applications/:id/assign', [ParkingLotteriesController, 'assign'])
+          .as('applications.assign')
+      })
+      .prefix('parking')
+      .as('parking.manage')
+      .use([middleware.auth(), middleware.tenant(spotsManage), middleware.subscription()])
 
     /**
      * Back-office: payments to AptoPH with Wompi (administration, also while the

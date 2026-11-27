@@ -124,14 +124,14 @@ La unidad 101 trae además un familiar, dos vehículos, una mascota y dos cuotas
 
 `demo_seeder` crea **Altos del Parque (Demo)**: 3 torres, 72 apartamentos, parqueaderos y depósitos,
 con registros en todos los módulos (ocupantes, vehículos, mascotas, cuotas, pagos, zonas comunes y
-reservas, comunicados, PQRS, visitas, parqueadero de visitantes, paquetes, documentos y auditoría):
+reservas, comunicados, PQRS, visitas, parqueaderos asignados con un sorteo abierto, parqueadero de visitantes, paquetes, documentos y auditoría):
 
 | Correo (contraseña `demo1234`) | Acceso |
 | --- | --- |
 | `admin@demo.test` | Backoffice, administración |
 | `residente@demo.test` | App web, propietario de Torre 1 · 302 |
 | `mantenimiento@demo.test` | Backoffice, personal: solo las PQRS que tiene asignadas |
-| `vigilancia@demo.test` | Backoffice, vigilancia: parqueadero de visitantes |
+| `vigilancia@demo.test` | Backoffice, vigilancia: parqueadero de visitantes y consulta de parqueaderos |
 
 Solo corre en `development`: producción no tiene datos demo. En cada ejecución borra y recrea los
 datos del conjunto.
@@ -237,4 +237,7 @@ tiene marcadores `__…__` en su lugar.
 - [Finanzas y contabilidad](docs/finance.md)
 - [Comunicados](docs/announcements.md)
 - [Importar torres, unidades y personas](docs/import.md)
+- [PQRS](docs/tickets.md)
+- [Parqueaderos del conjunto](docs/parking.md)
+- [Parqueadero de visitantes](docs/visitor-parking.md)
 - [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens

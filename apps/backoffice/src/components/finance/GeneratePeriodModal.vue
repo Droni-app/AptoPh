@@ -52,6 +52,9 @@ const closed = computed(() => preview.value?.existing?.status === 'closed')
 const interestLines = computed(
   () => preview.value?.lines.filter((line) => line.kind === 'interest') ?? [],
 )
+const parkingLines = computed(
+  () => preview.value?.lines.filter((line) => line.kind === 'parking') ?? [],
+)
 
 async function generate() {
   generating.value = true
@@ -170,6 +173,9 @@ async function generate() {
             {{ showLines ? 'Ocultar detalle' : `Ver detalle por unidad (${preview.lines.length})` }}
             <template v-if="interestLines.length">
               · {{ interestLines.length }} con intereses</template
+            >
+            <template v-if="parkingLines.length">
+              · {{ parkingLines.length }} de parqueaderos</template
             >
           </button>
           <div

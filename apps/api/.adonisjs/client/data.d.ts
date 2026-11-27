@@ -16,6 +16,7 @@ import type GatehouseParkingTransformer from '#transformers/gatehouse/parking_tr
 import type GatehouseResidentTransformer from '#transformers/gatehouse/resident'
 import type HelpersTransformer from '#transformers/helpers'
 import type PropertyBuildingTransformer from '#transformers/property/building_transformer'
+import type PropertyParkingTransformer from '#transformers/property/parking_transformer'
 import type PropertyResidentTransformer from '#transformers/property/resident'
 import type PropertyUnitOccupantTransformer from '#transformers/property/unit_occupant_transformer'
 import type PropertyUnitTransformer from '#transformers/property/unit_transformer'
@@ -83,6 +84,10 @@ export namespace Data {
     export type Building = InferData<PropertyBuildingTransformer>
     export namespace Building {
       export type Variants = InferVariants<PropertyBuildingTransformer>
+    }
+    export type Parking = InferData<PropertyParkingTransformer>
+    export namespace Parking {
+      export type Variants = InferVariants<PropertyParkingTransformer>
     }
     export type Resident = InferData<PropertyResidentTransformer>
     export namespace Resident {

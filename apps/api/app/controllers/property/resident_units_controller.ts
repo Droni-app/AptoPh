@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import UnitOccupant from '#models/property/unit_occupant'
+import { ParkingService } from '#services/property/parking'
 import {
   activeOccupancy,
   balancesFor,
@@ -50,6 +51,18 @@ export default class UnitsController {
     const unit = occupancy.unit
     const manages = canManageHousehold(occupancy)
     const balances = await balancesFor(tenant, [unit.id], today)
+    const parking = new ParkingService(tenant)
+    await parking.endExpired()
+    const owned = await parking
+      .spotsQuery()
+      .where('ownership', 'private')
+      .where('owner_unit_id', unit.id)
+      .orderByRaw('length(code), code')
+    const held = await parking
+      .assignmentsQuery()
+      .where('unit_id', unit.id)
+      .whereIn('status', ['offered', 'active'])
+      .orderBy('starts_on')
 
     return {
       data: {
@@ -70,6 +83,33 @@ export default class UnitsController {
         // for the members this resident manages (see presentHouseholdMember)
         household: unit.occupants.map((member) => presentHouseholdMember(member, user.id, manages)),
         vehicles: unit.vehicles.map(presentVehicle),
+        parkingSpots: [
+          ...owned.map((spot) => ({
+            id: spot.id,
+            code: spot.code,
+            vehicleType: spot.vehicleType,
+            ownership: spot.ownership,
+            location: spot.location,
+            isCovered: spot.isCovered,
+            startsOn: null,
+            endsOn: null,
+            monthlyRate: parking.settings.rates[spot.vehicleType].private || null,
+            vehiclePlate: null,
+          })),
+          ...held.map((assignment) => ({
+            id: assignment.spot.id,
+            code: assignment.spot.code,
+            vehicleType: assignment.spot.vehicleType,
+            ownership: assignment.spot.ownership,
+            location: assignment.spot.location,
+            isCovered: assignment.spot.isCovered,
+            startsOn: assignment.startsOn.toISODate(),
+            endsOn: assignment.endsOn?.toISODate() ?? null,
+            monthlyRate: Number(assignment.monthlyRate) || null,
+            vehiclePlate: assignment.vehicle?.plate ?? null,
+          })),
+        ],
+        allowThirdPartyVehicles: parking.settings.allowThirdPartyVehicles,
         pets: unit.pets.map(presentPet),
         openCharges: unit.charges.map((charge) => {
           const dueOn = charge.dueOn.toISODate()!

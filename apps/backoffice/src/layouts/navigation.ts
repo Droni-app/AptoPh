@@ -55,6 +55,8 @@ export function navigation(options: {
   canReadTickets: boolean
   /** Visitor parking: administration and guards */
   canUseVisitorParking: boolean
+  /** Parking of the conjunto: administration, council and guards */
+  canReadParking: boolean
   hasSubscription: boolean
 }): NavGroup[] {
   const finance = financeLinks(options.canManageFinance)
@@ -65,6 +67,9 @@ export function navigation(options: {
         link('Inicio', 'mdi-view-dashboard-outline', 'dashboard'),
         link('Unidades', 'mdi-door', 'units', ['units', 'unit']),
         link('Torres', 'mdi-office-building-outline', 'buildings'),
+        ...(options.canReadParking
+          ? [link('Parqueaderos', 'mdi-parking', 'parking', ['parking', 'parking-settings'])]
+          : []),
         link('Personas', 'mdi-account-group-outline', 'members'),
       ],
     },
@@ -80,7 +85,7 @@ export function navigation(options: {
     groups.push({
       label: 'Portería',
       items: [
-        link('Parqueadero', 'mdi-car-clock', 'visitor-parking', [
+        link('Parqueadero de visitantes', 'mdi-car-clock', 'visitor-parking', [
           'visitor-parking',
           'visitor-parking-settings',
         ]),

@@ -201,13 +201,31 @@ test.group('Finance · accounting', (group) => {
     // (12.000.000 of expenses + 1 % reserve fund) ÷ 12; fee income is not "other income"
     assert.equal(budget.body().data.monthlyBase.monthly, '1010000.00')
     const id = budget.body().data.id
-    await expectStatus(
+    assert.exists(budget.body().data.execution)
+    // Saving a draft answers the full detail: the page replaces what it shows with it
+    const saved = await expectStatus(
+      api.put(`/finance/budgets/${id}`, {
+        year: 2026,
+        name: 'Presupuesto 2026',
+        reserveFundRate: 1,
+        items: budget
+          .body()
+          .data.items.map((item: { accountId: string; annualAmount: string }) => ({
+            accountId: item.accountId,
+            annualAmount: Number(item.annualAmount),
+          })),
+      }),
+      200
+    )
+    assert.exists(saved.body().data.execution.expense.totals)
+    const approved = await expectStatus(
       api.post(`/finance/budgets/${id}/approve`, {
         approvedOn: '2026-03-20',
         approvalReference: 'Acta 5',
       }),
       200
     )
+    assert.exists(approved.body().data.execution)
     await expectStatus(
       api.put(`/finance/budgets/${id}`, {
         year: 2026,

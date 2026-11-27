@@ -171,7 +171,7 @@ export type BillingPreview = {
     conceptId: string
     conceptName: string
     description: string | null
-    kind: 'recurring' | 'interest'
+    kind: 'recurring' | 'interest' | 'parking'
     amount: string
     discountAmount: string
   }>

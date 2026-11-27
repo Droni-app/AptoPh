@@ -18,7 +18,13 @@ import Budget from '#models/finance/budget'
 import BudgetItem from '#models/finance/budget_item'
 import RecurringCharge from '#models/finance/recurring_charge'
 import Vendor from '#models/finance/vendor'
-import { normalizePlate, quoteParking, toCents, type VisitorParkingSettings } from '@aptoph/shared'
+import {
+  normalizePlate,
+  quoteParking,
+  toCents,
+  type ParkingSettings,
+  type VisitorParkingSettings,
+} from '@aptoph/shared'
 import { BillingService } from '#services/finance/billing'
 import { CashService } from '#services/finance/cash'
 import { ChargeService } from '#services/finance/charges'
@@ -34,6 +40,10 @@ import Ticket from '#models/tickets/ticket'
 import TicketComment from '#models/tickets/ticket_comment'
 import Visit from '#models/gatehouse/visit'
 import ParkingStay from '#models/gatehouse/parking_stay'
+import ParkingApplication from '#models/property/parking_application'
+import ParkingAssignment from '#models/property/parking_assignment'
+import ParkingLottery from '#models/property/parking_lottery'
+import ParkingSpot from '#models/property/parking_spot'
 import { splitByDay } from '#services/gatehouse/visitor_parking'
 import Parcel from '#models/gatehouse/parcel'
 import DocumentFile from '#models/documents/document'
@@ -65,6 +75,10 @@ const AREAS = [78.5, 62.3, 62.3, 78.5]
 const TENANT_TABLES = [
   'audit_logs',
   'parking_stays',
+  'parking_assignments',
+  'parking_applications',
+  'parking_lotteries',
+  'parking_spots',
   'attachments',
   'announcement_reads',
   'announcement_buildings',
@@ -287,6 +301,7 @@ class DemoBuilder {
     await this.communication(occupied, myUnit)
     await this.security(occupied, myUnit)
     await this.visitorParking(occupied, myUnit)
+    await this.parkingSpots(occupied, myUnit)
     await this.documents()
     await this.audit(myUnit)
   }
@@ -1168,6 +1183,214 @@ class DemoBuilder {
         )
       }
     }
+  }
+
+  /**
+   * Parking of the conjunto (mixed): the private spots of the structure, 16
+   * communal spots for cars and 8 for motorcycles, assigned to units with
+   * vehicles (one cancelled, one rejected, one from the previous period) and
+   * SOAT dates, some expired. docs/parking.md
+   */
+  private async parkingSpots(occupied: Unit[], myUnit: Unit) {
+    const parking: ParkingSettings = {
+      mode: 'mixed',
+      maxSpotsPerUnit: 2,
+      rates: {
+        car: { communal: 60_000, private: 0 },
+        motorcycle: { communal: 25_000, private: 0 },
+        bicycle: { communal: 0, private: 0 },
+        other: { communal: 0, private: 0 },
+      },
+      lotteryMonths: 6,
+      offerDays: 3,
+      requirements: {
+        noDebt: true,
+        debtToleranceDays: 30,
+        vehicle: true,
+        documents: true,
+        priorityWithoutPrivate: true,
+      },
+      allowThirdPartyVehicles: true,
+    }
+    this.tenant.settings = { ...(this.tenant.settings ?? {}), parking }
+    await this.tenant.useTransaction(this.trx).save()
+
+    // Documents of the vehicles; one is a leasing
+    const vehicles = await Vehicle.query(this.client)
+      .where('tenant_id', this.tenant.id)
+      .whereIn('type', ['car', 'motorcycle'])
+      .orderBy('plate')
+    for (const [i, vehicle] of vehicles.entries()) {
+      vehicle.soatExpiresOn = this.today.plus({ months: i % 7 === 0 ? -1 : 2 + (i % 10) })
+      vehicle.inspectionExpiresOn = i % 3 === 0 ? null : this.today.plus({ months: 1 + (i % 11) })
+      if (i === 4) {
+        vehicle.merge({
+          ownerType: 'third_party',
+          ownerName: 'Banco de Bogotá Leasing',
+          ownerDocumentType: 'NIT',
+          ownerDocumentNumber: '860002964',
+          ownerRelationship: 'leasing',
+        })
+      }
+      await vehicle.useTransaction(this.trx).save()
+    }
+
+    // Private: one per parking unit of the structure
+    const parkingUnits = await Unit.query(this.client)
+      .where('tenant_id', this.tenant.id)
+      .where('type', 'parking')
+      .whereNotNull('parent_unit_id')
+      .orderBy('code')
+    await ParkingSpot.createMany(
+      parkingUnits.map((unit, i) => ({
+        ...this.scope,
+        code: unit.code,
+        vehicleType: 'car' as const,
+        ownership: 'private' as const,
+        isCovered: true,
+        location: `Sótano 1 · Torre ${(i % TOWERS) + 1}`,
+        ownerUnitId: unit.parentUnitId,
+        propertyUnitId: unit.id,
+      })),
+      this.client
+    )
+    const communal = await ParkingSpot.createMany(
+      [
+        ...Array.from({ length: 16 }, (_, i) => ({
+          ...this.scope,
+          code: `C-${String(i + 1).padStart(2, '0')}`,
+          vehicleType: 'car' as const,
+          ownership: 'communal' as const,
+          isCovered: i < 8,
+          location: i < 8 ? 'Sótano 2' : 'Zona descubierta',
+          isActive: i !== 15,
+          notes: i === 15 ? 'Fuera de servicio por filtración.' : null,
+        })),
+        ...Array.from({ length: 8 }, (_, i) => ({
+          ...this.scope,
+          code: `M-${String(i + 1).padStart(2, '0')}`,
+          vehicleType: 'motorcycle' as const,
+          ownership: 'communal' as const,
+          isCovered: true,
+          location: 'Sótano 2',
+        })),
+      ],
+      this.client
+    )
+
+    // Units without a private spot, with a vehicle of the type
+    const owners = new Set(parkingUnits.map((unit) => unit.parentUnitId))
+    // One spot per unit
+    const taken = new Set<string>()
+    const byType = (type: 'car' | 'motorcycle') =>
+      vehicles.filter((vehicle) => {
+        const ok =
+          vehicle.type === type &&
+          !owners.has(vehicle.unitId) &&
+          !taken.has(vehicle.unitId) &&
+          vehicle.unitId !== myUnit.id &&
+          occupied.some((unit) => unit.id === vehicle.unitId)
+        if (ok) taken.add(vehicle.unitId)
+        return ok
+      })
+    const start = this.today.startOf('month').minus({ months: 2 })
+    const end = start.plus({ months: parking.lotteryMonths }).minus({ days: 1 })
+    const rows: Array<Partial<ParkingAssignment>> = []
+    const assign = (spot: ParkingSpot, vehicle: Vehicle, extra: Partial<ParkingAssignment> = {}) =>
+      rows.push({
+        ...this.scope,
+        spotId: spot.id,
+        unitId: vehicle.unitId,
+        vehicleId: vehicle.id,
+        status: 'active',
+        startsOn: start,
+        endsOn: end,
+        monthlyRate: parking.rates[spot.vehicleType].communal.toFixed(2),
+        createdById: this.admin.id,
+        ...extra,
+      })
+    const cars = byType('car')
+    const carSpots = communal.filter((spot) => spot.vehicleType === 'car' && spot.isActive)
+    for (const [i, spot] of carSpots.slice(0, 11).entries()) {
+      const vehicle = cars[i]
+      if (vehicle) assign(spot, vehicle)
+    }
+    const motos = byType('motorcycle')
+    const motoSpots = communal.filter((spot) => spot.vehicleType === 'motorcycle')
+    for (const [i, spot] of motoSpots.slice(0, 3).entries()) {
+      const vehicle = motos[i]
+      if (vehicle) assign(spot, vehicle)
+    }
+    // History: a cancelled one, a rejected one and the previous period
+    const freeSpot = carSpots[12]
+    const [a, b, c] = cars.slice(11)
+    if (freeSpot && a) {
+      assign(freeSpot, a, {
+        status: 'cancelled',
+        endedOn: this.today.minus({ days: 20 }),
+        endReason: 'unused',
+        endNote: 'El vehículo no ha entrado en dos meses.',
+        endedById: this.admin.id,
+        endedAt: this.now.minus({ days: 20 }),
+      })
+    }
+    if (freeSpot && b) {
+      assign(freeSpot, b, {
+        status: 'rejected',
+        startsOn: this.today.minus({ days: 10 }),
+        endsOn: this.today.minus({ days: 10 }).plus({ months: 6 }),
+        endedOn: this.today.minus({ days: 11 }),
+        endReason: 'resident_resigned',
+        endNote: 'La unidad vendió el carro.',
+        endedById: this.admin.id,
+        endedAt: this.now.minus({ days: 9 }),
+      })
+    }
+    if (carSpots[0] && c) {
+      assign(carSpots[0], c, {
+        status: 'ended',
+        startsOn: start.minus({ months: 6 }),
+        endsOn: start.minus({ days: 1 }),
+        endedOn: start.minus({ days: 1 }),
+      })
+    }
+    await ParkingAssignment.createMany(rows, this.client)
+
+    // Next period's lottery, open: current holders apply again and a few more.
+    // The demo resident's unit has not applied, to try it in the portal.
+    const lottery = await ParkingLottery.create(
+      {
+        ...this.scope,
+        number: 1,
+        title: `Sorteo de parqueaderos ${end.plus({ days: 1 }).setLocale('es-CO').toFormat('LLLL yyyy')}`,
+        status: 'open',
+        closesAt: this.now.plus({ days: 12 }).set({ hour: 18, minute: 0, second: 0 }),
+        periodStartsOn: end.plus({ days: 1 }),
+        periodEndsOn: end.plus({ months: parking.lotteryMonths }),
+        notes:
+          'Se sortean los cupos comunales del sótano 1 y de motos. Recuerda tener el SOAT y la tecnomecánica al día.',
+        createdById: this.admin.id,
+      },
+      this.client
+    )
+    await this.trx.rawQuery(
+      `INSERT INTO document_sequences (tenant_id, key, next_value) VALUES (?, 'parking_lottery', 2)`,
+      [this.tenant.id]
+    )
+    const applicants = [...cars.slice(0, 11), ...cars.slice(14, 20), ...motos.slice(0, 4)]
+    await ParkingApplication.createMany(
+      applicants.map((vehicle) => ({
+        ...this.scope,
+        lotteryId: lottery.id,
+        unitId: vehicle.unitId,
+        vehicleId: vehicle.id,
+        vehicleType: vehicle.type,
+        status: 'pending' as const,
+        priorityGroup: 0,
+        appliedById: this.admin.id,
+      })),
+      this.client
+    )
   }
 
   /**

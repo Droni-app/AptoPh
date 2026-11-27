@@ -658,6 +658,71 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/resident_announcements_controller').default['show']>>>
     }
   }
+  'resident.parking.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/parking'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['show']>>>
+    }
+  }
+  'resident.parking.apply': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/parking/applications'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').applyValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').applyValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['apply']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['apply']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['apply']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'resident.parking.withdraw': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/parking/applications/:id/withdraw'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['withdraw']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['withdraw']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['withdraw']>>>
+    }
+  }
+  'resident.parking.accept': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/parking/applications/:id/accept'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['accept']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['accept']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['accept']>>>
+    }
+  }
+  'resident.parking.decline': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/parking/applications/:id/decline'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['decline']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['decline']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/resident_parking_controller').default['decline']>>>
+    }
+  }
   'dashboard': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/dashboard'
@@ -1215,6 +1280,344 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['updateSettings']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/gatehouse/visitor_parking_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.summary': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/summary'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['summary']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['summary']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['summary']>>>
+    }
+  }
+  'parking.spots.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/spots'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/property/parking').listSpotsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['spots']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['spots']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['spots']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.assignments.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/assignments'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/property/parking').listAssignmentsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['assignments']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['assignments']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['assignments']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.lookup': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/lookup'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/property/parking').parkingLookupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['lookup']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['lookup']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['lookup']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.read.settings': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['settings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['settings']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['settings']>>>
+    }
+  }
+  'parking.manage.read.eligibility': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/eligibility'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/property/parking').eligibilityValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['eligibility']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['eligibility']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['eligibility']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.lotteries.read.lotteries.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/lotteries'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['index']>>>
+    }
+  }
+  'parking.lotteries.read.lotteries.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/lotteries/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['show']>>>
+    }
+  }
+  'parking.lotteries.read.lotteries.applications': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/parking/lotteries/:id/applications'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/property/parking').listApplicationsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['applications']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['applications']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['applications']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.settings.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/parking/settings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').parkingSettingsValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').parkingSettingsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateSettings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateSettings']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.spots.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/spots'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').createSpotValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').createSpotValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['storeSpot']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['storeSpot']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['storeSpot']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.spots.batch': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/spots/batch'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').spotBatchValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').spotBatchValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['storeBatch']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['storeBatch']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['storeBatch']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.spots.import': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/spots/import'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['importSpots']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['importSpots']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['importSpots']>>>
+    }
+  }
+  'parking.manage.spots.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/parking/spots/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').updateSpotValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').updateSpotValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateSpot']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateSpot']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateSpot']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.spots.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/parking/spots/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['destroySpot']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['destroySpot']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['destroySpot']>>>
+    }
+  }
+  'parking.manage.assignments.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/assignments'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').assignValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').assignValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['assign']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['assign']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['assign']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.assignments.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/parking/assignments/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').updateAssignmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').updateAssignmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateAssignment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateAssignment']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['updateAssignment']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.assignments.end': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/assignments/:id/end'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').endAssignmentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').endAssignmentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['endAssignment']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['endAssignment']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_controller').default['endAssignment']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.lotteries.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/lotteries'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').createLotteryValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').createLotteryValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.lotteries.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/parking/lotteries/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').updateLotteryValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').updateLotteryValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.lotteries.cancel': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/lotteries/:id/cancel'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['cancel']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['cancel']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['cancel']>>>
+    }
+  }
+  'parking.manage.lotteries.draw': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/lotteries/:id/draw'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['draw']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['draw']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['draw']>>>
+    }
+  }
+  'parking.manage.lotteries.offer': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/lotteries/:id/offer'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['offer']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['offer']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['offer']>>>
+    }
+  }
+  'parking.manage.lotteries.apply': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/lotteries/:id/applications'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').applyValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').applyValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['apply']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['apply']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['apply']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'parking.manage.applications.withdraw': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/applications/:id/withdraw'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['withdraw']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['withdraw']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['withdraw']>>>
+    }
+  }
+  'parking.manage.applications.assign': {
+    methods: ["POST"]
+    pattern: '/api/v1/parking/applications/:id/assign'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/parking').assignApplicationValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/parking').assignApplicationValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['assign']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['assign']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['assign']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'billing.show': {

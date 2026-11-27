@@ -1,12 +1,26 @@
 import { DateTime } from 'luxon'
 import db from '@adonisjs/lucid/services/db'
+import type { QueryClientContract } from '@adonisjs/lucid/types/database'
 import { Exception } from '@adonisjs/core/exceptions'
-import { dayOfPeriod, fromCents, percentOf, periodLabel, roundPesos, toCents } from '@aptoph/shared'
+import {
+  VEHICLE_TYPE_LABELS,
+  dayOfPeriod,
+  daysInPeriod,
+  fromCents,
+  parkingSettings,
+  percentOf,
+  periodLabel,
+  proratedCents,
+  roundPesos,
+  toCents,
+} from '@aptoph/shared'
 import BillingPeriod from '#models/finance/billing_period'
 import Budget from '#models/finance/budget'
 import Charge from '#models/finance/charge'
 import ChargeConcept from '#models/finance/charge_concept'
 import JournalEntry from '#models/finance/journal_entry'
+import ParkingAssignment from '#models/property/parking_assignment'
+import ParkingSpot from '#models/property/parking_spot'
 import RecurringCharge from '#models/finance/recurring_charge'
 import type Tenant from '#models/tenants/tenant'
 import Unit from '#models/property/unit'
@@ -23,7 +37,7 @@ export type BillingLine = {
   description: string | null
   /** Cents */
   amount: number
-  kind: 'recurring' | 'interest'
+  kind: 'recurring' | 'interest' | 'parking'
 }
 
 export type BillingPlan = {
@@ -123,7 +137,16 @@ export class BillingService {
     }
     for (const name of inactive) warnings.push(`El concepto «${name}» está inactivo: no se factura`)
 
-    // 2. Late interest on capital overdue before the month starts
+    // 2. Parking spots (docs/parking.md): communal ones held during the month,
+    //    prorated by day, and private ones when they have a monthly rate
+    await BillingService.planParking(tenant, period, client, {
+      dueOn,
+      billingPeriodId: existingPeriod?.id ?? null,
+      lines,
+      warnings,
+    })
+
+    // 3. Late interest on capital overdue before the month starts
     if (interest) {
       const interestConcept = await ChargeConcept.query({ client })
         .where('tenant_id', tenant.id)
@@ -179,7 +202,7 @@ export class BillingService {
       }
     }
 
-    // 3. Reserve fund appropriation of the month (approved budget of the year)
+    // 4. Reserve fund appropriation of the month (approved budget of the year)
     let reserveFund = 0
     const budget = await Budget.query({ client })
       .where('tenant_id', tenant.id)
@@ -249,6 +272,122 @@ export class BillingService {
       lines,
       reserveFund,
       warnings,
+    }
+  }
+
+  private static async planParking(
+    tenant: Tenant,
+    period: string,
+    client: QueryClientContract,
+    target: {
+      dueOn: string
+      billingPeriodId: string | null
+      lines: BillingPlan['lines']
+      warnings: string[]
+    }
+  ) {
+    const parking = parkingSettings((tenant.settings ?? {}).parking)
+    const { monthDays } = daysInPeriod(period, period, null)
+    const monthEnd = `${period.slice(0, 8)}${String(monthDays).padStart(2, '0')}`
+    /** Not billed yet for the period: `<prefix>:<id>:<period>` */
+    const notBilled = (prefix: string, table: string) =>
+      [
+        `NOT EXISTS (SELECT 1 FROM charges WHERE charges.tenant_id = ${table}.tenant_id AND charges.idempotency_key = '${prefix}:' || ${table}.id || ':' || ?)`,
+        [period],
+      ] as [string, string[]]
+
+    const assignments = await ParkingAssignment.query({ client })
+      .where('parking_assignments.tenant_id', tenant.id)
+      .whereIn('status', ['scheduled', 'active', 'ended', 'cancelled'])
+      .where('starts_on', '<=', monthEnd)
+      .whereRaw('coalesce(ended_on, ends_on, ?::date) >= ?::date', [monthEnd, period])
+      .where('monthly_rate', '>', 0)
+      .whereHas('unit', (units) => units.whereNull('deleted_at'))
+      .whereRaw(...notBilled('park', 'parking_assignments'))
+      .preload('unit')
+      .preload('spot')
+    const privateSpots = Object.values(parking.rates).some((rate) => rate.private > 0)
+      ? await ParkingSpot.query({ client })
+          .where('parking_spots.tenant_id', tenant.id)
+          .whereNull('deleted_at')
+          .where('ownership', 'private')
+          .where('is_active', true)
+          .whereIn(
+            'vehicle_type',
+            Object.entries(parking.rates)
+              .filter(([, rate]) => rate.private > 0)
+              .map(([type]) => type)
+          )
+          .whereHas('ownerUnit', (units) => units.whereNull('deleted_at'))
+          .whereRaw(...notBilled('pspot', 'parking_spots'))
+          .preload('ownerUnit')
+      : []
+    if (!assignments.length && !privateSpots.length) return
+
+    const concept = await ChargeConcept.query({ client })
+      .where('tenant_id', tenant.id)
+      .where('code', 'parking')
+      .first()
+    if (!concept?.isActive) {
+      target.warnings.push('El concepto de parqueaderos está inactivo: no se facturan parqueaderos')
+      return
+    }
+    const line = (input: {
+      unitId: string
+      unitCode: string
+      amount: number
+      description: string
+      sourceId: string
+      key: string
+    }) =>
+      target.lines.push({
+        unitId: input.unitId,
+        unitCode: input.unitCode,
+        conceptId: concept.id,
+        conceptName: concept.name,
+        description: input.description,
+        amount: input.amount,
+        kind: 'parking',
+        item: {
+          unitId: input.unitId,
+          concept,
+          amount: input.amount,
+          period,
+          dueOn: target.dueOn,
+          description: input.description,
+          sourceType: 'parking',
+          sourceId: input.sourceId,
+          idempotencyKey: input.key,
+          billingPeriodId: target.billingPeriodId,
+        },
+      })
+
+    for (const assignment of assignments) {
+      const from = assignment.startsOn.toISODate()!
+      const to = iso(assignment.endedOn ?? assignment.endsOn)
+      const amount = proratedCents(toCents(assignment.monthlyRate), period, from, to)
+      if (amount <= 0) continue
+      const { days } = daysInPeriod(period, from, to)
+      const type = VEHICLE_TYPE_LABELS[assignment.spot.vehicleType].toLowerCase()
+      line({
+        unitId: assignment.unitId,
+        unitCode: assignment.unit.code,
+        amount,
+        description: `Parqueadero comunal ${assignment.spot.code} · ${type}${days < monthDays ? ` (${days} de ${monthDays} días)` : ''}`,
+        sourceId: assignment.id,
+        key: `park:${assignment.id}:${period}`,
+      })
+    }
+    for (const spot of privateSpots) {
+      const amount = toCents(parking.rates[spot.vehicleType].private.toFixed(2))
+      line({
+        unitId: spot.ownerUnitId!,
+        unitCode: spot.ownerUnit.code,
+        amount,
+        description: `Parqueadero propio ${spot.code} · ${VEHICLE_TYPE_LABELS[spot.vehicleType].toLowerCase()}`,
+        sourceId: spot.id,
+        key: `pspot:${spot.id}:${period}`,
+      })
     }
   }
 

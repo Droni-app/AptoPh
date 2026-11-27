@@ -84,6 +84,12 @@ erDiagram
     tickets ||--o{ ticket_comments : ""
     units ||--o{ visits : ""
     units ||--o{ parking_stays : ""
+    units ||--o{ parking_spots : "propios"
+    parking_spots ||--o{ parking_assignments : ""
+    units ||--o{ parking_assignments : ""
+    parking_lotteries ||--o{ parking_applications : ""
+    units ||--o{ parking_applications : ""
+    parking_applications ||--o| parking_assignments : ""
     visits ||--o| parking_stays : ""
     units ||--o{ parcels : ""
     tenants ||--o{ announcements : ""
@@ -294,8 +300,75 @@ enrollment por rol.
 | plate | varchar(10) | `UNIQUE (tenant_id, plate)` |
 | type | varchar(20) | `car`, `motorcycle`, `bicycle`, `other` |
 | brand / model / color | varchar NULL | |
-| parking_unit_id | uuid NULL FK compuesta → units | Parqueadero asignado |
+| parking_unit_id | uuid NULL FK compuesta → units | Parqueadero asignado (anterior a `parking_spots`) |
+| owner_type | varchar(20) | `resident` o `third_party` |
+| owner_name / owner_document_type / owner_document_number / owner_relationship / owner_phone | NULL | Propietario cuando es de un tercero; el nombre es obligatorio (`CHECK`) |
+| soat_expires_on / inspection_expires_on | date NULL | Vencimiento del SOAT y de la tecnomecánica |
 | created_at / updated_at / deleted_at | | |
+
+### `parking_spots` — parqueaderos del conjunto
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id, tenant_id | | |
+| code | varchar(20) | Único por conjunto sin distinguir mayúsculas, entre los no eliminados |
+| vehicle_type | varchar(20) | `car`, `motorcycle`, `bicycle`, `other` |
+| ownership | varchar(10) | `private` o `communal`. `CHECK`: los propios tienen `owner_unit_id` |
+| is_covered, location, notes | | |
+| is_active | boolean | Fuera de servicio: no se asigna |
+| owner_unit_id | uuid NULL FK compuesta → units | Dueño de un parqueadero propio |
+| property_unit_id | uuid NULL FK compuesta → units | Unidad tipo `parking` de la que se trajo |
+| created_at / updated_at / deleted_at | | |
+
+### `parking_assignments` — cupos comunales asignados
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id, tenant_id | | |
+| spot_id / unit_id / vehicle_id | uuid FK compuestas | Vehículo opcional |
+| status | varchar(10) | `scheduled`, `offered`, `active`, `ended`, `cancelled`, `rejected`. Un titular por parqueadero: `UNIQUE (tenant_id, spot_id) WHERE status IN ('offered', 'active')`; un ganador del siguiente periodo: `UNIQUE (tenant_id, spot_id) WHERE status = 'scheduled'` |
+| lottery_id / application_id | uuid NULL FK compuestas | Sorteo y postulación de donde viene |
+| starts_on / ends_on | date | Periodo; `ends_on` NULL = sin fin |
+| ended_on | date NULL | Último día real (el día anterior al inicio si se rechazó) |
+| monthly_rate | numeric(14,2) | Tarifa con la que se asignó |
+| end_reason / end_note | | Motivo de la lista y detalle (`offer_declined` / `offer_expired` los pone el sistema) |
+| notes, created_by_id, ended_by_id, ended_at | | |
+
+Reglas y cobro: `docs/parking.md`.
+
+### `parking_lotteries` — sorteos de cupos comunales
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id, tenant_id | | |
+| number | integer | Consecutivo por conjunto (`document_sequences`, clave `parking_lottery`) |
+| title | varchar(120) | |
+| status | varchar(10) | `open`, `drawn`, `finished`, `cancelled`. Uno abierto a la vez: `UNIQUE (tenant_id) WHERE status = 'open'` |
+| closes_at | timestamptz | Cierre de postulaciones |
+| period_starts_on / period_ends_on | date | Periodo que se sortea |
+| notes | text NULL | Para los residentes |
+| seed | varchar(64) NULL | Semilla del sorteo (hex), pública después de sortear |
+| drawn_at / drawn_by_id | | |
+| notified_count | integer | Correos de apertura enviados |
+| created_by_id, created_at / updated_at | | |
+
+### `parking_applications` — postulaciones y lista de espera
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id, tenant_id | | |
+| lottery_id | uuid FK compuesta → parking_lotteries (CASCADE) | |
+| unit_id / vehicle_id | uuid FK compuestas | Vehículo opcional |
+| vehicle_type | varchar(20) | Tipo de cupo. Una por unidad y tipo: `UNIQUE (lottery_id, unit_id, vehicle_type) WHERE status <> 'withdrawn'` |
+| status | varchar(12) | `pending`, `ineligible`, `won`, `waiting`, `offered`, `accepted`, `declined`, `expired`, `withdrawn` |
+| priority_group | smallint | 0 sin parqueadero propio, 1 con propio |
+| draw_hash | varchar(64) NULL | SHA-256(semilla:id) |
+| draw_position | integer NULL | Orden en el sorteo dentro del tipo; las tardías van al final |
+| ineligible_reason | text NULL | |
+| spot_id | uuid NULL FK compuesta | Cupo ganado u ofrecido |
+| offer_expires_at / responded_at | timestamptz NULL | |
+| late | boolean | Se postuló después del sorteo |
+| applied_by_id, created_at / updated_at | | |
 
 ### `pets`
 

@@ -21,6 +21,7 @@ import type {
   UnitType,
   VehicleType,
 } from './domain.js'
+import type { ParkingOwnership, VehicleOwnerFields } from './parking.js'
 
 export type ApiItem<T> = { data: T }
 
@@ -295,13 +296,28 @@ export type ResidentHome = {
   units: ResidentUnitSummary[]
 }
 
-export type ResidentVehicle = {
+export type ResidentVehicle = VehicleOwnerFields & {
   id: string
   plate: string
   type: VehicleType
   brand: string | null
   model: string | null
   color: string | null
+}
+
+/** A parking spot the unit owns or holds (docs/parking.md) */
+export type ResidentParkingSpot = {
+  id: string
+  code: string
+  vehicleType: VehicleType
+  ownership: ParkingOwnership
+  location: string | null
+  isCovered: boolean
+  /** Communal spots: the assignment */
+  startsOn: string | null
+  endsOn: string | null
+  monthlyRate: number | null
+  vehiclePlate: string | null
 }
 
 export type ResidentPet = {
@@ -341,6 +357,9 @@ export type ResidentUnitDetail = ResidentUnitSummary & {
   canManageHousehold: boolean
   household: HouseholdMember[]
   vehicles: ResidentVehicle[]
+  parkingSpots: ResidentParkingSpot[]
+  /** Whether a vehicle can be registered in the name of someone else */
+  allowThirdPartyVehicles: boolean
   pets: ResidentPet[]
   openCharges: Array<{
     id: string

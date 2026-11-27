@@ -9,6 +9,8 @@ import {
   TICKET_READ_ROLES,
   TICKET_WORK_ROLES,
   VISITOR_PARKING_ADMIN_ROLES,
+  PARKING_MANAGE_ROLES,
+  PARKING_READ_ROLES,
   VISITOR_PARKING_ROLES,
   type EnrollmentRole,
   type TenantSummary,
@@ -55,6 +57,11 @@ export const useTenantStore = defineStore('tenant', () => {
   /** Visitor parking: administration and guards; only the administration configures it */
   const canUseVisitorParking = computed(() => hasRole(...VISITOR_PARKING_ROLES))
   const canConfigureVisitorParking = computed(() => hasRole(...VISITOR_PARKING_ADMIN_ROLES))
+  /** Parking of the conjunto: the council and the guards consult it */
+  const canReadParking = computed(() => hasRole(...PARKING_READ_ROLES))
+  const canManageParking = computed(() => hasRole(...PARKING_MANAGE_ROLES))
+  /** The lottery: administration and council (not the guards) */
+  const canReadParkingLotteries = computed(() => hasRole('administrator', 'council_member'))
   /** Sees every ticket (not only the assigned ones) */
   const seesAllTickets = computed(() => hasRole('administrator', 'council_member'))
 
@@ -104,6 +111,9 @@ export const useTenantStore = defineStore('tenant', () => {
     seesAllTickets,
     canUseVisitorParking,
     canConfigureVisitorParking,
+    canReadParking,
+    canManageParking,
+    canReadParkingLotteries,
     load,
     select,
     reset,

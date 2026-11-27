@@ -103,6 +103,13 @@ export interface ApiDefinition {
       }
       show: typeof routes['resident.announcements.show']
     }
+    parking: {
+      show: typeof routes['resident.parking.show']
+      apply: typeof routes['resident.parking.apply']
+      withdraw: typeof routes['resident.parking.withdraw']
+      accept: typeof routes['resident.parking.accept']
+      decline: typeof routes['resident.parking.decline']
+    }
   }
   dashboard: typeof routes['dashboard']
   buildings: {
@@ -198,6 +205,58 @@ export interface ApiDefinition {
         update: typeof routes['visitorParking.write.stays.update']
         exit: typeof routes['visitorParking.write.stays.exit']
         receipt: typeof routes['visitorParking.write.stays.receipt']
+      }
+    }
+  }
+  parking: {
+    summary: typeof routes['parking.summary']
+    spots: {
+      index: typeof routes['parking.spots.index']
+    }
+    assignments: {
+      index: typeof routes['parking.assignments.index']
+    }
+    lookup: typeof routes['parking.lookup']
+    manage: {
+      read: {
+        settings: typeof routes['parking.manage.read.settings']
+        eligibility: typeof routes['parking.manage.read.eligibility']
+      }
+      settings: {
+        update: typeof routes['parking.manage.settings.update']
+      }
+      spots: {
+        store: typeof routes['parking.manage.spots.store']
+        batch: typeof routes['parking.manage.spots.batch']
+        import: typeof routes['parking.manage.spots.import']
+        update: typeof routes['parking.manage.spots.update']
+        destroy: typeof routes['parking.manage.spots.destroy']
+      }
+      assignments: {
+        store: typeof routes['parking.manage.assignments.store']
+        update: typeof routes['parking.manage.assignments.update']
+        end: typeof routes['parking.manage.assignments.end']
+      }
+      lotteries: {
+        store: typeof routes['parking.manage.lotteries.store']
+        update: typeof routes['parking.manage.lotteries.update']
+        cancel: typeof routes['parking.manage.lotteries.cancel']
+        draw: typeof routes['parking.manage.lotteries.draw']
+        offer: typeof routes['parking.manage.lotteries.offer']
+        apply: typeof routes['parking.manage.lotteries.apply']
+      }
+      applications: {
+        withdraw: typeof routes['parking.manage.applications.withdraw']
+        assign: typeof routes['parking.manage.applications.assign']
+      }
+    }
+    lotteries: {
+      read: {
+        lotteries: {
+          index: typeof routes['parking.lotteries.read.lotteries.index']
+          show: typeof routes['parking.lotteries.read.lotteries.show']
+          applications: typeof routes['parking.lotteries.read.lotteries.applications']
+        }
       }
     }
   }

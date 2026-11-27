@@ -16,7 +16,13 @@ const units = useUnitsStore()
 const { theme, toggle } = useTheme()
 
 const items = [
-  { label: 'Inicio', icon: 'mdi-home-outline', active: 'mdi-home', to: '/', match: ['home', 'unit'] },
+  {
+    label: 'Inicio',
+    icon: 'mdi-home-outline',
+    active: 'mdi-home',
+    to: '/',
+    match: ['home', 'unit'],
+  },
   {
     label: 'Comunicados',
     icon: 'mdi-bullhorn-outline',
@@ -136,6 +142,11 @@ async function switchTenant() {
               </p>
             </div>
             <UiDropdownSeparator />
+            <UiDropdownItem
+              icon="mdi-parking"
+              label="Sorteo de parqueaderos"
+              @click="router.push({ name: 'parking' })"
+            />
             <UiDropdownItem
               icon="mdi-account-outline"
               label="Mi perfil"

@@ -903,6 +903,162 @@ export class ParcelSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class ParkingApplicationSchema extends BaseModel {
+  static $columns = ['appliedById', 'createdAt', 'drawHash', 'drawPosition', 'id', 'ineligibleReason', 'late', 'lotteryId', 'offerExpiresAt', 'priorityGroup', 'respondedAt', 'spotId', 'status', 'tenantId', 'unitId', 'updatedAt', 'vehicleId', 'vehicleType'] as const
+  $columns = ParkingApplicationSchema.$columns
+  @column()
+  declare appliedById: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare drawHash: string | null
+  @column()
+  declare drawPosition: number | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare ineligibleReason: string | null
+  @column()
+  declare late: boolean
+  @column()
+  declare lotteryId: string
+  @column.dateTime()
+  declare offerExpiresAt: DateTime | null
+  @column()
+  declare priorityGroup: number
+  @column.dateTime()
+  declare respondedAt: DateTime | null
+  @column()
+  declare spotId: string | null
+  @column()
+  declare status: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare unitId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vehicleId: string | null
+  @column()
+  declare vehicleType: string
+}
+
+export class ParkingAssignmentSchema extends BaseModel {
+  static $columns = ['applicationId', 'createdAt', 'createdById', 'endNote', 'endReason', 'endedAt', 'endedById', 'endedOn', 'endsOn', 'id', 'lotteryId', 'monthlyRate', 'notes', 'spotId', 'startsOn', 'status', 'tenantId', 'unitId', 'updatedAt', 'vehicleId'] as const
+  $columns = ParkingAssignmentSchema.$columns
+  @column()
+  declare applicationId: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdById: string | null
+  @column()
+  declare endNote: string | null
+  @column()
+  declare endReason: string | null
+  @column.dateTime()
+  declare endedAt: DateTime | null
+  @column()
+  declare endedById: string | null
+  @column.date()
+  declare endedOn: DateTime | null
+  @column.date()
+  declare endsOn: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare lotteryId: string | null
+  @column()
+  declare monthlyRate: string
+  @column()
+  declare notes: string | null
+  @column()
+  declare spotId: string
+  @column.date()
+  declare startsOn: DateTime
+  @column()
+  declare status: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare unitId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vehicleId: string | null
+}
+
+export class ParkingLotterySchema extends BaseModel {
+  static $columns = ['closesAt', 'createdAt', 'createdById', 'drawnAt', 'drawnById', 'id', 'notes', 'notifiedCount', 'number', 'periodEndsOn', 'periodStartsOn', 'seed', 'status', 'tenantId', 'title', 'updatedAt'] as const
+  $columns = ParkingLotterySchema.$columns
+  @column.dateTime()
+  declare closesAt: DateTime
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdById: string | null
+  @column.dateTime()
+  declare drawnAt: DateTime | null
+  @column()
+  declare drawnById: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare notes: string | null
+  @column()
+  declare notifiedCount: number
+  @column()
+  declare number: number
+  @column.date()
+  declare periodEndsOn: DateTime
+  @column.date()
+  declare periodStartsOn: DateTime
+  @column()
+  declare seed: string | null
+  @column()
+  declare status: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ParkingSpotSchema extends BaseModel {
+  static $columns = ['code', 'createdAt', 'deletedAt', 'id', 'isActive', 'isCovered', 'location', 'notes', 'ownerUnitId', 'ownership', 'propertyUnitId', 'tenantId', 'updatedAt', 'vehicleType'] as const
+  $columns = ParkingSpotSchema.$columns
+  @column()
+  declare code: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare deletedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare isActive: boolean
+  @column()
+  declare isCovered: boolean
+  @column()
+  declare location: string | null
+  @column()
+  declare notes: string | null
+  @column()
+  declare ownerUnitId: string | null
+  @column()
+  declare ownership: string
+  @column()
+  declare propertyUnitId: string | null
+  @column()
+  declare tenantId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vehicleType: string
+}
+
 export class ParkingStaySchema extends BaseModel {
   static $columns = ['amount', 'authorizationMethod', 'authorizationNotes', 'authorizedByName', 'billedMinutes', 'cashAccountId', 'chargeId', 'createdAt', 'days', 'enteredAt', 'enteredById', 'exemptReason', 'exitedAt', 'exitedById', 'graceMinutes', 'id', 'journalEntryId', 'minutes', 'number', 'overCapacity', 'paymentMethod', 'plate', 'receiptEmail', 'receiptSentAt', 'settlement', 'status', 'tariff', 'tenantId', 'unitId', 'updatedAt', 'vatAmount', 'vehicleDescription', 'vehicleType', 'visitId', 'visitorDocument', 'visitorName'] as const
   $columns = ParkingStaySchema.$columns
@@ -1366,7 +1522,7 @@ export class UserSchema extends BaseModel {
 }
 
 export class VehicleSchema extends BaseModel {
-  static $columns = ['brand', 'color', 'createdAt', 'deletedAt', 'id', 'model', 'parkingUnitId', 'plate', 'tenantId', 'type', 'unitId', 'updatedAt'] as const
+  static $columns = ['brand', 'color', 'createdAt', 'deletedAt', 'id', 'inspectionExpiresOn', 'model', 'ownerDocumentNumber', 'ownerDocumentType', 'ownerName', 'ownerPhone', 'ownerRelationship', 'ownerType', 'parkingUnitId', 'plate', 'soatExpiresOn', 'tenantId', 'type', 'unitId', 'updatedAt'] as const
   $columns = VehicleSchema.$columns
   @column()
   declare brand: string | null
@@ -1378,12 +1534,28 @@ export class VehicleSchema extends BaseModel {
   declare deletedAt: DateTime | null
   @column({ isPrimary: true })
   declare id: string
+  @column.date()
+  declare inspectionExpiresOn: DateTime | null
   @column()
   declare model: string | null
+  @column()
+  declare ownerDocumentNumber: string | null
+  @column()
+  declare ownerDocumentType: string | null
+  @column()
+  declare ownerName: string | null
+  @column()
+  declare ownerPhone: string | null
+  @column()
+  declare ownerRelationship: string | null
+  @column()
+  declare ownerType: string
   @column()
   declare parkingUnitId: string | null
   @column()
   declare plate: string
+  @column.date()
+  declare soatExpiresOn: DateTime | null
   @column()
   declare tenantId: string
   @column()

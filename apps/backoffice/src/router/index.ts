@@ -19,6 +19,8 @@ declare module 'vue-router' {
     tickets?: boolean
     /** Visitor parking: administration and guards */
     parking?: boolean
+    /** Parking of the conjunto: administration, council and guards */
+    spots?: boolean
     title?: string
   }
 }
@@ -115,6 +117,30 @@ const router = createRouter({
           name: 'tickets',
           component: () => import('@/views/TicketsView.vue'),
           meta: { tenant: true, tickets: true, title: 'PQRS' },
+        },
+        {
+          path: 'parqueaderos',
+          name: 'parking',
+          component: () => import('@/views/parking/SpotsView.vue'),
+          meta: { tenant: true, spots: true, title: 'Parqueaderos' },
+        },
+        {
+          path: 'parqueaderos/configuracion',
+          name: 'parking-settings',
+          component: () => import('@/views/parking/SpotsSettingsView.vue'),
+          meta: { tenant: true, manage: true, title: 'Configuración de parqueaderos' },
+        },
+        {
+          path: 'parqueaderos/sorteos',
+          name: 'parking-lotteries',
+          component: () => import('@/views/parking/LotteriesView.vue'),
+          meta: { tenant: true, lotteries: true, title: 'Sorteos de parqueaderos' },
+        },
+        {
+          path: 'parqueaderos/sorteos/:id',
+          name: 'parking-lottery',
+          component: () => import('@/views/parking/LotteryView.vue'),
+          meta: { tenant: true, lotteries: true, title: 'Sorteo de parqueaderos' },
         },
         {
           path: 'parqueadero',
@@ -273,6 +299,8 @@ router.beforeEach(async (to) => {
   if (to.meta.manage && !tenant.canManage) return { name: 'dashboard' }
   if (to.meta.tickets && !tenant.canReadTickets) return { name: 'dashboard' }
   if (to.meta.parking && !tenant.canUseVisitorParking) return { name: 'dashboard' }
+  if (to.meta.spots && !tenant.canReadParking) return { name: 'dashboard' }
+  if (to.meta.lotteries && !tenant.canReadParkingLotteries) return { name: 'dashboard' }
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails

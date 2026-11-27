@@ -54,6 +54,11 @@ export type ScannedRoutes = {
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.show': { paramsTuple?: []; params?: {} }
+    'resident.parking.apply': { paramsTuple?: []; params?: {} }
+    'resident.parking.withdraw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.accept': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.decline': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -97,6 +102,32 @@ export type ScannedRoutes = {
     'visitorParking.write.stays.exit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.write.stays.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.settings.update': { paramsTuple?: []; params?: {} }
+    'parking.summary': { paramsTuple?: []; params?: {} }
+    'parking.spots.index': { paramsTuple?: []; params?: {} }
+    'parking.assignments.index': { paramsTuple?: []; params?: {} }
+    'parking.lookup': { paramsTuple?: []; params?: {} }
+    'parking.manage.read.settings': { paramsTuple?: []; params?: {} }
+    'parking.manage.read.eligibility': { paramsTuple?: []; params?: {} }
+    'parking.lotteries.read.lotteries.index': { paramsTuple?: []; params?: {} }
+    'parking.lotteries.read.lotteries.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.lotteries.read.lotteries.applications': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.settings.update': { paramsTuple?: []; params?: {} }
+    'parking.manage.spots.store': { paramsTuple?: []; params?: {} }
+    'parking.manage.spots.batch': { paramsTuple?: []; params?: {} }
+    'parking.manage.spots.import': { paramsTuple?: []; params?: {} }
+    'parking.manage.spots.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.spots.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.assignments.store': { paramsTuple?: []; params?: {} }
+    'parking.manage.assignments.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.assignments.end': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.store': { paramsTuple?: []; params?: {} }
+    'parking.manage.lotteries.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.cancel': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.draw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.offer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.apply': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.applications.withdraw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.applications.assign': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -225,6 +256,7 @@ export type ScannedRoutes = {
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.show': { paramsTuple?: []; params?: {} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -249,6 +281,15 @@ export type ScannedRoutes = {
     'visitorParking.lookup': { paramsTuple?: []; params?: {} }
     'visitorParking.stays.index': { paramsTuple?: []; params?: {} }
     'visitorParking.stays.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.summary': { paramsTuple?: []; params?: {} }
+    'parking.spots.index': { paramsTuple?: []; params?: {} }
+    'parking.assignments.index': { paramsTuple?: []; params?: {} }
+    'parking.lookup': { paramsTuple?: []; params?: {} }
+    'parking.manage.read.settings': { paramsTuple?: []; params?: {} }
+    'parking.manage.read.eligibility': { paramsTuple?: []; params?: {} }
+    'parking.lotteries.read.lotteries.index': { paramsTuple?: []; params?: {} }
+    'parking.lotteries.read.lotteries.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.lotteries.read.lotteries.applications': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -310,6 +351,7 @@ export type ScannedRoutes = {
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.show': { paramsTuple?: []; params?: {} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
     'buildings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -334,6 +376,15 @@ export type ScannedRoutes = {
     'visitorParking.lookup': { paramsTuple?: []; params?: {} }
     'visitorParking.stays.index': { paramsTuple?: []; params?: {} }
     'visitorParking.stays.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.summary': { paramsTuple?: []; params?: {} }
+    'parking.spots.index': { paramsTuple?: []; params?: {} }
+    'parking.assignments.index': { paramsTuple?: []; params?: {} }
+    'parking.lookup': { paramsTuple?: []; params?: {} }
+    'parking.manage.read.settings': { paramsTuple?: []; params?: {} }
+    'parking.manage.read.eligibility': { paramsTuple?: []; params?: {} }
+    'parking.lotteries.read.lotteries.index': { paramsTuple?: []; params?: {} }
+    'parking.lotteries.read.lotteries.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.lotteries.read.lotteries.applications': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -392,6 +443,10 @@ export type ScannedRoutes = {
     'resident.tickets.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.apply': { paramsTuple?: []; params?: {} }
+    'resident.parking.withdraw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.accept': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.parking.decline': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.store': { paramsTuple?: []; params?: {} }
     'announcements.emailPreview': { paramsTuple?: []; params?: {} }
     'announcements.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -402,6 +457,18 @@ export type ScannedRoutes = {
     'visitorParking.write.stays.store': { paramsTuple?: []; params?: {} }
     'visitorParking.write.stays.exit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.write.stays.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.spots.store': { paramsTuple?: []; params?: {} }
+    'parking.manage.spots.batch': { paramsTuple?: []; params?: {} }
+    'parking.manage.spots.import': { paramsTuple?: []; params?: {} }
+    'parking.manage.assignments.store': { paramsTuple?: []; params?: {} }
+    'parking.manage.assignments.end': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.store': { paramsTuple?: []; params?: {} }
+    'parking.manage.lotteries.cancel': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.draw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.offer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.apply': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.applications.withdraw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.applications.assign': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.tokens.nequi': { paramsTuple?: []; params?: {} }
     'billing.tokens.daviplata': { paramsTuple?: []; params?: {} }
     'billing.tokens.daviplataOtp': { paramsTuple?: []; params?: {} }
@@ -455,6 +522,9 @@ export type ScannedRoutes = {
     'resident.household.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.write.stays.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.spots.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.assignments.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.lotteries.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'units.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.update': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
@@ -469,6 +539,7 @@ export type ScannedRoutes = {
     'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.image.set': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.settings.update': { paramsTuple?: []; params?: {} }
+    'parking.manage.settings.update': { paramsTuple?: []; params?: {} }
     'billing.autoRenew': { paramsTuple?: []; params?: {} }
     'billing.paymentMethod.save': { paramsTuple?: []; params?: {} }
     'finance.write.settings.update': { paramsTuple?: []; params?: {} }
@@ -490,6 +561,7 @@ export type ScannedRoutes = {
     'announcements.image.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'parking.manage.spots.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.paymentMethod.destroy': { paramsTuple?: []; params?: {} }
     'buildings.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'units.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

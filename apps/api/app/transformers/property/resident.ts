@@ -26,6 +26,14 @@ export function presentVehicle(vehicle: Vehicle) {
     brand: vehicle.brand,
     model: vehicle.model,
     color: vehicle.color,
+    ownerType: vehicle.ownerType,
+    ownerName: vehicle.ownerName,
+    ownerDocumentType: vehicle.ownerDocumentType,
+    ownerDocumentNumber: vehicle.ownerDocumentNumber,
+    ownerRelationship: vehicle.ownerRelationship,
+    ownerPhone: vehicle.ownerPhone,
+    soatExpiresOn: vehicle.soatExpiresOn?.toISODate() ?? null,
+    inspectionExpiresOn: vehicle.inspectionExpiresOn?.toISODate() ?? null,
   }
 }
 
