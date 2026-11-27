@@ -1282,6 +1282,45 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/unit_occupants_controller').default['destroy']>>>
     }
   }
+  'imports.property.preview': {
+    methods: ["POST"]
+    pattern: '/api/v1/imports/property/preview'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/import').importFileValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/import').importFileValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['preview']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['preview']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['preview']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'imports.property.plan': {
+    methods: ["POST"]
+    pattern: '/api/v1/imports/property/plan'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/import').importPlanValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/import').importPlanValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['plan']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['plan']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['plan']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'imports.property.apply': {
+    methods: ["POST"]
+    pattern: '/api/v1/imports/property/rows'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/property/import').importRowValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/property/import').importRowValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['apply']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['apply']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/property_import_controller').default['apply']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'members.store': {
     methods: ["POST"]
     pattern: '/api/v1/members'

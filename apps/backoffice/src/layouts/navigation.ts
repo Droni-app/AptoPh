@@ -36,7 +36,10 @@ export function financeLinks(canManage: boolean): NavLink[] {
     ]),
     link('Gastos', 'mdi-receipt-text-outline', 'finance-expenses'),
     link('Bancos', 'mdi-bank-outline', 'finance-banks'),
-    link('Presupuesto', 'mdi-chart-donut', 'finance-budgets', ['finance-budgets', 'finance-budget']),
+    link('Presupuesto', 'mdi-chart-donut', 'finance-budgets', [
+      'finance-budgets',
+      'finance-budget',
+    ]),
     link('Contabilidad', 'mdi-book-open-variant', 'finance-accounting'),
     link('Informes', 'mdi-file-chart-outline', 'finance-reports'),
     ...(canManage ? [link('Configuración', 'mdi-cog-outline', 'finance-settings')] : []),
@@ -46,6 +49,8 @@ export function financeLinks(canManage: boolean): NavLink[] {
 export function navigation(options: {
   canReadFinance: boolean
   canManageFinance: boolean
+  /** Administration: imports */
+  canManage: boolean
   hasSubscription: boolean
 }): NavGroup[] {
   const finance = financeLinks(options.canManageFinance)
@@ -83,6 +88,7 @@ export function navigation(options: {
     label: 'Administración',
     items: [
       link('Configuración', 'mdi-cog-outline', 'settings'),
+      ...(options.canManage ? [link('Importar', 'mdi-database-import-outline', 'import')] : []),
       // Managed conjuntos (no subscription) have no plan page
       ...(options.hasSubscription
         ? [link('Plan', 'mdi-card-account-details-star-outline', 'plan')]

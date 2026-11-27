@@ -26,6 +26,7 @@ const BuildingsController = () => import('#controllers/property/buildings_contro
 const UnitsController = () => import('#controllers/property/units_controller')
 const UnitOccupantsController = () => import('#controllers/property/unit_occupants_controller')
 const MembersController = () => import('#controllers/tenants/members_controller')
+const PropertyImportController = () => import('#controllers/property/property_import_controller')
 const SubscriptionController = () => import('#controllers/billing/subscription_controller')
 const EmailQuotaController = () => import('#controllers/announcements/email_quota_controller')
 const SubscriptionBillingController = () =>
@@ -380,6 +381,15 @@ router
         router
           .delete('units/:unitId/occupants/:id', [UnitOccupantsController, 'destroy'])
           .as('occupants.destroy')
+        router
+          .post('imports/property/preview', [PropertyImportController, 'preview'])
+          .as('imports.property.preview')
+        router
+          .post('imports/property/plan', [PropertyImportController, 'plan'])
+          .as('imports.property.plan')
+        router
+          .post('imports/property/rows', [PropertyImportController, 'apply'])
+          .as('imports.property.apply')
         router.post('members', [MembersController, 'store']).as('members.store')
         router.patch('members/:id', [MembersController, 'update']).as('members.update')
         router.patch('members/:id/status', [MembersController, 'changeStatus']).as('members.status')

@@ -43,7 +43,9 @@ async function onKeydown(event: KeyboardEvent, index: number) {
 }
 
 const containers = {
-  underline: 'gap-1 border-b border-neutral-200 dark:border-white/10',
+  // The bottom line is an inset shadow: a border plus -mb-px on the tabs overflows
+  // the scroll container by 1px and the browser shows scroll arrows
+  underline: 'gap-1 shadow-[inset_0_-1px_0_var(--color-neutral-200)] dark:shadow-[inset_0_-1px_0_rgb(255_255_255/0.1)]',
   pills: 'gap-1',
   boxed: 'gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-white/5',
 }
@@ -57,7 +59,7 @@ function tabClasses(active: boolean) {
   if (props.variant === 'underline')
     return cx(
       base,
-      '-mb-px border-b-2',
+      'border-b-2',
       active
         ? 'border-mint-500 text-neutral-900 dark:border-mint-400 dark:text-white'
         : 'border-transparent text-neutral-500 hover:border-neutral-300 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-100',
@@ -84,7 +86,7 @@ function tabClasses(active: boolean) {
   <div
     role="tablist"
     :aria-label="ariaLabel"
-    class="flex max-w-full overflow-x-auto"
+    class="flex max-w-full overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     :class="containers[variant]"
   >
     <button

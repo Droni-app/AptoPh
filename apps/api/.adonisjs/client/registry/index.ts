@@ -596,6 +596,24 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"units"],[1,"unitId"],[0,"occupants"],[1,"id"]],
     types: placeholder as Registry['occupants.destroy']['types'],
   },
+  'imports.property.preview': {
+    methods: ["POST"],
+    pattern: '/api/v1/imports/property/preview',
+    tokens: [[0,"api"],[0,"v1"],[0,"imports"],[0,"property"],[0,"preview"]],
+    types: placeholder as Registry['imports.property.preview']['types'],
+  },
+  'imports.property.plan': {
+    methods: ["POST"],
+    pattern: '/api/v1/imports/property/plan',
+    tokens: [[0,"api"],[0,"v1"],[0,"imports"],[0,"property"],[0,"plan"]],
+    types: placeholder as Registry['imports.property.plan']['types'],
+  },
+  'imports.property.apply': {
+    methods: ["POST"],
+    pattern: '/api/v1/imports/property/rows',
+    tokens: [[0,"api"],[0,"v1"],[0,"imports"],[0,"property"],[0,"rows"]],
+    types: placeholder as Registry['imports.property.apply']['types'],
+  },
   'members.store': {
     methods: ["POST"],
     pattern: '/api/v1/members',

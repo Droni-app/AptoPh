@@ -1,4 +1,8 @@
 import type {
+  ImportPlanRow,
+  ImportPreview,
+  ImportRowInput,
+  ImportRowResult,
   ApiItem,
   BillingCharge,
   BillingConfig,
@@ -154,5 +158,27 @@ export const billingApi = {
     api<ApiItem<ChargeRequestResult>>('/api/v1/email-quota/packs', {
       method: 'POST',
       body: { packs },
+    }),
+}
+
+/** Import of towers, units and people from a CSV (docs/import.md) */
+export const importApi = {
+  preview: (file: File) => {
+    const body = new FormData()
+    body.append('file', file)
+    return api<ApiItem<ImportPreview>>('/api/v1/imports/property/preview', {
+      method: 'POST',
+      body,
+    })
+  },
+  plan: (rows: Array<{ line: number; input: ImportRowInput }>) =>
+    api<{ data: ImportPlanRow[] }>('/api/v1/imports/property/plan', {
+      method: 'POST',
+      body: { rows },
+    }),
+  apply: (line: number, input: ImportRowInput) =>
+    api<ApiItem<ImportRowResult>>('/api/v1/imports/property/rows', {
+      method: 'POST',
+      body: { line, input },
     }),
 }

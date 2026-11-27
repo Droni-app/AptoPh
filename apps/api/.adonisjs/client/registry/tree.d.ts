@@ -192,6 +192,13 @@ export interface ApiDefinition {
       show: typeof routes['public.announcementImages.show']
     }
   }
+  imports: {
+    property: {
+      preview: typeof routes['imports.property.preview']
+      plan: typeof routes['imports.property.plan']
+      apply: typeof routes['imports.property.apply']
+    }
+  }
   finance: {
     summary: typeof routes['finance.summary']
     settings: typeof routes['finance.settings']

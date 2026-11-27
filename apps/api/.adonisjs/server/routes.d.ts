@@ -102,6 +102,9 @@ export type ScannedRoutes = {
     'occupants.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'occupants.update': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
     'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
+    'imports.property.preview': { paramsTuple?: []; params?: {} }
+    'imports.property.plan': { paramsTuple?: []; params?: {} }
+    'imports.property.apply': { paramsTuple?: []; params?: {} }
     'members.store': { paramsTuple?: []; params?: {} }
     'members.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'members.status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -365,6 +368,9 @@ export type ScannedRoutes = {
     'buildings.store': { paramsTuple?: []; params?: {} }
     'units.store': { paramsTuple?: []; params?: {} }
     'occupants.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'imports.property.preview': { paramsTuple?: []; params?: {} }
+    'imports.property.plan': { paramsTuple?: []; params?: {} }
+    'imports.property.apply': { paramsTuple?: []; params?: {} }
     'members.store': { paramsTuple?: []; params?: {} }
     'members.invitation': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.accounts.store': { paramsTuple?: []; params?: {} }

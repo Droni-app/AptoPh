@@ -29,6 +29,7 @@ const groups = computed(() =>
   navigation({
     canReadFinance: tenant.canReadFinance,
     canManageFinance: tenant.canManageFinance,
+    canManage: tenant.canManage,
     hasSubscription: subscription.current !== null,
   }),
 )
@@ -73,11 +74,7 @@ async function switchTenant() {
     >
       <div class="flex h-16 shrink-0 items-center justify-between px-5">
         <RouterLink to="/" class="flex h-7 items-center" aria-label="AptoPH, ir al inicio">
-          <img
-            :src="logoWhite"
-            alt="AptoPH"
-            class="h-full w-auto"
-          />
+          <img :src="logoWhite" alt="AptoPH" class="h-full w-auto" />
         </RouterLink>
         <button
           type="button"
@@ -147,7 +144,9 @@ async function switchTenant() {
                   :class="[
                     'mdi text-lg',
                     item.icon,
-                    isActive(item) ? 'text-mint-300' : 'text-neutral-500 group-hover:text-neutral-300',
+                    isActive(item)
+                      ? 'text-mint-300'
+                      : 'text-neutral-500 group-hover:text-neutral-300',
                   ]"
                   aria-hidden="true"
                 />
@@ -215,11 +214,7 @@ async function switchTenant() {
         class="hidden min-w-0 items-center gap-1.5 text-sm sm:flex"
       >
         <template v-for="(crumb, index) in trail" :key="crumb">
-          <i
-            v-if="index"
-            class="mdi mdi-chevron-right text-neutral-400"
-            aria-hidden="true"
-          />
+          <i v-if="index" class="mdi mdi-chevron-right text-neutral-400" aria-hidden="true" />
           <span
             class="truncate"
             :class="
@@ -248,10 +243,7 @@ async function switchTenant() {
           @click="toggle"
         >
           <i
-            :class="[
-              'mdi text-xl',
-              theme === 'dark' ? 'mdi-weather-sunny' : 'mdi-weather-night',
-            ]"
+            :class="['mdi text-xl', theme === 'dark' ? 'mdi-weather-sunny' : 'mdi-weather-night']"
             aria-hidden="true"
           />
         </button>

@@ -47,6 +47,7 @@ export const controllers = {
   },
   property: {
     Buildings: () => import('#controllers/property/buildings_controller'),
+    PropertyImport: () => import('#controllers/property/property_import_controller'),
     ResidentHousehold: () => import('#controllers/property/resident_household_controller'),
     ResidentPets: () => import('#controllers/property/resident_pets_controller'),
     ResidentUnits: () => import('#controllers/property/resident_units_controller'),

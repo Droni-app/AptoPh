@@ -13,6 +13,8 @@ declare module 'vue-router' {
     tenant?: boolean
     /** Finance pages: administration, accounting, council and fiscal reviewer */
     finance?: boolean
+    /** Administration only */
+    manage?: boolean
     title?: string
   }
 }
@@ -202,6 +204,12 @@ const router = createRouter({
           meta: { tenant: true, title: 'Configuración del conjunto' },
         },
         {
+          path: 'importar',
+          name: 'import',
+          component: () => import('@/views/ImportView.vue'),
+          meta: { tenant: true, manage: true, title: 'Importar datos' },
+        },
+        {
           path: 'plan',
           name: 'plan',
           component: () => import('@/views/PlanView.vue'),
@@ -240,6 +248,7 @@ router.beforeEach(async (to) => {
     return { name: 'select-tenant', query: { redirect: to.fullPath } }
   }
   if (to.meta.finance && !tenant.canReadFinance) return { name: 'dashboard' }
+  if (to.meta.manage && !tenant.canManage) return { name: 'dashboard' }
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails

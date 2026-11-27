@@ -73,6 +73,7 @@
     "@japa/api-client": "^3.2.1",
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.4.0",
+    "csv-parse": "^6.2.1",
     "edge.js": "^6.5.1",
     "luxon": "^3.7.2",
     "pg": "^8.16.0",
