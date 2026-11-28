@@ -18,13 +18,6 @@ const { theme, toggle } = useTheme()
 
 const items = [
   {
-    label: 'Inicio',
-    icon: 'mdi-home-outline',
-    active: 'mdi-home',
-    to: '/',
-    match: ['home', 'unit'],
-  },
-  {
     label: 'Comunicados',
     icon: 'mdi-bullhorn-outline',
     active: 'mdi-bullhorn',
