@@ -3,13 +3,17 @@ import { Exception } from '@adonisjs/core/exceptions'
 import db from '@adonisjs/lucid/services/db'
 import logger from '@adonisjs/core/services/logger'
 import { DateTime } from 'luxon'
-import type { GoogleAuthResult } from '@aptoph/shared'
+import type { GoogleAuthApp, GoogleAuthResult } from '@aptoph/shared'
 import User from '#models/auth/user'
 import UserIdentity from '#models/auth/user_identity'
 import ResourceException from '#exceptions/resource_exception'
 import { createSession } from '#services/auth/auth_session'
 import { GoogleAuthError, GoogleOAuth, type GoogleProfile } from '#services/auth/google_oauth'
-import { googleCallbackValidator, googleStartValidator } from '#validators/auth/google'
+import {
+  googleCallbackValidator,
+  googleStartValidator,
+  googleTokenValidator,
+} from '#validators/auth/google'
 
 const FAILED = 'No pudimos iniciar sesión con Google. Inténtalo de nuevo.'
 
@@ -21,7 +25,13 @@ const FAILED = 'No pudimos iniciar sesión con Google. Inténtalo de nuevo.'
 export default class GoogleAuthController {
   /** GET /api/v1/auth/providers: which sign-in buttons the apps show */
   async providers() {
-    return { data: { google: GoogleOAuth.enabled } }
+    // The client id is public: the mobile app uses it as `serverClientId`
+    return {
+      data: {
+        google: GoogleOAuth.enabled,
+        googleClientId: GoogleOAuth.enabled ? GoogleOAuth.clientId : null,
+      },
+    }
   }
 
   /** GET /api/v1/auth/google/url?app=backoffice|web&intent=login|signup */
@@ -55,6 +65,36 @@ export default class GoogleAuthController {
       if (error instanceof GoogleAuthError) throw ResourceException.badRequest(FAILED)
       throw error
     }
+    return this.finish(ctx, profile, state.app, device)
+  }
+
+  /**
+   * POST /api/v1/auth/google/token: the ID token the mobile app got from the
+   * Google SDK (residents: the app never signs up a conjunto)
+   */
+  async token(ctx: HttpContext) {
+    const { idToken, device } = await ctx.request.validateUsing(googleTokenValidator)
+    if (!GoogleOAuth.clientId) {
+      throw new Exception('El inicio de sesión con Google no está disponible', { status: 503 })
+    }
+    let profile: GoogleProfile
+    try {
+      profile = await GoogleOAuth.verifyIdToken(idToken)
+    } catch (error) {
+      logger.warn({ err: error }, 'google mobile sign-in failed')
+      if (error instanceof GoogleAuthError) throw ResourceException.badRequest(FAILED)
+      throw error
+    }
+    return this.finish(ctx, profile, 'web', device)
+  }
+
+  /** The session of the Google account, or what the app needs to sign up */
+  private async finish(
+    ctx: HttpContext,
+    profile: GoogleProfile,
+    app: GoogleAuthApp,
+    device: string | undefined
+  ) {
     if (!profile.emailVerified) {
       throw ResourceException.badRequest(
         'Tu cuenta de Google no tiene el correo confirmado. Confírmalo en Google o entra con tu contraseña.'
@@ -65,7 +105,7 @@ export default class GoogleAuthController {
     if (!user) {
       // Residents and staff are invited by the administration; only a new
       // conjunto signs up on its own, from the back-office
-      if (state.app === 'web') {
+      if (app === 'web') {
         throw ResourceException.badRequest(
           `No hay una cuenta de AptoPH con ${profile.email}. Pide a la administración de tu conjunto que te invite, o entra con el correo al que llegó la invitación.`
         )

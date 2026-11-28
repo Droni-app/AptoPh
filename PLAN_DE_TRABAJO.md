@@ -410,7 +410,10 @@ parqueaderos.
 
 ### 4.12 App móvil (Flutter)
 
-**Hay hoy:** solo el README en `apps/mobile` (el proyecto aún no se ha generado).
+**Hay hoy** ([docs/mobile.md](docs/mobile.md)): proyecto Flutter `co.aptoph.app` con la base (tema,
+cliente de la API, sesión en Keychain/Keystore, navegación) y la autenticación: correo y contraseña,
+Google nativo (la API verifica el ID token con las llaves de Google), recuperar contraseña y elegir
+conjunto. El plan por fases y la configuración de Google, Firebase, Apple y Play están en la guía.
 
 **Alcance inicial (P2):** lo mismo que el portal de residentes (inicio, estado de cuenta, reservas,
 visitas, paquetes, PQRS, comunicados) más notificaciones push. Después, una versión para portería.

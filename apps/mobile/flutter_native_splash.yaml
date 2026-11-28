@@ -1,0 +1,17 @@
+# Native splash (regenerate: dart run flutter_native_splash:create). The app then
+# shows the full illustrated splash (lib/router.dart, SplashScreen).
+flutter_native_splash:
+  color: "#FAF7F2"
+  image: assets/branding/splash-icon.png
+  color_dark: "#102038"
+  image_dark: assets/branding/splash-icon-dark.png
+  android_12:
+    color: "#FAF7F2"
+    image: assets/branding/splash-icon.png
+    icon_background_color: "#FAF7F2"
+    color_dark: "#102038"
+    image_dark: assets/branding/splash-icon-dark.png
+    icon_background_color_dark: "#102038"
+  ios_content_mode: center
+  fullscreen: false
+  web: false

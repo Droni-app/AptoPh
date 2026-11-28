@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { generateKeyPairSync, sign } from 'node:crypto'
 import testUtils from '@adonisjs/core/services/test_utils'
 import mail from '@adonisjs/mail/services/main'
 import env from '#start/env'
@@ -82,10 +83,10 @@ test.group('Google sign-in', (group) => {
 
   test('without credentials it is not available', async ({ client }) => {
     const enabled = await client.get('/api/v1/auth/providers')
-    enabled.assertBody({ data: { google: true } })
+    enabled.assertBody({ data: { google: true, googleClientId: CLIENT_ID } })
     env.set('GOOGLE_CLIENT_ID', '')
     const disabled = await client.get('/api/v1/auth/providers')
-    disabled.assertBody({ data: { google: false } })
+    disabled.assertBody({ data: { google: false, googleClientId: null } })
     const response = await client.get('/api/v1/auth/google/url').qs({ app: 'backoffice' })
     response.assertStatus(503)
   })
@@ -222,5 +223,87 @@ test.group('Google sign-in', (group) => {
     const { state } = await start(client, 'backoffice')
     const response = await client.post('/api/v1/auth/google').json({ code: 'c', state })
     response.assertStatus(403)
+  })
+})
+
+test.group('Google sign-in · mobile app', (group) => {
+  const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 })
+  const jwk = { ...publicKey.export({ format: 'jwk' }), kid: 'key-1', alg: 'RS256', use: 'sig' }
+  const originalKeys = GoogleOAuth.requestKeys
+
+  /** An ID token signed like Google signs them */
+  const signed = (claims: Claims, kid = 'key-1', key = privateKey) => {
+    const header = Buffer.from(JSON.stringify({ alg: 'RS256', kid, typ: 'JWT' })).toString(
+      'base64url'
+    )
+    const payload = Buffer.from(JSON.stringify(claims)).toString('base64url')
+    const signature = sign('RSA-SHA256', Buffer.from(`${header}.${payload}`), key)
+    return `${header}.${payload}.${signature.toString('base64url')}`
+  }
+  const claims = (overrides: Claims = {}) => ({ ...account(overrides)('unused'), nonce: undefined })
+
+  group.each.setup(async () => {
+    env.set('GOOGLE_CLIENT_ID', CLIENT_ID)
+    env.set('GOOGLE_CLIENT_SECRET', 'test-secret')
+    env.set('GOOGLE_IOS_CLIENT_ID', 'ios-client.apps.googleusercontent.com')
+    GoogleOAuth.resetKeys()
+    GoogleOAuth.requestKeys = async () => ({ keys: [jwk], maxAge: 3600 })
+    await resetRateLimits()
+    return testUtils.db().withGlobalTransaction()
+  })
+  group.each.teardown(() => {
+    GoogleOAuth.requestKeys = originalKeys
+    GoogleOAuth.resetKeys()
+    env.set('GOOGLE_CLIENT_ID', '')
+    env.set('GOOGLE_CLIENT_SECRET', '')
+    env.set('GOOGLE_IOS_CLIENT_ID', '')
+  })
+
+  test('a signed ID token from Android or iOS opens a session', async ({ client, assert }) => {
+    const { user } = await createMember('resident')
+    user.email = 'laura@gmail.com'
+    await user.save()
+
+    for (const aud of [CLIENT_ID, 'ios-client.apps.googleusercontent.com']) {
+      const response = await client
+        .post('/api/v1/auth/google/token')
+        .json({ idToken: signed(claims({ aud })), device: 'App móvil' })
+      response.assertStatus(200)
+      const data = response.body().data as any
+      assert.equal(data.status, 'session')
+      assert.equal(data.session.user.id, user.id)
+    }
+    const identity = await UserIdentity.findByOrFail('userId', user.id)
+    assert.equal(identity.providerUserId, 'google-123')
+  })
+
+  test('rejects forged, foreign and expired tokens', async ({ client }) => {
+    const { user } = await createMember('resident')
+    user.email = 'laura@gmail.com'
+    await user.save()
+    const other = generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey
+
+    for (const idToken of [
+      signed(claims(), 'key-1', other),
+      signed(claims(), 'unknown-key'),
+      signed(claims({ aud: 'another-app' })),
+      signed(claims({ iss: 'https://evil.example.com' })),
+      signed(claims({ exp: Math.floor(Date.now() / 1000) - 5 })),
+      'not.a.token',
+    ]) {
+      const response = await client.post('/api/v1/auth/google/token').json({ idToken })
+      response.assertStatus(400)
+    }
+  })
+
+  test('without an account the app is told to ask for an invitation', async ({
+    client,
+    assert,
+  }) => {
+    const response = await client
+      .post('/api/v1/auth/google/token')
+      .json({ idToken: signed(claims({ email: 'nadie@gmail.com' })) })
+    response.assertStatus(400)
+    assert.include((response.body() as any).errors[0].message, 'invite')
   })
 })

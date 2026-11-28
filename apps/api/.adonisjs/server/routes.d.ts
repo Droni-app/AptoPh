@@ -14,6 +14,7 @@ export type ScannedRoutes = {
     'auth.providers': { paramsTuple?: []; params?: {} }
     'auth.google.start': { paramsTuple?: []; params?: {} }
     'auth.google.callback': { paramsTuple?: []; params?: {} }
+    'auth.google.token': { paramsTuple?: []; params?: {} }
     'invitations.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'invitations.accept': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
@@ -574,6 +575,7 @@ export type ScannedRoutes = {
     'auth.password.reset': { paramsTuple?: []; params?: {} }
     'auth.email.verify': { paramsTuple?: []; params?: {} }
     'auth.google.callback': { paramsTuple?: []; params?: {} }
+    'auth.google.token': { paramsTuple?: []; params?: {} }
     'invitations.accept': { paramsTuple?: []; params?: {} }
     'profile.email.verification': { paramsTuple?: []; params?: {} }
     'profile.push.store': { paramsTuple?: []; params?: {} }

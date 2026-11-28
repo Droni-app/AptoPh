@@ -34,6 +34,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   // Authorized redirect URIs: <BACKOFFICE_URL>/auth/google and <RESIDENTS_URL>/auth/google
   GOOGLE_CLIENT_ID: Env.schema.string.optional(),
   GOOGLE_CLIENT_SECRET: Env.schema.string.optional(),
+  // iOS OAuth client of the mobile app (its ID tokens carry this audience)
+  GOOGLE_IOS_CLIENT_ID: Env.schema.string.optional(),
 
   // Database (PostgreSQL)
   DB_HOST: Env.schema.string({ format: 'host' }),

@@ -11,3 +11,8 @@ export const googleCallbackValidator = vine.create({
   state: vine.string().maxLength(4096),
   device: deviceField,
 })
+
+export const googleTokenValidator = vine.create({
+  idToken: vine.string().maxLength(4096),
+  device: deviceField,
+})

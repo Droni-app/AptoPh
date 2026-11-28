@@ -154,6 +154,7 @@ router
             router.get('providers', [GoogleAuthController, 'providers']).as('providers')
             router.get('google/url', [GoogleAuthController, 'start']).as('google.start')
             router.post('google', [GoogleAuthController, 'callback']).as('google.callback')
+            router.post('google/token', [GoogleAuthController, 'token']).as('google.token')
           })
           .use(throttlePublic)
       })

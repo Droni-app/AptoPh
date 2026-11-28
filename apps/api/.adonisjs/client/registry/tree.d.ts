@@ -22,6 +22,7 @@ export interface ApiDefinition {
     google: {
       start: typeof routes['auth.google.start']
       callback: typeof routes['auth.google.callback']
+      token: typeof routes['auth.google.token']
     }
   }
   invitations: {

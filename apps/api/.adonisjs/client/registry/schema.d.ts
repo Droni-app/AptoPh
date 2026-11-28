@@ -138,6 +138,19 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['callback']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'auth.google.token': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/google/token'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/auth/google').googleTokenValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/auth/google').googleTokenValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['token']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['token']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['token']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'invitations.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/invitations/:token'

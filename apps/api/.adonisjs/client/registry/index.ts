@@ -68,6 +68,12 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"google"]],
     types: placeholder as Registry['auth.google.callback']['types'],
   },
+  'auth.google.token': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/google/token',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"google"],[0,"token"]],
+    types: placeholder as Registry['auth.google.token']['types'],
+  },
   'invitations.show': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/invitations/:token',

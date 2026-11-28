@@ -172,6 +172,14 @@ correo no está confirmado en Google; `403` para una cuenta bloqueada; `503` si 
 credenciales. `GET /api/v1/auth/providers` responde `{ google: boolean }` y las apps esconden el
 botón cuando es `false`. Los dos endpoints usan el límite de los endpoints públicos.
 
+**App móvil:** el SDK nativo de Google entrega un ID token y la app lo envía a
+`POST /api/v1/auth/google/token { idToken, device }`. Como el token no llega directo de Google, la
+API verifica su firma RS256 con las llaves de `https://www.googleapis.com/oauth2/v3/certs`, en
+caché según `Cache-Control` y renovadas si aparece un `kid` desconocido. La audiencia puede ser
+`GOOGLE_CLIENT_ID` (el `serverClientId` del SDK, lo que pone Android) o `GOOGLE_IOS_CLIENT_ID`.
+Responde igual que el portal: sesión, o `400` si la cuenta no existe. `GET /auth/providers` incluye
+`googleClientId` para que la app no lo tenga quemado. Ver [mobile.md](mobile.md).
+
 Una cuenta creada con Google no tiene contraseña: puede crear una con "¿Olvidaste tu contraseña?".
 
 ### Configuración

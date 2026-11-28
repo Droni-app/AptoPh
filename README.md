@@ -246,4 +246,5 @@ tiene marcadores `__…__` en su lugar.
 - [Encuestas](docs/surveys.md)
 - [Reportes](docs/reports.md)
 - [Auditoría](docs/audit.md)
+- [App móvil (Flutter)](docs/mobile.md)
 - [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens
