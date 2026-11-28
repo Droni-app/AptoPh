@@ -46,6 +46,23 @@ const items = [
     match: ['bookings'],
   },
   {
+    label: 'Encuestas',
+    icon: 'mdi-vote-outline',
+    active: 'mdi-vote',
+    to: '/encuestas',
+    match: ['surveys', 'survey'],
+    desktopOnly: true,
+  },
+  {
+    label: 'Documentos',
+    icon: 'mdi-folder-file-outline',
+    active: 'mdi-folder-file',
+    to: '/documentos',
+    match: ['documents'],
+    /** The phone tab bar has room for five: it lives in the account menu there */
+    desktopOnly: true,
+  },
+  {
     label: 'PQRS',
     icon: 'mdi-message-text-outline',
     active: 'mdi-message-text',
@@ -53,7 +70,9 @@ const items = [
     match: ['tickets', 'ticket'],
   },
 ]
-const isActive = (item: (typeof items)[number]) => item.match.includes(String(route.name))
+type NavItem = (typeof items)[number] & { desktopOnly?: boolean }
+const isActive = (item: NavItem) => item.match.includes(String(route.name))
+const mobileItems = (items as NavItem[]).filter((item) => !item.desktopOnly)
 
 async function switchTenant() {
   units.reset()
@@ -151,6 +170,18 @@ async function switchTenant() {
             </div>
             <UiDropdownSeparator />
             <UiDropdownItem
+              class="md:hidden"
+              icon="mdi-vote-outline"
+              label="Encuestas"
+              @click="router.push({ name: 'surveys' })"
+            />
+            <UiDropdownItem
+              class="md:hidden"
+              icon="mdi-folder-file-outline"
+              label="Documentos"
+              @click="router.push({ name: 'documents' })"
+            />
+            <UiDropdownItem
               icon="mdi-parking"
               label="Sorteo de parqueaderos"
               @click="router.push({ name: 'parking' })"
@@ -185,7 +216,7 @@ async function switchTenant() {
       aria-label="Secciones"
     >
       <RouterLink
-        v-for="item in items"
+        v-for="item in mobileItems"
         :key="item.to"
         :to="item.to"
         class="flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-medium"

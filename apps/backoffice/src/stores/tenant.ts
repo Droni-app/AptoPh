@@ -16,6 +16,7 @@ import {
   type TenantSummary,
   AMENITY_MANAGE_ROLES,
   AMENITY_READ_ROLES,
+  SURVEY_READ_ROLES,
 } from '@aptoph/shared'
 import { api } from '@/lib/http'
 
@@ -66,6 +67,8 @@ export const useTenantStore = defineStore('tenant', () => {
   const canReadParkingLotteries = computed(() => hasRole('administrator', 'council_member'))
   /** Common areas: the calendar for staff and guards; the administration manages them */
   const canReadAmenities = computed(() => hasRole(...AMENITY_READ_ROLES))
+  /** Surveys: administration, council and fiscal reviewer follow the results */
+  const canReadSurveys = computed(() => hasRole(...SURVEY_READ_ROLES))
   const canManageAmenities = computed(() => hasRole(...AMENITY_MANAGE_ROLES))
   /** Sees every ticket (not only the assigned ones) */
   const seesAllTickets = computed(() => hasRole('administrator', 'council_member'))
@@ -120,6 +123,7 @@ export const useTenantStore = defineStore('tenant', () => {
     canManageParking,
     canReadParkingLotteries,
     canReadAmenities,
+    canReadSurveys,
     canManageAmenities,
     load,
     select,

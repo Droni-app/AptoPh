@@ -125,6 +125,19 @@ export interface ApiDefinition {
       }
       show: typeof routes['resident.announcements.show']
     }
+    documents: {
+      index: typeof routes['resident.documents.index']
+      folders: typeof routes['resident.documents.folders']
+      files: {
+        url: typeof routes['resident.documents.files.url']
+      }
+      show: typeof routes['resident.documents.show']
+    }
+    surveys: {
+      index: typeof routes['resident.surveys.index']
+      show: typeof routes['resident.surveys.show']
+      vote: typeof routes['resident.surveys.vote']
+    }
     parking: {
       show: typeof routes['resident.parking.show']
       apply: typeof routes['resident.parking.apply']
@@ -214,6 +227,40 @@ export interface ApiDefinition {
     reject: typeof routes['bookings.reject']
     cancel: typeof routes['bookings.cancel']
     deposit: typeof routes['bookings.deposit']
+  }
+  documents: {
+    index: typeof routes['documents.index']
+    folders: typeof routes['documents.folders'] & {
+      store: typeof routes['documents.folders.store']
+      update: typeof routes['documents.folders.update']
+      destroy: typeof routes['documents.folders.destroy']
+    }
+    files: {
+      url: typeof routes['documents.files.url']
+    }
+    show: typeof routes['documents.show']
+    stats: typeof routes['documents.stats']
+    store: typeof routes['documents.store']
+    update: typeof routes['documents.update']
+    destroy: typeof routes['documents.destroy']
+    versions: {
+      store: typeof routes['documents.versions.store']
+      destroy: typeof routes['documents.versions.destroy']
+    }
+    publish: typeof routes['documents.publish']
+    unpublish: typeof routes['documents.unpublish']
+    archive: typeof routes['documents.archive']
+    restore: typeof routes['documents.restore']
+  }
+  surveys: {
+    index: typeof routes['surveys.index']
+    stats: typeof routes['surveys.stats']
+    show: typeof routes['surveys.show']
+    voters: typeof routes['surveys.voters']
+    store: typeof routes['surveys.store']
+    update: typeof routes['surveys.update']
+    publish: typeof routes['surveys.publish']
+    destroy: typeof routes['surveys.destroy']
   }
   tickets: {
     index: typeof routes['tickets.index']

@@ -1,4 +1,12 @@
 import type {
+  ResidentSurveyDetail,
+  ResidentSurveyItem,
+  SurveyVoteInput,
+  ApiPaginated,
+  DocumentCategory,
+  DocumentDetail,
+  DocumentFolder,
+  DocumentItem,
   Amenity,
   AmenityAvailability,
   ApiItem,
@@ -160,6 +168,43 @@ export const residentApi = {
     api<ApiItem<AmenityAvailability>>(`${base}/amenities/${amenityId}/availability`, {
       query: { from, to },
     }),
+  /** Surveys: the owners vote for their units (docs/surveys.md) */
+  surveys: {
+    list: () => api<List<ResidentSurveyItem> & { isOwner: boolean }>(`${base}/surveys`),
+    show: (id: string) =>
+      api<ApiItem<ResidentSurveyDetail>>(`${base}/surveys/${encodeURIComponent(id)}`),
+    vote: (id: string, body: SurveyVoteInput) =>
+      api<ApiItem<ResidentSurveyDetail>>(`${base}/surveys/${encodeURIComponent(id)}/vote`, {
+        method: 'POST',
+        body,
+      }),
+  },
+
+  /** Documents the person can see as resident or owner (docs/documents.md) */
+  documents: {
+    list: (query: {
+      search?: string
+      category?: DocumentCategory | ''
+      folder?: string
+      page?: number
+    }) =>
+      api<ApiPaginated<DocumentItem> & { categories: DocumentCategory[] }>(`${base}/documents`, {
+        query: {
+          search: query.search || undefined,
+          category: query.category || undefined,
+          folder: query.folder || undefined,
+          page: query.page,
+          perPage: 30,
+        },
+      }),
+    folders: () => api<List<DocumentFolder>>(`${base}/documents/folders`),
+    show: (id: string) =>
+      api<ApiItem<DocumentDetail>>(`${base}/documents/${encodeURIComponent(id)}`),
+    /** Opening or downloading is logged */
+    fileUrl: (id: string, download = false) =>
+      api<ApiItem<{ url: string }>>(`${base}/documents/files/${id}/url`, { query: { download } }),
+  },
+
   bookings: {
     list: () => api<List<Booking>>(`${base}/bookings`),
     show: (id: string) => api<ApiItem<ResidentBookingDetail>>(`${base}/bookings/${id}`),

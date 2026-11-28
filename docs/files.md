@@ -114,5 +114,6 @@ el mismo slug que uno de producción (por ejemplo `demo`), sus archivos quedan e
 
 ## 6. Pendiente
 
-- Documentos del conjunto (tabla `documents`), fotos de PQRS del residente y paquetes, avatar y logo: usan el
-  mismo disco y la misma convención de carpetas.
+- Fotos de PQRS del residente y paquetes, avatar y logo: usarán el mismo disco y la misma
+  convención de carpetas. Los documentos del conjunto ya la usan (`documentos/`, ver
+  [documents.md](documents.md)).

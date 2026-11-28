@@ -1,6 +1,16 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { DOCUMENT_CATEGORIES, DOCUMENT_VISIBILITIES } from '@aptoph/shared'
 import { checkIn, tenantTable, timestamps, userForeign } from '#database/tenant_schema'
+
+/** The values of this first version (the module later grew: see documents_module) */
+const DOCUMENT_CATEGORIES = [
+  'bylaws',
+  'minutes',
+  'financial_statement',
+  'contract',
+  'policy',
+  'other',
+]
+const DOCUMENT_VISIBILITIES = ['public', 'council', 'administration']
 
 export default class extends BaseSchema {
   protected tableName = 'documents'

@@ -36,9 +36,10 @@ reales (sección 6).
 | PQRS y mantenimiento | ✅ bandeja, asignación, notas internas, plazos, correo | ✅ | ✅ | ⬜ |
 | Parqueaderos del conjunto | ✅ propios y comunales, asignación, cobro mensual, sorteo y lista de espera | ✅ | ✅ | ⬜ |
 | Portería, visitas y paquetes | 🟡 parqueadero de visitantes; visitas y paquetes solo residente | ✅ | ✅ | ⬜ |
-| Documentos | ⬜ (solo tablas) | ⬜ | ⬜ | ⬜ |
+| Documentos | ✅ carpetas, versiones, visibilidad por rol y unidad, registro de consultas, vencimientos | ✅ | ✅ | ⬜ |
 | Auditoría y reportes | ⬜ (solo tablas) | ⬜ | — | — |
 | Notificaciones | ✅ campana, correo y push (FCM) por categoría y canal, recordatorio de vencimiento | ✅ | ✅ | ⬜ |
+| Encuestas previas a la asamblea | ✅ una por unidad, coeficiente, anónimas o nominales, recordatorio | ✅ | ✅ | ⬜ |
 | Asambleas | ⬜ | ⬜ | ⬜ | ⬜ |
 | Presupuesto, gastos y contabilidad | ✅ | ✅ | — | — |
 
@@ -347,16 +348,20 @@ el residente gestiona su hogar, vehículos y mascotas.
 
 ### 4.9 Documentos del conjunto
 
-**Hay hoy:** tabla `documents`.
+**Hecho** (docs/documents.md)
+- [x] Carpetas, 14 categorías, referencia, fechas, proveedor y vencimiento.
+- [x] Visibilidad: toda la comunidad, propietarios, consejo, personal, unidades específicas o solo
+      la administración. La categoría sugiere la visibilidad.
+- [x] Borrador, publicado, archivado; aviso a quienes pueden verlo al publicar.
+- [x] Versiones (la última es la vigente) y registro de quién abrió o descargó cada archivo.
+- [x] Avisos de vencimiento de contratos y pólizas a 30 y 7 días y el mismo día.
+- [x] Consulta en el backoffice (todos los roles, según visibilidad) y en el portal.
 
-**Falta**
-- [ ] Subir documentos por categoría (reglamento, actas, estados financieros, contratos).
-- [ ] Visibilidad por rol (todos, propietarios, consejo).
-- [ ] Consulta y descarga en el portal.
-
-**Tener en cuenta**
-- Almacenamiento resuelto: bucket privado de DigitalOcean Spaces, carpeta por conjunto (slug) y
-  enlaces firmados de 10 minutos (docs/files.md). Documentos, PQRS y paquetes usan el mismo disco.
+**Siguiente**
+- [ ] Firma electrónica de actas (presidente y secretario) y acuse de lectura de reglamentos.
+- [ ] Búsqueda dentro del contenido (OCR de actas escaneadas).
+- [ ] Marca de agua con el nombre de quien descarga.
+- [ ] Cuota de almacenamiento por plan y retención (archivo automático).
 
 ---
 
@@ -415,7 +420,15 @@ visitas, paquetes, PQRS, comunicados) más notificaciones push. Después, una ve
 
 ### 4.13 Asambleas virtuales
 
-**Hay hoy:** nada (está en "fases posteriores" del modelo de datos).
+**Hay hoy:** encuestas a los propietarios (docs/surveys.md), con una respuesta por unidad,
+resultados por coeficiente y participación mínima. La misma base sirve para votar en asamblea.
+
+**Siguiente en encuestas**
+- [ ] Más tipos de pregunta: opción múltiple, escala de 1 a 5 y respuesta abierta.
+- [ ] Cambiar el voto hasta la fecha límite, cerrar antes de tiempo o ampliar el plazo, y
+      programar la apertura.
+- [ ] Exportar resultados (CSV y PDF para el acta) y adjuntar documentos de soporte.
+- [ ] Aviso de resultados al cierre y alcance por torre.
 
 **Falta (P2)**
 - [ ] Convocatoria con orden del día.
@@ -549,7 +562,7 @@ Lo que recomiendo resolver para operar con conjuntos reales y cobrarles. Ordenad
 - [ ] **PDF** del estado de cuenta, la cuenta de cobro, el recibo de caja y el paz y salvo, con
       envío por correo (4.3, 4.4).
 - [ ] Correo al residente al emitir la cuota mensual, con su saldo y el enlace al portal.
-- [ ] **Documentos del conjunto** (4.9): reglamento, actas y estados financieros en el portal.
+- [x] **Documentos del conjunto** (4.9): reglamento, actas y estados financieros en el portal.
 - [ ] Validar que los coeficientes sumen 100 % y mostrar la diferencia (4.2).
 - [ ] Vehículos y mascotas en el backoffice (portería los necesita).
 - [ ] Conciliación bancaria importando el extracto (4.4).

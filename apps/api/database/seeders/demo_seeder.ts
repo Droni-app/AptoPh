@@ -47,6 +47,11 @@ import ParkingSpot from '#models/property/parking_spot'
 import { splitByDay } from '#services/gatehouse/visitor_parking'
 import Parcel from '#models/gatehouse/parcel'
 import DocumentFile from '#models/documents/document'
+import DocumentFolder from '#models/documents/document_folder'
+import Survey from '#models/surveys/survey'
+import SurveyOption from '#models/surveys/survey_option'
+import SurveyQuestion from '#models/surveys/survey_question'
+import Attachment from '#models/files/attachment'
 import AuditLog from '#models/tenants/audit_log'
 
 /**
@@ -74,6 +79,14 @@ const AREAS = [78.5, 62.3, 62.3, 78.5]
 /** Tables with demo data, children first (all have tenant_id) */
 const TENANT_TABLES = [
   'audit_logs',
+  'survey_answers',
+  'survey_tallies',
+  'survey_responses',
+  'survey_options',
+  'survey_questions',
+  'surveys',
+  'document_access_logs',
+  'document_units',
   'parking_stays',
   'parking_assignments',
   'parking_applications',
@@ -113,6 +126,7 @@ const TENANT_TABLES = [
   'visits',
   'parcels',
   'documents',
+  'document_folders',
   'pets',
   'vehicles',
   'unit_occupants',
@@ -229,6 +243,7 @@ export default class extends BaseSeeder {
       { fullName: 'Luis Vigilante', password: DEMO_PASSWORD, isPlatformAdmin: false }
     )
 
+    let builder: DemoBuilder | null = null
     await db.transaction(async (trx) => {
       // The demo users only exist in the demo conjunto
       await trx
@@ -248,7 +263,8 @@ export default class extends BaseSeeder {
       )
 
       await this.wipe(trx, tenant.id)
-      await new DemoBuilder(trx, tenant, admin, resident, staff, guard).build()
+      builder = new DemoBuilder(trx, tenant, admin, resident, staff, guard)
+      await builder.build()
     })
 
     // Files visitors uploaded to the demo (its rows were wiped above)
@@ -256,6 +272,14 @@ export default class extends BaseSeeder {
       await drive.use().deleteAll(`${DEMO_SLUG}/`)
     } catch (err) {
       logger.warn({ err }, 'could not delete the demo files')
+    }
+    // The files of the demo documents, once the old ones are gone
+    for (const file of (builder as DemoBuilder | null)?.files ?? []) {
+      try {
+        await drive.use().put(file.key, file.body, { contentType: 'application/pdf' })
+      } catch (err) {
+        logger.warn({ err, key: file.key }, 'could not write a demo document')
+      }
     }
   }
 
@@ -269,7 +293,44 @@ export default class extends BaseSeeder {
   }
 }
 
+/** A one-page PDF with a title and some lines, for the demo documents */
+function demoPdf(title: string, lines: string[]) {
+  const ascii = (text: string) =>
+    text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\x20-\x7e]/g, '')
+      .replace(/[()\\]/g, (char) => `\\${char}`)
+  const content = [
+    'BT /F1 20 Tf 60 760 Td',
+    `(${ascii(title)}) Tj`,
+    '/F1 11 Tf 0 -36 Td',
+    ...lines.flatMap((line) => [`(${ascii(line)}) Tj`, '0 -18 Td']),
+    'ET',
+  ].join('\n')
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+    `<< /Length ${content.length} >>\nstream\n${content}\nendstream`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+  ]
+  let pdf = '%PDF-1.4\n'
+  const offsets: number[] = []
+  objects.forEach((object, i) => {
+    offsets.push(pdf.length)
+    pdf += `${i + 1} 0 obj\n${object}\nendobj\n`
+  })
+  const xref = pdf.length
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
+  pdf += offsets.map((offset) => `${String(offset).padStart(10, '0')} 00000 n \n`).join('')
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`
+  return Buffer.from(pdf, 'latin1')
+}
+
 class DemoBuilder {
+  /** Files to write once the transaction commits (see DemoSeeder.run) */
+  files: Array<{ key: string; body: Buffer }> = []
   private client: { client: TransactionClientContract }
   private trx: TransactionClientContract
   private now: DateTime
@@ -302,7 +363,8 @@ class DemoBuilder {
     await this.security(occupied, myUnit)
     await this.visitorParking(occupied, myUnit)
     await this.parkingSpots(occupied, myUnit)
-    await this.documents()
+    await this.documents(myUnit)
+    await this.surveys(apartments, myUnit)
     await this.audit(myUnit)
   }
 
@@ -1764,29 +1826,372 @@ class DemoBuilder {
     )
   }
 
-  /** Document records only: the demo has no files in storage */
-  private async documents() {
-    const docs: Array<[string, DocumentFile['category'], DocumentFile['visibility']]> = [
-      ['Reglamento de propiedad horizontal', 'bylaws', 'public'],
-      ['Manual de convivencia', 'policy', 'public'],
-      ['Acta asamblea ordinaria', 'minutes', 'public'],
-      ['Estados financieros del año anterior', 'financial_statement', 'public'],
-      ['Contrato de vigilancia', 'contract', 'council'],
-      ['Acta reunión de consejo', 'minutes', 'council'],
+  /**
+   * Document management: folders, every visibility, an expiring contract with
+   * two versions, a deed only for the resident's unit and a draft.
+   */
+  private async documents(myUnit: Unit) {
+    const folder = async (name: string, parentId: string | null = null) => {
+      const created = await DocumentFolder.create({ ...this.scope, name, parentId }, this.client)
+      return created.id
+    }
+    const assemblies = await folder('Asambleas')
+    const thisYear = await folder(String(this.today.year), assemblies)
+    const council = await folder('Consejo de administración')
+    const contracts = await folder('Contratos y pólizas')
+    const bylaws = await folder('Reglamentos')
+    const finance = await folder('Estados financieros')
+    const security = await Vendor.query({ client: this.trx })
+      .where('tenant_id', this.tenant.id)
+      .where('name', 'like', 'Vigilancia%')
+      .first()
+
+    type Seed = {
+      title: string
+      category: DocumentFile['category']
+      visibility: DocumentFile['visibility']
+      folderId: string | null
+      reference?: string
+      description?: string
+      documentDate?: DateTime
+      expiresOn?: DateTime
+      vendorId?: string | null
+      unitIds?: string[]
+      draft?: boolean
+      versions?: string[]
+    }
+    const year = this.today.year
+    const seeds: Seed[] = [
+      {
+        title: 'Reglamento de propiedad horizontal',
+        category: 'bylaws',
+        visibility: 'community',
+        folderId: bylaws,
+        reference: 'Escritura 4.512',
+        description: 'Reglamento protocolizado en la Notaría 21 de Bogotá.',
+        documentDate: DateTime.fromISO('2016-03-10'),
+      },
+      {
+        title: 'Manual de convivencia',
+        category: 'bylaws',
+        visibility: 'community',
+        folderId: bylaws,
+        description: 'Mascotas, ruido, uso de zonas comunes y sanciones.',
+        documentDate: DateTime.fromISO(`${year - 1}-08-01`),
+      },
+      {
+        title: `Acta asamblea general ordinaria ${year}`,
+        category: 'minutes',
+        visibility: 'owners',
+        folderId: thisYear,
+        reference: `Acta 01-${year}`,
+        description: 'Aprobación de estados financieros, presupuesto y elección del consejo.',
+        documentDate: DateTime.fromISO(`${year}-03-21`),
+      },
+      {
+        title: `Estados financieros ${year - 1}`,
+        category: 'financial_statement',
+        visibility: 'owners',
+        folderId: finance,
+        description:
+          'Balance general, estado de resultados y notas, con dictamen del revisor fiscal.',
+        documentDate: DateTime.fromISO(`${year}-02-28`),
+      },
+      {
+        title: `Presupuesto ${year}`,
+        category: 'budget',
+        visibility: 'owners',
+        folderId: finance,
+        documentDate: DateTime.fromISO(`${year}-03-21`),
+      },
+      {
+        title: 'Acta reunión de consejo',
+        category: 'minutes',
+        visibility: 'council',
+        folderId: council,
+        reference: `Acta 07-${year}`,
+        documentDate: this.today.minus({ days: 20 }),
+      },
+      {
+        title: 'Contrato de vigilancia',
+        category: 'contract',
+        visibility: 'council',
+        folderId: contracts,
+        reference: `CV-${year - 1}-03`,
+        description: 'Vigilancia 24 horas con dos guardas. Incluye otrosí de ajuste de tarifa.',
+        documentDate: this.today.minus({ months: 11 }),
+        expiresOn: this.today.plus({ days: 20 }),
+        vendorId: security?.id ?? null,
+        versions: ['Contrato firmado', 'Otrosi No. 1: ajuste de tarifa'],
+      },
+      {
+        title: 'Póliza de áreas comunes',
+        category: 'policy',
+        visibility: 'council',
+        folderId: contracts,
+        reference: 'Póliza 1002-334455',
+        documentDate: this.today.minus({ months: 7 }),
+        expiresOn: this.today.plus({ months: 5 }),
+      },
+      {
+        title: 'Cotización mantenimiento de fachada',
+        category: 'quote',
+        visibility: 'council',
+        folderId: contracts,
+        description: 'Lavado e impermeabilización de las tres torres.',
+        documentDate: this.today.minus({ days: 9 }),
+        expiresOn: this.today.plus({ days: 50 }),
+      },
+      {
+        title: 'Manual del sistema de bombas',
+        category: 'plan',
+        visibility: 'staff',
+        folderId: null,
+        description: 'Operación y mantenimiento del equipo de presión.',
+      },
+      {
+        title: `Certificado de tradición y libertad · ${myUnit.code}`,
+        category: 'deed',
+        visibility: 'units',
+        folderId: null,
+        documentDate: this.today.minus({ days: 40 }),
+        unitIds: [myUnit.id],
+      },
+      {
+        title: 'Propuesta de reforma al reglamento',
+        category: 'bylaws',
+        visibility: 'private',
+        folderId: bylaws,
+        description: 'Borrador para revisar con el abogado antes de llevarlo al consejo.',
+        draft: true,
+      },
     ]
-    await DocumentFile.createMany(
-      docs.map(([title, category, visibility], i) => ({
-        ...this.scope,
-        title,
-        category,
-        visibility,
-        fileKey: `demo/documents/${i + 1}.pdf`,
-        mimeType: 'application/pdf',
-        sizeBytes: 180_000 + i * 52_000,
-        uploadedById: this.admin.id,
-      })),
-      this.client
+
+    for (const [index, seed] of seeds.entries()) {
+      const createdAt = this.now.minus({ days: seeds.length - index })
+      const document = await DocumentFile.create(
+        {
+          ...this.scope,
+          title: seed.title,
+          category: seed.category,
+          visibility: seed.visibility,
+          folderId: seed.folderId,
+          reference: seed.reference ?? null,
+          description: seed.description ?? null,
+          documentDate: seed.documentDate ?? null,
+          expiresOn: seed.expiresOn ?? null,
+          vendorId: seed.vendorId ?? null,
+          publishedAt: seed.draft ? null : createdAt,
+          uploadedById: this.admin.id,
+          updatedById: this.admin.id,
+          createdAt,
+        },
+        this.client
+      )
+      if (seed.unitIds?.length) {
+        await this.trx.table('document_units').multiInsert(
+          seed.unitIds.map((unitId) => ({
+            tenant_id: this.tenant.id,
+            document_id: document.id,
+            unit_id: unitId,
+          }))
+        )
+      }
+      for (const [v, label] of (seed.versions ?? [seed.title]).entries()) {
+        const slug = seed.title
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')
+        const body = demoPdf(seed.title, [
+          label,
+          seed.reference ? `Referencia: ${seed.reference}` : '',
+          'Documento de ejemplo del conjunto demo de AptoPH.',
+        ])
+        const key = `${DEMO_SLUG}/documentos/${createdAt.toFormat('yyyy/MM')}/${document.id}-v${v + 1}-${slug}.pdf`
+        this.files.push({ key, body })
+        await Attachment.create(
+          {
+            ...this.scope,
+            ownerType: 'document',
+            ownerId: document.id,
+            fileKey: key,
+            fileName: `${slug}${v ? `-v${v + 1}` : ''}.pdf`,
+            mimeType: 'application/pdf',
+            sizeBytes: body.length,
+            uploadedById: this.admin.id,
+            createdAt: createdAt.plus({ hours: v }),
+          },
+          this.client
+        )
+      }
+    }
+  }
+
+  /**
+   * Surveys: one open (the resident's unit has not voted yet), one closed with
+   * its results in the history and a draft.
+   */
+  private async surveys(apartments: Unit[], myUnit: Unit) {
+    type Seed = {
+      title: string
+      description: string
+      opensAt: DateTime | null
+      closesAt: DateTime
+      anonymous: boolean
+      resultsVisibility: 'after_vote' | 'after_close'
+      minParticipation: number | null
+      questions: Array<{ text: string; options: string[]; weights: number[] }>
+      /** Share of the apartments that voted */
+      turnout: number
+    }
+    const seeds: Seed[] = [
+      {
+        title: 'Remodelación del salón social',
+        description:
+          'La administración recibió tres propuestas para remodelar el salón social. Antes de llevar el tema a la asamblea queremos conocer tu opinión.',
+        opensAt: this.now.minus({ days: 3 }),
+        closesAt: this.now.plus({ days: 6 }).set({ hour: 18, minute: 0 }),
+        anonymous: true,
+        resultsVisibility: 'after_vote',
+        minParticipation: 51,
+        questions: [
+          {
+            text: '¿Está de acuerdo con remodelar el salón social este año?',
+            options: ['Sí', 'No', 'Me abstengo'],
+            weights: [6, 3, 1],
+          },
+          {
+            text: '¿Cómo prefiere financiarla?',
+            options: [
+              'Cuota extraordinaria en 3 meses',
+              'Fondo de imprevistos',
+              'Esperar al próximo presupuesto',
+            ],
+            weights: [3, 5, 2],
+          },
+        ],
+        turnout: 0.4,
+      },
+      {
+        title: 'Horario de la piscina',
+        description:
+          'Propuesta del consejo para ampliar el horario de la piscina los fines de semana.',
+        opensAt: this.now.minus({ days: 40 }),
+        closesAt: this.now.minus({ days: 25 }),
+        anonymous: false,
+        resultsVisibility: 'after_close',
+        minParticipation: 30,
+        questions: [
+          {
+            text: '¿Amplía el horario hasta las 9:00 p. m. los sábados y domingos?',
+            options: ['Sí', 'No'],
+            weights: [7, 3],
+          },
+          {
+            text: '¿Prefiere un turno exclusivo para adultos?',
+            options: ['Sí, de 7:00 a 9:00 a. m.', 'No es necesario'],
+            weights: [4, 6],
+          },
+        ],
+        turnout: 0.65,
+      },
+      {
+        title: 'Cambio de empresa de vigilancia',
+        description: 'Borrador: se publicará cuando lleguen las tres cotizaciones.',
+        opensAt: null,
+        closesAt: this.now.plus({ days: 20 }),
+        anonymous: true,
+        resultsVisibility: 'after_close',
+        minParticipation: 51,
+        questions: [
+          {
+            text: '¿Está de acuerdo con cambiar la empresa de vigilancia?',
+            options: ['Sí', 'No', 'Me abstengo'],
+            weights: [0, 0, 0],
+          },
+        ],
+        turnout: 0,
+      },
+    ]
+
+    const voters = apartments.filter(
+      (unit) => unit.id !== myUnit.id && Number(unit.ownershipCoefficient) > 0
     )
+    for (const seed of seeds) {
+      const survey = await Survey.create(
+        {
+          ...this.scope,
+          title: seed.title,
+          description: seed.description,
+          opensAt: seed.opensAt,
+          publishedAt: seed.opensAt,
+          closesAt: seed.closesAt,
+          anonymous: seed.anonymous,
+          resultsVisibility: seed.resultsVisibility,
+          minParticipation: seed.minParticipation === null ? null : String(seed.minParticipation),
+          createdById: this.admin.id,
+          updatedById: this.admin.id,
+        },
+        this.client
+      )
+      const questions = []
+      for (const [index, question] of seed.questions.entries()) {
+        const created = await SurveyQuestion.create(
+          { ...this.scope, surveyId: survey.id, position: index + 1, text: question.text },
+          this.client
+        )
+        const options = await SurveyOption.createMany(
+          question.options.map((label, position) => ({
+            ...this.scope,
+            questionId: created.id,
+            position: position + 1,
+            label,
+          })),
+          this.client
+        )
+        questions.push({ id: created.id, options, weights: question.weights })
+      }
+
+      const count = Math.round(voters.length * seed.turnout)
+      for (const [n, unit] of voters.slice(0, count).entries()) {
+        const [response] = await this.trx
+          .table('survey_responses')
+          .insert({
+            tenant_id: this.tenant.id,
+            survey_id: survey.id,
+            unit_id: unit.id,
+            user_id: null,
+            coefficient: unit.ownershipCoefficient,
+            created_at: (seed.opensAt ?? this.now).plus({ hours: 2 + n * 3 }).toISO(),
+          })
+          .returning('id')
+        for (const question of questions) {
+          // A deterministic pick that follows the weights
+          const total = question.weights.reduce((sum, w) => sum + w, 0)
+          let point = (n * 7 + question.options.length) % total
+          let pick = 0
+          while (point >= question.weights[pick]) point -= question.weights[pick++]
+          const option = question.options[pick]
+          if (!seed.anonymous) {
+            await this.trx.table('survey_answers').insert({
+              tenant_id: this.tenant.id,
+              response_id: response.id,
+              question_id: question.id,
+              option_id: option.id,
+            })
+          }
+          await this.trx.rawQuery(
+            `INSERT INTO survey_tallies (tenant_id, survey_id, question_id, option_id, votes, coefficient)
+             VALUES (?, ?, ?, ?, 1, ?)
+             ON CONFLICT (survey_id, option_id)
+             DO UPDATE SET votes = survey_tallies.votes + 1, coefficient = survey_tallies.coefficient + EXCLUDED.coefficient`,
+            [this.tenant.id, survey.id, question.id, option.id, unit.ownershipCoefficient]
+          )
+        }
+      }
+    }
   }
 
   private async audit(myUnit: Unit) {

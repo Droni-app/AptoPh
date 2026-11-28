@@ -35,6 +35,7 @@ const groups = computed(() =>
     canUseVisitorParking: tenant.canUseVisitorParking,
     canReadParking: tenant.canReadParking,
     canReadAmenities: tenant.canReadAmenities,
+    canReadSurveys: tenant.canReadSurveys,
     hasSubscription: subscription.current !== null,
   }),
 )

@@ -601,19 +601,53 @@ Reglas y cálculo: `docs/visitor-parking.md`.
 
 ## 10. Documentos
 
-### `documents` — reglamento, actas, estados financieros
+Ver [documents.md](documents.md).
+
+### `documents` — actas, reglamentos, contratos, pólizas…
 
 | Columna | Tipo | Notas |
 | --- | --- | --- |
 | id, tenant_id | | |
+| folder_id | uuid FK → document_folders (SET NULL) | |
 | title | varchar(200) | |
-| category | varchar(20) | `bylaws`, `minutes`, `financial_statement`, `contract`, `policy`, `other` |
-| file_key | varchar | |
-| mime_type | varchar(100) | |
-| size_bytes | bigint | |
-| visibility | varchar(20) | `public` (todos los residentes), `council`, `administration` |
-| uploaded_by_id | uuid FK → users | |
+| description | text | |
+| category | varchar(20) | `minutes`, `bylaws`, `financial_statement`, `budget`, `report`, `contract`, `quote`, `policy`, `deed`, `certificate`, `plan`, `correspondence`, `support`, `other` |
+| visibility | varchar(20) | `community`, `owners`, `council`, `staff`, `units`, `private` (por defecto) |
+| reference | varchar(60) | Número de acta, contrato o póliza |
+| document_date / expires_on | date | Fecha del documento y vencimiento |
+| vendor_id | uuid FK → vendors (SET NULL) | |
+| published_at / archived_at | timestamptz | Nulo: borrador / no archivado |
+| uploaded_by_id / updated_by_id | uuid FK → users | |
 | created_at / updated_at / deleted_at | | |
+
+Los archivos son `attachments` con `owner_type = 'document'`; el más reciente es la versión vigente.
+
+### `document_folders`
+
+`id`, `tenant_id`, `parent_id` (FK a sí misma, RESTRICT), `name`, timestamps. Índice único
+`(tenant_id, parent_id, lower(name)) NULLS NOT DISTINCT`.
+
+### `document_units` — unidades de un documento `units`
+
+PK `(document_id, unit_id)`, `tenant_id`; ambas FK con CASCADE.
+
+### `document_access_logs` — quién abrió qué
+
+`id`, `tenant_id`, `document_id`, `attachment_id`, `user_id`, `action` (`view` | `download`),
+`created_at`.
+
+## 10c. Encuestas
+
+Ver [surveys.md](surveys.md).
+
+| Tabla | Columnas |
+| --- | --- |
+| `surveys` | `title`, `description`, `opens_at`, `closes_at`, `anonymous`, `results_visibility` (`after_vote`, `after_close`), `min_participation` (0-100, % del coeficiente), `published_at`, `reminded_at`, `created_by_id`, `updated_by_id`, timestamps |
+| `survey_questions` | `survey_id` (CASCADE), `position`, `text`, `description` |
+| `survey_options` | `question_id` (CASCADE), `position`, `label` |
+| `survey_responses` | `survey_id`, `unit_id`, `user_id`, `coefficient` (el de la unidad al votar), `created_at`. Único `(survey_id, unit_id)` |
+| `survey_tallies` | PK `(survey_id, option_id)`, `question_id`, `votes`, `coefficient`: los resultados |
+| `survey_answers` | PK `(response_id, question_id)`, `option_id`. Solo en encuestas nominales |
 
 ## 10b. Notificaciones
 

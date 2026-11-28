@@ -12,6 +12,8 @@ export const NOTIFICATION_CATEGORIES = [
   "tickets",
   "bookings",
   "parking",
+  "documents",
+  "surveys",
 ] as const;
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
 
@@ -22,6 +24,8 @@ export const NOTIFICATION_CATEGORY_LABELS: Record<NotificationCategory, string> 
   tickets: "PQRS",
   bookings: "Reservas",
   parking: "Parqueaderos",
+  documents: "Documentos",
+  surveys: "Encuestas",
 };
 
 export const NOTIFICATION_CATEGORY_DESCRIPTIONS: Record<NotificationCategory, string> = {
@@ -31,6 +35,8 @@ export const NOTIFICATION_CATEGORY_DESCRIPTIONS: Record<NotificationCategory, st
   tickets: "Respuestas y cambios de estado de las PQRS",
   bookings: "Reservas de zonas comunes",
   parking: "Sorteo de parqueaderos, cupos ofrecidos y cambios de asignación",
+  documents: "Documentos nuevos del conjunto y vencimientos de contratos y pólizas",
+  surveys: "Encuestas nuevas y recordatorio antes del cierre",
 };
 
 export const NOTIFICATION_CATEGORY_ICONS: Record<NotificationCategory, string> = {
@@ -40,6 +46,8 @@ export const NOTIFICATION_CATEGORY_ICONS: Record<NotificationCategory, string> =
   tickets: "mdi-message-text-outline",
   bookings: "mdi-calendar-check-outline",
   parking: "mdi-parking",
+  documents: "mdi-folder-file-outline",
+  surveys: "mdi-vote-outline",
 };
 
 export const NOTIFICATION_CHANNELS = ["email", "push"] as const;
@@ -58,6 +66,8 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   tickets: { email: true, push: true },
   bookings: { email: true, push: true },
   parking: { email: true, push: true },
+  documents: { email: true, push: false },
+  surveys: { email: true, push: true },
 };
 
 /** Stored preferences (maybe partial or from an older version) over the defaults */

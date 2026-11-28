@@ -21,6 +21,7 @@ const OWNER_TABLES: Record<AttachmentOwnerType, string> = {
   announcement_image: 'announcements',
   ticket: 'tickets',
   amenity_booking: 'amenity_bookings',
+  document: 'documents',
 }
 
 /**
@@ -36,6 +37,7 @@ const OWNER_FOLDERS: Record<AttachmentOwnerType, string> = {
   announcement_image: 'comunicados/imagenes',
   ticket: 'pqrs',
   amenity_booking: 'zonas-comunes/soportes',
+  document: 'documentos',
 }
 
 /** How long a signed link to a file works */
@@ -79,7 +81,7 @@ export class AttachmentsService {
       .from(OWNER_TABLES[ownerType])
       .where('tenant_id', this.tenant.id)
       .where('id', ownerId)
-      .if(ownerType === 'announcement' || ownerType === 'announcement_image', (q) =>
+      .if(['announcement', 'announcement_image', 'document'].includes(ownerType), (q) =>
         q.whereNull('deleted_at')
       )
       .select('id')

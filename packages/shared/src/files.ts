@@ -20,6 +20,8 @@ export const ATTACHMENT_OWNER_TYPES = [
   'ticket',
   // Reserva de zona común: soporte de pago
   'amenity_booking',
+  // Documento del conjunto: cada archivo es una versión
+  'document',
 ] as const
 
 export type AttachmentOwnerType = (typeof ATTACHMENT_OWNER_TYPES)[number]

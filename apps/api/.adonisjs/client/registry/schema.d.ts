@@ -827,6 +827,97 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/announcements/resident_announcements_controller').default['show']>>>
     }
   }
+  'resident.documents.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/documents'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['index']>>>
+    }
+  }
+  'resident.documents.folders': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/documents/folders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['folders']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['folders']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['folders']>>>
+    }
+  }
+  'resident.documents.files.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/documents/files/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['fileUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['fileUrl']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['fileUrl']>>>
+    }
+  }
+  'resident.documents.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/documents/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/resident_documents_controller').default['show']>>>
+    }
+  }
+  'resident.surveys.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/surveys'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['index']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['index']>>>
+    }
+  }
+  'resident.surveys.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/surveys/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['show']>>>
+    }
+  }
+  'resident.surveys.vote': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/surveys/:id/vote'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/surveys/surveys').surveyVoteValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/surveys/surveys').surveyVoteValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['vote']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['vote']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/resident_surveys_controller').default['vote']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'resident.parking.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/resident/parking'
@@ -1423,6 +1514,331 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['detach']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['detach']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/amenities/bookings_controller').default['detach']>>>
+    }
+  }
+  'documents.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/documents'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/documents/documents').documentListValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.folders': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/documents/folders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['folders']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['folders']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['folders']>>>
+    }
+  }
+  'documents.files.url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/documents/files/:id/url'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/documents/documents').documentFileUrlValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['fileUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['fileUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['fileUrl']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/documents/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['show']>>>
+    }
+  }
+  'documents.stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/documents-stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['stats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['stats']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['stats']>>>
+    }
+  }
+  'documents.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/documents'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/documents/documents').newDocumentValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/documents/documents').newDocumentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/documents/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/documents/documents').documentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/documents/documents').documentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/documents/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['destroy']>>>
+    }
+  }
+  'documents.versions.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/documents/:id/versions'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/documents/documents').documentFileValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/documents/documents').documentFileValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['addVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['addVersion']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['addVersion']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.versions.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/documents/versions/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['removeVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['removeVersion']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['removeVersion']>>>
+    }
+  }
+  'documents.publish': {
+    methods: ["POST"]
+    pattern: '/api/v1/documents/:id/publish'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/documents/documents').publishDocumentValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/documents/documents').publishDocumentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['publish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['publish']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['publish']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.unpublish': {
+    methods: ["POST"]
+    pattern: '/api/v1/documents/:id/unpublish'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['unpublish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['unpublish']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['unpublish']>>>
+    }
+  }
+  'documents.archive': {
+    methods: ["POST"]
+    pattern: '/api/v1/documents/:id/archive'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['archive']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['archive']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['archive']>>>
+    }
+  }
+  'documents.restore': {
+    methods: ["POST"]
+    pattern: '/api/v1/documents/:id/restore'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['restore']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['restore']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['restore']>>>
+    }
+  }
+  'documents.folders.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/documents/folders'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/documents/documents').documentFolderValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/documents/documents').documentFolderValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['storeFolder']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['storeFolder']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['storeFolder']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.folders.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/documents/folders/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/documents/documents').documentFolderValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/documents/documents').documentFolderValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['updateFolder']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['updateFolder']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['updateFolder']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'documents.folders.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/documents/folders/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['destroyFolder']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['destroyFolder']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/documents/documents_controller').default['destroyFolder']>>>
+    }
+  }
+  'surveys.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/surveys'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/surveys/surveys').surveyListValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'surveys.stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/surveys-stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['stats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['stats']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['stats']>>>
+    }
+  }
+  'surveys.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/surveys/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['show']>>>
+    }
+  }
+  'surveys.voters': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/surveys/:id/voters'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['voters']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['voters']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['voters']>>>
+    }
+  }
+  'surveys.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/surveys'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/surveys/surveys').surveyValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/surveys/surveys').surveyValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'surveys.update': {
+    methods: ["PUT"]
+    pattern: '/api/v1/surveys/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/surveys/surveys').surveyValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/surveys/surveys').surveyValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'surveys.publish': {
+    methods: ["POST"]
+    pattern: '/api/v1/surveys/:id/publish'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/surveys/surveys').publishSurveyValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/surveys/surveys').publishSurveyValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['publish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['publish']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['publish']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'surveys.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/surveys/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/surveys/surveys_controller').default['destroy']>>>
     }
   }
   'tickets.index': {

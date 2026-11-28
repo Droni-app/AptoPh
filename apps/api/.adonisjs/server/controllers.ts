@@ -29,6 +29,10 @@ export const controllers = {
     Dashboard: () => import('#controllers/dashboard/dashboard_controller'),
     ResidentHome: () => import('#controllers/dashboard/resident_home_controller'),
   },
+  documents: {
+    Documents: () => import('#controllers/documents/documents_controller'),
+    ResidentDocuments: () => import('#controllers/documents/resident_documents_controller'),
+  },
   finance: {
     Accounting: () => import('#controllers/finance/accounting_controller'),
     Accounts: () => import('#controllers/finance/accounts_controller'),
@@ -64,6 +68,10 @@ export const controllers = {
     ResidentVehicles: () => import('#controllers/property/resident_vehicles_controller'),
     UnitOccupants: () => import('#controllers/property/unit_occupants_controller'),
     Units: () => import('#controllers/property/units_controller'),
+  },
+  surveys: {
+    ResidentSurveys: () => import('#controllers/surveys/resident_surveys_controller'),
+    Surveys: () => import('#controllers/surveys/surveys_controller'),
   },
   tenants: {
     Invitations: () => import('#controllers/tenants/invitations_controller'),

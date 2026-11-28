@@ -6,7 +6,13 @@ import { notificationsApi } from '@/api/account'
 import { errorMessage } from '@/lib/errors'
 
 /** The channels of each kind of notice, saved on every change (docs/notifications.md) */
-const STAFF_CATEGORIES: NotificationCategory[] = ['tickets', 'finance', 'announcements', 'bookings']
+const STAFF_CATEGORIES: NotificationCategory[] = [
+  'tickets',
+  'finance',
+  'announcements',
+  'bookings',
+  'documents',
+]
 const categories: readonly NotificationCategory[] = STAFF_CATEGORIES
 
 const toast = useToast()

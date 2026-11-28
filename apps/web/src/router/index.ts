@@ -85,6 +85,24 @@ const router = createRouter({
           meta: { tenant: true, title: 'Parqueaderos' },
         },
         {
+          path: 'encuestas',
+          name: 'surveys',
+          component: () => import('@/views/SurveysView.vue'),
+          meta: { tenant: true, title: 'Encuestas' },
+        },
+        {
+          path: 'encuestas/:id',
+          name: 'survey',
+          component: () => import('@/views/SurveyView.vue'),
+          meta: { tenant: true, title: 'Encuesta' },
+        },
+        {
+          path: 'documentos',
+          name: 'documents',
+          component: () => import('@/views/DocumentsView.vue'),
+          meta: { tenant: true, title: 'Documentos' },
+        },
+        {
           path: 'reservas',
           name: 'bookings',
           component: () => import('@/views/BookingsView.vue'),

@@ -34,6 +34,8 @@ esa app: la abren la campana, el botón del correo y el push.
 | `announcements` Comunicados | Comunicado publicado | sí | no |
 | `tickets` PQRS | Respuesta o cambio de estado; al backoffice, PQRS nueva, respuesta del residente, asignación | sí | sí |
 | `bookings` Reservas | Solicitud, aprobación, rechazo, cancelación, depósito y recordatorio 24 h antes ([detalle](amenities.md#notificaciones-categoría-bookings)) | sí | sí |
+| `documents` Documentos | Documento publicado para quienes lo pueden ver y aviso de vencimiento a la administración ([detalle](documents.md#notificaciones-categoría-documents)) | sí | no |
+| `surveys` Encuestas | Encuesta nueva para los propietarios y recordatorio 24 h antes del cierre a quien no ha votado ([detalle](surveys.md#notificaciones-categoría-surveys)) | sí | sí |
 | `parking` Parqueaderos | Sorteo abierto, resultado, cupo ofrecido o vencido, asignación, cancelación | sí | sí |
 
 Las preferencias viven en `users.notification_preferences` (jsonb) y aplican a todos los conjuntos
@@ -59,6 +61,10 @@ de la cuenta. Si una categoría no está guardada, usa el valor por defecto
 - **Cada hora:**
   - `remindDueCharges()`: recordatorio a las unidades con saldo que vence en 3 días, una vez por
     unidad y fecha.
+  - `remindUpcomingBookings()`: recordatorio de las reservas del día siguiente.
+  - `remindExpiringDocuments()`: aviso a la administración de los documentos que vencen en 30 o 7
+    días o el mismo día ([documents.md](documents.md#vencimientos)).
+  - `remindClosingSurveys()`: recordatorio de las encuestas que cierran en las próximas 24 horas.
   - `pruneNotifications()`: borra las leídas de más de 90 días y todas las de más de un año.
 
 ## API

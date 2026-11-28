@@ -17,6 +17,8 @@ import { runBillingTick } from '#services/billing/billing_scheduler'
 import { pruneNotifications } from '#services/notifications/notifications'
 import { remindDueCharges } from '#services/notifications/finance_notifications'
 import { remindUpcomingBookings } from '#services/amenities/bookings'
+import { remindExpiringDocuments } from '#services/documents/documents'
+import { remindClosingSurveys } from '#services/surveys/surveys'
 
 const EVERY_MINUTE = 60_000
 const EVERY_FIVE_MINUTES = 5 * EVERY_MINUTE
@@ -38,10 +40,13 @@ const billing = setInterval(() => {
 }, EVERY_FIVE_MINUTES)
 billing.unref()
 
-// Hourly: due reminders (once per unit and due date), bookings of tomorrow and old notifications
+// Hourly: due reminders (once per unit and due date), bookings of tomorrow, expiring documents,
+// surveys closing within a day and old notifications
 const notifications = setInterval(() => {
   remindDueCharges()
     .then(() => remindUpcomingBookings())
+    .then(() => remindExpiringDocuments())
+    .then(() => remindClosingSurveys())
     .then(() => pruneNotifications())
     .catch(() => {})
 }, 60 * EVERY_MINUTE)

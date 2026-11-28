@@ -97,10 +97,6 @@ export const TICKET_STATUSES = values('open', 'in_progress', 'resolved', 'closed
 export const VISIT_TYPES = values('guest', 'delivery', 'service_provider', 'other')
 export const PARCEL_STATUSES = values('pending', 'delivered', 'returned')
 
-// Documents
-export const DOCUMENT_CATEGORIES = values('bylaws', 'minutes', 'financial_statement', 'contract', 'policy', 'other')
-export const DOCUMENT_VISIBILITIES = values('public', 'council', 'administration')
-
 export type UnitType = ValueOf<typeof UNIT_TYPES>
 export type UnitStatus = ValueOf<typeof UNIT_STATUSES>
 export type OccupantRelationship = ValueOf<typeof OCCUPANT_RELATIONSHIPS>

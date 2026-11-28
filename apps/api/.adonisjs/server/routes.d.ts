@@ -67,6 +67,13 @@ export type ScannedRoutes = {
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.documents.index': { paramsTuple?: []; params?: {} }
+    'resident.documents.folders': { paramsTuple?: []; params?: {} }
+    'resident.documents.files.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.documents.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.surveys.index': { paramsTuple?: []; params?: {} }
+    'resident.surveys.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.surveys.vote': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.parking.show': { paramsTuple?: []; params?: {} }
     'resident.parking.apply': { paramsTuple?: []; params?: {} }
     'resident.parking.withdraw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -113,6 +120,31 @@ export type ScannedRoutes = {
     'bookings.deposit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'bookings.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'bookings.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.index': { paramsTuple?: []; params?: {} }
+    'documents.folders': { paramsTuple?: []; params?: {} }
+    'documents.files.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.stats': { paramsTuple?: []; params?: {} }
+    'documents.store': { paramsTuple?: []; params?: {} }
+    'documents.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.versions.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.versions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.unpublish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.archive': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.restore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.folders.store': { paramsTuple?: []; params?: {} }
+    'documents.folders.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.folders.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.index': { paramsTuple?: []; params?: {} }
+    'surveys.stats': { paramsTuple?: []; params?: {} }
+    'surveys.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.voters': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.store': { paramsTuple?: []; params?: {} }
+    'surveys.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.index': { paramsTuple?: []; params?: {} }
     'tickets.stats': { paramsTuple?: []; params?: {} }
     'tickets.assignees': { paramsTuple?: []; params?: {} }
@@ -292,6 +324,12 @@ export type ScannedRoutes = {
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.documents.index': { paramsTuple?: []; params?: {} }
+    'resident.documents.folders': { paramsTuple?: []; params?: {} }
+    'resident.documents.files.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.documents.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.surveys.index': { paramsTuple?: []; params?: {} }
+    'resident.surveys.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.parking.show': { paramsTuple?: []; params?: {} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
@@ -313,6 +351,15 @@ export type ScannedRoutes = {
     'bookings.index': { paramsTuple?: []; params?: {} }
     'bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.index': { paramsTuple?: []; params?: {} }
+    'documents.folders': { paramsTuple?: []; params?: {} }
+    'documents.files.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.stats': { paramsTuple?: []; params?: {} }
+    'surveys.index': { paramsTuple?: []; params?: {} }
+    'surveys.stats': { paramsTuple?: []; params?: {} }
+    'surveys.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.voters': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.index': { paramsTuple?: []; params?: {} }
     'tickets.stats': { paramsTuple?: []; params?: {} }
     'tickets.assignees': { paramsTuple?: []; params?: {} }
@@ -399,6 +446,12 @@ export type ScannedRoutes = {
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.documents.index': { paramsTuple?: []; params?: {} }
+    'resident.documents.folders': { paramsTuple?: []; params?: {} }
+    'resident.documents.files.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.documents.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.surveys.index': { paramsTuple?: []; params?: {} }
+    'resident.surveys.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.parking.show': { paramsTuple?: []; params?: {} }
     'dashboard': { paramsTuple?: []; params?: {} }
     'buildings.index': { paramsTuple?: []; params?: {} }
@@ -420,6 +473,15 @@ export type ScannedRoutes = {
     'bookings.index': { paramsTuple?: []; params?: {} }
     'bookings.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'bookings.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.index': { paramsTuple?: []; params?: {} }
+    'documents.folders': { paramsTuple?: []; params?: {} }
+    'documents.files.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.stats': { paramsTuple?: []; params?: {} }
+    'surveys.index': { paramsTuple?: []; params?: {} }
+    'surveys.stats': { paramsTuple?: []; params?: {} }
+    'surveys.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.voters': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.index': { paramsTuple?: []; params?: {} }
     'tickets.stats': { paramsTuple?: []; params?: {} }
     'tickets.assignees': { paramsTuple?: []; params?: {} }
@@ -502,6 +564,7 @@ export type ScannedRoutes = {
     'resident.tickets.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.surveys.vote': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.parking.apply': { paramsTuple?: []; params?: {} }
     'resident.parking.withdraw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.parking.accept': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -519,6 +582,15 @@ export type ScannedRoutes = {
     'bookings.cancel': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'bookings.deposit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'bookings.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.store': { paramsTuple?: []; params?: {} }
+    'documents.versions.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.unpublish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.archive': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.restore': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.folders.store': { paramsTuple?: []; params?: {} }
+    'surveys.store': { paramsTuple?: []; params?: {} }
+    'surveys.publish': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.write.stays.store': { paramsTuple?: []; params?: {} }
@@ -607,6 +679,9 @@ export type ScannedRoutes = {
     'announcements.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'announcements.image.set': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'amenities.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.folders.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'visitorParking.settings.update': { paramsTuple?: []; params?: {} }
     'parking.manage.settings.update': { paramsTuple?: []; params?: {} }
     'billing.autoRenew': { paramsTuple?: []; params?: {} }
@@ -632,6 +707,10 @@ export type ScannedRoutes = {
     'announcements.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'amenities.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'bookings.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.versions.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'documents.folders.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'surveys.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tickets.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'parking.manage.spots.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.paymentMethod.destroy': { paramsTuple?: []; params?: {} }

@@ -59,6 +59,8 @@ export function navigation(options: {
   canReadParking: boolean
   /** Common areas: calendar and bookings */
   canReadAmenities: boolean
+  /** Surveys: administration, council and fiscal reviewer */
+  canReadSurveys: boolean
   hasSubscription: boolean
 }): NavGroup[] {
   const finance = financeLinks(options.canManageFinance)
@@ -79,6 +81,10 @@ export function navigation(options: {
       label: 'Comunicación',
       items: [
         link('Comunicados', 'mdi-bullhorn-outline', 'announcements'),
+        link('Documentos', 'mdi-folder-file-outline', 'documents'),
+        ...(options.canReadSurveys
+          ? [link('Encuestas', 'mdi-vote-outline', 'surveys', ['surveys', 'survey'])]
+          : []),
         ...(options.canReadTickets ? [link('PQRS', 'mdi-message-alert-outline', 'tickets')] : []),
         ...(options.canReadAmenities
           ? [

@@ -15,6 +15,8 @@ import {
   FINANCE_WRITE_ROLES,
   TICKET_READ_ROLES,
   AMENITY_MANAGE_ROLES,
+  SURVEY_MANAGE_ROLES,
+  SURVEY_READ_ROLES,
   AMENITY_READ_ROLES,
   TICKET_WORK_ROLES,
   VISITOR_PARKING_ADMIN_ROLES,
@@ -68,6 +70,11 @@ const ResidentFinanceController = () => import('#controllers/finance/resident_fi
 const ResidentAnnouncementsController = () =>
   import('#controllers/announcements/resident_announcements_controller')
 const AnnouncementsController = () => import('#controllers/announcements/announcements_controller')
+const DocumentsController = () => import('#controllers/documents/documents_controller')
+const SurveysController = () => import('#controllers/surveys/surveys_controller')
+const ResidentSurveysController = () => import('#controllers/surveys/resident_surveys_controller')
+const ResidentDocumentsController = () =>
+  import('#controllers/documents/resident_documents_controller')
 const AnnouncementImagesController = () =>
   import('#controllers/announcements/announcement_images_controller')
 const FinanceOverviewController = () => import('#controllers/finance/overview_controller')
@@ -91,6 +98,8 @@ const announcementsWrite = { roles: [...ANNOUNCEMENT_WRITE_ROLES] }
 const ticketsRead = { roles: [...TICKET_READ_ROLES] }
 const amenitiesRead = { roles: [...AMENITY_READ_ROLES] }
 const amenitiesManage = { roles: [...AMENITY_MANAGE_ROLES] }
+const surveysRead = { roles: [...SURVEY_READ_ROLES] }
+const surveysManage = { roles: [...SURVEY_MANAGE_ROLES] }
 const ticketsWork = { roles: [...TICKET_WORK_ROLES] }
 const parkingGate = { roles: [...VISITOR_PARKING_ROLES] }
 const parkingAdmin = { roles: [...VISITOR_PARKING_ADMIN_ROLES] }
@@ -305,6 +314,19 @@ router
         router
           .get('announcements/:id', [ResidentAnnouncementsController, 'show'])
           .as('announcements.show')
+        // Documentos del conjunto (docs/documents.md)
+        router.get('documents', [ResidentDocumentsController, 'index']).as('documents.index')
+        router
+          .get('documents/folders', [ResidentDocumentsController, 'folders'])
+          .as('documents.folders')
+        router
+          .get('documents/files/:id/url', [ResidentDocumentsController, 'fileUrl'])
+          .as('documents.files.url')
+        router.get('documents/:id', [ResidentDocumentsController, 'show']).as('documents.show')
+        // Encuestas (docs/surveys.md)
+        router.get('surveys', [ResidentSurveysController, 'index']).as('surveys.index')
+        router.get('surveys/:id', [ResidentSurveysController, 'show']).as('surveys.show')
+        router.post('surveys/:id/vote', [ResidentSurveysController, 'vote']).as('surveys.vote')
         // Sorteo de parqueaderos
         router.get('parking', [ResidentParkingController, 'show']).as('parking.show')
         router
@@ -417,6 +439,75 @@ router
           .as('bookings.attachments.destroy')
       })
       .use([middleware.auth(), middleware.tenant(amenitiesManage), middleware.subscription()])
+
+    /**
+     * Documents: every back-office role reads what its visibility allows, the
+     * administration manages. docs/documents.md
+     */
+    router
+      .group(() => {
+        router.get('documents', [DocumentsController, 'index']).as('documents.index')
+        router.get('documents/folders', [DocumentsController, 'folders']).as('documents.folders')
+        router
+          .get('documents/files/:id/url', [DocumentsController, 'fileUrl'])
+          .as('documents.files.url')
+        router.get('documents/:id', [DocumentsController, 'show']).as('documents.show')
+      })
+      .use([middleware.auth(), middleware.tenant(backofficeRead)])
+
+    router
+      .get('documents-stats', [DocumentsController, 'stats'])
+      .as('documents.stats')
+      .use([middleware.auth(), middleware.tenant(backofficeWrite)])
+
+    router
+      .group(() => {
+        router.post('documents', [DocumentsController, 'store']).as('store')
+        router.put('documents/:id', [DocumentsController, 'update']).as('update')
+        router.delete('documents/:id', [DocumentsController, 'destroy']).as('destroy')
+        router
+          .post('documents/:id/versions', [DocumentsController, 'addVersion'])
+          .as('versions.store')
+        router
+          .delete('documents/versions/:id', [DocumentsController, 'removeVersion'])
+          .as('versions.destroy')
+        router.post('documents/:id/publish', [DocumentsController, 'publish']).as('publish')
+        router.post('documents/:id/unpublish', [DocumentsController, 'unpublish']).as('unpublish')
+        router.post('documents/:id/archive', [DocumentsController, 'archive']).as('archive')
+        router.post('documents/:id/restore', [DocumentsController, 'restore']).as('restore')
+        router.post('documents/folders', [DocumentsController, 'storeFolder']).as('folders.store')
+        router
+          .put('documents/folders/:id', [DocumentsController, 'updateFolder'])
+          .as('folders.update')
+        router
+          .delete('documents/folders/:id', [DocumentsController, 'destroyFolder'])
+          .as('folders.destroy')
+      })
+      .as('documents')
+      .use([middleware.auth(), middleware.tenant(backofficeWrite), middleware.subscription()])
+
+    /**
+     * Surveys: the council and the fiscal reviewer follow the results, the
+     * administration creates and publishes. docs/surveys.md
+     */
+    router
+      .group(() => {
+        router.get('surveys', [SurveysController, 'index']).as('surveys.index')
+        router.get('surveys-stats', [SurveysController, 'stats']).as('surveys.stats')
+        router.get('surveys/:id', [SurveysController, 'show']).as('surveys.show')
+        router.get('surveys/:id/voters', [SurveysController, 'voters']).as('surveys.voters')
+      })
+      .use([middleware.auth(), middleware.tenant(surveysRead)])
+
+    router
+      .group(() => {
+        router.post('surveys', [SurveysController, 'store']).as('store')
+        router.put('surveys/:id', [SurveysController, 'update']).as('update')
+        router.post('surveys/:id/publish', [SurveysController, 'publish']).as('publish')
+        router.delete('surveys/:id', [SurveysController, 'destroy']).as('destroy')
+      })
+      .as('surveys')
+      .use([middleware.auth(), middleware.tenant(surveysManage), middleware.subscription()])
 
     /**
      * Back-office: PQRS. Administration and council read every ticket, staff only

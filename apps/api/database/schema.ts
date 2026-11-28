@@ -713,6 +713,42 @@ export class ContributionModuleSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class DocumentAccessLogSchema extends BaseModel {
+  static $columns = ['action', 'attachmentId', 'createdAt', 'documentId', 'id', 'tenantId', 'userId'] as const
+  $columns = DocumentAccessLogSchema.$columns
+  @column()
+  declare action: string
+  @column()
+  declare attachmentId: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare documentId: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare userId: string
+}
+
+export class DocumentFolderSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'name', 'parentId', 'tenantId', 'updatedAt'] as const
+  $columns = DocumentFolderSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare name: string
+  @column()
+  declare parentId: string | null
+  @column()
+  declare tenantId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class DocumentSequenceSchema extends BaseModel {
   static $columns = ['key', 'nextValue', 'tenantId'] as const
   $columns = DocumentSequenceSchema.$columns
@@ -724,9 +760,22 @@ export class DocumentSequenceSchema extends BaseModel {
   declare tenantId: string
 }
 
+export class DocumentUnitSchema extends BaseModel {
+  static $columns = ['documentId', 'tenantId', 'unitId'] as const
+  $columns = DocumentUnitSchema.$columns
+  @column({ isPrimary: true })
+  declare documentId: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare unitId: string
+}
+
 export class DocumentSchema extends BaseModel {
-  static $columns = ['category', 'createdAt', 'deletedAt', 'fileKey', 'id', 'mimeType', 'sizeBytes', 'tenantId', 'title', 'updatedAt', 'uploadedById', 'visibility'] as const
+  static $columns = ['archivedAt', 'category', 'createdAt', 'deletedAt', 'description', 'documentDate', 'expiresOn', 'folderId', 'id', 'publishedAt', 'reference', 'tenantId', 'title', 'updatedAt', 'updatedById', 'uploadedById', 'vendorId', 'visibility'] as const
   $columns = DocumentSchema.$columns
+  @column.dateTime()
+  declare archivedAt: DateTime | null
   @column()
   declare category: string
   @column.dateTime({ autoCreate: true })
@@ -734,13 +783,19 @@ export class DocumentSchema extends BaseModel {
   @column.dateTime()
   declare deletedAt: DateTime | null
   @column()
-  declare fileKey: string
+  declare description: string | null
+  @column.date()
+  declare documentDate: DateTime | null
+  @column.date()
+  declare expiresOn: DateTime | null
+  @column()
+  declare folderId: string | null
   @column({ isPrimary: true })
   declare id: string
+  @column.dateTime()
+  declare publishedAt: DateTime | null
   @column()
-  declare mimeType: string
-  @column()
-  declare sizeBytes: bigint | number
+  declare reference: string | null
   @column()
   declare tenantId: string
   @column()
@@ -748,7 +803,11 @@ export class DocumentSchema extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
+  declare updatedById: string | null
+  @column()
   declare uploadedById: string
+  @column()
+  declare vendorId: string | null
   @column()
   declare visibility: string
 }
@@ -1424,6 +1483,122 @@ export class SubscriptionSchema extends BaseModel {
   declare trialEndsAt: DateTime | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+}
+
+export class SurveyAnswerSchema extends BaseModel {
+  static $columns = ['optionId', 'questionId', 'responseId', 'tenantId'] as const
+  $columns = SurveyAnswerSchema.$columns
+  @column()
+  declare optionId: string
+  @column()
+  declare questionId: string
+  @column({ isPrimary: true })
+  declare responseId: string
+  @column()
+  declare tenantId: string
+}
+
+export class SurveyOptionSchema extends BaseModel {
+  static $columns = ['id', 'label', 'position', 'questionId', 'tenantId'] as const
+  $columns = SurveyOptionSchema.$columns
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare label: string
+  @column()
+  declare position: number
+  @column()
+  declare questionId: string
+  @column()
+  declare tenantId: string
+}
+
+export class SurveyQuestionSchema extends BaseModel {
+  static $columns = ['description', 'id', 'position', 'surveyId', 'tenantId', 'text'] as const
+  $columns = SurveyQuestionSchema.$columns
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare position: number
+  @column()
+  declare surveyId: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare text: string
+}
+
+export class SurveyResponseSchema extends BaseModel {
+  static $columns = ['coefficient', 'createdAt', 'id', 'surveyId', 'tenantId', 'unitId', 'userId'] as const
+  $columns = SurveyResponseSchema.$columns
+  @column()
+  declare coefficient: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare surveyId: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare unitId: string
+  @column()
+  declare userId: string | null
+}
+
+export class SurveyTallySchema extends BaseModel {
+  static $columns = ['coefficient', 'optionId', 'questionId', 'surveyId', 'tenantId', 'votes'] as const
+  $columns = SurveyTallySchema.$columns
+  @column()
+  declare coefficient: string
+  @column()
+  declare optionId: string
+  @column()
+  declare questionId: string
+  @column({ isPrimary: true })
+  declare surveyId: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare votes: number
+}
+
+export class SurveySchema extends BaseModel {
+  static $columns = ['anonymous', 'closesAt', 'createdAt', 'createdById', 'description', 'id', 'minParticipation', 'opensAt', 'publishedAt', 'remindedAt', 'resultsVisibility', 'tenantId', 'title', 'updatedAt', 'updatedById'] as const
+  $columns = SurveySchema.$columns
+  @column()
+  declare anonymous: boolean
+  @column.dateTime()
+  declare closesAt: DateTime
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare createdById: string | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare minParticipation: string | null
+  @column.dateTime()
+  declare opensAt: DateTime | null
+  @column.dateTime()
+  declare publishedAt: DateTime | null
+  @column.dateTime()
+  declare remindedAt: DateTime | null
+  @column()
+  declare resultsVisibility: string
+  @column()
+  declare tenantId: string
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare updatedById: string | null
 }
 
 export class TenantSchema extends BaseModel {
