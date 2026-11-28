@@ -244,4 +244,6 @@ tiene marcadores `__…__` en su lugar.
 - [Zonas comunes y reservas](docs/amenities.md)
 - [Documentos del conjunto](docs/documents.md)
 - [Encuestas](docs/surveys.md)
+- [Reportes](docs/reports.md)
+- [Auditoría](docs/audit.md)
 - [Identidad de marca AptoPH](branding/README.md) — logos, colores, tipografía y tokens

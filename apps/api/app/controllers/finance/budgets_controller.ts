@@ -9,7 +9,8 @@ import BudgetItem from '#models/finance/budget_item'
 import type Tenant from '#models/tenants/tenant'
 import { budgetMonthlyBase } from '#services/finance/fees'
 import { FinanceReports } from '#services/finance/reports'
-import { fromCents } from '@aptoph/shared'
+import { fromCents, toCents } from '@aptoph/shared'
+import { recordAudit } from '#services/audit/audit_log'
 import { serializeBudget } from '#transformers/finance/finance'
 import { approveBudgetValidator, budgetValidator } from '#validators/finance/finance'
 
@@ -123,8 +124,31 @@ export default class BudgetsController {
         notes: data.notes ?? null,
       })
       await budget.save()
+      const before = await BudgetItem.query({ client: trx }).where('budget_id', budget.id)
       await BudgetItem.query({ client: trx }).where('budget_id', budget.id).delete()
       await this.saveItems(tenant, budget.id, data.items, trx)
+      // The items are replaced in bulk: one entry with the totals before and after
+      const total = (amounts: Array<string | number>) =>
+        fromCents(amounts.reduce<number>((sum, amount) => sum + toCents(amount), 0))
+      const previous = {
+        items: before.length,
+        annualTotal: total(before.map((item) => item.annualAmount)),
+      }
+      const next = {
+        items: data.items.length,
+        annualTotal: total(data.items.map((item) => item.annualAmount)),
+      }
+      if (JSON.stringify(previous) !== JSON.stringify(next)) {
+        await recordAudit({
+          tenantId: tenant.id,
+          action: 'updated',
+          type: 'budgets',
+          id: budget.id,
+          label: `${budget.name} ${budget.year} · partidas`,
+          changes: { before: previous, after: next },
+          client: trx,
+        })
+      }
     })
     return { data: await present(tenant, budget) }
   }

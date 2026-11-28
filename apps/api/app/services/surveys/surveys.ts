@@ -117,7 +117,7 @@ export class SurveysService {
   /* Results                                                             */
   /* ------------------------------------------------------------------ */
 
-  private async participation(surveys: Survey[]): Promise<Map<string, SurveyParticipation>> {
+  async participation(surveys: Survey[]): Promise<Map<string, SurveyParticipation>> {
     const map = new Map<string, SurveyParticipation>()
     if (!surveys.length) return map
     const [eligible] = await this.eligibleUnits()

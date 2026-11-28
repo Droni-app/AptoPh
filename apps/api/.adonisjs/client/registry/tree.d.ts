@@ -352,6 +352,16 @@ export interface ApiDefinition {
       }
     }
   }
+  reports: {
+    options: typeof routes['reports.options']
+    export: typeof routes['reports.export']
+    show: typeof routes['reports.show']
+  }
+  auditLogs: {
+    index: typeof routes['auditLogs.index']
+    export: typeof routes['auditLogs.export']
+    show: typeof routes['auditLogs.show']
+  }
   billing: {
     show: typeof routes['billing.show']
     config: typeof routes['billing.config']

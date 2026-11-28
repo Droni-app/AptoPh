@@ -689,14 +689,16 @@ Además: `users.notification_preferences` (jsonb NULL, `{ categoría: { email, p
 | id | uuid PK | |
 | tenant_id | uuid NULL FK | NULL para acciones de plataforma |
 | user_id | uuid NULL FK → users | |
-| action | varchar(50) | `created`, `updated`, `deleted`, `login`, … |
+| action | varchar(50) | `created`, `updated`, `deleted`, `restored`, `exported` |
 | auditable_type | varchar(50) | Nombre de la tabla/modelo |
 | auditable_id | uuid | |
-| changes | jsonb NULL | `{ before, after }` |
+| changes | jsonb NULL | `{ label, before, after, details }`: solo los campos que cambiaron |
 | ip_address | inet NULL | |
 | created_at | timestamptz | |
 
 `INDEX (tenant_id, auditable_type, auditable_id)`
+
+Qué se registra y cómo: [audit.md](audit.md).
 
 ## 12. Fases posteriores (no incluidas aún)
 

@@ -1124,6 +1124,42 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"parking"],[0,"applications"],[1,"id"],[0,"assign"]],
     types: placeholder as Registry['parking.manage.applications.assign']['types'],
   },
+  'reports.options': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/reports/options',
+    tokens: [[0,"api"],[0,"v1"],[0,"reports"],[0,"options"]],
+    types: placeholder as Registry['reports.options']['types'],
+  },
+  'reports.export': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/reports/:key/export',
+    tokens: [[0,"api"],[0,"v1"],[0,"reports"],[1,"key"],[0,"export"]],
+    types: placeholder as Registry['reports.export']['types'],
+  },
+  'reports.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/reports/:key',
+    tokens: [[0,"api"],[0,"v1"],[0,"reports"],[1,"key"]],
+    types: placeholder as Registry['reports.show']['types'],
+  },
+  'auditLogs.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/audit-logs',
+    tokens: [[0,"api"],[0,"v1"],[0,"audit-logs"]],
+    types: placeholder as Registry['auditLogs.index']['types'],
+  },
+  'auditLogs.export': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/audit-logs/export',
+    tokens: [[0,"api"],[0,"v1"],[0,"audit-logs"],[0,"export"]],
+    types: placeholder as Registry['auditLogs.export']['types'],
+  },
+  'auditLogs.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/audit-logs/:id',
+    tokens: [[0,"api"],[0,"v1"],[0,"audit-logs"],[1,"id"]],
+    types: placeholder as Registry['auditLogs.show']['types'],
+  },
   'billing.show': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/billing',

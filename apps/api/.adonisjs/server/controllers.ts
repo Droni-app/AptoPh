@@ -15,6 +15,9 @@ export const controllers = {
     EmailQuota: () => import('#controllers/announcements/email_quota_controller'),
     ResidentAnnouncements: () => import('#controllers/announcements/resident_announcements_controller'),
   },
+  audit: {
+    AuditLogs: () => import('#controllers/audit/audit_logs_controller'),
+  },
   auth: {
     Account: () => import('#controllers/auth/account_controller'),
     Auth: () => import('#controllers/auth/auth_controller'),
@@ -68,6 +71,9 @@ export const controllers = {
     ResidentVehicles: () => import('#controllers/property/resident_vehicles_controller'),
     UnitOccupants: () => import('#controllers/property/unit_occupants_controller'),
     Units: () => import('#controllers/property/units_controller'),
+  },
+  reports: {
+    Reports: () => import('#controllers/reports/reports_controller'),
   },
   surveys: {
     ResidentSurveys: () => import('#controllers/surveys/resident_surveys_controller'),

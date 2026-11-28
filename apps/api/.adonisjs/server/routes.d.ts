@@ -190,6 +190,12 @@ export type ScannedRoutes = {
     'parking.manage.lotteries.apply': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'parking.manage.applications.withdraw': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'parking.manage.applications.assign': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'reports.options': { paramsTuple?: []; params?: {} }
+    'reports.export': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
+    'reports.show': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
+    'auditLogs.index': { paramsTuple?: []; params?: {} }
+    'auditLogs.export': { paramsTuple?: []; params?: {} }
+    'auditLogs.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -379,6 +385,12 @@ export type ScannedRoutes = {
     'parking.lotteries.read.lotteries.index': { paramsTuple?: []; params?: {} }
     'parking.lotteries.read.lotteries.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'parking.lotteries.read.lotteries.applications': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'reports.options': { paramsTuple?: []; params?: {} }
+    'reports.export': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
+    'reports.show': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
+    'auditLogs.index': { paramsTuple?: []; params?: {} }
+    'auditLogs.export': { paramsTuple?: []; params?: {} }
+    'auditLogs.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -501,6 +513,12 @@ export type ScannedRoutes = {
     'parking.lotteries.read.lotteries.index': { paramsTuple?: []; params?: {} }
     'parking.lotteries.read.lotteries.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'parking.lotteries.read.lotteries.applications': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'reports.options': { paramsTuple?: []; params?: {} }
+    'reports.export': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
+    'reports.show': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
+    'auditLogs.index': { paramsTuple?: []; params?: {} }
+    'auditLogs.export': { paramsTuple?: []; params?: {} }
+    'auditLogs.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.show': { paramsTuple?: []; params?: {} }
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

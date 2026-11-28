@@ -36,6 +36,8 @@ const groups = computed(() =>
     canReadParking: tenant.canReadParking,
     canReadAmenities: tenant.canReadAmenities,
     canReadSurveys: tenant.canReadSurveys,
+    canReadReports: tenant.canReadReports,
+    canReadAudit: tenant.canReadAudit,
     hasSubscription: subscription.current !== null,
   }),
 )
@@ -58,7 +60,7 @@ async function switchTenant() {
 </script>
 
 <template>
-  <div class="min-h-full lg:pl-64">
+  <div class="min-h-full lg:pl-64 print:pl-0">
     <!-- Sidebar: fixed on desktop, a drawer on small screens -->
     <Transition
       enter-active-class="transition-opacity duration-150"
@@ -74,7 +76,7 @@ async function switchTenant() {
       />
     </Transition>
     <aside
-      class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-rail text-neutral-300 transition-transform duration-200 lg:translate-x-0 dark:border-r dark:border-white/6"
+      class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col print:hidden bg-rail text-neutral-300 transition-transform duration-200 lg:translate-x-0 dark:border-r dark:border-white/6"
       :class="drawer ? 'translate-x-0' : '-translate-x-full'"
       aria-label="Menú principal"
     >
@@ -199,7 +201,7 @@ async function switchTenant() {
 
     <!-- Top bar -->
     <header
-      class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-neutral-200 bg-white/85 px-4 backdrop-blur-md sm:px-6 lg:px-8 dark:border-white/8 dark:bg-neutral-950/80"
+      class="sticky top-0 z-30 flex h-16 print:hidden items-center gap-3 border-b border-neutral-200 bg-white/85 px-4 backdrop-blur-md sm:px-6 lg:px-8 dark:border-white/8 dark:bg-neutral-950/80"
     >
       <button
         type="button"
@@ -306,7 +308,7 @@ async function switchTenant() {
     <div
       v-if="subscription.locked || subscription.showTrialReminder"
       role="status"
-      class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-b px-4 py-2.5 text-center text-sm"
+      class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-b px-4 py-2.5 text-center text-sm print:hidden"
       :class="
         subscription.locked
           ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200'
@@ -334,9 +336,11 @@ async function switchTenant() {
       </RouterLink>
     </div>
 
-    <EmailVerificationNotice v-if="route.name !== 'profile'" compact />
+    <EmailVerificationNotice v-if="route.name !== 'profile'" compact class="print:hidden" />
 
-    <main class="mx-auto w-full max-w-[90rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <main
+      class="mx-auto w-full max-w-[90rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-8 print:max-w-none print:p-0"
+    >
       <RouterView :key="tenant.currentId ?? ''" />
     </main>
   </div>

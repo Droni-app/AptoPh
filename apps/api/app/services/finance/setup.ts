@@ -10,6 +10,7 @@ import {
   isLeafCode,
 } from '#services/finance/chart_template'
 import { type Trx, transaction } from '#services/finance/support'
+import { withoutAudit } from '#services/audit/context'
 
 /** Bump when the template or the default concepts change */
 const SETUP_VERSION = 3
@@ -17,13 +18,15 @@ const SETUP_VERSION = 3
 /**
  * Prepares the finance module of a conjunto: chart of accounts, default charge
  * concepts and the accounts of every concept. Idempotent and cheap once done
- * (a version mark in `tenants.settings`).
+ * (a version mark in `tenants.settings`). The template is not audited: it is
+ * the same for every conjunto, row by row it would bury the real changes.
  */
 export async function ensureFinanceSetup(tenant: Tenant, trx?: Trx) {
   const settings = (tenant.settings ?? {}) as Record<string, unknown>
   if (settings.financeSetupVersion === SETUP_VERSION) return
-  if (trx) return runSetup(tenant, trx)
-  return transaction((client) => runSetup(tenant, client))
+  return withoutAudit(() =>
+    trx ? runSetup(tenant, trx) : transaction((client) => runSetup(tenant, client))
+  )
 }
 
 async function runSetup(tenant: Tenant, trx: Trx) {

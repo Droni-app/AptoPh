@@ -37,7 +37,7 @@ reales (sección 6).
 | Parqueaderos del conjunto | ✅ propios y comunales, asignación, cobro mensual, sorteo y lista de espera | ✅ | ✅ | ⬜ |
 | Portería, visitas y paquetes | 🟡 parqueadero de visitantes; visitas y paquetes solo residente | ✅ | ✅ | ⬜ |
 | Documentos | ✅ carpetas, versiones, visibilidad por rol y unidad, registro de consultas, vencimientos | ✅ | ✅ | ⬜ |
-| Auditoría y reportes | ⬜ (solo tablas) | ⬜ | — | — |
+| Auditoría y reportes | ✅ bitácora automática, 22 reportes con filtros, Excel, CSV y PDF | ✅ | — | — |
 | Notificaciones | ✅ campana, correo y push (FCM) por categoría y canal, recordatorio de vencimiento | ✅ | ✅ | ⬜ |
 | Encuestas previas a la asamblea | ✅ una por unidad, coeficiente, anónimas o nominales, recordatorio | ✅ | ✅ | ⬜ |
 | Asambleas | ⬜ | ⬜ | ⬜ | ⬜ |
@@ -367,14 +367,18 @@ el residente gestiona su hogar, vehículos y mascotas.
 
 ### 4.10 Auditoría y reportes
 
-**Hay hoy:** tabla `audit_logs`.
+**Hay hoy** ([docs/audit.md](docs/audit.md), [docs/reports.md](docs/reports.md))
+- [x] Registrar automáticamente cambios en dinero, censo, permisos y configuración.
+- [x] Consulta de auditoría en el backoffice (administración, revisor fiscal, consejo; el contador
+      solo finanzas), con detalle antes/después e historia de un registro.
+- [x] Reportes: 22 con filtros (recaudo, cartera por edades, mora, bancos, gastos, retenciones,
+      anulaciones, PQRS, zonas comunes, portería, comunicados, encuestas, censo, vehículos,
+      parqueaderos…).
+- [x] Exportar a Excel y CSV; PDF desde la impresión del navegador. Cada descarga queda registrada.
 
 **Falta**
-- [ ] Registrar automáticamente cambios en dinero, censo, permisos y configuración.
-- [ ] Consulta de auditoría en el backoffice (administración, revisor fiscal).
-- [ ] Reportes: recaudo del mes, cartera por edades, ocupación de zonas, PQRS por estado.
-- [ ] Exportar a Excel y PDF.
 - [ ] Indicadores reales en el inicio del backoffice.
+- [ ] Reportes programados por correo (p. ej. cartera mensual al consejo).
 
 ---
 
@@ -546,8 +550,8 @@ Lo que recomiendo resolver para operar con conjuntos reales y cobrarles. Ordenad
 **Operación de AptoPH**
 - [ ] **Panel de superadmin** (`is_platform_admin`): conjuntos, suscripciones, pagos, activar
       paquetes de correos (hoy es manual), entrar como soporte con registro en auditoría.
-- [ ] Auditoría escrita de verdad: hoy existe la tabla `audit_logs` pero nada escribe en ella.
-      Registrar cambios de dinero, censo, permisos y configuración (regla de la sección 3).
+- [x] Auditoría escrita de verdad: cambios de dinero, censo, permisos y configuración
+      (regla de la sección 3, [docs/audit.md](docs/audit.md)).
 - [ ] Canal de soporte visible en las apps (correo o WhatsApp) y centro de ayuda con guías
       cortas: primeros pasos, importar el censo, facturar el mes, registrar pagos.
 - [ ] **Primeros pasos del administrador**: lista guiada en el inicio (crear torres o importar,

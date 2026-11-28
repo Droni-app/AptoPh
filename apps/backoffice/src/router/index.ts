@@ -24,6 +24,10 @@ declare module 'vue-router' {
     surveys?: boolean
     /** Parking of the conjunto: administration, council and guards */
     spots?: boolean
+    /** Reports: administration, accounting, council and fiscal reviewer */
+    reports?: boolean
+    /** Audit log: administration, fiscal reviewer, council and accounting */
+    audit?: boolean
     title?: string
   }
 }
@@ -190,6 +194,24 @@ const router = createRouter({
           meta: { tenant: true, manage: true, title: 'Configuración del parqueadero' },
         },
         {
+          path: 'reportes',
+          name: 'reports',
+          component: () => import('@/views/reports/ReportsView.vue'),
+          meta: { tenant: true, reports: true, title: 'Reportes' },
+        },
+        {
+          path: 'reportes/:key',
+          name: 'report',
+          component: () => import('@/views/reports/ReportView.vue'),
+          meta: { tenant: true, reports: true, title: 'Reporte' },
+        },
+        {
+          path: 'auditoria',
+          name: 'audit',
+          component: () => import('@/views/reports/AuditLogView.vue'),
+          meta: { tenant: true, audit: true, title: 'Auditoría' },
+        },
+        {
           path: 'finanzas',
           component: () => import('@/layouts/FinanceLayout.vue'),
           meta: { tenant: true, finance: true },
@@ -338,6 +360,8 @@ router.beforeEach(async (to) => {
   if (to.meta.lotteries && !tenant.canReadParkingLotteries) return { name: 'dashboard' }
   if (to.meta.amenities && !tenant.canReadAmenities) return { name: 'dashboard' }
   if (to.meta.surveys && !tenant.canReadSurveys) return { name: 'dashboard' }
+  if (to.meta.reports && !tenant.canReadReports) return { name: 'dashboard' }
+  if (to.meta.audit && !tenant.canReadAudit) return { name: 'dashboard' }
 
   if (tenant.current) {
     // The trial banner is informative: never block navigation if it fails

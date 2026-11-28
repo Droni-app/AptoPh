@@ -2426,6 +2426,84 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/property/parking_lotteries_controller').default['assign']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'reports.options': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/reports/options'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['options']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['options']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['options']>>>
+    }
+  }
+  'reports.export': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/reports/:key/export'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { key: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['export']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['export']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['export']>>>
+    }
+  }
+  'reports.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/reports/:key'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { key: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/reports/reports_controller').default['show']>>>
+    }
+  }
+  'auditLogs.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/audit-logs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/audit/audit').auditListValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auditLogs.export': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/audit-logs/export'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/audit/audit').auditExportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['export']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['export']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['export']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auditLogs.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/audit-logs/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/audit/audit_logs_controller').default['show']>>>
+    }
+  }
   'billing.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/billing'

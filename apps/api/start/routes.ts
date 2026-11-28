@@ -23,6 +23,8 @@ import {
   PARKING_MANAGE_ROLES,
   PARKING_READ_ROLES,
   VISITOR_PARKING_ROLES,
+  REPORT_ROLES,
+  AUDIT_READ_ROLES,
 } from '@aptoph/shared'
 import { throttleBilling, throttlePublic, throttleSignup } from '#start/limiter'
 
@@ -87,6 +89,8 @@ const PayablesController = () => import('#controllers/finance/payables_controlle
 const BudgetsController = () => import('#controllers/finance/budgets_controller')
 const AccountingController = () => import('#controllers/finance/accounting_controller')
 const AttachmentsController = () => import('#controllers/finance/attachments_controller')
+const ReportsController = () => import('#controllers/reports/reports_controller')
+const AuditLogsController = () => import('#controllers/audit/audit_logs_controller')
 
 /**
  * Back-office permissions: every back-office role can read,
@@ -111,6 +115,10 @@ const lotteriesRead = {
 }
 const financeRead = { roles: [...FINANCE_READ_ROLES] }
 const financeWrite = { roles: [...FINANCE_WRITE_ROLES] }
+/** Reports and audit log: each report also checks its own roles */
+const reportsRead = { roles: [...REPORT_ROLES] }
+const auditRead = { roles: [...AUDIT_READ_ROLES] }
+const REPORT_KEY = { match: /^[a-z_]+$/ }
 /** `:ownerType` of the finance attachment routes */
 const ATTACHMENT_OWNER_MATCHER = {
   match: new RegExp(`^(${FINANCE_ATTACHMENT_OWNER_TYPES.join('|')})$`),
@@ -645,6 +653,33 @@ router
       .prefix('parking')
       .as('parking.manage')
       .use([middleware.auth(), middleware.tenant(spotsManage), middleware.subscription()])
+
+    /**
+     * Back-office: reports with filters, Excel and CSV (docs/reports.md)
+     */
+    router
+      .group(() => {
+        router.get('reports/options', [ReportsController, 'options']).as('options')
+        router
+          .get('reports/:key/export', [ReportsController, 'export'])
+          .where('key', REPORT_KEY)
+          .as('export')
+        router.get('reports/:key', [ReportsController, 'show']).where('key', REPORT_KEY).as('show')
+      })
+      .as('reports')
+      .use([middleware.auth(), middleware.tenant(reportsRead)])
+
+    /**
+     * Back-office: audit log (docs/audit.md)
+     */
+    router
+      .group(() => {
+        router.get('audit-logs', [AuditLogsController, 'index']).as('index')
+        router.get('audit-logs/export', [AuditLogsController, 'export']).as('export')
+        router.get('audit-logs/:id', [AuditLogsController, 'show']).as('show')
+      })
+      .as('auditLogs')
+      .use([middleware.auth(), middleware.tenant(auditRead)])
 
     /**
      * Back-office: payments to AptoPH with Wompi (administration, also while the

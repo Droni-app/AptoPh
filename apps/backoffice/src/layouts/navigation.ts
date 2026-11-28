@@ -61,6 +61,10 @@ export function navigation(options: {
   canReadAmenities: boolean
   /** Surveys: administration, council and fiscal reviewer */
   canReadSurveys: boolean
+  /** Reports: administration, accounting, council and fiscal reviewer */
+  canReadReports: boolean
+  /** Audit log */
+  canReadAudit: boolean
   hasSubscription: boolean
 }): NavGroup[] {
   const finance = financeLinks(options.canManageFinance)
@@ -120,6 +124,16 @@ export function navigation(options: {
           ),
           children: finance,
         },
+      ],
+    })
+  if (options.canReadReports || options.canReadAudit)
+    groups.push({
+      label: 'Control',
+      items: [
+        ...(options.canReadReports
+          ? [link('Reportes', 'mdi-chart-box-multiple-outline', 'reports', ['reports', 'report'])]
+          : []),
+        ...(options.canReadAudit ? [link('Auditoría', 'mdi-shield-search', 'audit')] : []),
       ],
     })
   groups.push({
