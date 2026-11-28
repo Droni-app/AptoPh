@@ -1,3 +1,4 @@
+import { isIP } from 'node:net'
 import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/core/http'
@@ -24,6 +25,18 @@ export const http = defineConfig({
    * X-Forwarded-For so request.ip() is the client's IP (used by the rate limits).
    */
   trustProxy: () => true,
+
+  /**
+   * With every proxy trusted, request.ip() would be the left-most address of
+   * X-Forwarded-For, which the client writes: anyone could send a different one
+   * on each request and skip the rate limits. App Platform puts the address that
+   * connected to its edge in `do-connecting-ip` (overwriting any sent by the
+   * client), so that one is used when present.
+   */
+  getIp(request, originalFn) {
+    const connecting = request.header('do-connecting-ip')?.trim()
+    return connecting && isIP(connecting) ? connecting : originalFn()
+  },
 
   /**
    * Allow HTTP method spoofing via the "_method" form/query parameter.

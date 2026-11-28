@@ -18,6 +18,23 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       return ctx.response.status(dbError.status).send({ errors: [{ message: dbError.message }] })
     }
 
+    // Unexpected failures (errors without an HTTP status: the database driver,
+    // the drive, a bug): their message can carry SQL, file paths or the responses
+    // of other services. Production answers a generic message with the request
+    // id, so the log entry can be found. Errors thrown with a status on purpose
+    // (Exception, WompiError…) keep their message for the person.
+    const status = (error as { status?: unknown })?.status
+    if (!this.debug && typeof status !== 'number') {
+      return ctx.response.status(500).send({
+        errors: [
+          {
+            message: 'Ocurrió un error inesperado. Inténtalo de nuevo en unos minutos.',
+            requestId: ctx.request.id() ?? null,
+          },
+        ],
+      })
+    }
+
     return super.handle(error, ctx)
   }
 

@@ -161,12 +161,21 @@ export async function reportToXlsx(result: ReportResult, tenant: Tenant) {
   return Buffer.from(await workbook.xlsx.writeBuffer())
 }
 
+/**
+ * Text typed by people (names, plates, subjects of a PQRS…) that starts like a
+ * formula would run when the CSV opens in Excel ("=HYPERLINK(…)", "+cmd|…").
+ * A leading apostrophe makes the spreadsheet show it as text (OWASP: CSV injection).
+ */
+export function neutralizeFormula(value: string) {
+  return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+}
+
 /** CSV for Excel in Colombia: semicolons, decimal comma, UTF-8 with BOM */
 export function reportToCsv(result: ReportResult, tenant: Tenant) {
   const zone = tenant.timezone || 'America/Bogota'
   const text = (type: ReportColumnType, value: ReportCell) => {
     if (value === null || value === undefined) return ''
-    if (typeof value === 'string' && type === 'text') return value
+    if (typeof value === 'string' && type === 'text') return neutralizeFormula(value)
     switch (type) {
       case 'money':
       case 'number':
