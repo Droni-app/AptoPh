@@ -273,6 +273,74 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class BankStatementLineSchema extends BaseModel {
+  static $columns = ['amount', 'bankStatementId', 'cashAccountId', 'createdAt', 'description', 'fingerprint', 'id', 'line', 'note', 'paymentId', 'postedOn', 'reconciledAt', 'reconciledById', 'reference', 'status', 'tenantId', 'updatedAt', 'vendorPaymentId'] as const
+  $columns = BankStatementLineSchema.$columns
+  @column()
+  declare amount: string
+  @column()
+  declare bankStatementId: string
+  @column()
+  declare cashAccountId: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare description: string
+  @column()
+  declare fingerprint: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare line: number
+  @column()
+  declare note: string | null
+  @column()
+  declare paymentId: string | null
+  @column.date()
+  declare postedOn: DateTime
+  @column.dateTime()
+  declare reconciledAt: DateTime | null
+  @column()
+  declare reconciledById: string | null
+  @column()
+  declare reference: string | null
+  @column()
+  declare status: string
+  @column()
+  declare tenantId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vendorPaymentId: string | null
+}
+
+export class BankStatementSchema extends BaseModel {
+  static $columns = ['cashAccountId', 'createdAt', 'duplicatesCount', 'endsOn', 'fileName', 'id', 'importedById', 'linesCount', 'startsOn', 'tenantId', 'updatedAt'] as const
+  $columns = BankStatementSchema.$columns
+  @column()
+  declare cashAccountId: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare duplicatesCount: number
+  @column.date()
+  declare endsOn: DateTime
+  @column()
+  declare fileName: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare importedById: string | null
+  @column()
+  declare linesCount: number
+  @column.date()
+  declare startsOn: DateTime
+  @column()
+  declare tenantId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class BillLineSchema extends BaseModel {
   static $columns = ['accountId', 'amount', 'billId', 'description', 'id', 'tenantId'] as const
   $columns = BillLineSchema.$columns
@@ -677,6 +745,35 @@ export class ChargeSchema extends BaseModel {
   declare unitId: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+}
+
+export class ClearanceCertificateSchema extends BaseModel {
+  static $columns = ['asOf', 'code', 'createdAt', 'holderName', 'id', 'issuedById', 'number', 'tenantId', 'unitId', 'upcomingAmount', 'updatedAt', 'validUntil'] as const
+  $columns = ClearanceCertificateSchema.$columns
+  @column.date()
+  declare asOf: DateTime
+  @column()
+  declare code: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare holderName: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare issuedById: string | null
+  @column()
+  declare number: number
+  @column()
+  declare tenantId: string
+  @column()
+  declare unitId: string
+  @column()
+  declare upcomingAmount: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column.date()
+  declare validUntil: DateTime
 }
 
 export class ContributionModuleUnitSchema extends BaseModel {

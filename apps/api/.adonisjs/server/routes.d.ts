@@ -65,6 +65,10 @@ export type ScannedRoutes = {
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
+    'resident.payments.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.clearance.show': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'resident.clearances.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'resident.clearances.pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -214,6 +218,7 @@ export type ScannedRoutes = {
     'billing.pay': { paramsTuple?: []; params?: {} }
     'billing.emailPacks': { paramsTuple?: []; params?: {} }
     'webhooks.wompi': { paramsTuple?: []; params?: {} }
+    'public.clearances.verify': { paramsTuple: [ParamValue]; params: {'code': ParamValue} }
     'public.announcementImages.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'buildings.store': { paramsTuple?: []; params?: {} }
     'buildings.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -247,6 +252,11 @@ export type ScannedRoutes = {
     'finance.modules.index': { paramsTuple?: []; params?: {} }
     'finance.payments.index': { paramsTuple?: []; params?: {} }
     'finance.payments.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.payments.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.units.clearance': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'finance.clearances.pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.statements.index': { paramsTuple?: []; params?: {} }
+    'finance.statements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.vendors.index': { paramsTuple?: []; params?: {} }
     'finance.vendors.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.bills.index': { paramsTuple?: []; params?: {} }
@@ -291,6 +301,13 @@ export type ScannedRoutes = {
     'finance.write.payments.confirm': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.payments.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.payments.reverse': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.clearances.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'finance.write.statements.preview': { paramsTuple?: []; params?: {} }
+    'finance.write.statements.store': { paramsTuple?: []; params?: {} }
+    'finance.write.statements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.statements.applySuggestions': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.statementLines.reconcile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.statementLines.undo': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.vendors.store': { paramsTuple?: []; params?: {} }
     'finance.write.vendors.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.bills.store': { paramsTuple?: []; params?: {} }
@@ -332,6 +349,9 @@ export type ScannedRoutes = {
     'resident.tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
+    'resident.payments.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.clearance.show': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'resident.clearances.pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -401,6 +421,7 @@ export type ScannedRoutes = {
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.tokens.show': { paramsTuple: [ParamValue,ParamValue]; params: {'type': ParamValue,'tokenId': ParamValue} }
+    'public.clearances.verify': { paramsTuple: [ParamValue]; params: {'code': ParamValue} }
     'public.announcementImages.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.summary': { paramsTuple?: []; params?: {} }
     'finance.settings': { paramsTuple?: []; params?: {} }
@@ -417,6 +438,11 @@ export type ScannedRoutes = {
     'finance.modules.index': { paramsTuple?: []; params?: {} }
     'finance.payments.index': { paramsTuple?: []; params?: {} }
     'finance.payments.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.payments.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.units.clearance': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'finance.clearances.pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.statements.index': { paramsTuple?: []; params?: {} }
+    'finance.statements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.vendors.index': { paramsTuple?: []; params?: {} }
     'finance.vendors.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.bills.index': { paramsTuple?: []; params?: {} }
@@ -462,6 +488,9 @@ export type ScannedRoutes = {
     'resident.tickets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.statement': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.index': { paramsTuple?: []; params?: {} }
+    'resident.payments.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'resident.clearance.show': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'resident.clearances.pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.announcements.index': { paramsTuple?: []; params?: {} }
     'resident.announcements.attachments.url': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -531,6 +560,7 @@ export type ScannedRoutes = {
     'billing.config': { paramsTuple?: []; params?: {} }
     'billing.charges.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'billing.tokens.show': { paramsTuple: [ParamValue,ParamValue]; params: {'type': ParamValue,'tokenId': ParamValue} }
+    'public.clearances.verify': { paramsTuple: [ParamValue]; params: {'code': ParamValue} }
     'public.announcementImages.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.summary': { paramsTuple?: []; params?: {} }
     'finance.settings': { paramsTuple?: []; params?: {} }
@@ -547,6 +577,11 @@ export type ScannedRoutes = {
     'finance.modules.index': { paramsTuple?: []; params?: {} }
     'finance.payments.index': { paramsTuple?: []; params?: {} }
     'finance.payments.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.payments.receipt': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.units.clearance': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'finance.clearances.pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.statements.index': { paramsTuple?: []; params?: {} }
+    'finance.statements.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.vendors.index': { paramsTuple?: []; params?: {} }
     'finance.vendors.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.bills.index': { paramsTuple?: []; params?: {} }
@@ -591,6 +626,7 @@ export type ScannedRoutes = {
     'resident.tickets.store': { paramsTuple?: []; params?: {} }
     'resident.tickets.comments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.payments.report': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'resident.clearances.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
     'resident.payments.attachments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.surveys.vote': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resident.parking.apply': { paramsTuple?: []; params?: {} }
@@ -670,6 +706,12 @@ export type ScannedRoutes = {
     'finance.write.payments.confirm': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.payments.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.payments.reverse': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.clearances.store': { paramsTuple: [ParamValue]; params: {'unitId': ParamValue} }
+    'finance.write.statements.preview': { paramsTuple?: []; params?: {} }
+    'finance.write.statements.store': { paramsTuple?: []; params?: {} }
+    'finance.write.statements.applySuggestions': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.statementLines.reconcile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.statementLines.undo': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.vendors.store': { paramsTuple?: []; params?: {} }
     'finance.write.bills.store': { paramsTuple?: []; params?: {} }
     'finance.write.bills.cancel': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -746,6 +788,7 @@ export type ScannedRoutes = {
     'units.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'occupants.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'unitId': ParamValue,'id': ParamValue} }
     'finance.write.modules.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'finance.write.statements.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.budgets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'finance.write.attachments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }

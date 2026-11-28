@@ -10,6 +10,7 @@ import {
   UiDropdownItem,
   UiSkeleton,
   UiTabs,
+  useToast,
 } from '@aptoph/ui'
 import {
   CHARGE_STATUS_LABELS,
@@ -40,6 +41,7 @@ import PageHeader from '@/components/PageHeader.vue'
 import PetFormModal from '@/components/PetFormModal.vue'
 import ReportPaymentModal from '@/components/ReportPaymentModal.vue'
 import PaymentReceipts from '@/components/payments/PaymentReceipts.vue'
+import ClearanceCard from '@/components/payments/ClearanceCard.vue'
 import VehicleFormModal from '@/components/VehicleFormModal.vue'
 import VisitFormModal from '@/components/VisitFormModal.vue'
 import { residentApi } from '@/api/resident'
@@ -60,6 +62,7 @@ import { useTenantStore } from '@/stores/tenant'
 const route = useRoute()
 const router = useRouter()
 const tenant = useTenantStore()
+const toast = useToast()
 const unit = ref<ResidentUnitDetail | null>(null)
 const error = ref<string | null>(null)
 const notFound = ref(false)
@@ -202,8 +205,21 @@ async function loadFinance() {
   }
 }
 
+const clearance = ref<InstanceType<typeof ClearanceCard> | null>(null)
+const downloadingReceipt = ref<string | null>(null)
+async function downloadReceipt(payment: ResidentPayment) {
+  downloadingReceipt.value = payment.id
+  try {
+    await residentApi.finance.downloadReceipt(payment)
+  } catch (e) {
+    toast.error(errorMessage(e))
+  } finally {
+    downloadingReceipt.value = null
+  }
+}
+
 async function afterReport() {
-  await Promise.all([load(), loadFinance()])
+  await Promise.all([load(), loadFinance(), clearance.value?.load()])
 }
 
 /** Reported payments the administration has not reviewed yet */
@@ -470,6 +486,8 @@ const removeMember = (member: HouseholdMember) =>
         </UiButton>
       </div>
 
+      <ClearanceCard ref="clearance" :unit-id="String(route.params.id)" :currency="currency" />
+
       <div v-if="payments.length" class="mt-6">
         <h3 class="mb-2 font-semibold">Tus pagos</h3>
         <ul
@@ -503,6 +521,15 @@ const removeMember = (member: HouseholdMember) =>
                 variant="soft"
                 size="xs"
               />
+              <button
+                v-if="payment.number !== null"
+                type="button"
+                class="mt-1 block text-xs font-semibold text-brand-700 hover:underline disabled:opacity-60 dark:text-brand-200"
+                :disabled="downloadingReceipt === payment.id"
+                @click="downloadReceipt(payment)"
+              >
+                <i class="mdi mdi-file-pdf-box" aria-hidden="true" /> Recibo PDF
+              </button>
             </div>
           </li>
         </ul>

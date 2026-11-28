@@ -35,7 +35,11 @@ export function financeLinks(canManage: boolean): NavLink[] {
       'finance-statement',
     ]),
     link('Gastos', 'mdi-receipt-text-outline', 'finance-expenses'),
-    link('Bancos', 'mdi-bank-outline', 'finance-banks'),
+    link('Bancos', 'mdi-bank-outline', 'finance-banks', [
+      'finance-banks',
+      'finance-reconciliation',
+      'finance-reconciliation-statement',
+    ]),
     link('Presupuesto', 'mdi-chart-donut', 'finance-budgets', [
       'finance-budgets',
       'finance-budget',

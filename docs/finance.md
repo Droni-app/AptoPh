@@ -116,6 +116,22 @@ Los cargos emitidos no se editan:
 - Si sobra dinero queda como **saldo a favor** (anticipo) y se aplica solo al facturar.
 - Un pago confirmado no se edita: se **reversa** con motivo y se registra de nuevo.
 
+### Recibo de caja y paz y salvo en PDF
+
+- **Recibo de caja** (`GET /finance/payments/:id/receipt`; el residente,
+  `GET /resident/payments/:id/receipt`): para pagos confirmados o reversados, que tienen número.
+  Muestra el conjunto, la unidad, a nombre de quién (responsable de pago, si no el propietario o
+  el contacto principal), el valor en números y en letras, a qué cobros se aplicó y el saldo a
+  favor. Si se reversó, lleva el sello **ANULADO** y el motivo.
+- **Paz y salvo** (`POST /finance/units/:unitId/clearances`; el residente que es propietario,
+  arrendatario o contacto principal, `POST /resident/units/:unitId/clearances`): solo si la unidad
+  no tiene saldo **vencido**. Tiene consecutivo propio, vale hasta fin de mes o hasta el día antes
+  del próximo vencimiento, e indica los cobros ya facturados que aún no vencen y no cubre.
+- Cada paz y salvo tiene un **código de verificación** (`ABCD-2345-XY`) y el enlace
+  `<RESIDENTS_URL>/verificar/<código>`: quien lo recibe (notaría, comprador, inmobiliaria)
+  confirma sin sesión que es auténtico y si sigue vigente (`GET /public/clearances/:code`).
+- Los PDF se generan en el servidor con pdfkit y las fuentes de la marca (`resources/fonts`, OFL).
+
 ## 6. Gastos y proveedores
 
 - **Proveedores** (terceros): NIT/CC, contacto, cuenta bancaria y cuenta de gasto por defecto.
@@ -131,6 +147,38 @@ Los cargos emitidos no se editan:
 `cash_accounts`: cuentas de ahorros/corriente y cajas. Cada una crea su subcuenta contable
 (`1110xxxx` bancos, `1105xxxx` caja) y puede tener saldo inicial. Sus movimientos son el auxiliar
 de esa subcuenta. Los traslados entre cuentas generan su comprobante.
+
+### Conciliación bancaria
+
+En **Finanzas → Bancos → Conciliación bancaria** se importa el extracto que se descarga de la
+sucursal virtual del banco y se cruza cada movimiento con lo que ya está en AptoPH.
+
+1. **Importar** un CSV o Excel (.xlsx; los .xls antiguos se guardan antes como .xlsx). Cada
+   banco exporta su formato: el sistema encuentra la fila de encabezados (aunque antes vengan los
+   datos de la cuenta) y adivina las columnas de fecha, descripción, referencia y valor (una
+   columna con signo, o créditos y débitos). Se pueden corregir viendo cómo queda la lectura.
+   Las filas sin fecha (saldos, totales) se omiten. Un movimiento que ya se importó en otro
+   extracto de la misma cuenta no se repite.
+2. **Sugerencias** para cada movimiento pendiente:
+   - Entrada con el mismo valor que un **recibo de caja** de esa cuenta (fecha a ±5 días): se
+     vincula.
+   - Entrada con el mismo valor que un **pago reportado** por un residente (±10 días): se
+     confirma con esa cuenta y se aplica.
+   - Entrada cuya **referencia** es el código de una unidad (`101`, `T2-101`, `2101`…): se
+     registra el pago de esa unidad con la fecha del extracto.
+   - Salida con el mismo valor que un **comprobante de egreso** de esa cuenta: se vincula.
+
+   Son **seguras** cuando coinciden por referencia, y por revisar cuando solo coinciden por valor y
+   fecha o la unidad sale de la descripción. "Aplicar sugerencias seguras" las aplica todas, cada
+   una en su transacción.
+3. A mano: registrar el pago de cualquier unidad, elegir otro recibo o pago reportado, otro egreso
+   o **ignorar** con una nota (comisiones, 4×1000, intereses, traslados).
+4. **Deshacer** devuelve el movimiento a pendiente; el recibo que se creó o confirmó sigue como
+   está (si sobra, se reversa desde Recaudo). Un extracto se puede eliminar mientras no tenga
+   movimientos conciliados.
+
+Cada recibo o egreso se concilia con un movimiento como máximo (índice único). Registrar o
+confirmar un pago desde aquí genera su comprobante contable y notifica al residente como siempre.
 
 ## 8. Presupuesto
 
@@ -195,23 +243,26 @@ compara lo causado en el libro mayor contra lo presupuestado a la fecha.
 | Resumen | Facturado, recaudado, cartera vencida, saldos a favor, bancos, gastos, cuentas por pagar y pagos por revisar; tendencia de seis meses. |
 | Facturación | Periodos (vista previa → generar, completar, cerrar, reabrir) y cobros con filtros; cobro manual a unidades o a todo un tipo; detalle con nota crédito y anulación. |
 | Tarifas | Tarifas vigentes por mes, calculadora de cuotas (por coeficiente, módulos, área, iguales o fijo por tipo; desde un valor o desde el presupuesto), historial de cálculos, conceptos y módulos de contribución. |
-| Recaudo | Recibos de caja, reportes de residentes por confirmar o rechazar, reversión y exportación CSV. |
-| Cartera | Edades de la deuda por unidad y estado de cuenta de cada unidad (también desde el detalle de la unidad). |
+| Recaudo | Recibos de caja (descarga en PDF), reportes de residentes por confirmar o rechazar, reversión y exportación CSV. |
+| Cartera | Edades de la deuda por unidad y estado de cuenta de cada unidad (también desde el detalle de la unidad), con el paz y salvo: expedirlo y descargar los anteriores. |
 | Gastos | Facturas de proveedores (con IVA, retenciones o pago inmediato de caja menor), egresos, proveedores y cuentas por pagar por edades. |
-| Bancos | Cuentas y cajas con su saldo, traslados y enlace a su libro auxiliar. |
+| Bancos | Cuentas y cajas con su saldo, traslados, enlace a su libro auxiliar y la conciliación bancaria (importar extractos y conciliar sus movimientos). |
 | Presupuesto | Partidas por cuenta, aprobación con acta, cuota mensual resultante y ejecución con CSV. |
 | Contabilidad | Libro diario con detalle y reversión, notas de contabilidad y plan de cuentas (subcuentas). |
 | Informes | Estado de resultados, balance general, balance de prueba y libro auxiliar, con CSV. |
 | Configuración | Vencimiento, redondeo, orden de aplicación, mora, pronto pago y cierre contable. |
 
 **Portal de residentes → Mi unidad**: saldo, cobros abiertos, valor para quedar al día (con pronto
-pago), reportar un pago con su comprobante adjunto, historial de pagos con su estado y sus
-comprobantes, y movimientos del último año.
+pago), reportar un pago con su comprobante adjunto, historial de pagos con su estado, sus
+comprobantes y el recibo de caja en PDF, el paz y salvo (cuando está al día) y movimientos del
+último año. La página pública `/verificar/<código>` confirma un paz y salvo sin sesión.
 
 ## 13. Pendiente (siguientes fases)
 
 - Cobros automáticos desde parqueaderos asignados, parqueadero de visitantes y reservas (el
   `ChargeService` y los conceptos ya existen).
-- PDF del estado de cuenta, recibo y paz y salvo; envío por correo de la cuenta de cobro.
-- Pagos en línea (PSE/tarjeta) y conciliación con extracto bancario.
+- PDF del estado de cuenta y de la cuenta de cobro; envío por correo.
+- Pagos en línea (PSE/tarjeta).
+- Conciliación: contabilizar desde el extracto las comisiones y el 4×1000 que hoy se ignoran con
+  una nota.
 - Nómina, activos fijos y depreciación, información exógena.

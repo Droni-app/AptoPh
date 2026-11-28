@@ -801,6 +801,58 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['payments']>>>
     }
   }
+  'resident.payments.receipt': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/payments/:id/receipt'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['receipt']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['receipt']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['receipt']>>>
+    }
+  }
+  'resident.clearance.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/units/:unitId/clearance'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['clearance']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['clearance']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['clearance']>>>
+    }
+  }
+  'resident.clearances.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/resident/units/:unitId/clearances'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['issueClearance']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['issueClearance']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['issueClearance']>>>
+    }
+  }
+  'resident.clearances.pdf': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/resident/clearances/:id/pdf'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['clearancePdf']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['clearancePdf']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/resident_finance_controller').default['clearancePdf']>>>
+    }
+  }
   'resident.payments.attachments.store': {
     methods: ["POST"]
     pattern: '/api/v1/resident/payments/:id/attachments'
@@ -2738,6 +2790,19 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/billing/wompi_controller').default['handle']>>>
     }
   }
+  'public.clearances.verify': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/public/clearances/:code'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance/reconciliation').verifyClearanceValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['verify']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['verify']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['verify']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'public.announcementImages.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/public/announcement-images/:id'
@@ -3165,6 +3230,71 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['show']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['show']>>>
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['show']>>>
+    }
+  }
+  'finance.payments.receipt': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/payments/:id/receipt'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['receipt']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['receipt']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['receipt']>>>
+    }
+  }
+  'finance.units.clearance': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/units/:unitId/clearance'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['status']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['status']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['status']>>>
+    }
+  }
+  'finance.clearances.pdf': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/clearances/:id/pdf'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['pdf']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['pdf']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['pdf']>>>
+    }
+  }
+  'finance.statements.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/bank-statements'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/finance/reconciliation').listStatementsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.statements.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/finance/bank-statements/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['show']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['show']>>>
     }
   }
   'finance.vendors.index': {
@@ -3737,6 +3867,97 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reverse']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reverse']>>> | { status: 422; response: { errors: SimpleError[] } }
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/payments_controller').default['reverse']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.clearances.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/units/:unitId/clearances'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { unitId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['store']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/clearances_controller').default['store']>>>
+    }
+  }
+  'finance.write.statements.preview': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/bank-statements/preview'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance/reconciliation').statementPreviewValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance/reconciliation').statementPreviewValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['preview']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['preview']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['preview']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.statements.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/bank-statements'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance/reconciliation').statementImportValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance/reconciliation').statementImportValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.statements.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/finance/bank-statements/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['destroy']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['destroy']>>>
+    }
+  }
+  'finance.write.statements.applySuggestions': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/bank-statements/:id/apply-suggestions'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['applySuggestions']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['applySuggestions']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['applySuggestions']>>>
+    }
+  }
+  'finance.write.statementLines.reconcile': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/bank-statement-lines/:id/reconcile'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/finance/reconciliation').reconcileValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/finance/reconciliation').reconcileValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['reconcile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['reconcile']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['reconcile']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'finance.write.statementLines.undo': {
+    methods: ["POST"]
+    pattern: '/api/v1/finance/bank-statement-lines/:id/undo'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['undo']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['undo']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/finance/reconciliation_controller').default['undo']>>>
     }
   }
   'finance.write.vendors.store': {

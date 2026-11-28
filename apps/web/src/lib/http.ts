@@ -88,3 +88,31 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   if (response.status === 204) return undefined as T
   return (await response.json()) as T
 }
+
+/**
+ * Downloads a file the API builds (receipts, certificates) with the user's
+ * session and the active tenant, and hands it to the browser as `filename`.
+ */
+export async function apiDownload(path: string, filename: string) {
+  const auth = useAuthStore()
+  const tenant = useTenantStore()
+  const headers: Record<string, string> = {}
+  if (auth.token) headers.Authorization = `Bearer ${auth.token}`
+  if (tenant.currentId) headers['X-Tenant-Id'] = tenant.currentId
+  const response = await fetch(buildUrl(path), { headers })
+  if (response.status === 401) {
+    auth.clear()
+    await router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } })
+    throw new ApiError(401, null)
+  }
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as ApiErrorBody | null
+    throw new ApiError(response.status, body)
+  }
+  const url = URL.createObjectURL(await response.blob())
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}

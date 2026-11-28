@@ -425,6 +425,9 @@ Los valores son `numeric` y se exponen como `string`; en el código se calcula e
 | `vendors` | Proveedores: documento, contacto, cuenta bancaria y cuenta de gasto habitual. |
 | `bills` / `bill_lines` | Facturas de proveedores: líneas por cuenta de gasto, IVA, retenciones (fuente, IVA, ICA), neto y saldo. |
 | `vendor_payments` / `vendor_payment_allocations` | Comprobantes de egreso numerados y las facturas que pagan. |
+| `clearance_certificates` | Paz y salvo expedidos: `number` consecutivo por conjunto, `as_of`, `valid_until`, `code` de verificación único (público), `holder_name`, `upcoming_amount` (cobros facturados no vencidos que no cubre) y quién lo expidió. |
+| `bank_statements` | Extractos bancarios importados a una cuenta (`cash_account_id`): archivo, rango de fechas, movimientos importados y repetidos. |
+| `bank_statement_lines` | Movimientos del extracto (valor con signo: + entra, − sale) y su conciliación: `status` `pending` / `reconciled` / `ignored`, `payment_id` o `vendor_payment_id` (cada uno con un movimiento como máximo) o `note`. `fingerprint` único por cuenta evita importar dos veces el mismo movimiento. |
 | `attachments` | Adjuntos de facturas, egresos, recibos de caja, comprobantes contables, comunicados y la imagen de cada comunicado (`owner_type` + `owner_id`). Quitar uno solo marca `deleted_at`. Ver [files.md](files.md). |
 | `cash_accounts` | Cuentas bancarias y cajas, cada una con su auxiliar contable (`ledger_account_id`). |
 | `budgets` / `budget_items` | Presupuesto anual por cuenta, porcentaje del fondo de imprevistos y aprobación en asamblea. |

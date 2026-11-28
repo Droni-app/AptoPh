@@ -33,6 +33,9 @@ import FeeSchedule from '#models/finance/fee_schedule'
 import JournalEntry from '#models/finance/journal_entry'
 import LedgerAccount from '#models/finance/ledger_account'
 import Payment from '#models/finance/payment'
+import BankStatementLine from '#models/finance/bank_statement_line'
+import BankStatement from '#models/finance/bank_statement'
+import ClearanceCertificate from '#models/finance/clearance_certificate'
 import RecurringCharge from '#models/finance/recurring_charge'
 import VendorPayment from '#models/finance/vendor_payment'
 import Vendor from '#models/finance/vendor'
@@ -79,6 +82,26 @@ auditable(Payment, {
     withUnit(client, row.unitId, row.number ? `Recibo ${row.number}` : 'Pago reportado'),
   // Applying the credit balance later moves only this
   quiet: ['unappliedAmount'],
+})
+
+auditable(ClearanceCertificate, {
+  type: 'clearance_certificates',
+  label: (row, client) => withUnit(client, row.unitId, `Paz y salvo ${row.number}`),
+})
+
+auditable(BankStatement, {
+  type: 'bank_statements',
+  label: (row) => row.fileName,
+  quiet: ['linesCount', 'duplicatesCount'],
+})
+
+auditable(BankStatementLine, {
+  type: 'bank_statement_lines',
+  label: (row) => `Movimiento del ${row.postedOn.toISODate()} por ${row.amount}`,
+  // The import is one entry (the statement); here what each movement was reconciled with
+  create: false,
+  only: ['status', 'paymentId', 'vendorPaymentId', 'note'],
+  delete: false,
 })
 
 auditable(Charge, {

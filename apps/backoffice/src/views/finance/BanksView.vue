@@ -31,17 +31,26 @@ const total = computed(() =>
 
 <template>
   <PageHeader title="Bancos y caja" :subtitle="`Disponible: ${formatMoney(total)}`">
-    <template v-if="tenant.canManageFinance" #actions>
-      <UiButton
-        variant="outline"
-        :disabled="catalog.activeCashAccounts.value.length < 2"
-        @click="transferOpen = true"
+    <template #actions>
+      <RouterLink :to="{ name: 'finance-reconciliation' }"
+        ><UiButton variant="outline">
+          <span class="mr-1"><i class="mdi mdi-bank-check" aria-hidden="true" /></span>Conciliación
+          bancaria
+        </UiButton></RouterLink
       >
-        <span class="mr-1"><i class="mdi mdi-swap-horizontal" aria-hidden="true" /></span>Trasladar
-      </UiButton>
-      <UiButton color="primary" @click="((editing = null), (formOpen = true))">
-        <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nueva cuenta
-      </UiButton>
+      <template v-if="tenant.canManageFinance">
+        <UiButton
+          variant="outline"
+          :disabled="catalog.activeCashAccounts.value.length < 2"
+          @click="transferOpen = true"
+        >
+          <span class="mr-1"><i class="mdi mdi-swap-horizontal" aria-hidden="true" /></span
+          >Trasladar
+        </UiButton>
+        <UiButton color="primary" @click="((editing = null), (formOpen = true))">
+          <span class="mr-1"><i class="mdi mdi-plus" aria-hidden="true" /></span>Nueva cuenta
+        </UiButton>
+      </template>
     </template>
   </PageHeader>
 

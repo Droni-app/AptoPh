@@ -51,6 +51,8 @@ export const CHARGE_SOURCES = values(
 export const CHARGE_ADJUSTMENT_TYPES = values('early_payment_discount', 'credit_note', 'cancellation')
 export const PAYMENT_METHODS = values('cash', 'bank_transfer', 'card', 'pse', 'consignment', 'check', 'other')
 export const PAYMENT_STATUSES = values('pending_review', 'confirmed', 'rejected', 'reversed')
+/** Movement of an imported bank statement: to reconcile, reconciled or ignored */
+export const BANK_LINE_STATUSES = values('pending', 'reconciled', 'ignored')
 export const PAYMENT_APPLICATION_ORDERS = values('interest_first', 'oldest_first')
 export const FEE_METHODS = values('coefficient', 'module', 'area', 'equal', 'fixed_by_type')
 export const ROUNDING_MODES = values('nearest', 'up')
@@ -116,6 +118,7 @@ export type ChargeSource = ValueOf<typeof CHARGE_SOURCES>
 export type ChargeAdjustmentType = ValueOf<typeof CHARGE_ADJUSTMENT_TYPES>
 export type PaymentMethod = ValueOf<typeof PAYMENT_METHODS>
 export type PaymentStatus = ValueOf<typeof PAYMENT_STATUSES>
+export type BankLineStatus = ValueOf<typeof BANK_LINE_STATUSES>
 export type PaymentApplicationOrder = ValueOf<typeof PAYMENT_APPLICATION_ORDERS>
 export type FeeMethod = ValueOf<typeof FEE_METHODS>
 export type RoundingMode = ValueOf<typeof ROUNDING_MODES>

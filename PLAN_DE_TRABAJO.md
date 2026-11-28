@@ -219,7 +219,8 @@ el residente gestiona su hogar, vehículos y mascotas.
       generen sus cobros (ya lo usa la reserva del demo).
 
 **Falta**
-- [ ] Estado de cuenta, cuenta de cobro y paz y salvo en PDF; envío por correo.
+- [x] Paz y salvo en PDF con código de verificación público (docs/finance.md §5).
+- [ ] Estado de cuenta y cuenta de cobro en PDF; envío por correo.
 - [ ] Cobros automáticos de parqueadero de visitantes y reservas cuando existan esos flujos.
 - [ ] Importar saldos iniciales de cartera desde Excel (fase 2).
 
@@ -240,10 +241,12 @@ el residente gestiona su hogar, vehículos y mascotas.
 - [x] Reversión de pagos (cheque devuelto) que devuelve el saldo a los cargos.
 - [x] Soportes adjuntos del recibo de caja: la administración en el backoffice y el residente al
       reportar su pago en el portal (docs/files.md).
+- [x] Recibo de caja y paz y salvo en PDF, para la administración y el residente.
+- [x] Importar extracto bancario (CSV o Excel) y conciliar por referencia: vincula recibos,
+      confirma pagos reportados, registra el pago de la unidad de la referencia y vincula egresos
+      (docs/finance.md §7).
 
 **Falta**
-- [ ] Recibo y paz y salvo en PDF.
-- [ ] Importar extracto bancario y conciliar por referencia (P1).
 - [ ] **Pagos en línea** (P2): PSE y tarjeta; webhook que registra y aplica el pago.
 
 **Tener en cuenta**

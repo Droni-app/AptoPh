@@ -1,4 +1,7 @@
 import type {
+  ClearanceCertificate,
+  ClearanceVerification,
+  ResidentClearanceStatus,
   ResidentSurveyDetail,
   ResidentSurveyItem,
   SurveyVoteInput,
@@ -39,7 +42,7 @@ import type {
   VehicleType,
   VisitType,
 } from '@aptoph/shared'
-import { api } from '@/lib/http'
+import { api, apiDownload } from '@/lib/http'
 
 /**
  * Resident endpoints (/api/v1/resident/*). Dates go out as ISO strings with offset.
@@ -85,6 +88,13 @@ export type TicketInput = {
   description: string
 }
 
+/** Anyone with the code printed on a paz y salvo checks it (no session) */
+export const verifyClearance = (code: string) =>
+  api<ApiItem<ClearanceVerification>>(
+    `/api/v1/public/clearances/${encodeURIComponent(code)}`,
+    { auth: false, tenant: false },
+  )
+
 export const residentApi = {
   home: () => api<ApiItem<ResidentHome>>(`${base}/home`),
   unit: (id: string) => api<ApiItem<ResidentUnitDetail>>(`${base}/units/${encodeURIComponent(id)}`),
@@ -113,6 +123,26 @@ export const residentApi = {
     attachmentUrl: (id: string, download = false) =>
       api<ApiItem<{ url: string }>>(`${base}/attachments/${id}/url`, { query: { download } }),
     detach: (id: string) => api<void>(`${base}/attachments/${id}`, { method: 'DELETE' }),
+    /** Recibo de caja en PDF */
+    downloadReceipt: (payment: { id: string; number: number | null }) =>
+      apiDownload(
+        `${base}/payments/${payment.id}/receipt`,
+        `recibo-de-caja-${String(payment.number ?? '').padStart(6, '0')}.pdf`,
+      ),
+    clearance: (unitId: string) =>
+      api<ApiItem<ResidentClearanceStatus>>(
+        `${base}/units/${encodeURIComponent(unitId)}/clearance`,
+      ),
+    issueClearance: (unitId: string) =>
+      api<ApiItem<ClearanceCertificate>>(
+        `${base}/units/${encodeURIComponent(unitId)}/clearances`,
+        { method: 'POST', body: {} },
+      ),
+    downloadClearance: (certificate: { id: string; number: number }) =>
+      apiDownload(
+        `${base}/clearances/${certificate.id}/pdf`,
+        `paz-y-salvo-${String(certificate.number).padStart(6, '0')}.pdf`,
+      ),
   },
 
   announcements: {

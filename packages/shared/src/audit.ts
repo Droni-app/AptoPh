@@ -38,6 +38,9 @@ export const AUDIT_MODULE_LABELS: Record<AuditModule, string> = {
 export const AUDITABLE_TYPES = {
   payments: { module: 'finance', label: 'Recibo de caja' },
   charges: { module: 'finance', label: 'Cobro' },
+  clearance_certificates: { module: 'finance', label: 'Paz y salvo' },
+  bank_statements: { module: 'finance', label: 'Extracto bancario' },
+  bank_statement_lines: { module: 'finance', label: 'Conciliación bancaria' },
   charge_adjustments: { module: 'finance', label: 'Ajuste de cobro' },
   billing_periods: { module: 'finance', label: 'Facturación del mes' },
   recurring_charges: { module: 'finance', label: 'Tarifa de una unidad' },

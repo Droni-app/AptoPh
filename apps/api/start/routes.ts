@@ -86,6 +86,8 @@ const CashAccountsController = () => import('#controllers/finance/cash_accounts_
 const BillingController = () => import('#controllers/finance/billing_controller')
 const FeesController = () => import('#controllers/finance/fees_controller')
 const PaymentsController = () => import('#controllers/finance/payments_controller')
+const ClearancesController = () => import('#controllers/finance/clearances_controller')
+const ReconciliationController = () => import('#controllers/finance/reconciliation_controller')
 const PayablesController = () => import('#controllers/finance/payables_controller')
 const BudgetsController = () => import('#controllers/finance/budgets_controller')
 const AccountingController = () => import('#controllers/finance/accounting_controller')
@@ -305,6 +307,18 @@ router
           .post('units/:unitId/payments', [ResidentFinanceController, 'report'])
           .as('payments.report')
         router.get('payments', [ResidentFinanceController, 'payments']).as('payments.index')
+        router
+          .get('payments/:id/receipt', [ResidentFinanceController, 'receipt'])
+          .as('payments.receipt')
+        router
+          .get('units/:unitId/clearance', [ResidentFinanceController, 'clearance'])
+          .as('clearance.show')
+        router
+          .post('units/:unitId/clearances', [ResidentFinanceController, 'issueClearance'])
+          .as('clearances.store')
+        router
+          .get('clearances/:id/pdf', [ResidentFinanceController, 'clearancePdf'])
+          .as('clearances.pdf')
         router
           .post('payments/:id/attachments', [ResidentFinanceController, 'attach'])
           .as('payments.attachments.store')
@@ -747,6 +761,14 @@ router
      * Image of a comunicado linked from its email (public; HMAC-signed link).
      * Not throttled by IP: email clients load images from a few proxy IPs.
      */
+    /**
+     * Verification of a paz y salvo by the code printed on it (public)
+     */
+    router
+      .get('public/clearances/:code', [ClearancesController, 'verify'])
+      .as('public.clearances.verify')
+      .use(throttlePublic)
+
     router
       .get('public/announcement-images/:id', [AnnouncementImagesController, 'show'])
       .as('public.announcementImages.show')
@@ -812,6 +834,13 @@ router
         router.get('modules', [FeesController, 'modules']).as('modules.index')
         router.get('payments', [PaymentsController, 'index']).as('payments.index')
         router.get('payments/:id', [PaymentsController, 'show']).as('payments.show')
+        router.get('payments/:id/receipt', [ClearancesController, 'receipt']).as('payments.receipt')
+        router
+          .get('units/:unitId/clearance', [ClearancesController, 'status'])
+          .as('units.clearance')
+        router.get('clearances/:id/pdf', [ClearancesController, 'pdf']).as('clearances.pdf')
+        router.get('bank-statements', [ReconciliationController, 'index']).as('statements.index')
+        router.get('bank-statements/:id', [ReconciliationController, 'show']).as('statements.show')
         router.get('vendors', [PayablesController, 'vendors']).as('vendors.index')
         router.get('vendors/:id', [PayablesController, 'showVendor']).as('vendors.show')
         router.get('bills', [PayablesController, 'bills']).as('bills.index')
@@ -888,6 +917,28 @@ router
         router.post('payments/:id/confirm', [PaymentsController, 'confirm']).as('payments.confirm')
         router.post('payments/:id/reject', [PaymentsController, 'reject']).as('payments.reject')
         router.post('payments/:id/reverse', [PaymentsController, 'reverse']).as('payments.reverse')
+        router
+          .post('units/:unitId/clearances', [ClearancesController, 'store'])
+          .as('clearances.store')
+        router
+          .post('bank-statements/preview', [ReconciliationController, 'preview'])
+          .as('statements.preview')
+        router.post('bank-statements', [ReconciliationController, 'store']).as('statements.store')
+        router
+          .delete('bank-statements/:id', [ReconciliationController, 'destroy'])
+          .as('statements.destroy')
+        router
+          .post('bank-statements/:id/apply-suggestions', [
+            ReconciliationController,
+            'applySuggestions',
+          ])
+          .as('statements.applySuggestions')
+        router
+          .post('bank-statement-lines/:id/reconcile', [ReconciliationController, 'reconcile'])
+          .as('statementLines.reconcile')
+        router
+          .post('bank-statement-lines/:id/undo', [ReconciliationController, 'undo'])
+          .as('statementLines.undo')
         router.post('vendors', [PayablesController, 'storeVendor']).as('vendors.store')
         router.put('vendors/:id', [PayablesController, 'updateVendor']).as('vendors.update')
         router.post('bills', [PayablesController, 'storeBill']).as('bills.store')

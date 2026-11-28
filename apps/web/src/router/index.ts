@@ -51,6 +51,13 @@ const router = createRouter({
       meta: { public: true, title: 'Invitación' },
     },
     {
+      // Printed on the paz y salvo: anyone checks it, with or without a session
+      path: '/verificar/:code',
+      name: 'verify-clearance',
+      component: () => import('@/views/VerifyClearanceView.vue'),
+      meta: { public: true, title: 'Verificar paz y salvo' },
+    },
+    {
       path: '/verificar-correo',
       name: 'verify-email',
       component: () => import('@/views/VerifyEmailView.vue'),

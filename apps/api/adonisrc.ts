@@ -107,7 +107,11 @@ export default defineConfig({
   | the production build.
   |
   */
-  metaFiles: [{ pattern: 'resources/views/**/*.edge', reloadServer: false }],
+  metaFiles: [
+    { pattern: 'resources/views/**/*.edge', reloadServer: false },
+    // Fonts of the PDFs (recibo de caja, paz y salvo)
+    { pattern: 'resources/fonts/*', reloadServer: false },
+  ],
 
   hooks: {
     init: [

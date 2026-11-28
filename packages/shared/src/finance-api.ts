@@ -19,6 +19,7 @@ import type {
   FeeMethod,
   JournalEntryType,
   PaymentMethod,
+  BankLineStatus,
   PaymentStatus,
   RoundingMode,
   UnitType,
@@ -289,6 +290,140 @@ export type FinancePayment = {
   allocations?: Array<{ amount: string; charge: FinanceCharge | null }>
   createdAt: string
 }
+
+/** Paz y salvo de una unidad (docs/finance.md §5) */
+export type ClearanceCertificate = {
+  id: string
+  number: number
+  unit: FinanceUnitRef | null
+  asOf: string
+  validUntil: string
+  code: string
+  holderName: string | null
+  /** Cobros facturados que aún no vencían al expedirlo (no los cubre) */
+  upcomingAmount: string
+  issuedBy: string | null
+  createdAt: string
+}
+
+/** Si la unidad puede recibir paz y salvo hoy y, si no, cuánto debe */
+export type ClearanceStatus = {
+  eligible: boolean
+  /** Saldo vencido (cobros con vencimiento hasta hoy) */
+  overdue: string
+  /** Cobros facturados que aún no vencen */
+  upcoming: string
+  certificates: ClearanceCertificate[]
+}
+
+/** El residente: además, si puede pedirlo (propietario, arrendatario o contacto principal) */
+export type ResidentClearanceStatus = ClearanceStatus & { canIssue: boolean }
+
+/** Verificación pública de un paz y salvo */
+export type ClearanceVerification = {
+  number: number
+  tenant: string
+  unit: string
+  holderName: string | null
+  asOf: string
+  validUntil: string
+  issuedAt: string
+  current: boolean
+}
+
+// ---------------------------------------------------------------- conciliación bancaria
+
+/** Columnas del extracto que el sistema necesita, con el índice de la columna del archivo */
+export type BankColumnMapping = {
+  headerRow: number
+  date: number
+  description: number | null
+  reference: number | null
+  /** Una sola columna con valores positivos (entradas) y negativos (salidas)… */
+  amount: number | null
+  /** …o dos columnas: créditos (entradas) y débitos (salidas) */
+  credit: number | null
+  debit: number | null
+  dateFormat: BankDateFormat
+}
+
+export type BankDateFormat = 'dmy' | 'ymd' | 'mdy'
+
+/** Lo que se ve del archivo antes de importarlo */
+export type BankStatementPreview = {
+  rows: string[][]
+  mapping: BankColumnMapping
+  /** Movimientos que se leerían con esa configuración */
+  sample: Array<{ postedOn: string; description: string; reference: string | null; amount: string }>
+  total: number
+  errors: Array<{ line: number; message: string }>
+}
+
+export type BankStatement = {
+  id: string
+  cashAccount: { id: string; name: string } | null
+  fileName: string
+  startsOn: string
+  endsOn: string
+  linesCount: number
+  duplicatesCount: number
+  pending: number
+  reconciled: number
+  ignored: number
+  importedBy: string | null
+  createdAt: string
+}
+
+export type BankLineSuggestion =
+  | {
+      action: 'link'
+      confidence: 'high' | 'medium'
+      reason: string
+      payment: { id: string; number: number | null; unit: string | null; paidAt: string; amount: string; reference: string | null }
+    }
+  | {
+      action: 'confirm'
+      confidence: 'high' | 'medium'
+      reason: string
+      payment: { id: string; number: number | null; unit: string | null; paidAt: string; amount: string; reference: string | null }
+    }
+  | {
+      action: 'register'
+      confidence: 'high' | 'medium'
+      reason: string
+      unit: FinanceUnitRef
+    }
+  | {
+      action: 'link_vendor_payment'
+      confidence: 'high' | 'medium'
+      reason: string
+      vendorPayment: { id: string; number: number; vendor: string | null; paidOn: string; amount: string }
+    }
+
+export type BankStatementLine = {
+  id: string
+  line: number
+  postedOn: string
+  description: string
+  reference: string | null
+  amount: string
+  status: BankLineStatus
+  note: string | null
+  payment: { id: string; number: number | null; unit: string | null; status: PaymentStatus } | null
+  vendorPayment: { id: string; number: number; vendor: string | null } | null
+  reconciledBy: string | null
+  reconciledAt: string | null
+  suggestion: BankLineSuggestion | null
+}
+
+export type BankStatementDetail = BankStatement & { lines: BankStatementLine[] }
+
+export type ReconcileLineInput =
+  | { action: 'link'; paymentId: string }
+  | { action: 'confirm'; paymentId: string }
+  | { action: 'register'; unitId: string; method?: PaymentMethod; notes?: string | null }
+  | { action: 'link_vendor_payment'; vendorPaymentId: string }
+  | { action: 'ignore'; note: string }
 
 export type ResidentPayment = Omit<FinancePayment, 'registeredBy' | 'cashAccount'> & {
   /** Comprobantes adjuntos al pago */

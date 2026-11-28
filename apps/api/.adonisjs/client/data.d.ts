@@ -11,6 +11,7 @@ import type BillingBillingTransformer from '#transformers/billing/billing_transf
 import type BillingSubscriptionTransformer from '#transformers/billing/subscription_transformer'
 import type FilesAttachmentTransformer from '#transformers/files/attachment_transformer'
 import type FinanceFinanceTransformer from '#transformers/finance/finance'
+import type FinanceReconciliationTransformer from '#transformers/finance/reconciliation'
 import type GatehouseParkingTransformer from '#transformers/gatehouse/parking_transformer'
 import type GatehouseResidentTransformer from '#transformers/gatehouse/resident'
 import type HelpersTransformer from '#transformers/helpers'
@@ -57,6 +58,10 @@ export namespace Data {
     export type Finance = InferData<FinanceFinanceTransformer>
     export namespace Finance {
       export type Variants = InferVariants<FinanceFinanceTransformer>
+    }
+    export type Reconciliation = InferData<FinanceReconciliationTransformer>
+    export namespace Reconciliation {
+      export type Variants = InferVariants<FinanceReconciliationTransformer>
     }
   }
   export namespace Gatehouse {

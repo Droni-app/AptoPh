@@ -9,7 +9,15 @@ import type Tenant from '#models/tenants/tenant'
 import { AttachmentsService } from '#services/files/attachments'
 import { serializeAttachment } from '#transformers/files/attachment_transformer'
 import { attachmentUrlValidator, uploadAttachmentValidator } from '#validators/files/attachment'
-import { findOwnUnit, residentUnitIds } from '#services/resident_scope'
+import { canManageHousehold, findOwnUnit, residentUnitIds } from '#services/resident_scope'
+import {
+  ClearanceService,
+  clearanceFileName,
+  receiptFileName,
+  receiptPdf,
+} from '#services/finance/finance_documents'
+import { serializeClearance } from '#transformers/finance/reconciliation'
+import { clearanceStatus, sendPdf } from '#controllers/finance/clearances_controller'
 import { ensureFinanceSetup } from '#services/finance/setup'
 import { serializePayment } from '#transformers/finance/finance'
 import { reportPaymentValidator, statementValidator } from '#validators/finance/finance'
@@ -60,6 +68,47 @@ export default class FinanceController {
     await ensureFinanceSetup(tenant)
     const range = await request.validateUsing(statementValidator, { data: request.qs() })
     return { data: await unitStatement(tenant, params.unitId, range) }
+  }
+
+  /** GET /resident/payments/:id/receipt — recibo de caja of a confirmed payment (PDF) */
+  async receipt({ tenant, auth, params, response }: HttpContext) {
+    const payment = await findOwnPayment(tenant, auth.getUserOrFail().id, params.id)
+    return sendPdf(response, await receiptPdf(tenant, payment), receiptFileName(payment))
+  }
+
+  /** GET /resident/units/:unitId/clearance — can it get a paz y salvo, and the issued ones */
+  async clearance({ tenant, auth, params }: HttpContext) {
+    const occupancy = await findOwnUnit(tenant, auth.getUserOrFail().id, params.unitId)
+    await ensureFinanceSetup(tenant)
+    return {
+      data: {
+        ...(await clearanceStatus(new ClearanceService(tenant), params.unitId)),
+        canIssue: canManageHousehold(occupancy),
+      },
+    }
+  }
+
+  /** POST /resident/units/:unitId/clearances — owner, renter or primary contact, when up to date */
+  async issueClearance({ tenant, auth, params, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const occupancy = await findOwnUnit(tenant, user.id, params.unitId)
+    if (!canManageHousehold(occupancy)) {
+      throw ResourceException.forbidden(
+        'Solo el propietario, el arrendatario o el contacto principal pueden pedir el paz y salvo'
+      )
+    }
+    await ensureFinanceSetup(tenant)
+    const certificate = await new ClearanceService(tenant).issue(params.unitId, user.id)
+    response.status(201)
+    return { data: serializeClearance(certificate) }
+  }
+
+  /** GET /resident/clearances/:id/pdf */
+  async clearancePdf({ tenant, auth, params, response }: HttpContext) {
+    const unitIds = await residentUnitIds(tenant, auth.getUserOrFail().id)
+    const service = new ClearanceService(tenant)
+    const certificate = await service.find(params.id, unitIds)
+    return sendPdf(response, await service.pdf(certificate), clearanceFileName(certificate))
   }
 
   /** GET /resident/payments — payments of their units, newest first */

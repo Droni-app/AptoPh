@@ -75,6 +75,18 @@ const confirm = () =>
   )
 const reject = (reason: string) =>
   act(() => financeApi.rejectPayment(props.paymentId!, reason), 'Pago rechazado')
+const downloading = ref(false)
+async function download() {
+  if (!payment.value) return
+  downloading.value = true
+  try {
+    await financeApi.downloadReceipt(payment.value)
+  } catch (e) {
+    toast.error(errorMessage(e))
+  } finally {
+    downloading.value = false
+  }
+}
 const reverse = (reason: string) =>
   act(() => financeApi.reversePayment(props.paymentId!, reason), 'Pago reversado')
 </script>
@@ -165,9 +177,18 @@ const reverse = (reason: string) =>
         :editable="tenant.canManageFinance"
       />
     </div>
-    <template v-if="payment && tenant.canManageFinance" #footer>
+    <template v-if="payment" #footer>
       <div class="flex flex-wrap justify-end gap-2">
-        <template v-if="payment.status === 'pending_review'">
+        <UiButton
+          v-if="payment.number !== null"
+          variant="ghost"
+          class="mr-auto"
+          :loading="downloading"
+          @click="download"
+          ><i class="mdi mdi-file-pdf-box mr-1" aria-hidden="true" />Descargar recibo</UiButton
+        >
+        <template v-if="!tenant.canManageFinance" />
+        <template v-else-if="payment.status === 'pending_review'">
           <UiButton variant="ghost" color="danger" :disabled="busy" @click="rejectOpen = true"
             >Rechazar</UiButton
           >

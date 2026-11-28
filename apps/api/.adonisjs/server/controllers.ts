@@ -44,11 +44,13 @@ export const controllers = {
     Billing: () => import('#controllers/finance/billing_controller'),
     Budgets: () => import('#controllers/finance/budgets_controller'),
     CashAccounts: () => import('#controllers/finance/cash_accounts_controller'),
+    Clearances: () => import('#controllers/finance/clearances_controller'),
     Fees: () => import('#controllers/finance/fees_controller'),
     Helpers: () => import('#controllers/finance/helpers'),
     Overview: () => import('#controllers/finance/overview_controller'),
     Payables: () => import('#controllers/finance/payables_controller'),
     Payments: () => import('#controllers/finance/payments_controller'),
+    Reconciliation: () => import('#controllers/finance/reconciliation_controller'),
     ResidentFinance: () => import('#controllers/finance/resident_finance_controller'),
   },
   gatehouse: {

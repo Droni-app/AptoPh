@@ -50,8 +50,16 @@ import type {
   VendorPaymentInput,
   BillStatus,
   VendorPaymentStatus,
+  BankColumnMapping,
+  BankStatement,
+  BankStatementDetail,
+  BankStatementLine,
+  BankStatementPreview,
+  ClearanceCertificate,
+  ClearanceStatus,
+  ReconcileLineInput,
 } from '@aptoph/shared'
-import { api } from '@/lib/http'
+import { api, apiDownload } from '@/lib/http'
 
 const base = '/api/v1/finance'
 const post = <T>(path: string, body: unknown = {}) =>
@@ -160,6 +168,58 @@ export const financeApi = {
     post<ApiItem<FinancePayment>>(`/payments/${id}/reject`, { reason }),
   reversePayment: (id: string, reason: string) =>
     post<ApiItem<FinancePayment>>(`/payments/${id}/reverse`, { reason }),
+
+  /** Recibo de caja en PDF */
+  downloadReceipt: (payment: { id: string; number: number | null }) =>
+    apiDownload(
+      `${base}/payments/${payment.id}/receipt`,
+      `recibo-de-caja-${String(payment.number ?? '').padStart(6, '0')}.pdf`,
+    ),
+
+  clearance: (unitId: string) => get<ApiItem<ClearanceStatus>>(`/units/${unitId}/clearance`),
+  issueClearance: (unitId: string) =>
+    post<ApiItem<ClearanceCertificate>>(`/units/${unitId}/clearances`),
+  downloadClearance: (certificate: { id: string; number: number }) =>
+    apiDownload(
+      `${base}/clearances/${certificate.id}/pdf`,
+      `paz-y-salvo-${String(certificate.number).padStart(6, '0')}.pdf`,
+    ),
+
+  bankStatements: (cashAccountId?: string) =>
+    get<{ data: BankStatement[] }>('/bank-statements', { cashAccountId }),
+  bankStatement: (id: string) => get<ApiItem<BankStatementDetail>>(`/bank-statements/${id}`),
+  previewBankStatement: (file: File, mapping?: BankColumnMapping) => {
+    const body = new FormData()
+    body.append('file', file)
+    if (mapping) body.append('mapping', JSON.stringify(mapping))
+    return post<ApiItem<BankStatementPreview>>('/bank-statements/preview', body)
+  },
+  importBankStatement: (file: File, cashAccountId: string, mapping: BankColumnMapping) => {
+    const body = new FormData()
+    body.append('file', file)
+    body.append('cashAccountId', cashAccountId)
+    body.append('mapping', JSON.stringify(mapping))
+    return post<ApiItem<BankStatementDetail>>('/bank-statements', body)
+  },
+  removeBankStatement: (id: string) =>
+    api<void>(`${base}/bank-statements/${id}`, { method: 'DELETE' }),
+  applySuggestions: (id: string) =>
+    post<
+      ApiItem<{
+        applied: number
+        failed: Array<{ lineId: string; message: string }>
+        statement: BankStatementDetail
+      }>
+    >(`/bank-statements/${id}/apply-suggestions`),
+  reconcileLine: (id: string, input: ReconcileLineInput) =>
+    post<ApiItem<{ line: BankStatementLine; statement: BankStatementDetail }>>(
+      `/bank-statement-lines/${id}/reconcile`,
+      input,
+    ),
+  undoLine: (id: string) =>
+    post<ApiItem<{ line: BankStatementLine; statement: BankStatementDetail }>>(
+      `/bank-statement-lines/${id}/undo`,
+    ),
 
   statement: (unitId: string, query: { from?: string; to?: string } = {}) =>
     get<ApiItem<BackofficeUnitStatement>>(`/units/${unitId}/statement`, query),

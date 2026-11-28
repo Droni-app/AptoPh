@@ -21,6 +21,7 @@ import StatusBadge from '@/components/finance/StatusBadge.vue'
 import PaymentFormModal from '@/components/finance/PaymentFormModal.vue'
 import ChargeFormModal from '@/components/finance/ChargeFormModal.vue'
 import ChargeDetailModal from '@/components/finance/ChargeDetailModal.vue'
+import ClearancePanel from '@/components/finance/ClearancePanel.vue'
 import { financeApi } from '@/api/finance'
 import { errorMessage } from '@/lib/errors'
 import {
@@ -48,6 +49,7 @@ const chargeOpen = ref(false)
 const detailOpen = ref(false)
 const detailId = ref<string | null>(null)
 const today = todayInput()
+const clearance = ref<InstanceType<typeof ClearancePanel> | null>(null)
 
 async function load() {
   try {
@@ -58,6 +60,8 @@ async function load() {
       })
     ).data
     error.value = null
+    // A payment or a charge changes whether it can get a paz y salvo
+    clearance.value?.load()
   } catch (e) {
     error.value = errorMessage(e)
   }
@@ -203,6 +207,8 @@ function exportCsv() {
         ><p class="py-6 text-center text-sm text-neutral-500">La unidad está al día.</p></template
       >
     </UiTable>
+
+    <ClearancePanel ref="clearance" :unit-id="unitId" />
 
     <UiCard>
       <div class="mb-4 flex flex-wrap items-end justify-between gap-3">

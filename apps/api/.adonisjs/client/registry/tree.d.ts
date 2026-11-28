@@ -116,9 +116,17 @@ export interface ApiDefinition {
     payments: {
       report: typeof routes['resident.payments.report']
       index: typeof routes['resident.payments.index']
+      receipt: typeof routes['resident.payments.receipt']
       attachments: {
         store: typeof routes['resident.payments.attachments.store']
       }
+    }
+    clearance: {
+      show: typeof routes['resident.clearance.show']
+    }
+    clearances: {
+      store: typeof routes['resident.clearances.store']
+      pdf: typeof routes['resident.clearances.pdf']
     }
     attachments: {
       url: typeof routes['resident.attachments.url']
@@ -393,6 +401,9 @@ export interface ApiDefinition {
     wompi: typeof routes['webhooks.wompi']
   }
   public: {
+    clearances: {
+      verify: typeof routes['public.clearances.verify']
+    }
     announcementImages: {
       show: typeof routes['public.announcementImages.show']
     }
@@ -437,6 +448,18 @@ export interface ApiDefinition {
     payments: {
       index: typeof routes['finance.payments.index']
       show: typeof routes['finance.payments.show']
+      receipt: typeof routes['finance.payments.receipt']
+    }
+    units: {
+      clearance: typeof routes['finance.units.clearance']
+      statement: typeof routes['finance.units.statement']
+    }
+    clearances: {
+      pdf: typeof routes['finance.clearances.pdf']
+    }
+    statements: {
+      index: typeof routes['finance.statements.index']
+      show: typeof routes['finance.statements.show']
     }
     vendors: {
       index: typeof routes['finance.vendors.index']
@@ -457,9 +480,6 @@ export interface ApiDefinition {
     journal: {
       index: typeof routes['finance.journal.index']
       show: typeof routes['finance.journal.show']
-    }
-    units: {
-      statement: typeof routes['finance.units.statement']
     }
     aging: {
       receivables: typeof routes['finance.aging.receivables']
@@ -522,6 +542,19 @@ export interface ApiDefinition {
         confirm: typeof routes['finance.write.payments.confirm']
         reject: typeof routes['finance.write.payments.reject']
         reverse: typeof routes['finance.write.payments.reverse']
+      }
+      clearances: {
+        store: typeof routes['finance.write.clearances.store']
+      }
+      statements: {
+        preview: typeof routes['finance.write.statements.preview']
+        store: typeof routes['finance.write.statements.store']
+        destroy: typeof routes['finance.write.statements.destroy']
+        applySuggestions: typeof routes['finance.write.statements.applySuggestions']
+      }
+      statementLines: {
+        reconcile: typeof routes['finance.write.statementLines.reconcile']
+        undo: typeof routes['finance.write.statementLines.undo']
       }
       vendors: {
         store: typeof routes['finance.write.vendors.store']

@@ -272,6 +272,18 @@ const router = createRouter({
               meta: { tenant: true, finance: true, title: 'Bancos y caja' },
             },
             {
+              path: 'conciliacion',
+              name: 'finance-reconciliation',
+              component: () => import('@/views/finance/ReconciliationView.vue'),
+              meta: { tenant: true, finance: true, title: 'Conciliación bancaria' },
+            },
+            {
+              path: 'conciliacion/:id',
+              name: 'finance-reconciliation-statement',
+              component: () => import('@/views/finance/BankStatementView.vue'),
+              meta: { tenant: true, finance: true, title: 'Extracto bancario' },
+            },
+            {
               path: 'presupuesto',
               name: 'finance-budgets',
               component: () => import('@/views/finance/BudgetsView.vue'),
