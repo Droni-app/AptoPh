@@ -99,6 +99,45 @@ export interface Registry {
       rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth/auth_controller').default['verifyEmail']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'auth.providers': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/auth/providers'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['providers']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['providers']>>>
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['providers']>>>
+    }
+  }
+  'auth.google.start': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/auth/google/url'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/auth/google').googleStartValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['start']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['start']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['start']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'auth.google.callback': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/google'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/auth/google').googleCallbackValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/auth/google').googleCallbackValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['callback']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['callback']>>> | { status: 422; response: { errors: SimpleError[] } }
+      rawResponse: ExtractRawResponse<Awaited<ReturnType<import('#controllers/auth/google_auth_controller').default['callback']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'invitations.show': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/invitations/:token'

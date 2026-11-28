@@ -50,6 +50,24 @@ const routes = {
     tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"email"],[0,"verify"]],
     types: placeholder as Registry['auth.email.verify']['types'],
   },
+  'auth.providers': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/auth/providers',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"providers"]],
+    types: placeholder as Registry['auth.providers']['types'],
+  },
+  'auth.google.start': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/auth/google/url',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"google"],[0,"url"]],
+    types: placeholder as Registry['auth.google.start']['types'],
+  },
+  'auth.google.callback': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/google',
+    tokens: [[0,"api"],[0,"v1"],[0,"auth"],[0,"google"]],
+    types: placeholder as Registry['auth.google.callback']['types'],
+  },
   'invitations.show': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/invitations/:token',

@@ -14,6 +14,7 @@ import UserTokenService from '#services/auth/user_token_service'
 import { appUrl, tokenLink } from '#services/app_urls'
 import { queueMail } from '#services/mailer'
 import { createSession } from '#services/auth/auth_session'
+import { GoogleOAuth } from '#services/auth/google_oauth'
 import {
   loginLimiter,
   passwordResetEmailLimiter,
@@ -73,9 +74,29 @@ export default class AuthController {
   async signup(ctx: HttpContext) {
     const data = await ctx.request.validateUsing(signupValidator)
 
+    // With Google the account has no password, and its email is the Google one
+    const google = data.googleTicket ? GoogleOAuth.readTicket(data.googleTicket) : null
+    if (data.googleTicket && !google) {
+      throw new FieldException(
+        'email',
+        'El registro con Google venció. Vuelve a elegir "Registrarme con Google".'
+      )
+    }
+    if (!google && !data.password) {
+      throw new FieldException('password', 'Escribe una contraseña')
+    }
+
     let result
     try {
-      result = await new SignupService().register(data, evidenceFrom(ctx))
+      result = await new SignupService().register(
+        {
+          ...data,
+          email: google?.email ?? data.email,
+          password: google ? null : data.password!,
+          google,
+        },
+        evidenceFrom(ctx)
+      )
     } catch (error) {
       if (error instanceof EmailTakenError) {
         throw new FieldException(

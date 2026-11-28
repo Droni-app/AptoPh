@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { UiAlert, UiButton, UiForm, UiInput, UiLabel } from '@aptoph/ui'
 import AuthShell from '@/components/AuthShell.vue'
+import GoogleButton from '@/components/GoogleButton.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTenantStore } from '@/stores/tenant'
 import { ApiError } from '@/lib/http'
@@ -51,37 +52,44 @@ async function submit() {
       Tu unidad, tus pagos, reservas, visitas y PQRS en un solo lugar.
     </p>
 
-    <UiForm :loading="loading" class="mt-8" @submit="submit">
-      <UiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</UiAlert>
-      <UiLabel title="Correo electrónico" :error="errors.email">
-        <UiInput
-          v-model="form.email"
-          type="email"
-          autocomplete="username"
-          required
-          autofocus
-          block
-        />
-      </UiLabel>
-      <UiLabel title="Contraseña" :error="errors.password">
-        <UiInput
-          v-model="form.password"
-          type="password"
-          autocomplete="current-password"
-          required
-          block
-        />
-      </UiLabel>
-      <p class="-mt-1 text-right text-sm">
-        <RouterLink
-          to="/recuperar-contrasena"
-          class="font-semibold text-brand-700 underline-offset-2 hover:underline dark:text-brand-200"
-        >
-          ¿Olvidaste tu contraseña?
-        </RouterLink>
-      </p>
-      <UiButton type="submit" color="primary" block :loading="loading"> Iniciar sesión </UiButton>
-    </UiForm>
+    <div class="mt-8">
+      <GoogleButton
+        :redirect="typeof route.query.redirect === 'string' ? route.query.redirect : null"
+        @error="error = $event"
+      />
+
+      <UiForm :loading="loading" @submit="submit">
+        <UiAlert v-if="error" color="danger" variant="soft" role="alert">{{ error }}</UiAlert>
+        <UiLabel title="Correo electrónico" :error="errors.email">
+          <UiInput
+            v-model="form.email"
+            type="email"
+            autocomplete="username"
+            required
+            autofocus
+            block
+          />
+        </UiLabel>
+        <UiLabel title="Contraseña" :error="errors.password">
+          <UiInput
+            v-model="form.password"
+            type="password"
+            autocomplete="current-password"
+            required
+            block
+          />
+        </UiLabel>
+        <p class="-mt-1 text-right text-sm">
+          <RouterLink
+            to="/recuperar-contrasena"
+            class="font-semibold text-brand-700 underline-offset-2 hover:underline dark:text-brand-200"
+          >
+            ¿Olvidaste tu contraseña?
+          </RouterLink>
+        </p>
+        <UiButton type="submit" color="primary" block :loading="loading"> Iniciar sesión </UiButton>
+      </UiForm>
+    </div>
 
     <p
       class="mt-6 rounded-2xl bg-mint-50 px-4 py-3 text-sm text-neutral-700 dark:bg-mint-500/10 dark:text-neutral-200"

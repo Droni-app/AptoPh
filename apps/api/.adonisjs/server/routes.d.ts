@@ -11,6 +11,9 @@ export type ScannedRoutes = {
     'auth.password.forgot': { paramsTuple?: []; params?: {} }
     'auth.password.reset': { paramsTuple?: []; params?: {} }
     'auth.email.verify': { paramsTuple?: []; params?: {} }
+    'auth.providers': { paramsTuple?: []; params?: {} }
+    'auth.google.start': { paramsTuple?: []; params?: {} }
+    'auth.google.callback': { paramsTuple?: []; params?: {} }
     'invitations.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'invitations.accept': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
@@ -305,6 +308,8 @@ export type ScannedRoutes = {
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'auth.providers': { paramsTuple?: []; params?: {} }
+    'auth.google.start': { paramsTuple?: []; params?: {} }
     'invitations.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
@@ -433,6 +438,8 @@ export type ScannedRoutes = {
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'auth.providers': { paramsTuple?: []; params?: {} }
+    'auth.google.start': { paramsTuple?: []; params?: {} }
     'invitations.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'profile.sessions.index': { paramsTuple?: []; params?: {} }
@@ -566,6 +573,7 @@ export type ScannedRoutes = {
     'auth.password.forgot': { paramsTuple?: []; params?: {} }
     'auth.password.reset': { paramsTuple?: []; params?: {} }
     'auth.email.verify': { paramsTuple?: []; params?: {} }
+    'auth.google.callback': { paramsTuple?: []; params?: {} }
     'invitations.accept': { paramsTuple?: []; params?: {} }
     'profile.email.verification': { paramsTuple?: []; params?: {} }
     'profile.push.store': { paramsTuple?: []; params?: {} }

@@ -1,14 +1,15 @@
 # Autenticación: access tokens de AdonisJS
 
 Las apps (backoffice, portal de residentes y, más adelante, la app móvil) se autentican con correo y
-contraseña contra la API. La API responde con un **access token opaco** de `@adonisjs/auth`
+contraseña, o con su cuenta de Google (ver [Google](#google)), contra la API. La API responde con un **access token opaco** de `@adonisjs/auth`
 (`oat_…`), que la app envía en cada petición:
 
 ```
 Authorization: Bearer oat_…
 ```
 
-No hay OAuth, ni sesiones con cookies, ni refresh tokens. El token dura **30 días**
+No hay sesiones con cookies ni refresh tokens. Google solo identifica a la persona: la sesión es
+el mismo access token. El token dura **30 días**
 (`ACCESS_TOKEN_TTL` en `apps/api/config/auth.ts`). Cuando vence, la API responde `401` y la app
 vuelve a la pantalla de inicio de sesión.
 
@@ -141,7 +142,60 @@ Seguridad:
 - Cabeceras `X-Content-Type-Options`, `X-Frame-Options` y, en producción, HSTS
   (`app/middleware/security_headers_middleware.ts`).
 
+## Google
+
+"Continuar con Google" en el inicio de sesión del backoffice y del portal, y "Registrarme con
+Google" en `/registro`. Es el flujo *authorization code* de OAuth 2.0 / OpenID Connect. El secreto
+nunca sale de la API.
+
+1. La app pide `GET /api/v1/auth/google/url?app=backoffice|web&intent=login|signup`. La API
+   responde la URL de Google y un `state` cifrado con `APP_KEY` (10 minutos) que lleva la app, la
+   intención y un `nonce`. La app guarda el `state` en `sessionStorage` y abre Google.
+2. Google devuelve el navegador a **`<app>/auth/google?code=…&state=…`**. La app comprueba que el
+   `state` sea el que guardó en esa pestaña y envía `POST /api/v1/auth/google { code, state, device }`.
+3. La API cambia el código por el ID token con `GOOGLE_CLIENT_SECRET` y el mismo `redirect_uri`. Luego
+   comprueba `iss`, `aud` (el client id), `exp`, el `nonce` del `state` y que Google tenga el
+   correo confirmado. La firma no se valida porque el token llega directo de Google por TLS
+   (OIDC Core 3.1.3.7).
+4. Busca la cuenta:
+   - por la cuenta de Google vinculada (`user_identities`, `provider = google`, `sub`), que no
+     cambia si cambia el correo;
+   - si no, por el correo: la vincula en ese momento y marca el correo como confirmado.
+5. Responde `{ status: 'session', session }` con el access token de siempre. Si no hay cuenta:
+   - **backoffice:** `{ status: 'signup', ticket, profile }`. `/registro` se abre con el nombre y el
+     correo de Google, sin contraseña, y envía `googleTicket` en `POST /auth/signup`. El ticket va
+     cifrado y dura 30 minutos. La cuenta queda sin contraseña, vinculada y con el correo confirmado.
+   - **portal:** `400`. Los residentes y el personal entran por invitación de la administración.
+
+Errores: `400` si el `state` venció o fue alterado, si el código o el token no sirven, o si el
+correo no está confirmado en Google; `403` para una cuenta bloqueada; `503` si faltan las
+credenciales. `GET /api/v1/auth/providers` responde `{ google: boolean }` y las apps esconden el
+botón cuando es `false`. Los dos endpoints usan el límite de los endpoints públicos.
+
+Una cuenta creada con Google no tiene contraseña: puede crear una con "¿Olvidaste tu contraseña?".
+
+### Configuración
+
+Cliente OAuth de tipo **Aplicación web** en Google Cloud Console (APIs y servicios › Credenciales),
+con estos **URI de redireccionamiento autorizados**:
+
+| Entorno | URI |
+| --- | --- |
+| Producción, backoffice | `https://admin.aptoph.com/auth/google` |
+| Producción, portal | `https://web.aptoph.com/auth/google` |
+| Desarrollo, backoffice | `http://localhost:5174/auth/google` |
+| Desarrollo, portal | `http://localhost:5173/auth/google` |
+
+Variables de la API: `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`. En producción, el secreto va
+cifrado en la app de DigitalOcean.
+
+Código: `services/auth/google_oauth.ts`, `controllers/auth/google_auth_controller.ts`, modelo
+`UserIdentity` (`user_identities`) y, en cada app, `lib/google.ts`, `components/GoogleButton.vue`
+y `views/GoogleCallbackView.vue`. Pruebas: `tests/functional/auth/google.spec.ts`.
+
 ## Pendiente
+
+- Aceptar una invitación con Google (hoy pide crear contraseña).
 
 - Cambio de correo con confirmación del correo nuevo (hoy se pide a soporte).
 - Avisar por correo de un inicio de sesión desde un dispositivo nuevo.

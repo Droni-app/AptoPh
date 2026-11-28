@@ -18,6 +18,11 @@ export interface ApiDefinition {
     email: {
       verify: typeof routes['auth.email.verify']
     }
+    providers: typeof routes['auth.providers']
+    google: {
+      start: typeof routes['auth.google.start']
+      callback: typeof routes['auth.google.callback']
+    }
   }
   invitations: {
     show: typeof routes['invitations.show']

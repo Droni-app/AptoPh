@@ -176,6 +176,21 @@ La gestiona `@adonisjs/auth`: un access token por sesión iniciada (ver
 [authentication.md](authentication.md)). `tokenable_id` es `uuid` y `name` guarda la app que lo pidió
 (`Backoffice`, `Portal de residentes`…).
 
+### `user_identities` — cuentas externas para iniciar sesión (Google)
+
+| Columna | Tipo | Notas |
+| --- | --- | --- |
+| id | uuid PK | |
+| user_id | uuid FK → users | `ON DELETE CASCADE` |
+| provider | varchar(20) | `google` |
+| provider_user_id | varchar(255) | Id de la cuenta en el proveedor (`sub` de Google) |
+| email | varchar(254) | Correo de la cuenta externa al vincularla o usarla |
+| last_used_at | timestamptz NULL | |
+| created_at / updated_at | timestamptz | |
+
+`UNIQUE (provider, provider_user_id)`, `UNIQUE (user_id, provider)`. Ver
+[authentication.md](authentication.md#google).
+
 ### `legal_acceptances` — evidencia de aceptación de los documentos legales
 
 Módulo `legal`. Solo inserciones: quién aceptó qué versión de cada documento, cuándo, desde qué IP y

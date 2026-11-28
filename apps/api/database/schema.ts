@@ -1764,6 +1764,27 @@ export class UnitSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class UserIdentitySchema extends BaseModel {
+  static $columns = ['createdAt', 'email', 'id', 'lastUsedAt', 'provider', 'providerUserId', 'updatedAt', 'userId'] as const
+  $columns = UserIdentitySchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare email: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare lastUsedAt: DateTime | null
+  @column()
+  declare provider: string
+  @column()
+  declare providerUserId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare userId: string
+}
+
 export class UserTokenSchema extends BaseModel {
   static $columns = ['createdAt', 'expiresAt', 'id', 'tokenHash', 'type', 'usedAt', 'userId'] as const
   $columns = UserTokenSchema.$columns

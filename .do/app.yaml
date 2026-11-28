@@ -91,6 +91,9 @@ services:
       - { key: SMTP_USERNAME, value: __SMTP_USERNAME__, type: SECRET }
       - { key: SMTP_PASSWORD, value: __SMTP_PASSWORD__, type: SECRET }
       - { key: APP_KEY, value: __APP_KEY__, type: SECRET }
+      # Sign in with Google (docs/authentication.md#google)
+      - { key: GOOGLE_CLIENT_ID, value: __GOOGLE_CLIENT_ID__ }
+      - { key: GOOGLE_CLIENT_SECRET, value: __GOOGLE_CLIENT_SECRET__, type: SECRET }
       # Files: private DigitalOcean Spaces bucket, one folder per conjunto (docs/files.md)
       - { key: DRIVE_DISK, value: spaces }
       - { key: SPACES_REGION, value: nyc3 }

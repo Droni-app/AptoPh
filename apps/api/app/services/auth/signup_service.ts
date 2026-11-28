@@ -6,13 +6,18 @@ import Enrollment from '#models/tenants/enrollment'
 import Subscription from '#models/billing/subscription'
 import Tenant from '#models/tenants/tenant'
 import User from '#models/auth/user'
+import UserIdentity from '#models/auth/user_identity'
+import type { GoogleProfile } from '#services/auth/google_oauth'
 import { recordAcceptances, type AcceptanceEvidence } from '#services/legal/legal_acceptances'
 
 export type SignupInput = {
   fullName: string
   email: string
   phone: string
-  password: string
+  /** Null when signing up with Google */
+  password: string | null
+  /** The Google account that signs up: linked, and its email is confirmed */
+  google?: GoogleProfile | null
   tenantName: string
   city: string
   units: number
@@ -52,9 +57,22 @@ export default class SignupService {
           email: input.email,
           phone: input.phone,
           password: input.password,
+          emailVerifiedAt: input.google?.emailVerified ? DateTime.now() : null,
         },
         { client: trx }
       )
+      if (input.google) {
+        await UserIdentity.create(
+          {
+            userId: user.id,
+            provider: 'google',
+            providerUserId: input.google.subject,
+            email: input.google.email,
+            lastUsedAt: DateTime.now(),
+          },
+          { client: trx }
+        )
+      }
 
       const tenant = await Tenant.create(
         {

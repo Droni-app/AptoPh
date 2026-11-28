@@ -62,10 +62,33 @@ export type SignupInput = {
   fullName: string
   email: string
   phone: string
-  password: string
+  /** Not needed when signing up with Google (`googleTicket`) */
+  password?: string
+  /** From `POST /auth/google` when the Google account has no AptoPH account yet */
+  googleTicket?: string
   acceptTerms: boolean
   device?: string
 }
+
+/** Sign in with Google: which app opens it and what the person wants to do */
+export type GoogleAuthApp = 'backoffice' | 'web'
+export type GoogleAuthIntent = 'login' | 'signup'
+
+/** GET /auth/google/url: where to send the browser, and the state to check on return */
+export type GoogleAuthStart = { url: string; state: string }
+
+/**
+ * POST /auth/google: a session when the Google account belongs to an AptoPH
+ * account; in the back-office, otherwise, the data to finish the sign-up.
+ */
+export type GoogleAuthResult =
+  | { status: 'session'; session: AuthSession }
+  | {
+      status: 'signup'
+      /** Encrypted, valid 30 minutes: sent back as `googleTicket` in the sign-up */
+      ticket: string
+      profile: { fullName: string; email: string }
+    }
 
 export type UserProfile = {
   id: string

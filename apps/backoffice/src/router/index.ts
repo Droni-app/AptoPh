@@ -44,6 +44,13 @@ const router = createRouter({
       meta: { public: true, guest: true, title: 'Iniciar sesión' },
     },
     {
+      // Google sends the browser back here (redirect URI of the OAuth client)
+      path: '/auth/google',
+      name: 'google-callback',
+      component: () => import('@/views/GoogleCallbackView.vue'),
+      meta: { public: true, title: 'Entrando con Google' },
+    },
+    {
       path: '/registro',
       name: 'signup',
       component: () => import('@/views/SignupView.vue'),

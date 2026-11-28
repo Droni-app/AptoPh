@@ -12,6 +12,8 @@ export const PROPERTY_TYPES = values('residential', 'commercial', 'mixed')
 export const ENROLLMENT_STATUSES = values('invited', 'active', 'suspended', 'revoked')
 /** Single-use tokens sent by email */
 export const USER_TOKEN_TYPES = values('password_reset', 'email_verification')
+/** External accounts a user can sign in with */
+export const IDENTITY_PROVIDERS = values('google')
 
 // Physical structure
 export const UNIT_TYPES = values('apartment', 'house', 'commercial', 'parking', 'storage')
@@ -102,6 +104,7 @@ export type UnitStatus = ValueOf<typeof UNIT_STATUSES>
 export type OccupantRelationship = ValueOf<typeof OCCUPANT_RELATIONSHIPS>
 export type EnrollmentStatus = ValueOf<typeof ENROLLMENT_STATUSES>
 export type UserTokenType = ValueOf<typeof USER_TOKEN_TYPES>
+export type IdentityProvider = ValueOf<typeof IDENTITY_PROVIDERS>
 export type TenantStatus = ValueOf<typeof TENANT_STATUSES>
 export type PropertyType = ValueOf<typeof PROPERTY_TYPES>
 export type DocumentType = ValueOf<typeof DOCUMENT_TYPES>

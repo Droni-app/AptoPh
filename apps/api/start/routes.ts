@@ -29,6 +29,7 @@ import {
 import { throttleBilling, throttlePublic, throttleSignup } from '#start/limiter'
 
 const AuthController = () => import('#controllers/auth/auth_controller')
+const GoogleAuthController = () => import('#controllers/auth/google_auth_controller')
 const InvitationsController = () => import('#controllers/tenants/invitations_controller')
 const ProfileController = () => import('#controllers/auth/profile_controller')
 const AccountController = () => import('#controllers/auth/account_controller')
@@ -149,6 +150,10 @@ router
             router.post('password/forgot', [AuthController, 'forgotPassword']).as('password.forgot')
             router.post('password/reset', [AuthController, 'resetPassword']).as('password.reset')
             router.post('email/verify', [AuthController, 'verifyEmail']).as('email.verify')
+            // Sign in and sign up with Google
+            router.get('providers', [GoogleAuthController, 'providers']).as('providers')
+            router.get('google/url', [GoogleAuthController, 'start']).as('google.start')
+            router.post('google', [GoogleAuthController, 'callback']).as('google.callback')
           })
           .use(throttlePublic)
       })

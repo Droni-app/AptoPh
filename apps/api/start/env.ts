@@ -30,6 +30,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   BACKOFFICE_URL: Env.schema.string.optional({ format: 'url', tld: false }),
   RESIDENTS_URL: Env.schema.string.optional({ format: 'url', tld: false }),
 
+  // Sign in with Google (OAuth 2.0 web client). Without them the Google button is hidden.
+  // Authorized redirect URIs: <BACKOFFICE_URL>/auth/google and <RESIDENTS_URL>/auth/google
+  GOOGLE_CLIENT_ID: Env.schema.string.optional(),
+  GOOGLE_CLIENT_SECRET: Env.schema.string.optional(),
+
   // Database (PostgreSQL)
   DB_HOST: Env.schema.string({ format: 'host' }),
   DB_PORT: Env.schema.number(),

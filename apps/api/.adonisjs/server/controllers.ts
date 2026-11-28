@@ -21,6 +21,7 @@ export const controllers = {
   auth: {
     Account: () => import('#controllers/auth/account_controller'),
     Auth: () => import('#controllers/auth/auth_controller'),
+    GoogleAuth: () => import('#controllers/auth/google_auth_controller'),
     Profile: () => import('#controllers/auth/profile_controller'),
   },
   billing: {

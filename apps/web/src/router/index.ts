@@ -19,6 +19,13 @@ const router = createRouter({
   scrollBehavior: (to) => (to.hash ? { el: to.hash, top: 80 } : { top: 0 }),
   routes: [
     {
+      // Google sends the browser back here (redirect URI of the OAuth client)
+      path: '/auth/google',
+      name: 'google-callback',
+      component: () => import('@/views/GoogleCallbackView.vue'),
+      meta: { public: true, title: 'Entrando con Google' },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
